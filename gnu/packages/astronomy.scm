@@ -1490,6 +1490,39 @@ interchange format for scientific data.  This package contains the Python
 implementation of the ASDF Standard.")
     (license license:bsd-3)))
 
+(define python-asdf-transform-schemas
+  (package
+    (name "python-asdf-transform-schemas")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "asdf_transform_schemas" version))
+       (sha256
+        (base32 "1gmzd81hw4ppsvzrc91wcbjpcw9hhv9gavllv7nyi7qjb54c837g"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "-m" "pytest")))))))
+    (native-inputs
+     (list python-pytest
+           python-semantic-version
+           python-setuptools-scm))
+    (propagated-inputs
+     (list python-asdf))
+    (home-page "https://github.com/asdf-format/asdf-transform-schemas")
+    (synopsis "ASDF schemas for transforms")
+    (description
+     "This package provides ASDF schemas for validating transform tags.  Users
+should not need to install this directly; instead, install an implementation
+package such as asdf-astropy.")
+    (license license:bsd-3)))
+
 (define-public python-astroalign
   (package
     (name "python-astroalign")
