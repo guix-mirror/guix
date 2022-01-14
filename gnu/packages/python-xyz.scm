@@ -4212,7 +4212,9 @@ structure for Python.")
     (build-system python-build-system)
     (arguments
      (list
-      #:tests? #f ; Tests are deprecated/broken until next version.
+      ;; Tests are deprecated and broken until next version, see
+      ;; https://github.com/autokey/autokey/issues/327
+      #:tests? #f
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'fix-paths
@@ -4221,8 +4223,16 @@ structure for Python.")
                 (("\"wmctrl\"")
                  (string-append "\"" (search-input-file inputs "bin/wmctrl") "\""))
                 (("\"zenity\"")
-                 (string-append "\"" (search-input-file inputs "bin/zenity") "\"")))))
-          (add-after 'install 'wrap-autokey
+                 (string-append "\"" (search-input-file inputs "bin/zenity") "\"")))
+              (substitute* "autokey-shell"
+                (("'ipython3'")
+                 (string-append "'" (search-input-file inputs "bin/ipython3") "'"))
+                (("'python3'")
+                 (string-append "'" (search-input-file inputs "bin/python3") "'")))))
+          ;; Use 'prefix' instead of '=' to allow the user to use additional
+          ;; GI paths from their autokey scripts.  GUIX_PYTHONPATH is already
+          ;; wrapped with prefix in python-build-system's wrap.
+          (add-before 'wrap 'wrap-autokey-gi
             (lambda _
               (let ((gi-typelib-path (getenv "GI_TYPELIB_PATH")))
                 (for-each
@@ -4238,14 +4248,14 @@ structure for Python.")
            gtksourceview-3
            libappindicator
            libnotify
-           wmctrl
-           zenity))
-    (propagated-inputs
-     (list python-dbus
+           python-dbus
+           python-ipython
            python-pygobject
            python-pyinotify
            python-pyqt+qscintilla
-           python-xlib))
+           python-xlib
+           wmctrl
+           zenity))
     (home-page "https://github.com/autokey/autokey")
     (synopsis
       "Keyboard and GUI automation utility")
