@@ -26543,29 +26543,27 @@ color.  Designed for 256-color terminals.  Comes in light and dark!")
       (license license:gpl3+))))
 
 (define-public emacs-spacemacs-theme
-  (let ((commit "f79c40fb241e204539fde97200abae91e828e585")
-        (revision "1"))
-    (package
-      (name "emacs-spacemacs-theme")
-      (version (git-version "0" revision commit)) ;no release yet
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/nashamri/spacemacs-theme")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "1l2kkiyrskkpx8f901v0wrzaah1wjg15zdyv88spj3mh3hwd3b6n"))))
-      (build-system emacs-build-system)
-      (home-page "https://github.com/nashamri/spacemacs-theme")
-      (synopsis
-       "Light and dark theme for spacemacs that supports GUI and terminal")
-      (description
-       "Spacemacs theme is an Emacs color theme that started as
+  (package
+    (name "emacs-spacemacs-theme")
+    (version "0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nashamri/spacemacs-theme")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "15l9hb8f08nkxsaj8pxbg2mip4pp2msnrl0nvlq22zg40gh7pqsn"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/nashamri/spacemacs-theme")
+    (synopsis
+     "Light and dark theme for spacemacs that supports GUI and terminal")
+    (description
+     "Spacemacs theme is an Emacs color theme that started as
 a theme for Spacemacs.  The theme comes with dark and light variants
 and it should work well with 256 color terminals.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-elixir-mode
   (package
