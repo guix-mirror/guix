@@ -1074,14 +1074,14 @@ framework.")
 (define-public python-pytest-pycodestyle
   (package
     (name "python-pytest-pycodestyle")
-    (version "2.0.0")               ;later versions require python-pytest~=5.4
+    (version "2.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest-pycodestyle" version))
        (sha256
         (base32
-         "02i5gl7pm9cwxk15sn29inz3n8flpj1r3p1l110h43f2na5w8h7z"))))
+         "1clyjypn93hwvz17f4i6n2688835d4y8qsq2aw17d6fkbqiy8mg7"))))
     (build-system python-build-system)
     (propagated-inputs
      (list python-pycodestyle))
