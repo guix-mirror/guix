@@ -1630,6 +1630,52 @@ System (WCS) tags.  Users should not need to install this directly; instead,
 install an implementation package such as gwcs.")
     (license license:bsd-3)))
 
+(define-public python-gwcs
+  (package
+    (name "python-gwcs")
+    (version "0.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "gwcs" version))
+       (sha256
+        (base32 "194j49m8xjjzv9pp8cnj06igz8sdxb0nphyybcc7mhigw0f0kr30"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "-m" "pytest")))))))
+    (native-inputs
+     (list python-jsonschema
+           python-jmespath
+           python-pytest
+           python-pytest-doctestplus
+           python-pyyaml
+           python-semantic-version
+           python-setuptools-scm))
+    (propagated-inputs
+     (list python-asdf
+           python-asdf-astropy
+           python-asdf-wcs-schemas
+           python-astropy
+           python-numpy
+           python-scipy))
+    (home-page "https://gwcs.readthedocs.io/en/latest/")
+    (synopsis "Generalized World Coordinate System")
+    (description "Generalized World Coordinate System (GWCS) is an Astropy
+affiliated package providing tools for managing the World Coordinate System of
+astronomical data.
+
+GWCS takes a general approach to the problem of expressing transformations
+between pixel and world coordinates.  It supports a data model which includes
+the entire transformation pipeline from input coordinates (detector by
+default) to world coordinates.")
+    (license license:bsd-3)))
+
 (define-public python-astroalign
   (package
     (name "python-astroalign")
