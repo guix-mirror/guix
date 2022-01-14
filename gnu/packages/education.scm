@@ -409,8 +409,7 @@ to open the application in a web browser, for offline usage.")
                (mkdir-p bin)
                (with-directory-excursion bin
                  (symlink (string-append share "/" executable ".py")
-                          executable)))
-             #t))
+                          executable)))))
          (add-after 'install 'create-desktop-file
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -428,8 +427,7 @@ to open the application in a web browser, for offline usage.")
                             Terminal=false~@
                             Icon=toutenclic~@
                             Type=Application~%"
-                           out)))
-               #t))))))
+                           out)))))))))
     (native-inputs
      (list unzip))
     (inputs
