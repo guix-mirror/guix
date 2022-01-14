@@ -6247,6 +6247,27 @@ of these tests are also included.")
 rules with R.")
     (license license:gpl2)))
 
+(define-public r-leaflet-providers
+  (package
+    (name "r-leaflet-providers")
+    (version "1.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "leaflet.providers" version))
+       (sha256
+        (base32 "0yynrwv4xd5cdh49cwvfxm4ranarah9iiry2cd3b4fiihdfcg3wy"))))
+    (properties `((upstream-name . "leaflet.providers")))
+    (build-system r-build-system)
+    (home-page "https://github.com/rstudio/leaflet.providers")
+    (synopsis "Leaflet map tile providers")
+    (description
+     "This package contains third-party map tile provider information from
+Leaflet.js, to be used with the @code{leaflet} R package.  Additionally,
+@code{leaflet.providers} enables users to retrieve up-to-date provider
+information between package updates.")
+    (license license:bsd-2)))
+
 (define-public r-leaps
   (package
     (name "r-leaps")
