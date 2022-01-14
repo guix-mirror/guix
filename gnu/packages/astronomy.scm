@@ -1555,6 +1555,48 @@ coordinates tags.  Users should not need to install this directly; instead,
 install an implementation package such as asdf-astropy.")
     (license license:bsd-3)))
 
+(define-public python-asdf-astropy
+  (package
+    (name "python-asdf-astropy")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "asdf_astropy" version))
+       (sha256
+        (base32 "0bzgah7gskvnz6jcrzipvzixv8k2jzjkskqwxngzwp4nxgjbcvi4"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "-m" "pytest")))))))
+    (native-inputs
+     (list python-coverage
+           python-h5py
+           python-matplotlib
+           python-pandas
+           python-pytest-astropy
+           python-scipy
+           python-semantic-version
+           python-setuptools-scm))
+    (propagated-inputs
+     (list python-asdf
+           python-asdf-coordinates-schemas
+           python-asdf-transform-schemas
+           python-astropy
+           python-numpy
+           python-packaging))
+    (home-page "https://github.com/astropy/asdf-astropy")
+    (synopsis "ASDF serialization support for astropy")
+    (description
+     "This package includes plugins that provide ASDF serialization support for
+Astropy objects.")
+    (license license:bsd-3)))
+
 (define-public python-astroalign
   (package
     (name "python-astroalign")
