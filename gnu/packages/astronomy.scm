@@ -1523,6 +1523,38 @@ should not need to install this directly; instead, install an implementation
 package such as asdf-astropy.")
     (license license:bsd-3)))
 
+(define python-asdf-coordinates-schemas
+  (package
+    (name "python-asdf-coordinates-schemas")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "asdf_coordinates_schemas" version))
+       (sha256
+        (base32 "0ahwhsz5jzljnpkfd2kvspirg823lnj5ip9sfkd9cx09z1nlz8jg"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "-m" "pytest")))))))
+    (native-inputs
+     (list python-pytest
+           python-semantic-version
+           python-setuptools-scm))
+    (propagated-inputs
+     (list python-asdf))
+    (home-page "https://github.com/asdf-format/asdf-coordinates-schemas")
+    (synopsis "ASDF coordinates schemas")
+    (description "This package provides ASDF schemas for validating
+coordinates tags.  Users should not need to install this directly; instead,
+install an implementation package such as asdf-astropy.")
+    (license license:bsd-3)))
+
 (define-public python-astroalign
   (package
     (name "python-astroalign")
