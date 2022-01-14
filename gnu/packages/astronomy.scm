@@ -5,7 +5,7 @@
 ;;; Copyright © 2019 by Amar Singh <nly@disroot.org>
 ;;; Copyright © 2020 R Veera Kumar <vkor@vkten.in>
 ;;; Copyright © 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
-;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
+;;; Copyright © 2021, 2022 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2021, 2022 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2021 Foo Chuan Wei <chuanwei.foo@hotmail.com>
@@ -1460,34 +1460,35 @@ of stand-alone functions and classes.")
 (define-public python-asdf
   (package
     (name "python-asdf")
-    (version "2.7.4")
+    (version "2.8.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "asdf" version))
        (sha256
-        (base32 "1mj52l2m8pbhiqacgjakjpvqi8kyx470yw151lcsswbq5wp0rsc6"))))
+        (base32 "0i4vq1hsympjgb1yvn4ql0gm8j1mki9ggmj03533kmg0nbzp03yy"))))
     (build-system python-build-system)
     (arguments
-     ;; TODO: (Sharlatan-20210207T165820+0000): Tests depend on astropy, astropy
-     ;; depends on asdf. Disable circular dependence.
+     ;; NOTE: (Sharlatan-20211229T201059+0000): Tests depend on astropy and
+     ;; gwcs, astropy gwcs depend on asdf.  Disable circular dependence.
      `(#:tests? #f))
     (native-inputs
-     `(("packaging" ,python-packaging)
-       ("semantic-version" ,python-semantic-version)
-       ("setuptools-scm" ,python-setuptools-scm)))
-     (inputs
-      `(("importlib-resources" ,python-importlib-resources)
-        ("jsonschema" ,python-jsonschema)
-        ("numpy" ,python-numpy)
-        ("pyyaml" ,python-pyyaml)))
-     (home-page "https://github.com/asdf-format/asdf")
-     (synopsis "Python tools to handle ASDF files")
-     (description
-      "The Advanced Scientific Data Format (ASDF) is a next-generation
+     (list python-setuptools-scm
+           python-semantic-version
+           python-packaging))
+    (propagated-inputs
+     (list python-importlib-resources
+           python-jsonschema
+           python-jmespath
+           python-numpy
+           python-pyyaml))
+    (home-page "https://github.com/asdf-format/asdf")
+    (synopsis "Python tools to handle ASDF files")
+    (description
+     "The Advanced Scientific Data Format (ASDF) is a next-generation
 interchange format for scientific data.  This package contains the Python
 implementation of the ASDF Standard.")
-     (license license:bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python-astroalign
   (package
