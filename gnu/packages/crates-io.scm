@@ -1,3 +1,4 @@
+
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
 ;;; Copyright © 2019, 2020, 2021, 2022 Efraim Flashner <efraim@flashner.co.il>
@@ -40384,7 +40385,7 @@ in your code.")
 (define-public rust-proc-macro2-1
   (package
     (name "rust-proc-macro2")
-    (version "1.0.27")
+    (version "1.0.32")
     (source
       (origin
         (method url-fetch)
@@ -40392,7 +40393,7 @@ in your code.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0f3h0zl5w5090ajmmvpmhkpr4iwqnn5rip3afacabhc657vwmn7h"))))
+          "0hqbxlvhiaybakl1gai3mgps1dxsmxricxsr2rfdrh222z0qql5s"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-test-flags '("--lib")
