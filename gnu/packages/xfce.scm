@@ -13,7 +13,7 @@
 ;;; Copyright © 2019 Ingo Ruhnke <grumbel@gmail.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
-;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020, 2021, 2022 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2021 André A. Gomes <andremegafone@gmail.com>
 ;;;
@@ -1014,7 +1014,7 @@ inhibit interface which allows applications to prevent automatic sleep.")
 (define-public ristretto
   (package
     (name "ristretto")
-    (version "0.12.1")
+    (version "0.12.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/apps/ristretto/"
@@ -1022,10 +1022,12 @@ inhibit interface which allows applications to prevent automatic sleep.")
                                   "ristretto-" version ".tar.bz2"))
               (sha256
                (base32
-                "1vnpzyb966pfbn7md0q26kl972iqwfywg4lfg3jahrl4l6f3z18k"))))
+                "0sfrvb19xkiphcp2ddqxgvh9hbramlm6qi7sv99s407c4acqdvhf"))))
     (build-system gnu-build-system)
     (native-inputs
-     (list intltool desktop-file-utils pkg-config))
+     (list intltool desktop-file-utils
+           `(,glib "bin") ; for gdbus-codegen
+           pkg-config))
     (inputs
      (list gtk+ libexif libxfce4ui tumbler))
     (home-page "https://docs.xfce.org/apps/ristretto/start")
