@@ -14616,7 +14616,7 @@ applications.")
 (define-public python-qasync
   (package
     (name "python-qasync")
-    (version "0.15.0")
+    (version "0.22.0")
     (source
      (origin
        ;; There are no tests in the PyPI tarball.
@@ -14626,7 +14626,7 @@ applications.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0va9h6v102d7mxz608banjc0l0v02dq3ywhr5i4nqaxx3qkazc2l"))))
+        (base32 "1q9cllrwf94whr0f6mipa0hdq1rcyqvklwx19g35g2dav8f3xkjl"))))
     (build-system python-build-system)
     (arguments
      `(#:test-target "pytest"
@@ -14634,8 +14634,7 @@ applications.")
        (modify-phases %standard-phases
          (add-before 'check 'set-qpa
            (lambda _
-             (setenv "QT_QPA_PLATFORM" "offscreen")
-             #t)))))
+             (setenv "QT_QPA_PLATFORM" "offscreen"))))))
     (native-inputs
      (list python-pytest python-pytest-runner))
     (propagated-inputs
