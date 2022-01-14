@@ -707,37 +707,6 @@ auto-completion and syntax highlighting.")
 autocompletion and syntax highlighting.")
     (license license:bsd-3)))
 
-(define-public litecli
-  (package
-    (name "litecli")
-    (version "1.6.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "litecli" version))
-       (sha256
-        (base32 "1yb706mgzizzijm1k0fbny98jf58qh5q6f2870rbplxlfla4w9sd"))))
-    (build-system python-build-system)
-    ;; 'check' phase fails with: ice-9/boot-9.scm:1685:16: In procedure
-    ;; raise-exception: "In procedure struct-vtable: Wrong type argument in
-    ;; position 1 (expecting struct): #f"
-    (arguments `(#:tests? #f))
-    (propagated-inputs
-     (list python-cli-helpers
-           python-click
-           python-configobj
-           python-prompt-toolkit
-           python-pygments
-           python-sqlparse))
-    (native-inputs
-     (list python-mock python-pytest))
-    (home-page "https://litecli.com")
-    (synopsis "CLI for SQLite databases")
-    (description
-     "@code{litecli} is a command-line client for SQLite databases that has
-auto-completion and syntax highlighting.")
-    (license license:bsd-3)))
-
 (define-public mycli
   (package
     (name "mycli")
