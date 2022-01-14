@@ -1210,16 +1210,24 @@ for scientific computing and data science (e.g. BLAS and OpenMP).")
 (define-public python-pynndescent
   (package
     (name "python-pynndescent")
-    (version "0.5.2")
+    (version "0.5.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pynndescent" version))
        (sha256
-        (base32 "0w87c2v0li2rdbx6qfc2lb6y6bxpdy3jwfgzfs1kcr4d1chj5zfr"))))
+        (base32 "10pqqqc3jkpw03cyzy04slxmpgyhqnlgbyk0c1cv7kqr5d0zhzbs"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "-m" "pytest" "--pyargs" "pynndescent")))))))
     (native-inputs
-     (list python-nose))
+     (list python-pytest))
     (propagated-inputs
      (list python-joblib python-llvmlite python-numba python-scikit-learn
            python-scipy))
