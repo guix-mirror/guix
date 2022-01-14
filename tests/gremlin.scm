@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2018, 2020, 2022 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2022 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -94,8 +94,12 @@
                (loop result))))))
     (define ground-truth
       (remove (lambda (entry)
+                ;; See vdso(7) for the list of vDSO names across
+                ;; architectures.
                 (or (string-prefix? "linux-vdso.so" entry)
-                    (string-prefix? "linux-vdso64.so" entry)))
+                    (string-prefix? "linux-vdso32.so" entry) ;32-bit powerpc
+                    (string-prefix? "linux-vdso64.so" entry) ;64-bit powerpc
+                    (string-prefix? "linux-gate.so" entry))) ;i386
               (read-ldd-output pipe)))
 
     (and (zero? (close-pipe pipe))
