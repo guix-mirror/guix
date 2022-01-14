@@ -1931,12 +1931,16 @@ and system administrators.")
                  (base32
                   "04r8dspa6nmicrifhi3sh46hqvyy88hzq37xx99q3q1mwsrpmwy8"))))
       (build-system meson-build-system)
+      (arguments `(#:meson ,meson-0.59))
       (inputs
        (list graphene
              gtk+-2
              libxml2
              libxslt
-             poppler
+
+             ;; XXX: PDF plugin fails to build with poppler 21.07.0.
+             ;; poppler
+
              ;; Without Python 2, build fails: plug-ins/python/meson.build:4:0:
              ;; ERROR: Unknown method "dependency" in object.
              python-2))
