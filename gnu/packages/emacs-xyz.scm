@@ -28439,7 +28439,7 @@ snippets for Emacs.")
 (define-public emacs-org-roam
   (package
     (name "emacs-org-roam")
-    (version "2.1.0")
+    (version "2.2.0")
     (source
      (origin
        (method git-fetch)
@@ -28448,13 +28448,13 @@ snippets for Emacs.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "092xn0sqc7b7f6pdf7m6c3giqqbh6fq02mfz8qrg0wmx4ds1isqp"))))
+        (base32 "0q3nhw05wnqh1qgggxsj8wki4ihciqlkic2x7qbcsskjqm73j1r7"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         ;; Move the extensions source files to the top level, which is included in
-         ;; the EMACSLOADPATH.
+         ;; Move the extensions source files to the top level, which is
+         ;; included in the EMACSLOADPATH.
          (add-after 'unpack 'move-source-files
            (lambda _
              (let ((el-files (find-files "./extensions" ".*\\.el$")))
