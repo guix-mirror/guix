@@ -14,6 +14,7 @@
 ;;; Copyright © 2021 Sergey Trofimov <sarg@sarg.org.ru>
 ;;; Copyright © 2021 Dhruvin Gandhi <contact@dhruvin.dev>
 ;;; Copyright © 2021 Ahmad Jarara <git@ajarara.io>
+;;; Copyright © 2022 John Kehayias <john.kehayias@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,6 +54,7 @@
   #:use-module (gnu packages dns)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages graphviz)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libbsd)
@@ -72,7 +74,9 @@
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages swig)
+  #:use-module (gnu packages suckless)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml))
 
 (define-public ccid
@@ -442,6 +446,65 @@ PCSC API Python wrapper module.")
 
 (define-public python2-pyscard
   (package-with-python2 python-pyscard))
+
+(define-public yubikey-oath-dmenu
+  (package
+    (name "yubikey-oath-dmenu")
+    (version "0.13.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emlun/yubikey-oath-dmenu")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1h6dr4l0gzgdg8zn2c39kx9cx1bgvwqxkz3z95qz9r70xfsghgwk"))))
+    (build-system python-build-system)
+    (arguments
+     (list
+      #:tests? #f ; there are no tests
+      #:phases
+      #~(modify-phases %standard-phases
+          (delete 'configure) ; no configure script
+          (delete 'build)     ; or build
+          (add-after 'unpack 'fix-paths
+            (lambda* (#:key inputs #:allow-other-keys)
+              (substitute* "yubikey-oath-dmenu.py"
+                (("'(dmenu|notify-send|wl-copy|xclip|xdotool)" _ tool)
+                 (string-append
+                  "'"
+                  (search-input-file inputs
+                                     (string-append "/bin/" tool)))))))
+          (replace 'install
+            (lambda _
+              (invoke "make" "install"
+                      (string-append "PREFIX=" #$output)))))))
+    (inputs
+     (list dmenu
+           libnotify
+           python-click
+           python-yubikey-manager
+           ;; TODO add wtype, once packaged, for type support for Wayland
+           wl-clipboard ; optional clipboard support for Wayland
+           xclip        ; optional clipboard support for X11
+           xdotool))    ; optional type support for X11
+    (home-page
+     "https://github.com/emlun/yubikey-oath-dmenu/")
+    (synopsis "Interface for getting OATH codes from a YubiKey using dmenu")
+    (description
+     "Yubikey-oath-demenu lets you pick an OATH credential from your YubiKey using
+dmenu, and copies the corresponding OTP to the clipboard.  Alternatively, it
+can \"type\" the OTP using @code{xdotool} on X11.
+
+Notable features:
+
+@itemize
+@item Pick between all credentials on all connected YubiKeys
+@item No mouse interaction required
+@end itemize\n")
+    (license license:gpl3+)))
 
 (define-public libu2f-host
   (package
