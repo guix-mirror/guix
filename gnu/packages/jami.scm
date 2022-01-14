@@ -527,6 +527,12 @@ decentralized calling using P2P-DHT.")
              (substitute* "CMakeLists.txt"
                (("WEBKIT webkit2gtk-4.0")
                 "WEBKIT webkit2gtk-4.1"))))
+         (add-after 'change-directory/maybe 'fix-version-string
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("^# Set VERSION.*" anchor)
+                (string-append anchor
+                               "set(PROJECT_VERSION \"" ,version "\")\n")))))
          (add-after 'install 'glib-or-gtk-compile-schemas
            (assoc-ref gtk:%standard-phases 'glib-or-gtk-compile-schemas))
          (add-after 'glib-or-gtk-compile-schemas 'glib-or-gtk-wrap
