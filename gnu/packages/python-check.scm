@@ -686,6 +686,31 @@ framework and makes it easy to undo any monkey patching.  The fixtures are:
 in Pytest.")
     (license license:bsd-3)))
 
+(define-public python-pytest-pydocstyle
+  (package
+    (name "python-pytest-pydocstyle")
+    (version "2.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/henry0312/pytest-pydocstyle")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0w6fivz4nb4b70wzmi5sk17qs9pd05rnh03fmch6v00r3dmfpk39"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ; test requires the package itself
+    (propagated-inputs
+     (list python-pydocstyle
+           python-pytest))              ;apparently required
+    (home-page "https://github.com/henry0312/pytest-pydocstyle")
+    (synopsis "Pytest plugin to run @command{pydocstyle}")
+    (description "This package provides a Pytest plugin to run
+@command{pydocstyle}.")
+    (license license:expat)))
+
 (define-public python-covdefaults
   (package
     (name "python-covdefaults")
