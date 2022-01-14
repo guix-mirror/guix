@@ -145,7 +145,8 @@ with Microsoft Compiled HTML (CHM) files")
              (delete-file "resources/calibre-portable.bat")
              (delete-file "resources/calibre-portable.sh")
              #t))
-        (patches (search-patches "calibre-no-updates-dialog.patch"
+        (patches (search-patches "calibre-fix-zeroconf.patch"
+                                 "calibre-no-updates-dialog.patch"
                                  "calibre-remove-test-sqlite.patch" ; TODO: fix test.
                                  "calibre-remove-test-unrar.patch"))))
     (build-system python-build-system)

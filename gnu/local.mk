@@ -916,6 +916,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/cabal-install-ghc8.10.patch		\
   %D%/packages/patches/cairo-CVE-2018-19876.patch		\
   %D%/packages/patches/cairo-CVE-2020-35492.patch		\
+  %D%/packages/patches/calibre-fix-zeroconf.patch		\
   %D%/packages/patches/calibre-no-updates-dialog.patch		\
   %D%/packages/patches/calibre-remove-test-sqlite.patch		\
   %D%/packages/patches/calibre-remove-test-unrar.patch		\
