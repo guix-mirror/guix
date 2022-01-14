@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018–2022 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2018-2022 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Robert Smith <robertsmith@posteo.net>
 ;;; Copyright © 2020 Guy Fleury Iteriteka <gfleury@disroot.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
@@ -376,8 +376,12 @@ to open the application in a web browser, for offline usage.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.bipede.fr/downloads/logiciels/"
-                           "ToutEnClic-" version "-src.zip"))
+       (uri (list
+             ;; XXX: Upstream does not exist anymore.
+             (string-append "http://www.bipede.fr/downloads/logiciels/"
+                            "ToutEnClic-" version "-src.zip")
+             (string-append "https://archive.org/download/tout-en-clic-" version
+                            "-src/ToutEnClic-" version "-src.zip")))
        (sha256
         (base32 "0xg24p925rl5bfqsq3jb2lrkidb0f3kbmay5iyxxmjsn3ra0blyh"))))
     (build-system python-build-system)
