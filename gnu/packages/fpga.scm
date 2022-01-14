@@ -26,6 +26,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
@@ -97,16 +98,18 @@ formal verification.")
 (define-public iverilog
   (package
     (name "iverilog")
-    (version "10.3")
+    (version "11.0")
     (source (origin
               (method url-fetch)
               (uri
-               (string-append "ftp://ftp.icarus.com/pub/eda/verilog/v10/"
+               (string-append "ftp://ftp.icarus.com/pub/eda/verilog/v11/"
                               "verilog-" version ".tar.gz"))
               (sha256
                (base32
-                "1vv88ckvfwq7mrysyjnilsrcrzm9d173kp9w5ivwh6rdw7klbgc6"))))
+                "1mamlrkpb2gb00g7xdddaknrvwi4jr4ng6cfjhwngzk3ddhqaiym"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list (string-append "CC=" ,(cc-for-target)))))
     (native-inputs
      (list flex bison ghostscript))   ; ps2pdf
     (home-page "http://iverilog.icarus.com/")
