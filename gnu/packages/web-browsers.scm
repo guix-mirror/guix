@@ -914,8 +914,7 @@ interface.")
     (arguments
      `(#:tests? #f))                    ;no tests
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("pkg-config" ,pkg-config)))
+     (list gettext-minimal pkg-config))
     (inputs
      (list libevent libressl ncurses))
     (home-page "https://git.omarpolo.com/telescope/about/")
