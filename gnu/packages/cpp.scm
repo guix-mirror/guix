@@ -22,6 +22,9 @@
 ;;; Copyright © 2021 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2021 Nikolay Korotkiy <sikmir@disroot.org>
+;;; Copyright © 2021 jgart <jgart@dismail.de>
+;;; Copyright © 2021 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2021 Disseminate Dissent <disseminatedissent@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -78,6 +81,37 @@
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml))
 
+(define-public asmjit
+  (let ((commit "4ec760a3d1f69e32ba460ecd2513f29b8428700b")
+        (revision "0"))
+    (package
+      (name "asmjit")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/asmjit/asmjit")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0skgccbpamcbg1byawfq5n6jzxgj64hnc7jznvk35nkskaaz1nlb"))))
+      (build-system cmake-build-system)
+      (arguments
+       (list #:configure-flags #~(list "-DASMJIT_TEST=TRUE")))
+      (home-page "https://asmjit.com/")
+      (synopsis "Machine code generation for C++")
+      (description "AsmJit is a lightweight library for machine code
+generation written in C++ language.  It can generate machine code for X86 and
+X86_64 architectures with the support for the whole instruction set from
+legacy MMX to the newest AVX-512 and AMX.  It has a type-safe API that allows
+C++ compiler to do semantic checks at compile-time even before the assembled
+code is generated or executed.  It also provides an optional register
+allocator that makes it easy to generate complex code without a significant
+development effort.")
+      (license license:zlib))))
+
 (define-public range-v3
   (package
     (name "range-v3")
@@ -111,7 +145,7 @@ range-v3 ranges are an abstraction layer on top of iterators.")
       (license:x11-style "file:///LICENSE.txt")
       ;; SGI STL
       license:sgifreeb2.0
-      ;;; LibC++ (dual-licensed)
+;;; LibC++ (dual-licensed)
       license:expat
       license:ncsa
       ;; Others
