@@ -1808,8 +1808,7 @@ cp -r /tmp/locale/*/en_US.*")))
             #t))
         (add-after 'unpack 'p11-kit-fix
           (lambda* (#:key inputs #:allow-other-keys)
-            (let ((p11-path (string-append (assoc-ref inputs "p11-kit-next")
-                                           "/bin/p11-kit")))
+            (let ((p11-path (search-input-file inputs "/bin/p11-kit")))
               (substitute* "session-helper/flatpak-session-helper.c"
                 (("\"p11-kit\",")
                  (string-append "\"" p11-path "\","))
@@ -1823,37 +1822,37 @@ cp -r /tmp/locale/*/en_US.*")))
             (setenv "HOME" "/tmp")
             (invoke "make" "check"
                     "TESTS=tests/test-basic.sh tests/test-config.sh testcommon"))))))
-    (native-inputs
-    `(("bison" ,bison)
-      ("dbus" ,dbus) ; for dbus-daemon
-      ("gettext" ,gettext-minimal)
-      ("glib:bin" ,glib "bin")          ; for glib-mkenums + gdbus-codegen
-      ("glibc-utf8-locales" ,glibc-utf8-locales)
-      ("gobject-introspection" ,gobject-introspection)
-      ("libcap" ,libcap)
-      ("pkg-config" ,pkg-config)
-      ("python" ,python)
-      ("python-pyparsing" ,python-pyparsing)
-      ("socat" ,socat)
-      ("which" ,which)))
-   (propagated-inputs (list glib-networking gnupg gsettings-desktop-schemas))
+   (native-inputs
+    (list bison
+          dbus ; for dbus-daemon
+          gettext-minimal
+          `(,glib "bin") ; for glib-mkenums + gdbus-codegen
+          glibc-utf8-locales
+          gobject-introspection
+          libcap
+          pkg-config
+          python
+          python-pyparsing
+          socat
+          which))
    (inputs
-    `(("appstream-glib" ,appstream-glib)
-      ("bubblewrap" ,bubblewrap)
-      ("dconf" ,dconf)
-      ("fuse" ,fuse)
-      ("gdk-pixbuf" ,gdk-pixbuf)
-      ("gpgme" ,gpgme)
-      ("json-glib" ,json-glib)
-      ("libarchive" ,libarchive)
-      ("libostree" ,libostree)
-      ("libseccomp" ,libseccomp)
-      ("libsoup" ,libsoup-minimal-2)
-      ("libxau" ,libxau)
-      ("libxml2" ,libxml2)
-      ("p11-kit-next" ,p11-kit-next)
-      ("util-linux" ,util-linux)
-      ("xdg-dbus-proxy" ,xdg-dbus-proxy)))
+    (list appstream-glib
+          bubblewrap
+          dconf
+          fuse
+          gdk-pixbuf
+          gpgme
+          json-glib
+          libarchive
+          libostree
+          libseccomp
+          libsoup-minimal-2
+          libxau
+          libxml2
+          p11-kit-next
+          util-linux
+          xdg-dbus-proxy))
+   (propagated-inputs (list glib-networking gnupg gsettings-desktop-schemas))
    (home-page "https://flatpak.org")
    (synopsis "System for building, distributing, and running sandboxed desktop
 applications")
