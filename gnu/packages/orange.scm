@@ -34,13 +34,13 @@
 (define-public python-orange-canvas-core
   (package
     (name "python-orange-canvas-core")
-    (version "0.1.19")
+    (version "0.1.24")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "orange-canvas-core" version))
        (sha256
-        (base32 "03wav2msfm32y8zwq69v1v6qyh1ld76xla2z60avf49yhbwjgwal"))))
+        (base32 "0m3dszdkc5bc80ahcvrqxz8jahs33js9cx1mc6rc9ihysq2ddnfz"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -51,15 +51,13 @@
              (substitute* "orangecanvas/application/tests/test_mainwindow.py"
                (("test_help_requests") "_test_help_requests"))
              (setenv "HOME" "/tmp")
-             (setenv "QT_QPA_PLATFORM" "offscreen")
-             #t)))))
+             (setenv "QT_QPA_PLATFORM" "offscreen"))))))
     (propagated-inputs
      (list python-anyqt
            python-cachecontrol
            python-commonmark
            python-dictdiffer
            python-docutils
-           python-pyqt
            python-qasync
            python-requests))
     (home-page "https://github.com/biolab/orange-canvas-core")
