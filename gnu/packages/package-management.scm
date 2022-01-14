@@ -662,7 +662,7 @@ GTK icon cache for instance.")))
 (define-public nix
   (package
     (name "nix")
-    (version "2.4")
+    (version "2.5.1")
     (source
      (origin
        (method git-fetch)
@@ -671,7 +671,7 @@ GTK icon cache for instance.")))
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1abgfw5ndqklm0x533li32l4azifz3f6lhaxm6s74b704043r7m2"))
+        (base32 "1m8rmv8i6lg83pmalvjlq1fn8mcghn3ngjv3kw1kqsa45ymj5sqq"))
        (patches
         (search-patches "nix-dont-build-html-doc.diff"))))
     (build-system gnu-build-system)
