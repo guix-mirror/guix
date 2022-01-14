@@ -10729,6 +10729,30 @@ harness.")
         ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
         ("rust-tempdir" ,rust-tempdir-0.3))))))
 
+(define-public rust-concat-idents-1
+  (package
+    (name "rust-concat-idents")
+    (version "1.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "concat-idents" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0bqdl6vml2ksyz6hc4xlpw3iqaagxs7xn0xinwa51ms80a390vsb"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/DzenanJupic/concat-idents")
+    (synopsis "Concatenate multiple identifiers and use them everywhere")
+    (description
+     "This package allows concatenating multiple identifiers and using them
+everywhere.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-concolor-control-0.0.7
   (package
     (name "rust-concolor-control")
