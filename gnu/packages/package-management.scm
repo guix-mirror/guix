@@ -1709,7 +1709,7 @@ for packaging and deployment of cross-compiled Windows applications.")
 (define-public libostree
   (package
     (name "libostree")
-    (version "2021.6")
+    (version "2022.1")
     (source
      (origin
        (method url-fetch)
@@ -1717,7 +1717,7 @@ for packaging and deployment of cross-compiled Windows applications.")
              "https://github.com/ostreedev/ostree/releases/download/v"
              (version-major+minor version) "/libostree-" version ".tar.xz"))
        (sha256
-        (base32 "0cgmnjf4mr4wn4fliq6ncs0q9qwblrlizjfhx57p7m332g5k21p8"))))
+        (base32 "1mfakwm0sjvb1vvl3jhc451yyf723k7c4vv1yqs8law4arw0x823"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1734,23 +1734,23 @@ for packaging and deployment of cross-compiled Windows applications.")
        ;;     tap-driver.sh: fatal: I/O or internal error
        #:tests? #f))
     (native-inputs
-     `(("attr" ,attr)                   ; for tests
-       ("bison" ,bison)
-       ("glib:bin" ,glib "bin")         ; for 'glib-mkenums'
-       ("gobject-introspection" ,gobject-introspection)
-       ("pkg-config" ,pkg-config)
-       ("xsltproc" ,libxslt)))
+     (list attr ; for tests
+           bison
+           `(,glib "bin") ; for 'glib-mkenums'
+           gobject-introspection
+           pkg-config
+           libxslt))
     (inputs
-     `(("avahi" ,avahi)
-       ("docbook-xml" ,docbook-xml-4.2)
-       ("docbook-xsl" ,docbook-xsl)
-       ("e2fsprogs" ,e2fsprogs)
-       ("fuse" ,fuse)
-       ("glib" ,glib)
-       ("gpgme" ,gpgme)
-       ("libarchive" ,libarchive)
-       ("libsoup" ,libsoup-minimal-2) ; needs libsoup-2.4
-       ("util-linux" ,util-linux)))
+     (list avahi
+           docbook-xml
+           docbook-xsl
+           e2fsprogs
+           fuse
+           glib
+           gpgme
+           libarchive
+           libsoup-minimal-2 ; needs libsoup-2.4
+           util-linux))
     (home-page "https://ostree.readthedocs.io/en/latest/")
     (synopsis "Operating system and container binary deployment and upgrades")
     (description
