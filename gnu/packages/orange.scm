@@ -71,13 +71,13 @@ data-mining application.")
 (define-public python-orange-widget-base
   (package
     (name "python-orange-widget-base")
-    (version "4.12.0")
+    (version "4.16.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "orange-widget-base" version))
        (sha256
-        (base32 "13sy3s8rdqs3i3ghixljpqvnfz81qmbb0kqlasw39zvf39qc22kz"))))
+        (base32 "0a0sijsvzijj71sxq8ckpgz59z1cq9sxn4fya3z23ibdzjzwrsi7"))))
     (build-system python-build-system)
     (arguments
      `(;; unittest fails to load one test, all other tests are passing:
@@ -88,11 +88,10 @@ data-mining application.")
          (add-before 'check 'check-setup
            (lambda _
              (setenv "HOME" "/tmp")
-             (setenv "QT_QPA_PLATFORM" "offscreen")
-             #t)))))
+             (setenv "QT_QPA_PLATFORM" "offscreen"))))))
     (propagated-inputs
      (list python-anyqt python-matplotlib python-orange-canvas-core
-           python-pyqtgraph))
+           python-pyqtgraph python-typing-extensions))
     (home-page "https://github.com/biolab/orange-widget-base")
     (synopsis "Base Widget for Orange Canvas")
     (description
