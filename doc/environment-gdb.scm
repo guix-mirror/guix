@@ -6,8 +6,7 @@
 ;; Augment the package definition of GDB with the build tools
 ;; needed when developing GDB (and which are not needed when
 ;; simply installing it.)
-(package (inherit gdb)
-  (native-inputs `(("autoconf" ,autoconf-2.64)
-                   ("automake" ,automake)
-                   ("texinfo" ,texinfo)
-                   ,@(package-native-inputs gdb))))
+(package
+  (inherit gdb)
+  (native-inputs (modify-inputs (package-native-inputs gdb)
+                   (prepend autoconf-2.64 automake texinfo))))
