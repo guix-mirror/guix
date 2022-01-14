@@ -52,6 +52,7 @@
 ;;; Copyright © 2021 ikasero <ahmed@ikasero.com>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 jgart <jgart@dismail.de>
+;;; Copyright © 2022 John Kehayias <john.kehayias@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1718,6 +1719,11 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
            xcb-util-cursor
            xcb-util-wm
            xcb-util-xrm))
+    (native-search-paths
+     ;; This is where rofi will search for plugins by default.
+     (list (search-path-specification
+            (variable "ROFI_PLUGIN_PATH")
+            (files '("lib/rofi")))))
     (arguments
      `(#:parallel-tests? #f             ; fails in some circumstances
        #:phases
