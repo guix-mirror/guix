@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013-2014, 2016-2020, 2022 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -37,6 +37,21 @@
 ;;;
 ;;; Code:
 
+(define (strip-keyword-arguments keywords args) ;XXX: copied from (guix utils)
+  "Remove all of the keyword arguments listed in KEYWORDS from ARGS."
+  (let loop ((args   args)
+             (result '()))
+    (match args
+      (()
+       (reverse result))
+      (((? keyword? kw) arg . rest)
+       (loop rest
+             (if (memq kw keywords)
+                 result
+                 (cons* arg kw result))))
+      ((head . tail)
+       (loop tail (cons head result))))))
+
 (define optimizations-for-level
   (or (and=> (false-if-exception
               (resolve-interface '(system base optimize)))
@@ -60,9 +75,18 @@
                (loop rest `(#f ,kw ,@result))))))
 
         (lambda (level)
-          (if (<= level 1)
-              %lightweight-optimizations
-              %default-optimizations)))))
+          ;; In the upcoming Guile 3.0.8, .go files include code of their
+          ;; inlinable exports and free variables are resolved at compile time
+          ;; (both are enabled at -O1) to permit cross-module inlining
+          ;; (enabled at -O2).  Unfortunately, this currently leads to
+          ;; non-reproducible and more expensive builds, so we turn it off
+          ;; here:
+          ;; <https://wingolog.org/archives/2021/05/13/cross-module-inlining-in-guile>.
+          (strip-keyword-arguments '(#:inlinable-exports? #:resolve-free-vars?
+                                     #:cross-module-inlining?)
+                                   (if (<= level 1)
+                                       %lightweight-optimizations
+                                       %default-optimizations))))))
 
 (define (supported-warning-type? type)
   "Return true if TYPE, a symbol, denotes a supported warning type."
