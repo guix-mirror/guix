@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019, 2020, 2022 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +28,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xml)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
@@ -87,6 +89,32 @@ Authentication Code One-Time Password} algorithm (RFC4226), the time-based
 data.")
     (license (list license:lgpl2.1+     ; the libraries (liboath/ & libpskc/)
                    license:gpl3+))))    ; the tools (everything else)
+
+(define-public oauth2l
+  (package
+    (name "oauth2l")
+    (version "1.2.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/google/oauth2l")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0a9x0b31ybyjg0k7923xw6zr6crm0kigcn8g6hyr228nbvw35r8w"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/google/oauth2l"))
+    (home-page "https://github.com/google/oauth2l")
+    (synopsis "Simple CLI for interacting with Google API authentication")
+    (description
+     "@code{oauth2l} (pronounced ``oauth tool'') is a simple command-line tool
+for working with @url{https://developers.google.com/identity/protocols/OAuth2,
+Google OAuth 2.0} written in Go.  Its primary use is to fetch and print OAuth
+2.0 access tokens, which can be used with other command-line tools and
+scripts.")
+    (license license:asl2.0)))
 
 (define-public yubico-pam
   (package
