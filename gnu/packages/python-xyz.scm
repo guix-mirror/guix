@@ -12657,14 +12657,13 @@ Jupyter kernels such as IJulia and IRKernel.")
 (define-public python-qtconsole
   (package
     (name "python-qtconsole")
-    (version "4.4.3")
+    (version "4.7.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "qtconsole" version))
        (sha256
-        (base32
-         "1b03n1ixzscm0jw97l4dq5iy4fslnqxq5bb8287xb7n2a1gs26xw"))))
+        (base32 "013qgpsm8jzcz3prhq7sxs36l8f7fgagmn3xa010gfhxf7cfldpj"))))
     (build-system python-build-system)
     (arguments
      ;; XXX: Tests are disabled, because this package needs python-ipython 7,
@@ -12677,10 +12676,11 @@ Jupyter kernels such as IJulia and IRKernel.")
        (modify-phases %standard-phases
          (add-before 'check 'pre-check
            (lambda _
-             (setenv "QT_QPA_PLATFORM" "offscreen")
-             #t)))))
+             (setenv "QT_QPA_PLATFORM" "offscreen"))))))
     (propagated-inputs
-     (list python-ipykernel python-ipython python-pyqt))
+     (list python-ipykernel python-ipython-genutils python-jupyter-client
+           python-jupyter-core python-pygments python-pyqt python-pyzmq
+           python-qtpy python-traitlets))
     (native-inputs
      (list python-pytest))
     (home-page "https://jupyter.org")
