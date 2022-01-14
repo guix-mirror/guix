@@ -54,6 +54,7 @@
 ;;; Copyright © 2021 Alexandre Hannud Abdo <abdo@member.fsf.org>
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2021 jgart <jgart@dismail.de>
+;;; Copyright © 2021 Foo Chuan Wei <chuanwei.foo@hotmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -654,16 +655,37 @@ replacement for the code@{python-memcached} library.")
 auto-completion and syntax highlighting.")
   (license license:bsd-3)))
 
+(define-public python-pgspecial
+  (package
+    (name "python-pgspecial")
+    (version "1.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pgspecial" version))
+       (sha256
+        (base32 "00ddkf565rjcxmfml1z4mmkns1aq8x5s5g85xmnz2scln42y4irq"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     (list python-click python-sqlparse python-psycopg2))
+    (home-page "https://github.com/dbcli/pgspecial")
+    (synopsis
+     "Python implementation of PostgreSQL meta commands (backslash commands)")
+    (description
+     "This Python package provides an API to execute meta-commands (AKA
+\"special\", or \"backslash commands\") on PostgreSQL.")
+    (license license:bsd-3)))
+
 (define-public mycli
   (package
     (name "mycli")
     (version "1.24.1")
     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "mycli" version))
-        (sha256
-          (base32 "0rij9nw20zhqr7cqnkm8daw8b1wdc9zb6ny1ji9qz5557nz9i3bl"))))
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "mycli" version))
+       (sha256
+        (base32 "0rij9nw20zhqr7cqnkm8daw8b1wdc9zb6ny1ji9qz5557nz9i3bl"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f                      ; tests expect a running MySQL
@@ -674,21 +696,21 @@ auto-completion and syntax highlighting.")
                       (substitute* "setup.py"
                         (("<0\\.4\\.0") "<0.5.0")))))))
     (propagated-inputs
-      (list python-cli-helpers
-            python-click
-            python-configobj
-            python-cryptography
-            python-prompt-toolkit
-            python-pyaes
-            python-pygments
-            python-pymysql
-            python-pyperclip
-            python-sqlparse))
+     (list python-cli-helpers
+           python-click
+           python-configobj
+           python-cryptography
+           python-prompt-toolkit
+           python-pyaes
+           python-pygments
+           python-pymysql
+           python-pyperclip
+           python-sqlparse))
     (home-page "https://www.mycli.net")
     (synopsis
-      "Terminal Client for MySQL with AutoCompletion and Syntax Highlighting")
+     "Terminal Client for MySQL with AutoCompletion and Syntax Highlighting")
     (description
-      "MyCLI is a command line interface for MySQL, MariaDB, and Percona with
+     "MyCLI is a command line interface for MySQL, MariaDB, and Percona with
 auto-completion and syntax highlighting.")
     (license license:bsd-3)))
 
