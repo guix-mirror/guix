@@ -4,7 +4,7 @@
 ;;; Copyright © 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
-;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021, 2022 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -153,50 +153,52 @@ RDP, VNC, SPICE, NX, XDMCP, SSH and EXEC network protocols are supported.")
     (license license:gpl2+)))
 
 (define-public tigervnc-client
-  (package
-    (name "tigervnc-client")
-    (version "1.11.0")
-    (source (origin
-              (method git-fetch)
-              (uri
-               (git-reference
-                (url "https://github.com/TigerVNC/tigervnc")
-                (commit (string-append "v" version))))
-              (sha256
-               (base32
-                "1bg79ahr4mzy48ak0caxy3ckdsxmhpchypggaz6lxjjk92hgsz91"))
-              (file-name (git-file-name name version))))
-    (build-system cmake-build-system)
-    (arguments
-     '(#:tests? #f ; Tests that do exists are not automated.
-       #:phases (modify-phases %standard-phases
-                  (replace 'install
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (with-directory-excursion "vncviewer"
-                        (invoke "make" "install")))))))
-    (native-inputs
-     (list autoconf gettext-minimal automake))
-    (inputs
-     (list zlib
-           gnutls
-           libjpeg-turbo
-           fltk
-           linux-pam
-           libx11
-           libxext
-           libxtst
-           libxrandr
-           libxdamage
-           pixman))
-    (home-page "https://tigervnc.org/")
-    (synopsis "High-performance, platform-neutral
+  ;; xorg-server 21 support was merged 2 weeks after the last (1.12.0) release.
+  (let ((revision "0")
+        (commit "b484c229853a08c7f254a4c6efbaf3c9e85b5074"))
+    (package
+      (name "tigervnc-client")
+      (version (git-version "1.12.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/TigerVNC/tigervnc")
+               (commit commit)))
+         (sha256
+          (base32 "125dnn05ps7vfsxlxmzm05w99lhm8hk8j4hpxl1mlzb5j0hp1061"))
+         (file-name (git-file-name name version))))
+      (build-system cmake-build-system)
+      (arguments
+       '(#:tests? #f                 ; Tests that do exists are not automated.
+                  #:phases (modify-phases %standard-phases
+                             (replace 'install
+                               (lambda* (#:key outputs #:allow-other-keys)
+                                 (with-directory-excursion "vncviewer"
+                                   (invoke "make" "install")))))))
+      (native-inputs
+       (list autoconf gettext-minimal automake))
+      (inputs
+       (list zlib
+             gnutls
+             libjpeg-turbo
+             fltk
+             linux-pam
+             libx11
+             libxext
+             libxtst
+             libxrandr
+             libxdamage
+             pixman))
+      (home-page "https://tigervnc.org/")
+      (synopsis "High-performance, platform-neutral
 implementation of VNC (client)")
-    (description "TigerVNC is a client/server implementation of VNC (Virtual
+      (description "TigerVNC is a client/server implementation of VNC (Virtual
 Network Computing).  It provides enough performance to run even 3D and video
 applications.  It also provides extensions for advanced authentication methods
 and TLS encryption.  This package installs only the VNC client, the
 application which is needed to connect to VNC servers.")
-    (license license:gpl2)))
+      (license license:gpl2))))
 
 ;; A VNC server is, in fact, an X server so it seems like a good idea
 ;; to build on the work already done for xorg-server package.  This is
@@ -267,32 +269,13 @@ application which is needed to connect to VNC servers.")
                (let*
                    ((tvnc-src (assoc-ref %build-inputs "tigervnc-src"))
                     (tvnc-xserver (string-append tvnc-src "/unix/xserver")))
-                 (copy-recursively tvnc-xserver ".")
-                 #t)))
+                 (copy-recursively tvnc-xserver "."))))
            (add-after 'copy-tvnc-xserver 'patch-xserver
              (lambda _
-               (let*
-                   ((tvnc-src (assoc-ref %build-inputs "tigervnc-src"))
-                    (xorg-server-version ,(package-version xorg-server))
-                    (which-patch (lambda ()
-                                   (let*
-                                       ((patch-num (apply string-append
-                                                          (list-head (string-split xorg-server-version
-                                                                                   #\.)
-                                                                     2)))
-                                        (fn (format #f "~a/unix/xserver~a.patch" tvnc-src patch-num)))
-                                     (when (not (file-exists? fn))
-                                       (error (format #f "Patch file, ~a,
-corresponding to the input xorg-server version, does not exist.  Installation
-will fail.  " fn)))
-
-                                     fn))) ; VNC patches for xserver have the
-                                           ; form xserverXY[Y].patch, where
-                                           ; X.Y[Y].Z is the Xorg server
-					; version.
-                    (xserver-patch (which-patch)))
-                 (invoke "patch" "-p1" "-i" xserver-patch)
-                 (invoke "autoreconf" "-fiv"))))
+               (invoke "patch" "-p1" "-i"
+                       (string-append (assoc-ref %build-inputs "tigervnc-src")
+                                      "/unix/xserver21.1.1.patch"))
+               (invoke "autoreconf" "-fiv")))
            (add-before 'build 'build-tigervnc
              (lambda _
                (let* ((out (assoc-ref %outputs "out"))
