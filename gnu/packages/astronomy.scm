@@ -1597,6 +1597,39 @@ install an implementation package such as asdf-astropy.")
 Astropy objects.")
     (license license:bsd-3)))
 
+(define python-asdf-wcs-schemas
+  (package
+    (name "python-asdf-wcs-schemas")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "asdf_wcs_schemas" version))
+       (sha256
+        (base32 "0khyab9mnf2lv755as8kwhk3lqqpd3f4291ny3b9yp3ik86fzhz1"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "-m" "pytest")))))))
+    (native-inputs
+     (list python-pytest
+           python-setuptools-scm
+           python-semantic-version))
+    (propagated-inputs
+     (list python-asdf))
+    (home-page "https://github.com/asdf-format/asdf-wcs-schemas")
+    (synopsis "ASDF WCS Schemas")
+    (description
+     "This package provides ASDF schemas for validating World Coordinate
+System (WCS) tags.  Users should not need to install this directly; instead,
+install an implementation package such as gwcs.")
+    (license license:bsd-3)))
+
 (define-public python-astroalign
   (package
     (name "python-astroalign")
