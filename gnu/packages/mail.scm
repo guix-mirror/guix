@@ -17,7 +17,7 @@
 ;;; Copyright © 2016, 2017 Troy Sankey <sankeytms@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016–2022 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -4452,7 +4452,12 @@ ex-like commands on it.")
              ;; Inline functions can only be used from the same compilation
              ;; unit. This causes the build to fail.
              (substitute* "crm_svm_matrix.c"
-               (("^inline ") ""))))
+               (("^inline ") ""))
+             ;; Building with gcc 10 fails without the -fcommon flag. Add it
+             ;; to CFLAGS.
+             (substitute* "Makefile"
+               (("CFLAGS \\+= -DVERSION")
+                "CFLAGS += -fcommon -DVERSION"))))
          (add-before 'install 'pre-install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
