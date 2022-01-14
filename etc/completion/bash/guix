@@ -73,7 +73,7 @@ _guix_complete_option ()
     local command="${COMP_WORDS[$1]}"
     local subcommand="${COMP_WORDS[$(($1 + 1))]}"
 
-    if [ $1 -le 1 ]
+    if [ $1 -eq 0 ]
     then
 	command=""
 	subcommand=""
