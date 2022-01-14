@@ -102,13 +102,13 @@ GUI based workflow.  It is primarily used in the Orange framework.")
 (define-public orange
   (package
     (name "orange")
-    (version "3.28.0")
+    (version "3.31.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Orange3" version))
        (sha256
-        (base32 "1ac4xjjkx06z10hl7k0zh1z3qhkl5vng15l9jkpkmck9spinbzil"))))
+        (base32 "0jqay46nysgfxldik7f6mfi8iylai2gwfpq60vklrfi1rhqf3pn6"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -125,11 +125,12 @@ GUI based workflow.  It is primarily used in the Orange framework.")
              ;; We use a correct version of PyQtWebEngine, but the build scripts
              ;; consider it incorrect anyways. Remove the constraint entirely to
              ;; work around this bug.
-             (substitute* "requirements-gui.txt" (("PyQtWebEngine>=5.12") ""))
-             #t))
-         (add-before 'check 'set-HOME
+             (substitute* "requirements-pyqt.txt" (("PyQtWebEngine>=5.12") ""))))
+         (add-before 'check 'pre-check
            ;; Tests need a writable home.
-           (lambda _ (setenv "HOME" "/tmp") #t))
+           (lambda _
+             (setenv "HOME" "/tmp")
+             (setenv "QT_QPA_PLATFORM" "offscreen")))
          (add-after 'install 'wrap-executable
            ;; Ensure that icons are found at runtime.
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -137,8 +138,7 @@ GUI based workflow.  It is primarily used in the Orange framework.")
                (wrap-program (string-append out "/bin/orange-canvas")
                  `("QT_PLUGIN_PATH" prefix
                    ,(list (string-append (assoc-ref inputs "qtsvg")
-                                         "/lib/qt5/plugins/")))))
-             #t)))))
+                                         "/lib/qt5/plugins/"))))))))))
     (native-inputs
      (list python-cython))
     (inputs
@@ -159,10 +159,12 @@ GUI based workflow.  It is primarily used in the Orange framework.")
            python-orange-canvas-core
            python-orange-widget-base
            python-pandas
+           python-pygments
            python-pyqt
            python-pyqtgraph
            python-pyqtwebengine
            python-pyyaml
+           python-qtconsole
            python-requests
            python-scikit-learn
            python-scipy
