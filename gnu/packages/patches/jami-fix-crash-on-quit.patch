@@ -1,0 +1,34 @@
+Retrieved from:
+https://git.jami.net/savoirfairelinux/jami-client-qt/-/commit/83f68573324a453a6d26e025fd6439f175a79d1b.diff.
+
+With the 'client-qt' prefix added to match the file hierarchy of the release tarball.
+
+diff --git a/client-qt/src/mainapplication.cpp b/client-qt/src/mainapplication.cpp
+index 0c3209fc6fa7c528bec197f1cf9332758170441c..278f19287b86dd2c916935ab0930cbe0abb35d26 100644
+--- a/client-qt/src/mainapplication.cpp
++++ b/client-qt/src/mainapplication.cpp
+@@ -155,7 +155,11 @@ MainApplication::MainApplication(int& argc, char** argv)
+     QObject::connect(this, &QApplication::aboutToQuit, [this] { cleanup(); });
+ }
+ 
+-MainApplication::~MainApplication() {}
++MainApplication::~MainApplication()
++{
++    engine_.reset();
++    lrcInstance_.reset();
++}
+ 
+ bool
+ MainApplication::init()
+diff --git a/src/mainapplication.h b/src/mainapplication.h
+index 51306be829478b9fbc1c61a08aeb96938be26dac..4047e3abb3cfd3e6250387a37fa5a896e9bc4161 100644
+--- a/client-qt/src/mainapplication.h
++++ b/client-qt/src/mainapplication.h
+@@ -80,7 +80,6 @@ private:
+ private:
+     QScopedPointer<QFile> debugFile_;
+     QScopedPointer<QQmlApplicationEngine> engine_;
+-
+     QScopedPointer<LRCInstance> lrcInstance_;
+ 
+     QScopedPointer<ConnectivityMonitor> connectivityMonitor_;
