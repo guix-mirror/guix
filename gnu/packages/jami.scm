@@ -572,7 +572,16 @@ decentralized calling using P2P-DHT.")
          (add-after 'unpack 'change-directory/maybe
            (lambda _
              ;; Allow building from the tarball or a git checkout.
-             (false-if-exception (chdir "client-qt")))))))
+             (false-if-exception (chdir "client-qt"))))
+         (add-after 'change-directory/maybe 'fix-version-string
+           (lambda _
+             (substitute* "src/version.h"
+               (("VERSION_STRING")
+                "BUILD_DATE")           ;to avoid a redefinition error
+               (("// clang-format on.*" anchor)
+                (string-append "const char VERSION_STRING[] = \""
+                               ,version "\";\n"
+                               anchor))))))))
     (native-inputs
      (list pkg-config python qttools doxygen graphviz))
     (inputs
