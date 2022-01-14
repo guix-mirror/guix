@@ -78,6 +78,7 @@
   #:use-module (guix build-system python)
   #:use-module (guix build-system scons)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix hg-download)
   #:use-module ((guix licenses) #:prefix license:)
@@ -1739,6 +1740,51 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
     (description "Rofi is a minimalist application launcher.  It memorizes which
 applications you regularly use and also allows you to search for an application
 by name.")
+    (license license:expat)))
+
+(define-public rofi-calc
+  (package
+    (name "rofi-calc")
+    (version "2.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/svenstaro/rofi-calc")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1j23xwa6s27wyx6r0yb85cby6dggrcb103nqcfxr5li1mcqrgd9m"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          ;; Don't try to install directly to rofi, instead install
+          ;; to lib/rofi to match rofi's search-path ROFI_PLUGIN_PATH.
+          (add-after 'unpack 'patch-plugindir
+            (lambda _
+              (substitute* "Makefile.am"
+                (("plugindir=\\$\\{rofi_PLUGIN_INSTALL_DIR\\}\\/")
+                 "plugindir=${libdir}/rofi/"))))
+          (add-after 'unpack 'patch-qalc-path
+            (lambda* (#:key inputs #:allow-other-keys)
+              (substitute* "src/calc.c"
+                (("\"qalc\"")
+                 (string-append "\""
+                                (search-input-file inputs "bin/qalc")
+                                "\""))))))))
+    (inputs
+     (list cairo libqalculate rofi))
+    (native-inputs
+     (list autoconf automake libtool pkg-config))
+    (home-page
+     "https://github.com/svenstaro/rofi-calc")
+    (synopsis "Do live calculations in rofi with qalc")
+    (description
+     "@code{rofi-calc} is a rofi plugin that uses qalculate's @code{qalc} to parse
+natural language input and provide results.")
     (license license:expat)))
 
 (define-public tint2
