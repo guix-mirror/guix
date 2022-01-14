@@ -19,6 +19,7 @@
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2021 Ryan Prior <rprior@protonmail.com>
+;;; Copyright © 2021 Foo Chuan Wei <chuanwei.foo@hotmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -157,7 +158,30 @@ saving time.  Almost all of the Olson timezones are supported.")
     (build-system python-build-system)
     ;; XXX: The PyPI distribution lacks tests, and the upstream repository
     ;; lacks a setup.py!
-    (arguments '(#:tests? #f))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Add setup.py to fix the build. Otherwise, the build will fail with
+         ;; "no setup.py found".
+         ;;
+         ;; Upstream uses Poetry to build python-pendulum, including parts
+         ;; written in C. Here, we simply add a setup.py file and do not build
+         ;; the parts written in C. This is possible because python-pendulum
+         ;; falls back on pure Python code when the C parts are not available
+         ;; (reference: build.py).
+         (add-after 'unpack 'add-setup.py
+           (lambda _
+             (call-with-output-file "setup.py"
+               (lambda (port)
+                 (format port
+                         "from setuptools import find_packages, setup
+setup(name='pendulum',
+      version='~a',
+      packages=find_packages())
+"
+                         ,version))))))
+       ;; XXX: The PyPI distribution lacks tests.
+       #:tests? #f))
     (propagated-inputs
      (list python-dateutil python-pytzdata))
     (home-page "https://github.com/sdispater/pendulum")
