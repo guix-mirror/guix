@@ -286,7 +286,7 @@ e.g. emacs-geiser-guile for Guile.")
 (define-public emacs-geiser-guile
   (package
     (name "emacs-geiser-guile")
-    (version "0.21")
+    (version "0.21.1")
     (source
      (origin
        (method git-fetch)
@@ -295,7 +295,7 @@ e.g. emacs-geiser-guile for Guile.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0nab8a0iyv554gfds7r677qvzwpml2fm7ql41vf7sc1y0yx0d6ql"))))
+        (base32 "0fk5rr7mjmb4waiagi80dhddas5mrsgqr0flag5v5b0piblixxq6"))))
     (build-system emacs-build-system)
     (arguments
      '(#:include (cons "^src/" %default-include)
