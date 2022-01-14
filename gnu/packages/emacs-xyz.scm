@@ -28451,54 +28451,52 @@ snippets for Emacs.")
         (base32 "0q3nhw05wnqh1qgggxsj8wki4ihciqlkic2x7qbcsskjqm73j1r7"))))
     (build-system emacs-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; Move the extensions source files to the top level, which is
-         ;; included in the EMACSLOADPATH.
-         (add-after 'unpack 'move-source-files
-           (lambda _
-             (let ((el-files (find-files "./extensions" ".*\\.el$")))
-               (for-each (lambda (f)
-                           (rename-file f (basename f)))
-                         el-files))))
-         (add-after 'move-source-files 'patch-exec-paths
-           (lambda* (#:key inputs #:allow-other-keys)
-             (make-file-writable "org-roam-graph.el")
-             (emacs-substitute-variables "org-roam-graph.el"
-               ("org-roam-graph-executable"
-                (string-append (assoc-ref inputs "graphviz")
-                               "/bin/dot")))))
-         (add-after 'install 'install-image
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (install-file "doc/images/org-ref-citelink.png"
-                             (string-append out "/share/info/images")))))
-         (add-after 'install-image 'make-info
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (with-directory-excursion "doc"
-                 (invoke "makeinfo" "-o" "org-roam.info" "org-roam.texi")
-                 (install-file "org-roam.info"
-                               (string-append out "/share/info")))))))))
-       (inputs
-        (list graphviz))
-       (native-inputs
-        (list texinfo))
-       (propagated-inputs
-        (list emacs-dash
-              emacs-emacsql-sqlite3
-              emacs-f
-              emacs-magit
-              emacs-org
-              emacs-s))
-       (home-page "https://github.com/org-roam/org-roam/")
-       (synopsis "Non-hierarchical note-taking with Org mode")
-       (description "Emacs Org Roam is a solution for taking non-hierarchical
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          ;; Move the extensions source files to the top level, which
+          ;; is included in the EMACSLOADPATH.
+          (add-after 'unpack 'move-source-files
+            (lambda _
+              (let ((el-files (find-files "./extensions" ".*\\.el$")))
+                (for-each (lambda (f)
+                            (rename-file f (basename f)))
+                          el-files))))
+          (add-after 'move-source-files 'patch-exec-paths
+            (lambda* (#:key inputs #:allow-other-keys)
+              (make-file-writable "org-roam-graph.el")
+              (emacs-substitute-variables "org-roam-graph.el"
+                ("org-roam-graph-executable"
+                 (search-input-file inputs "/bin/dot")))))
+          (add-after 'install 'install-image
+            (lambda* (#:key outputs #:allow-other-keys)
+              (install-file "doc/images/org-ref-citelink.png"
+                            (string-append #$output "/share/info/images"))))
+          (add-after 'install-image 'make-info
+            (lambda* (#:key outputs #:allow-other-keys)
+              (with-directory-excursion "doc"
+                (invoke "makeinfo" "-o" "org-roam.info" "org-roam.texi")
+                (install-file "org-roam.info"
+                              (string-append #$output "/share/info"))))))))
+    (inputs
+     (list graphviz))
+    (native-inputs
+     (list texinfo))
+    (propagated-inputs
+     (list emacs-dash
+           emacs-emacsql-sqlite3
+           emacs-f
+           emacs-magit
+           emacs-org
+           emacs-s))
+    (home-page "https://github.com/org-roam/org-roam/")
+    (synopsis "Non-hierarchical note-taking with Org mode")
+    (description "Emacs Org Roam is a solution for taking non-hierarchical
 notes with Org mode.  Notes are captured without hierarchy and are connected
 by tags.  Notes can be found and created quickly.  Org Roam should also work
 as a plug-and-play solution for anyone already using Org mode for their
 personal wiki.")
-       (license license:gpl3+)))
+    (license license:gpl3+)))
 
 (define-public emacs-org-roam-bibtex
   (package
