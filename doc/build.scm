@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019-2022 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -51,17 +51,7 @@
   (@@ (guix self) file-append*))
 
 (define translated-texi-manuals
-  (let ((translated (@@ (guix self) translate-texi-manuals)))
-    (lambda (source)
-      (let ((result (translated source)))
-        ;; Build with 'guile-3.0-latest', which is linked against
-        ;; 'libgc/disable-munmap', to avoid the dreaded "mmap(PROT_NONE)
-        ;; failed" crash: <https://bugs.gnu.org/47428>.
-        (computed-file (computed-file-name result)
-                       (computed-file-gexp result)
-                       #:local-build? #f
-                       #:options (computed-file-options result)
-                       #:guile guile-3.0-latest)))))
+  (@@ (guix self) translate-texi-manuals))
 
 (define info-manual
   (@@ (guix self) info-manual))
