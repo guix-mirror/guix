@@ -29,6 +29,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages boost)
@@ -78,11 +79,18 @@ to take care of the OS-specific details when writing software that uses serial p
                     version ".tar.gz"))
               (sha256
                (base32
-                "1h1zi1kpsgf6j2z8j8hjpv1q7n49i3fhqjn8i178rka3cym18265"))))
+                "1h1zi1kpsgf6j2z8j8hjpv1q7n49i3fhqjn8i178rka3cym18265"))
+              (patches
+               (search-patches "libsigrokdecode-python3.9-fix.patch"))))
     (outputs '("out" "doc"))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (replace 'bootstrap
+           (lambda _
+             (invoke "autoconf")
+             (invoke "aclocal")
+             (invoke "automake" "-ac")))
          (add-after 'build 'build-doc
            (lambda _
              (invoke "doxygen")
@@ -94,7 +102,7 @@ to take care of the OS-specific details when writing software that uses serial p
                                               "/share/doc/libsigrokdecode"))
              #t)))))
     (native-inputs
-     (list check-0.14 doxygen graphviz pkg-config))
+     (list check-0.14 doxygen graphviz pkg-config automake autoconf))
     ;; libsigrokdecode.pc lists "python" in Requires.private, and "glib" in Requires.
     (propagated-inputs
      (list glib python))
