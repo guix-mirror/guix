@@ -15,7 +15,7 @@
 ;;; Copyright © 2017, 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018, 2022 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2018 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2018 Thomas Sigurdsen <tonton@riseup.net>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
@@ -502,8 +502,7 @@ any X11 window.")
                   (string-append " SYSTEM_EXTENSION_DIR=\""
                                  "${PASSWORD_STORE_SYSTEM_EXTENSION_DIR:-"
                                  extension-dir
-                                 "}\"\n"))))
-             #t))
+                                 "}\"\n"))))))
          (add-before 'install 'patch-passmenu-path
            ;; FIXME Wayland support requires ydotool and dmenu-wl packages
            ;; We are ignoring part of the script that gets executed if
@@ -522,18 +521,18 @@ any X11 window.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin")))
-               (install-file "contrib/dmenu/passmenu" bin)
-               #t)))
+               (install-file "contrib/dmenu/passmenu" bin))))
          (add-after 'install 'wrap-path
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (path (map (lambda (pkg)
-                                (string-append (assoc-ref inputs pkg) "/bin"))
-                              '("coreutils" "getopt" "git" "gnupg" "qrencode"
-                                "sed" "tree" "which" "wl-clipboard" "xclip"))))
+             (let* ((out (assoc-ref outputs "out"))
+                    (requisites '("getopt" "git" "gpg" "qrencode" "sed"
+                                  "tree" "which" "wl-copy" "xclip"))
+                    (path (map (lambda (pkg)
+                                 (dirname (search-input-file
+                                           inputs (string-append "/bin/" pkg))))
+                               requisites)))
                (wrap-program (string-append out "/bin/pass")
-                 `("PATH" ":" prefix (,(string-join path ":"))))
-               #t))))
+                 `("PATH" ":" prefix (,(string-join path ":"))))))))
        #:make-flags (list "CC=gcc" (string-append "PREFIX=" %output)
                           "WITH_ALLCOMP=yes"
                           (string-append "BASHCOMPDIR="
@@ -548,17 +547,17 @@ any X11 window.")
             (separator #f)             ;single entry
             (files '("lib/password-store/extensions")))))
     (inputs
-     `(("dmenu" ,dmenu)
-       ("getopt" ,util-linux)
-       ("git" ,git)
-       ("gnupg" ,gnupg)
-       ("qrencode" ,qrencode)
-       ("sed" ,sed)
-       ("tree" ,tree)
-       ("which" ,which)
-       ("wl-clipboard" ,wl-clipboard)
-       ("xclip" ,xclip)
-       ("xdotool" ,xdotool)))
+     (list dmenu
+           util-linux
+           git
+           gnupg
+           qrencode
+           sed
+           tree
+           which
+           wl-clipboard
+           xclip
+           xdotool))
     (home-page "https://www.passwordstore.org/")
     (synopsis "Encrypted password manager")
     (description "Password-store is a password manager which uses GnuPG to
