@@ -9112,33 +9112,30 @@ window layout easily.")
     (license license:gpl3+)))
 
 (define-public emacs-iedit
-  ;; Last release version was in 2016.
-  (let ((commit "e2c100cdd67b7d82835d281ac2cd1bf4f374bc8f")
-        (revision "1"))
-    (package
-      (name "emacs-iedit")
-      (version (git-version "0.9.9.9" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/victorhge/iedit")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "0wr3w2id95wx2rma8n1ifjrv9rx37ly26ijc5zi58id0yrip3hnc"))))
-      (build-system emacs-build-system)
-      (home-page "https://www.emacswiki.org/emacs/Iedit")
-      (synopsis "Edit multiple regions in the same way simultaneously")
-      (description
-       "This package is an Emacs minor mode and allows you to edit one
+  (package
+    (name "emacs-iedit")
+    (version "0.9.9.9.9")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/victorhge/iedit")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "02jdyrff88n69d4kadjaac38gwcv28lhiqqa93rlqzdvmgqsbwak"))))
+    (build-system emacs-build-system)
+    (home-page "https://www.emacswiki.org/emacs/Iedit")
+    (synopsis "Edit multiple regions in the same way simultaneously")
+    (description
+     "This package is an Emacs minor mode and allows you to edit one
 occurrence of some text in a buffer (possibly narrowed) or region, and
 simultaneously have other occurrences edited in the same way.
 
 You can also use Iedit mode as a quick way to temporarily show only the buffer
 lines that match the current text being edited.  This gives you the effect of
 a temporary @code{keep-lines} or @code{occur}.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-zoutline
   (package
