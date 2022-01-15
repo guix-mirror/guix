@@ -19,7 +19,7 @@
 (define-module (gnu installer newt)
   #:use-module (gnu installer record)
   #:use-module (gnu installer utils)
-  #:use-module (gnu installer newt dump)
+  #:use-module (gnu installer dump)
   #:use-module (gnu installer newt ethernet)
   #:use-module (gnu installer newt final)
   #:use-module (gnu installer newt parameters)
@@ -40,9 +40,12 @@
   #:use-module (guix config)
   #:use-module (guix discovery)
   #:use-module (guix i18n)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
+  #:use-module (ice-9 ftw)
+  #:use-module (ice-9 match)
   #:use-module (newt)
   #:export (newt-installer))
 
@@ -58,28 +61,53 @@
   (newt-finish)
   (clear-screen))
 
-(define (exit-error file report key args)
+(define (exit-error error)
   (newt-set-color COLORSET-ROOT "white" "red")
-  (let ((width (nearest-exact-integer
-                (* (screen-columns) 0.8)))
-        (height (nearest-exact-integer
-                 (* (screen-rows) 0.7)))
-        (report (if report
-                    (format #f ". It has been uploaded as ~a" report)
-                    "")))
-    (run-file-textbox-page
-     #:info-text (format #f (G_ "The installer has encountered an unexpected \
-problem. The backtrace is displayed below~a. Please report it by email to \
-<~a>.") report %guix-bug-report-address)
+  (define action
+    (run-textbox-page
+     #:info-text (G_ "The installer has encountered an unexpected problem. \
+The backtrace is displayed below. You may choose to exit or create a dump \
+archive.")
      #:title (G_ "Unexpected problem")
-     #:file file
-     #:exit-button? #f
-     #:info-textbox-width width
-     #:file-textbox-width width
-     #:file-textbox-height height))
+     #:content error
+     #:buttons-spec
+     (list
+      (cons (G_ "Dump") (const 'dump))
+      (cons (G_ "Exit") (const 'exit)))))
   (newt-set-color COLORSET-ROOT "white" "blue")
-  (newt-finish)
-  (clear-screen))
+  action)
+
+(define (report-page dump-archive)
+  (define text
+    (format #f (G_ "The dump archive was created as ~a.  Would you like to \
+send this archive to the Guix servers?") dump-archive))
+  (define title (G_ "Dump archive created"))
+  (when (run-confirmation-page text title)
+    (let* ((uploaded-name (send-dump-report dump-archive))
+           (text (if uploaded-name
+                     (format #f (G_ "The dump was uploaded as ~a.  Please \
+report it by email to ~a.") uploaded-name %guix-bug-report-address)
+                     (G_ "The dump could not be uploaded."))))
+      (run-error-page
+       text
+       (G_ "Dump upload result")))))
+
+(define (dump-page dump-dir)
+  (define files
+    (scandir dump-dir (lambda (x)
+                        (not (or (string=? x ".")
+                                 (string=? x ".."))))))
+  (fold (match-lambda*
+          (((file . enable?) acc)
+           (if enable?
+               (cons file acc)
+               acc)))
+        '()
+        (run-dump-page
+         dump-dir
+         (map (lambda (x)
+                (cons x #f))
+              files))))
 
 (define (newt-run-command . args)
   (define command-output "")
@@ -118,7 +146,7 @@ problem. The backtrace is displayed below~a. Please report it by email to \
                            (cons "Abort"
                                  (lambda ()
                                    (abort-to-prompt 'installer-step 'abort)))
-                           (cons "Dump"
+                           (cons "Report"
                                  (lambda ()
                                    (raise
                                     (condition
@@ -178,9 +206,6 @@ problem. The backtrace is displayed below~a. Please report it by email to \
 (define (parameters-page keyboard-layout-selection)
   (run-parameters-page keyboard-layout-selection))
 
-(define (dump-page steps)
-  (run-dump-page steps))
-
 (define newt-installer
   (installer
    (name 'newt)
@@ -202,4 +227,5 @@ problem. The backtrace is displayed below~a. Please report it by email to \
    (parameters-menu parameters-menu)
    (parameters-page parameters-page)
    (dump-page dump-page)
-   (run-command newt-run-command)))
+   (run-command newt-run-command)
+   (report-page report-page)))

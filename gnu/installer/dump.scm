@@ -28,7 +28,8 @@
   #:use-module (web http)
   #:use-module (web response)
   #:use-module (webutils multipart)
-  #:export (make-dump
+  #:export (prepare-dump
+            make-dump
             send-dump-report))
 
 ;; The installer crash dump type.
@@ -40,35 +41,49 @@
                     (cons k v))
                   result))
 
-(define* (make-dump output
-                    #:key
-                    result
-                    backtrace)
-  "Create a crash dump archive in OUTPUT.  RESULT is the installer result hash
-table.  BACKTRACE is the installer Guile backtrace."
-  (let ((dump-dir "/tmp/dump"))
-    (mkdir-p dump-dir)
-    (with-directory-excursion dump-dir
-      ;; backtrace
-      (copy-file backtrace "installer-backtrace")
+(define* (prepare-dump key args #:key result)
+  "Create a crash dump directory.  KEY and ARGS represent the thrown error.
+RESULT is the installer result hash table.  Returns the created directory path."
+  (define now (localtime (current-time)))
+  (define dump-dir
+    (format #f "/tmp/dump.~a"
+            (strftime "%F.%H.%M.%S" now)))
+  (mkdir-p dump-dir)
+  (with-directory-excursion dump-dir
+    ;; backtrace
+    (call-with-output-file "installer-backtrace"
+      (lambda (port)
+        (display-backtrace (make-stack #t) port)
+        (print-exception port
+                         (stack-ref (make-stack #t) 1)
+                         key args)))
 
-      ;; installer result
-      (call-with-output-file "installer-result"
+    ;; installer result
+    (call-with-output-file "installer-result"
+      (lambda (port)
+        (write (result->list result) port)))
+
+    ;; syslog
+    (copy-file "/var/log/messages" "syslog")
+
+    ;; dmesg
+    (let ((pipe (open-pipe* OPEN_READ "dmesg")))
+      (call-with-output-file "dmesg"
         (lambda (port)
-          (write (result->list result) port)))
+          (dump-port pipe port)
+          (close-pipe pipe)))))
+  dump-dir)
 
-      ;; syslog
-      (copy-file "/var/log/messages" "syslog")
-
-      ;; dmesg
-      (let ((pipe (open-pipe* OPEN_READ "dmesg")))
-        (call-with-output-file "dmesg"
-          (lambda (port)
-            (dump-port pipe port)
-            (close-pipe pipe)))))
-
-    (with-directory-excursion (dirname dump-dir)
-      (system* "tar" "-zcf" output (basename dump-dir)))))
+(define* (make-dump dump-dir file-choices)
+  "Create a crash dump archive from DUMP-DIR containing FILE-CHOICES.
+Returns the archive path."
+  (define output (string-append (basename dump-dir) ".tar.gz"))
+  (with-directory-excursion (dirname dump-dir)
+    (apply system* "tar" "-zcf" output
+           (map (lambda (f)
+                  (string-append (basename dump-dir) "/" f))
+                file-choices)))
+  (canonicalize-path (string-append (dirname dump-dir) "/" output)))
 
 (define* (send-dump-report dump
                            #:key

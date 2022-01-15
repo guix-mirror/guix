@@ -386,7 +386,8 @@ selected keymap."
                          (guix build utils)
                          ((system repl debug)
                           #:select (terminal-width))
-                         (ice-9 match))
+                         (ice-9 match)
+                         (ice-9 textual-ports))
 
             ;; Initialize gettext support so that installers can use
             ;; (guix i18n) module.
@@ -416,6 +417,7 @@ selected keymap."
 
             (define current-installer newt-installer)
             (define steps (#$steps current-installer))
+
             (dynamic-wind
               (installer-init current-installer)
               (lambda ()
@@ -436,30 +438,31 @@ selected keymap."
                          (sync)
                          (stop-service 'root))
                         (_
-                         ;; The installation failed, exit so that it is restarted
-                         ;; by login.
+                         ;; The installation failed, exit so that it is
+                         ;; restarted by login.
                          #f)))
                     (const #f)
                     (lambda (key . args)
                       (installer-log-line "crashing due to uncaught exception: ~s ~s"
                                           key args)
-                      (let ((error-file "/tmp/last-installer-error")
-                            (dump-archive "/tmp/dump.tgz"))
-                        (call-with-output-file error-file
-                          (lambda (port)
-                            (display-backtrace (make-stack #t) port)
-                            (print-exception port
-                                             (stack-ref (make-stack #t) 1)
-                                             key args)))
-                        (make-dump dump-archive
-                                   #:result %current-result
-                                   #:backtrace error-file)
-                        (let ((report
-                               ((installer-dump-page current-installer)
-                                dump-archive)))
-                          ((installer-exit-error current-installer)
-                           error-file report key args)))
-                      (primitive-exit 1)))))
+                      (define dump-dir
+                        (prepare-dump key args #:result %current-result))
+                      (define action
+                        ((installer-exit-error current-installer)
+                         (get-string-all
+                          (open-input-file
+                           (string-append dump-dir "/installer-backtrace")))))
+                      (match action
+                        ('dump
+                         (let* ((dump-files
+                                 ((installer-dump-page current-installer)
+                                  dump-dir))
+                                (dump-archive
+                                 (make-dump dump-dir dump-files)))
+                           ((installer-report-page current-installer)
+                            dump-archive)))
+                        (_ #f))
+                      (exit 1)))))
 
               (installer-exit current-installer))))))
 

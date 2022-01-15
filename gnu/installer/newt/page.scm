@@ -47,6 +47,7 @@
             %ok-button
             %exit-button
             run-textbox-page
+            run-dump-page
 
             run-form-with-clients))
 
@@ -899,3 +900,67 @@ component ~a." argument))))))))
       ;; TODO
       ('exit-fd-ready
        (raise (condition (&serious)))))))
+
+(define* (run-dump-page base-dir file-choices)
+  (define info-textbox
+    (make-reflowed-textbox -1 -1 "Please select files you wish to include in \
+the dump."
+                           50
+                           #:flags FLAG-BORDER))
+  (define components
+    (map (match-lambda ((file . enabled)
+                        (list
+                         (make-compact-button -1 -1 "Edit")
+                         (make-checkbox -1 -1 file (if enabled #\x #\ ) " x")
+                         file)))
+         file-choices))
+
+  (define sub-grid (make-grid 2 (length components)))
+
+  (for-each
+   (match-lambda* (((button checkbox _) index)
+                   (set-grid-field sub-grid 0 index
+                                   GRID-ELEMENT-COMPONENT checkbox
+                                   #:anchor ANCHOR-LEFT)
+                   (set-grid-field sub-grid 1 index
+                                   GRID-ELEMENT-COMPONENT button
+                                   #:anchor ANCHOR-LEFT)))
+   components (iota (length components)))
+
+  (define grid
+    (vertically-stacked-grid
+     GRID-ELEMENT-COMPONENT info-textbox
+     GRID-ELEMENT-SUBGRID sub-grid
+     GRID-ELEMENT-COMPONENT (make-button -1 -1 "Create")))
+
+  (define form (make-form #:flags FLAG-NOF12))
+
+  (add-form-to-grid grid form #t)
+  (make-wrapped-grid-window grid "Installer dump")
+
+  (define prompt-tag (make-prompt-tag))
+
+  (let loop ()
+    (call-with-prompt prompt-tag
+      (lambda ()
+        (receive (exit-reason argument)
+            (run-form-with-clients form
+                                   `(dump-page))
+          (match exit-reason
+            ('exit-component
+             (let ((result
+                    (map (match-lambda
+                           ((edit checkbox filename)
+                            (if (components=? edit argument)
+                                (abort-to-prompt prompt-tag filename)
+                                (cons filename (eq? #\x
+                                                    (checkbox-value checkbox))))))
+                         components)))
+               (destroy-form-and-pop form)
+               result))
+            ;; TODO
+            ('exit-fd-ready
+             (raise (condition (&serious)))))))
+      (lambda (k file)
+        (edit-file (string-append base-dir "/" file))
+        (loop)))))

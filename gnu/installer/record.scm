@@ -43,7 +43,8 @@
             installer-parameters-menu
             installer-parameters-page
             installer-dump-page
-            installer-run-command))
+            installer-run-command
+            installer-report-page))
 
 
 ;;;
@@ -63,7 +64,7 @@
   (init installer-init)
   ;; procedure: void -> void
   (exit installer-exit)
-  ;; procedure (key arguments) -> void
+  ;; procedure (key arguments) -> (action)
   (exit-error installer-exit-error)
   ;; procedure void -> void
   (final-page installer-final-page)
@@ -97,4 +98,6 @@
   ;; procedure (dump) -> void
   (dump-page installer-dump-page)
   ;; procedure command -> bool
-  (run-command installer-run-command))
+  (run-command installer-run-command)
+  ;; procedure (report) -> void
+  (report-page installer-report-page))
