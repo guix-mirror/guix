@@ -93,9 +93,9 @@ disconnect.
 Like 'run-form', return two values: the exit reason, and an \"argument\"."
   (define* (discard-client! port #:optional errno)
     (if errno
-        (syslog "removing client ~d due to ~s~%"
+        (installer-log-line "removing client ~d due to ~s"
                 (fileno port) (strerror errno))
-        (syslog "removing client ~d due to EOF~%"
+        (installer-log-line "removing client ~d due to EOF"
                 (fileno port)))
 
     ;; XXX: Watch out!  There's no 'form-unwatch-fd' procedure in Newt so we
@@ -124,7 +124,7 @@ Like 'run-form', return two values: the exit reason, and an \"argument\"."
   (send-to-clients exp)
 
   (let loop ()
-    (syslog "running form ~s (~s) with ~d clients~%"
+    (installer-log-line "running form ~s (~s) with ~d clients"
             form title (length (current-clients)))
 
     ;; Call 'watch-clients!' within the loop because there might be new
@@ -146,7 +146,7 @@ Like 'run-form', return two values: the exit reason, and an \"argument\"."
                        (discard-client! port)
                        (loop))
                       (obj
-                       (syslog "form ~s (~s): client ~d replied ~s~%"
+                       (installer-log-line "form ~s (~s): client ~d replied ~s"
                                form title (fileno port) obj)
                        (values 'exit-fd-ready obj))))
                   (lambda args
@@ -156,8 +156,9 @@ Like 'run-form', return two values: the exit reason, and an \"argument\"."
                 ;; Accept a new client and send it EXP.
                 (match (accept port)
                   ((client . _)
-                   (syslog "accepting new client ~d while on form ~s~%"
-                           (fileno client) form)
+                   (installer-log-line
+                    "accepting new client ~d while on form ~s"
+                    (fileno client) form)
                    (catch 'system-error
                      (lambda ()
                        (write exp client)

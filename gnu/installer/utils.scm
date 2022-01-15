@@ -100,13 +100,13 @@ successfully, #f otherwise."
              (format (current-error-port)
                      (G_ "Command failed with exit code ~a.~%")
                      (invoke-error-exit-status c))
-             (syslog "command ~s failed with exit code ~a"
-                     command (invoke-error-exit-status c))
+             (installer-log-line "command ~s failed with exit code ~a"
+                                 command (invoke-error-exit-status c))
              (pause)
              #f))
-    (syslog "running command ~s~%" command)
+    (installer-log-line "running command ~s" command)
     (apply invoke command)
-    (syslog "command ~s succeeded~%" command)
+    (installer-log-line "command ~s succeeded" command)
     (newline)
     (pause)
     #t))
@@ -259,8 +259,9 @@ accepting socket."
                 (let ((errno (system-error-errno args)))
                   (if (memv errno (list EPIPE ECONNRESET ECONNABORTED))
                       (begin
-                        (syslog "removing client ~s due to ~s while replying~%"
-                                (fileno client) (strerror errno))
+                        (installer-log-line
+                         "removing client ~s due to ~s while replying"
+                         (fileno client) (strerror errno))
                         (false-if-exception (close-port client))
                         remainder)
                       (cons client remainder))))))

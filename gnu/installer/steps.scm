@@ -185,7 +185,7 @@ return the accumalated result so far."
                               #:done-steps '())))))
                  ((installer-step-break? c)
                   (reverse result)))
-         (syslog "running step '~a'~%" (installer-step-id step))
+         (installer-log-line "running step '~a'" (installer-step-id step))
          (let* ((id (installer-step-id step))
                 (compute (installer-step-compute step))
                 (res (compute result done-steps)))

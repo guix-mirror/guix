@@ -125,15 +125,15 @@ it can interact with the rest of the system."
                      (setlocale LC_ALL locale))))
     (if supported?
         (begin
-          (syslog "install supported locale ~a~%." locale)
+          (installer-log-line "install supported locale ~a." locale)
           (setenv "LC_ALL" locale))
         (begin
           ;; If the selected locale is not supported, install a default UTF-8
           ;; locale. This is required to copy some files with UTF-8
           ;; characters, in the nss-certs package notably. Set LANGUAGE
           ;; anyways, to have translated messages if possible.
-          (syslog "~a locale is not supported, installating en_US.utf8 \
-locale instead.~%" locale)
+          (installer-log-line "~a locale is not supported, installing \
+en_US.utf8 locale instead." locale)
           (setlocale LC_ALL "en_US.utf8")
           (setenv "LC_ALL" "en_US.utf8")
           (setenv "LANGUAGE"

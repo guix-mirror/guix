@@ -371,7 +371,8 @@ which are smaller than %MIN-DEVICE-SIZE."
     (let ((length (device-length device))
           (sector-size (device-sector-size device)))
       (and (< (* length sector-size) %min-device-size)
-           (syslog "~a is not eligible because it is smaller than ~a.~%"
+           (installer-log-line "~a is not eligible because it is smaller than \
+~a."
                    (device-path device)
                    (unit-format-custom-byte device
                                             %min-device-size
@@ -391,7 +392,8 @@ which are smaller than %MIN-DEVICE-SIZE."
                            (string=? the-installer-root-partition-path
                                      (partition-get-path partition)))
                          (disk-partitions disk)))))
-         (syslog "~a is not eligible because it is the installation device.~%"
+         (installer-log-line "~a is not eligible because it is the \
+installation device."
                  (device-path device))))
 
   (remove
@@ -817,24 +819,22 @@ cause them to cross."
                    (disk-add-partition disk partition no-constraint)))
               (partition-ok?
                (or partition-constraint-ok? partition-no-contraint-ok?)))
-         (syslog "Creating partition:
-~/type: ~a
-~/filesystem-type: ~a
-~/start: ~a
-~/end: ~a
-~/start-range: [~a, ~a]
-~/end-range: [~a, ~a]
-~/constraint: ~a
-~/no-constraint: ~a
-"
-                 partition-type
-                 (filesystem-type-name filesystem-type)
-                 start-sector*
-                 end-sector
-                 (geometry-start start-range) (geometry-end start-range)
-                 (geometry-start end-range) (geometry-end end-range)
-                 partition-constraint-ok?
-                 partition-no-contraint-ok?)
+         (installer-log-line "Creating partition:")
+         (installer-log-line "~/type: ~a" partition-type)
+         (installer-log-line "~/filesystem-type: ~a"
+                             (filesystem-type-name filesystem-type))
+         (installer-log-line "~/start: ~a" start-sector*)
+         (installer-log-line "~/end: ~a" end-sector)
+         (installer-log-line "~/start-range: [~a, ~a]"
+                             (geometry-start start-range)
+                             (geometry-end start-range))
+         (installer-log-line "~/end-range: [~a, ~a]"
+                             (geometry-start end-range)
+                             (geometry-end end-range))
+         (installer-log-line "~/constraint: ~a"
+                             partition-constraint-ok?)
+         (installer-log-line "~/no-constraint: ~a"
+                             partition-no-contraint-ok?)
          ;; Set the partition name if supported.
          (when (and partition-ok? has-name? name)
            (partition-set-name partition name))
@@ -1188,7 +1188,7 @@ USER-PARTITION if it is encrypted, or the plain file-name otherwise."
     (call-with-luks-key-file
      password
      (lambda (key-file)
-       (syslog "formatting and opening LUKS entry ~s at ~s~%"
+       (installer-log-line "formatting and opening LUKS entry ~s at ~s"
                label file-name)
        (system* "cryptsetup" "-q" "luksFormat" file-name key-file)
        (system* "cryptsetup" "open" "--type" "luks"
@@ -1197,7 +1197,7 @@ USER-PARTITION if it is encrypted, or the plain file-name otherwise."
 (define (luks-close user-partition)
   "Close the encrypted partition pointed by USER-PARTITION."
   (let ((label (user-partition-crypt-label user-partition)))
-    (syslog "closing LUKS entry ~s~%" label)
+    (installer-log-line "closing LUKS entry ~s" label)
     (system* "cryptsetup" "close" label)))
 
 (define (format-user-partitions user-partitions)
@@ -1279,7 +1279,7 @@ respective mount-points."
                        (file-name
                         (user-partition-upper-file-name user-partition)))
                   (mkdir-p target)
-                  (syslog "mounting ~s on ~s~%" file-name target)
+                  (installer-log-line "mounting ~s on ~s" file-name target)
                   (mount file-name target mount-type)))
               sorted-partitions)))
 
@@ -1295,7 +1295,7 @@ respective mount-points."
                        (target
                         (string-append (%installer-target-dir)
                                        mount-point)))
-                  (syslog "unmounting ~s~%" target)
+                  (installer-log-line "unmounting ~s" target)
                   (umount target)
                   (when crypt-label
                     (luks-close user-partition))))
@@ -1486,6 +1486,6 @@ the devices not to be used before returning."
                       (error
                        (format #f (G_ "Device ~a is still in use.")
                                file-name))
-                      (syslog "Syncing ~a took ~a seconds.~%"
+                      (installer-log-line "Syncing ~a took ~a seconds."
                               file-name (time-second time)))))
               device-file-names)))

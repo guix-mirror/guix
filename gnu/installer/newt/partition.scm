@@ -801,9 +801,9 @@ by pressing the Exit button.~%~%")))
     ;; Make sure the disks are not in use before proceeding to formatting.
     (free-parted eligible-devices)
     (format-user-partitions user-partitions-with-pass)
-    (syslog "formatted ~a user partitions~%"
+    (installer-log-line "formatted ~a user partitions"
             (length user-partitions-with-pass))
-    (syslog "user-partitions: ~a~%" user-partitions)
+    (installer-log-line "user-partitions: ~a" user-partitions)
 
     (destroy-form-and-pop form)
     user-partitions))

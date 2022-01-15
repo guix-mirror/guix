@@ -435,7 +435,7 @@ selected keymap."
                    #f)))
               (const #f)
               (lambda (key . args)
-                (syslog "crashing due to uncaught exception: ~s ~s~%"
+                (installer-log-line "crashing due to uncaught exception: ~s ~s"
                         key args)
                 (let ((error-file "/tmp/last-installer-error")
                       (dump-archive "/tmp/dump.tgz"))
