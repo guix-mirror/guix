@@ -85,8 +85,9 @@ USERS."
                              (uid (if root? 0 #f))
                              (home-directory
                               (user-home-directory user))
-                             (password (crypt (user-password user)
-                                              (salt)))
+                             (password (crypt
+                                        (secret-content (user-password user))
+                                        (salt)))
 
                              ;; We need a string here, not a file-like, hence
                              ;; this choice.

@@ -19,7 +19,14 @@
 (define-module (gnu installer user)
   #:use-module (guix records)
   #:use-module (srfi srfi-1)
-  #:export (<user>
+  #:use-module (srfi srfi-9)
+  #:use-module (srfi srfi-9 gnu)
+  #:export (<secret>
+            secret?
+            make-secret
+            secret-content
+
+            <user>
             user
             make-user
             user-name
@@ -29,6 +36,16 @@
             user-password
 
             users->configuration))
+
+(define-record-type <secret>
+  (make-secret content)
+  secret?
+  (content secret-content))
+
+(set-record-type-printer!
+ <secret>
+ (lambda (secret port)
+   (format port "<secret>")))
 
 (define-record-type* <user>
   user make-user

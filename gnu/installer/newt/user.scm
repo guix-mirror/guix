@@ -143,7 +143,7 @@ REAL-NAME, and HOME-DIRECTORY as the initial values in the form."
                              (name name)
                              (real-name real-name)
                              (home-directory home-directory)
-                             (password password))
+                             (password (make-secret password)))
                             (run-user-add-page #:name name
                                                #:real-name real-name
                                                #:home-directory
@@ -266,7 +266,7 @@ administrator (\"root\").")
                   (map (lambda (name real-name home password)
                          (user (name name) (real-name real-name)
                                (home-directory home)
-                               (password password)))
+                               (password (make-secret password))))
                        names real-names homes passwords))))))
           (lambda ()
             (destroy-form-and-pop form))))))
@@ -274,5 +274,5 @@ administrator (\"root\").")
   ;; Add a "root" user simply to convey the root password.
   (cons (user (name "root")
               (home-directory "/root")
-              (password (run-root-password-page)))
+              (password (make-secret (run-root-password-page))))
         (run '())))
