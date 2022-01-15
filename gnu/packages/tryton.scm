@@ -366,7 +366,7 @@ Tryton.")
 deposit accounting.
 
 A deposit is an amount paid by the customer prior to the company providing it
-with services or goods.  A wizard on invoice allows to recall prior deposit of
+with services or goods.  A wizard on invoice allows recalling a prior deposit of
 the party.")
     (license license:gpl3+)))
 
@@ -488,7 +488,7 @@ accounts for Tryton:
 @item Plan Contable para PYMES 2008
 @end itemize
 
-A wizard allows to generate the following AEAT files:
+A wizard allows generating the following AEAT files:
 
 @itemize
 @item Modelo 111
@@ -656,8 +656,8 @@ original quantity, once with the inverted quantity.")
     (home-page
      "https://docs.tryton.org/projects/modules-account-invoice-defer")
     (synopsis "Tryton module to defer expense and revenue")
-    (description "The @emph{Account Invoice Defer} Tryton module allows to
-defer the expense or the revenue of an invoice line over many periods.")
+    (description "The @emph{Account Invoice Defer} Tryton module allows
+deferring the expense or the revenue of an invoice line over many periods.")
     (license license:gpl3+)))
 
 (define-public trytond-account-invoice-history
@@ -701,7 +701,7 @@ the historization of the invoice and its related fields.")
      "https://docs.tryton.org/projects/modules-account-invoice-line-standalone")
     (synopsis "Tryton module to have standalone invoice lines")
     (description "The @emph{Account Invoice Line Standalone} Tryton module
-allows to create invoice line not linked to an invoice.")
+allows creating an invoice line not linked to an invoice.")
     (license license:gpl3+)))
 
 (define-public trytond-account-invoice-secondary-unit
@@ -823,8 +823,8 @@ methods.")
     (home-page
      "https://docs.tryton.org/projects/modules-account-payment-clearing")
     (synopsis "Tryton module for payment clearing")
-    (description "The @emph{Account Payment Clearing} Tryton module allows to
-generate account move when a payment is succeeded between the
+    (description "The @emph{Account Payment Clearing} Tryton module allows
+generating an account move when a payment succeeded between the
 receivable/payable account to a clearing account defined on the payment
 journal.")
     (license license:gpl3+)))
@@ -851,8 +851,8 @@ journal.")
            trytond-party))
     (home-page "https://docs.tryton.org/projects/modules-account-payment-sepa")
     (synopsis "Tryton module for SEPA payment")
-    (description "The @emph{Account Payment SEPA} Tryton module allows to
-generate SEPA files for a Payment Group.")
+    (description "The @emph{Account Payment SEPA} Tryton module allows
+generating SEPA files for a Payment Group.")
     (license license:gpl3+)))
 
 (define-public trytond-account-payment-sepa-cfonb
@@ -955,7 +955,7 @@ and category.")
            trytond-party))
     (home-page "https://docs.tryton.org/projects/modules-account-statement")
     (synopsis "Tryton module with account statements")
-    (description "The @emph{Account Statement} Tryton module allows to book
+    (description "The @emph{Account Statement} Tryton module allows booking
 statements.  Statement can be used for bank statement, cash daybook etc.")
     (license license:gpl3+)))
 
@@ -1141,8 +1141,8 @@ continental accounting model for stock valuation.")
     (home-page
      "https://docs.tryton.org/projects/modules-account-stock-landed-cost")
     (synopsis "Tryton module for landed cost")
-    (description "The @emph{Account Stock Landed Cost} Tryton module allows to
-allocate landed cost on Supplier Shipments after their reception.")
+    (description "The @emph{Account Stock Landed Cost} Tryton module allows
+allocating landed cost on Supplier Shipments after their reception.")
     (license license:gpl3+)))
 
 (define-public trytond-account-stock-landed-cost-weight
@@ -1186,7 +1186,7 @@ from the Product Measurements")
      (list trytond trytond-account trytond-account-invoice trytond-party))
     (home-page "https://docs.tryton.org/projects/modules-account-tax-cash")
     (synopsis "Tryton module to support tax report on cash basis")
-    (description "The @emph{Account Tax Cash} Tryton module allows to make tax
+    (description "The @emph{Account Tax Cash} Tryton module allows making a tax
 report on cash basis.")
     (license license:gpl3+)))
 
@@ -1264,8 +1264,8 @@ required to analyse accounting using multiple different axes.")
      (list trytond trytond-account-invoice trytond-analytic-account))
     (home-page "https://docs.tryton.org/projects/modules-analytic-invoice")
     (synopsis "Tryton module to add analytic accounting on invoice")
-    (description "The @emph{Analytic Invoice} Tryton module allows to set
-analytic accounts on invoice line.")
+    (description "The @emph{Analytic Invoice} Tryton module allows setting
+analytic accounts on an invoice line.")
     (license license:gpl3+)))
 
 (define-public trytond-analytic-purchase
@@ -1286,8 +1286,8 @@ analytic accounts on invoice line.")
            trytond-purchase))
     (home-page "https://docs.tryton.org/projects/modules-analytic-purchase")
     (synopsis "Tryton module to add analytic accounting on purchase")
-    (description "The @emph{Analytic Purchase} Tryton module allows to set
-analytic accounts on purchase line.")
+    (description "The @emph{Analytic Purchase} Tryton module allows setting
+analytic accounts on a purchase line.")
     (license license:gpl3+)))
 
 (define-public trytond-analytic-sale
@@ -1308,8 +1308,8 @@ analytic accounts on purchase line.")
            trytond-sale))
     (home-page "https://docs.tryton.org/projects/modules-analytic-sale")
     (synopsis "Tryton module to add analytic accounting on sale")
-    (description "The @emph{Analytic Sale} Tryton module allows to set
-analytic accounts on sale line.")
+    (description "The @emph{Analytic Sale} Tryton module allows setting
+analytic accounts on a sale line.")
     (license license:gpl3+)))
 
 (define-public trytond-attendance
@@ -1515,8 +1515,8 @@ the weight is greater or equal but smaller than the next line.")
            trytond-product))
     (home-page "https://docs.tryton.org/projects/modules-commission")
     (synopsis "Tryton module for commission")
-    (description "The @emph{Commission} Tryton module allows to manageq
-commission for sale's agents.  A commission move is created when posting the
+    (description "The @emph{Commission} Tryton module allows manageing a
+commission for sales agents.  A commission move is created when posting the
 invoice, following the agent's commission plan.")
     (license license:gpl3+)))
 
@@ -1538,8 +1538,8 @@ invoice, following the agent's commission plan.")
            trytond-commission))
     (home-page "https://docs.tryton.org/projects/modules-commission-waiting")
     (synopsis "Tryton module for commission waiting")
-    (description "The @emph{Commission Waiting} Tryton module allows to
-generate account move for each commission between the expense/revenue account
+    (description "The @emph{Commission Waiting} Tryton module allows
+generating an account move for each commission between the expense/revenue account
 to a waiting account defined on the agent.")
     (license license:gpl3+)))
 
@@ -1590,7 +1590,7 @@ management.
 
 The Company Work Time module adds 4 new fields (Hours per Work Day, Hours per
 Work Week, Hours per Work Month, Hours per Work Year) on the company form that
-allow to define how much hours are spent by an employee in a day, a week, a
+allows defining how many hours are spent by an employee in a day, a week, a
 month and a year of work.")
     (license license:gpl3+)))
 
@@ -1666,7 +1666,7 @@ currency and rate.")
            trytond-product))
     (home-page "https://docs.tryton.org/projects/modules-customs")
     (synopsis "Tryton module for customs")
-    (description "The @emph{Customs} Tryton module allows to define customs
+    (description "The @emph{Customs} Tryton module allows defining customs
 duty based on the tariff code.")
     (license license:gpl3+)))
 
@@ -1799,8 +1799,8 @@ versions of 2010 and 2020.")
      (list python-ldap3 trytond))
     (home-page "https://docs.tryton.org/projects/modules-ldap-authentication")
     (synopsis "Tryton module to authenticate users through LDAP")
-    (description "The @emph{LDAP Authentication} Tryton module allows to
-authenticate users via a LDAP server.")
+    (description "The @emph{LDAP Authentication} Tryton module allows
+authenticating users via a LDAP server.")
     (license license:gpl3+)))
 
 (define-public trytond-marketing
@@ -1893,7 +1893,7 @@ mailing lists.")
      (list trytond))
     (home-page "https://docs.tryton.org/projects/modules-notification-email")
     (synopsis "Tryton module for sending email notifications")
-    (description "The @emph{Notification Email} Tryton module allows to define
+    (description "The @emph{Notification Email} Tryton module allows defining
 email templates which will be sent to a list of recipients when a trigger is
 fired on a record event.  Extra reports from the same record can be attached
 to the email.")
@@ -1965,7 +1965,7 @@ party.")
      (list trytond trytond-party))
     (home-page "https://docs.tryton.org/projects/modules-party-relationship")
     (synopsis "Party Relationship module for Tryton")
-    (description "The @emph{Party Relationship} Tryton module allows to define
+    (description "The @emph{Party Relationship} Tryton module allows defining
 different types of relations between parties.")
     (license license:gpl3+)))
 
@@ -2311,8 +2311,8 @@ for production management: Bill of material and production order.")
     (home-page
      "https://docs.tryton.org/projects/modules-production-outsourcing")
     (synopsis "Tryton module to outsource production")
-    (description "The @emph{Production Outsourcing} Tryton module allows to
-outsource production order per routing.  When such outsourced production is
+    (description "The @emph{Production Outsourcing} Tryton module allows
+outsourcing production orders per routing.  When such outsourced production is
 set to @code{waiting}, a purchase order is created and its cost is added to
 the production.")
     (license license:gpl3+)))
@@ -2358,7 +2358,7 @@ routings for production: Routing, Step and Operation.")
     (home-page "https://docs.tryton.org/projects/modules-production-split")
     (synopsis "Tryton module to split production")
     (description "The @emph{Production Split} Tryton module adds on the
-production a wizard that allows to split it.  The production is split into
+production a wizard that allows splitting it.  The production is split into
 productions of Quantity.  If a count is set, it will be split only this number
 of times.  On occasion there can be a production with the remaining
 quantity.")
@@ -2386,7 +2386,7 @@ quantity.")
            trytond-stock))
     (home-page "https://docs.tryton.org/projects/modules-production-work")
     (synopsis "Tryton module for production work")
-    (description "The @emph{Production Work} Tryton module allows to manage
+    (description "The @emph{Production Work} Tryton module allows managing a
 work order for each production.  It also adds in the production cost for the
 work cost.")
     (license license:gpl3+)))
@@ -2410,8 +2410,8 @@ work cost.")
     (home-page
      "https://docs.tryton.org/projects/modules-production-work-timesheet")
     (synopsis "Tryton module for timesheet on production work")
-    (description "The @emph{Production Work Timesheet} Tryton module allows to
-enter timesheet for production works.")
+    (description "The @emph{Production Work Timesheet} Tryton module allows
+entering a timesheet for production works.")
     (license license:gpl3+)))
 
 (define-public trytond-project
@@ -2986,7 +2986,7 @@ line.")
            trytond-sale-price-list))
     (home-page "https://docs.tryton.org/projects/modules-sale-extra")
     (synopsis "Tryton module for sale extra")
-    (description "The @emph{Sale Extra} Tryton module allows to add extra line
+    (description "The @emph{Sale Extra} Tryton module allows adding an extra line
 on sale based on criteria.")
     (license license:gpl3+)))
 
@@ -3183,8 +3183,8 @@ customer's names and codes for products or variants.")
            trytond-sale-price-list))
     (home-page "https://docs.tryton.org/projects/modules-sale-promotion")
     (synopsis "Tryton module for sale promotion")
-    (description "The @emph{Sale Promotion} module allows to apply promotions
-on sale based on criteria.")
+    (description "The @emph{Sale Promotion} module allows applying promotions
+on a sale based on criteria.")
     (license license:gpl3+)))
 
 (define-public trytond-sale-promotion-coupon
@@ -3557,7 +3557,7 @@ location to pick products.")
            trytond-stock))
     (home-page "https://docs.tryton.org/projects/modules-stock-consignment")
     (synopsis "Tryton module to manage consignment stock")
-    (description "The @emph{Stock Consignment} Tryton module allow to manage
+    (description "The @emph{Stock Consignment} Tryton module allows managing
 consignment stock from supplier or at customer warehouse.")
     (license license:gpl3+)))
 
@@ -3624,8 +3624,8 @@ wizard \"Create Inventories\" under the \"Inventories\" sub-menu.")
      (list trytond trytond-stock))
     (home-page "https://docs.tryton.org/projects/modules-stock-location-move")
     (synopsis "Tryton module to move storage locations")
-    (description "The @emph{Stock Location} move Tryton module allows to
-define some Locations as movable
+    (description "The @emph{Stock Location} move Tryton module allows
+defining some Locations as movable
 (like palette).")
     (license license:gpl3+)))
 
@@ -3717,7 +3717,7 @@ it is no more used to compute the forecast quantity of the stock.")
      (list trytond trytond-product trytond-stock trytond-stock-lot))
     (home-page "https://docs.tryton.org/projects/modules-stock-lot-unit")
     (synopsis "Tryton module to define unit on stock lot")
-    (description "The @emph{Stock Lot Unit} Tryton module allows to define a
+    (description "The @emph{Stock Lot Unit} Tryton module allows defining a
 unit and quantity on stock lot.")
     (license license:gpl3+)))
 
@@ -3738,7 +3738,7 @@ unit and quantity on stock lot.")
      (list trytond trytond-company trytond-product trytond-stock))
     (home-page "https://docs.tryton.org/projects/modules-stock-package")
     (synopsis "Tryton module for stock packaging")
-    (description "The @emph{Stock Package} Tryton module allows to store
+    (description "The @emph{Stock Package} Tryton module allows storing
 packaging information about customer and supplier return shipments.")
     (license license:gpl3+)))
 
@@ -3961,7 +3961,7 @@ measurement and the quantity of their moves.")
     (home-page "https://docs.tryton.org/projects/modules-stock-split")
     (synopsis "Tryton module to split stock move")
     (description "The @emph{Stock Split} Tryton module adds on the stock move
-a wizard that allows to split them.  The move is split into moves of Quantity.
+a wizard that allows splitting them.  The move is split into moves of Quantity.
 If Counts is set, it will be split only this number of times.  On occasion
 there can be a move with the remaining quantity.")
     (license license:gpl3+)))
@@ -4015,7 +4015,7 @@ mechanisms and introduces the concepts of order point.")
     (home-page "https://docs.tryton.org/projects/modules-stock-supply-day")
     (synopsis "Tryton module to add supply weekdays")
     (description "The @emph{Stock Supply Day} Tryton module adds a Week Days
-list on the Product Supplier form.  This allow to restrict the supply week
+list on the Product Supplier form.  This allows restricting the supply week
 days for each supplier on each product.  If no days are defined for a supplier
 a supplying may happens at any day of the week.")
     (license license:gpl3+)))
@@ -4082,7 +4082,7 @@ supply mechanisms via production request.")
      (list trytond trytond-company trytond-company-work-time))
     (home-page "https://docs.tryton.org/projects/modules-timesheet")
     (synopsis "Tryton module with timesheets")
-    (description "The @emph{Timesheet} Tryton module allows to track the time
+    (description "The @emph{Timesheet} Tryton module allows tracking the time
 spent by employees on various works.  This module also comes with several
 reports that show the time spent by employees on works following various time
 periods.")
