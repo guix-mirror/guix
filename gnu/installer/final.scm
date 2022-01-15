@@ -211,17 +211,7 @@ or #f.  Return #t on success and #f on failure."
 
              (setenv "PATH" path)
 
-             ;; If there are any connected clients, assume that we are running
-             ;; installation tests. In that case, dump the standard and error
-             ;; outputs to syslog.
-             (set! ret
-                   (if (not (null? (current-clients)))
-                       (with-output-to-file "/dev/console"
-                         (lambda ()
-                           (with-error-to-file "/dev/console"
-                             (lambda ()
-                               (run-command install-command)))))
-                       (run-command install-command))))
+             (set! ret (run-command install-command)))
            (lambda ()
              ;; Restart guix-daemon so that it does no keep the MNT namespace
              ;; alive.
