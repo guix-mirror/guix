@@ -1225,8 +1225,8 @@ and a partitioning of the heap between kinds of memory (for NUMA).")
     (license license:bsd-3)))
 
 (define-public mmc-utils
-  (let ((commit "e9654ebc4a6a48642848822c4a1355a9de4958d1")
-        (revision "0"))
+  (let ((commit "3969aa4804edb8aed7bcb3c958e49d0c7388b067")
+        (revision "1"))
     (package
       (name "mmc-utils")
       (version (git-version "0.1" revision commit))
@@ -1238,8 +1238,7 @@ and a partitioning of the heap between kinds of memory (for NUMA).")
                  (commit commit)))
           (file-name (git-file-name name version))
           (sha256
-           (base32
-            "1dbsppsmky0r4z6kxwczrw8pih8bhc2pb61gsvs986r4xy6jr17a"))))
+           (base32 "0pvcm685x63afvp8795jd4vn4zs8psh8bs6j2yvk1kgrawpyk10g"))))
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f ; No test suite
