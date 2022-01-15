@@ -41,6 +41,8 @@
   #:use-module (guix discovery)
   #:use-module (guix i18n)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (newt)
   #:export (newt-installer))
 
@@ -80,11 +82,53 @@ problem. The backtrace is displayed below~a. Please report it by email to \
   (clear-screen))
 
 (define (newt-run-command . args)
-  (newt-suspend)
-  (clear-screen)
-  (define result (run-command args))
-  (newt-resume)
-  result)
+  (define command-output "")
+  (define (line-accumulator line)
+    (set! command-output
+          (string-append/shared command-output line "\n")))
+  (define displayed-command
+    (string-join
+     (map (lambda (s) (string-append "\"" s "\"")) args)
+     " "))
+  (define result (run-external-command-with-line-hooks (list line-accumulator)
+                                                       args))
+  (define exit-val (status:exit-val result))
+  (define term-sig (status:term-sig result))
+  (define stop-sig (status:stop-sig result))
+
+  (if (and exit-val (zero? exit-val))
+      #t
+      (let ((info-text
+             (cond
+              (exit-val
+               (format #f (G_ "External command ~s exited with code ~a")
+                       args exit-val))
+              (term-sig
+               (format #f (G_ "External command ~s terminated by signal ~a")
+                       args term-sig))
+              (stop-sig
+               (format #f (G_ "External command ~s stopped by signal ~a")
+                       args stop-sig)))))
+        (run-textbox-page #:title (G_ "External command error")
+                          #:info-text info-text
+                          #:content command-output
+                          #:buttons-spec
+                          (list
+                           (cons "Ignore" (const #t))
+                           (cons "Abort"
+                                 (lambda ()
+                                   (abort-to-prompt 'installer-step 'abort)))
+                           (cons "Dump"
+                                 (lambda ()
+                                   (raise
+                                    (condition
+                                     ((@@ (guix build utils)
+                                          &invoke-error)
+                                      (program (car args))
+                                      (arguments (cdr args))
+                                      (exit-status exit-val)
+                                      (term-signal term-sig)
+                                      (stop-signal stop-sig)))))))))))
 
 (define (final-page result prev-steps)
   (run-final-page result prev-steps))

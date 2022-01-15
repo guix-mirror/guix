@@ -44,6 +44,9 @@
             run-scale-page
             run-checkbox-tree-page
             run-file-textbox-page
+            %ok-button
+            %exit-button
+            run-textbox-page
 
             run-form-with-clients))
 
@@ -816,3 +819,83 @@ ITEMS when 'Ok' is pressed."
                  (components=? argument edit-button))
             (loop)                                ;recurse in tail position
             result)))))
+
+(define %ok-button
+  (cons (G_ "Ok")  (lambda () #t)))
+
+(define %exit-button
+  (cons (G_ "Exit") (lambda () (abort-to-prompt 'installer-step 'abort))))
+
+(define %default-buttons
+  (list %ok-button %exit-button))
+
+(define (make-newt-buttons buttons-spec)
+  (map
+   (match-lambda ((title . proc)
+                  (cons (make-button -1 -1 title) proc)))
+   buttons-spec))
+
+(define* (run-textbox-page #:key
+                           title
+                           info-text
+                           content
+                           (buttons-spec %default-buttons))
+  "Run a page to display INFO-TEXT followed by CONTENT to the user, who has to
+choose an action among the buttons specified by BUTTONS-SPEC.
+
+BUTTONS-SPEC is an association list with button labels as keys, and callback
+procedures as values.
+
+This procedure returns the result of the callback procedure of the button
+chosen by the user."
+  (define info-textbox
+    (make-reflowed-textbox -1 -1 info-text
+                           50
+                           #:flags FLAG-BORDER))
+  (define content-textbox
+    (make-textbox -1 -1
+                  50
+                  30
+                  (logior FLAG-SCROLL FLAG-BORDER)))
+  (define buttons
+    (make-newt-buttons buttons-spec))
+  (define grid
+    (vertically-stacked-grid
+     GRID-ELEMENT-COMPONENT info-textbox
+     GRID-ELEMENT-COMPONENT content-textbox
+     GRID-ELEMENT-SUBGRID
+     (apply
+      horizontal-stacked-grid
+      (append-map (match-lambda ((button . proc)
+                                 (list GRID-ELEMENT-COMPONENT button)))
+                  buttons))))
+  (define form (make-form #:flags FLAG-NOF12))
+  (add-form-to-grid grid form #t)
+  (make-wrapped-grid-window grid title)
+  (set-textbox-text content-textbox
+                    (receive (_w _h text)
+                        (reflow-text content
+                                     50
+                                     0 0)
+                      text))
+
+  (receive (exit-reason argument)
+      (run-form-with-clients form
+                             `(contents-dialog (title ,title)
+                                               (text ,info-text)
+                                               (content ,content)))
+    (destroy-form-and-pop form)
+    (match exit-reason
+      ('exit-component
+       (let ((proc (assq-ref buttons argument)))
+         (if proc
+             (proc)
+             (raise
+              (condition
+               (&serious)
+               (&message
+                (message (format #f "Unable to find corresponding PROC for \
+component ~a." argument))))))))
+      ;; TODO
+      ('exit-fd-ready
+       (raise (condition (&serious)))))))
