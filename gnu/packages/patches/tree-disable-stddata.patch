@@ -1,0 +1,16 @@
+Tree 2.0.0 and later will write its output in JSON format on fd3 if
+present, instead of the requested output on fd1, which breaks e.g.
+'password-store' tests.  Disable for now; upstream has been notified.
+
+diff --git a/tree.c b/tree.c
+--- a/tree.c
++++ b/tree.c
+@@ -133,7 +133,7 @@ int main(int argc, char **argv)
+   mb_cur_max = 1;
+ #endif
+ 
+-#ifdef __linux__
++#if 0
+   // Output JSON automatically to "stddata" if present:
+   if (fcntl(STDDATA_FILENO, F_GETFD) >= 0) {
+     Jflag = noindent = TRUE;
