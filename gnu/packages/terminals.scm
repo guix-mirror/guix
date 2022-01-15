@@ -573,13 +573,21 @@ to all types of devices that provide serial consoles.")
         (base32 "05c2gxfqc12rgp88c65q7f5ha9gzh222vdh0qpdq1zmyhqj43pq1"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                      ; no tests
-       #:make-flags
+     `(#:make-flags
        (list (string-append "prefix=" (assoc-ref %outputs "out"))
              (string-append "pkgdocdir=$(docdir)/" ,name "-" ,version))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure))))         ; no configure script
+         (delete 'configure)            ; no configure script
+         (add-before 'check 'patch-tests
+           (lambda _
+             (substitute* "GNUmakefile"
+               (("/bin/bash")
+                (which "bash")))
+             (substitute* (find-files "tests" "\\.expected")
+               ;; The build environment lacks /dev/{console,tty*}.
+               ((": Permission denied")
+                ": No such file or directory")))))))
     (synopsis "Linux command-line utility to control the PC speaker")
     (description "beep allows the user to control the PC speaker with precision,
 allowing different sounds to indicate different events.  While it can be run
