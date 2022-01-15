@@ -391,8 +391,8 @@ benchmarks as well as comparing benchmark results.")
            julia-biosymbols
            julia-intervaltrees))
     (home-page "https://github.com/BioJulia/BioAlignments.jl")
-    (synopsis "Sequence alignement algorithm and data structures")
-    (description "This package provides alignement algorithms and data
+    (synopsis "Sequence alignment algorithm and data structures")
+    (description "This package provides alignment algorithms and data
 structures for sequence of DNA, RNA, and amino acid sequences.")
     (license license:expat)))
 
