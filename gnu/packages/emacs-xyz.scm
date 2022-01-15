@@ -8249,8 +8249,6 @@ style, or as multiple word prefixes.")
         (base32 "051fjp03lj3b5kkzpdhk78g2lj37v973q0f012zld1n6937srj6h"))
        (file-name (git-file-name name version))))
     (build-system emacs-build-system)
-    (propagated-inputs
-     (list emacs-flycheck emacs-selectrum))
     (home-page "https://github.com/minad/consult")
     (synopsis "Consulting completing-read")
     (description "This package provides various handy commands based on the
