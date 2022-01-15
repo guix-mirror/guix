@@ -38,7 +38,6 @@
 
             syslog-port
             %syslog-line-hook
-            syslog
             installer-log-port
             %installer-log-line-hook
             %default-installer-line-hooks
