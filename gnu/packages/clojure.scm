@@ -555,7 +555,7 @@ dependency graph expansion and the creation of classpaths.")
        #:doc-dirs '()
        ;; Tests attempt to clone git repositories from the internet.
        #:tests? #f))
-    (synopsis "Retrieve, cache, and programatically access git libraries")
+    (synopsis "Retrieve, cache, and programmatically access git libraries")
     (description "To access git dependencies (for example, via
 @code{tools.deps}), one must download git directories and working trees as
 indicated by git SHAs.  This library provides this functionality and also
