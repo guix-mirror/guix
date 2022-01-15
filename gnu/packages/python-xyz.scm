@@ -80,7 +80,7 @@
 ;;; Copyright © 2020 Josh Holland <josh@inv.alid.pw>
 ;;; Copyright © 2020 Yuval Kogman <nothingmuch@woobling.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
-;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020, 2021, 2022 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Guy Fleury Iteriteka <gfleury@disroot.org>
 ;;; Copyright © 2020 Hendursaga <hendursaga@yahoo.com>
 ;;; Copyright © 2020 Malte Frank Gerdes <malte.f.gerdes@gmail.com>
@@ -1475,26 +1475,31 @@ approximate nearest neighbor search with Python bindings.")
 (define-public python-cftime
   (package
     (name "python-cftime")
-    (version "1.0.4.2")
+    (version "1.5.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cftime" version))
        (sha256
-        (base32 "0w0gi6jnch38hiygl62j4xkcirv4y3dcwrvxl9p7bsk6j27lzihs"))))
+        (base32 "0l1a22zlhdpgaisibvvm7dhij4vzfm661rnv00y2snpyqxpdgi3d"))))
     (build-system python-build-system)
     (propagated-inputs
      (list python-numpy))
     (native-inputs
-     (list python-coveralls python-cython python-pytest-cov))
-    (home-page "https://github.com/Unidata/cftime")
+     (list python-check-manifest
+           python-coverage
+           python-coveralls
+           python-cython
+           python-pytest-cov
+           python-sphinx
+           python-twine
+           python-wheel))
+    (home-page "https://unidata.github.io/cftime/")
     (synopsis "Library for time handling")
     (description
      "This package provides time-handling functionality that used to be part
 of the netcdf4 package before.")
-    ;; This package claims to include code under the GPLv3 but is released
-    ;; under ISC.
-    (license (list license:isc license:gpl3+))))
+    (license license:expat)))
 
 (define-public python-netcdf4
   (package
