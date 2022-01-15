@@ -36,10 +36,8 @@
   #:export (run-partitioning-page))
 
 (define (button-exit-action)
-  "Raise the &installer-step-abort condition."
-  (raise
-   (condition
-    (&installer-step-abort))))
+  "Abort the installer step."
+  (abort-to-prompt 'installer-step 'abort))
 
 (define (run-scheme-page)
   "Run a page asking the user for a partitioning scheme."

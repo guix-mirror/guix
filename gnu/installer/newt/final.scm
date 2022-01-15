@@ -59,9 +59,7 @@ This will take a few minutes.")
      #:file-textbox-height height
      #:exit-button-callback-procedure
      (lambda ()
-       (raise
-        (condition
-         (&installer-step-abort)))))))
+       (abort-to-prompt 'installer-step 'abort)))))
 
 (define (run-install-success-page)
   (match (current-clients)
@@ -88,9 +86,7 @@ press the button to reboot.")))
              (G_ "Restart the installer")
              (G_ "The final system installation step failed.  You can resume from \
 a specific step, or restart the installer."))
-       (1 (raise
-           (condition
-            (&installer-step-abort))))
+       (1 (abort-to-prompt 'installer-step 'abort))
        (2
         ;; Keep going, the installer will be restarted later on.
         #t)))

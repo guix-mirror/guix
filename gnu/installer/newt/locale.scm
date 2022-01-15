@@ -43,9 +43,7 @@ installation process and for the installed system.")
      #:button-text (G_ "Exit")
      #:button-callback-procedure
      (lambda _
-       (raise
-        (condition
-         (&installer-step-abort))))))
+       (abort-to-prompt 'installer-step 'abort))))
 
   ;; Immediately install the chosen language so that the territory page that
   ;; comes after (optionally) is displayed in the chosen language.
@@ -63,9 +61,7 @@ installation process and for the installed system.")
      #:button-text (G_ "Back")
      #:button-callback-procedure
      (lambda _
-       (raise
-        (condition
-         (&installer-step-abort)))))))
+       (abort-to-prompt 'installer-step 'abort)))))
 
 (define (run-codeset-page codesets)
   (let ((title (G_ "Locale codeset")))
@@ -78,9 +74,7 @@ installation process and for the installed system.")
      #:button-text (G_ "Back")
      #:button-callback-procedure
      (lambda _
-       (raise
-        (condition
-         (&installer-step-abort)))))))
+       (abort-to-prompt 'installer-step 'abort)))))
 
 (define (run-modifier-page modifiers modifier->text)
   (let ((title (G_ "Locale modifier")))
@@ -94,9 +88,7 @@ symbol.")
      #:button-text (G_ "Back")
      #:button-callback-procedure
      (lambda _
-       (raise
-        (condition
-         (&installer-step-abort)))))))
+       (abort-to-prompt 'installer-step 'abort)))))
 
 (define* (run-locale-page #:key
                           supported-locales
@@ -110,11 +102,10 @@ associating a territory code with a territory name. The formatted locale, under
 glibc format is returned."
 
   (define (break-on-locale-found locales)
-    "Raise the &installer-step-break condition if LOCALES contains exactly one
+    "Break to the installer step if LOCALES contains exactly one
 element."
     (and (= (length locales) 1)
-         (raise
-          (condition (&installer-step-break)))))
+         (abort-to-prompt 'installer-step 'break)))
 
   (define (filter-locales locales result)
     "Filter the list of locale records LOCALES using the RESULT returned by
@@ -218,8 +209,8 @@ glibc locale string and return it."
 
   ;; If run-installer-steps returns locally, it means that the user had to go
   ;; through all steps (language, territory, codeset and modifier) to select a
-  ;; locale. In that case, like if we exited by raising &installer-step-break
-  ;; condition, turn the result into a glibc locale string and return it.
+  ;; locale. In that case, like if we exited by breaking to the installer
+  ;; step, turn the result into a glibc locale string and return it.
   (result->locale-string
    supported-locales
    (run-installer-steps #:steps locale-steps)))

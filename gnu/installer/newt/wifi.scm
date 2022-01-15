@@ -237,9 +237,7 @@ force a wifi scan."
               (run-wifi-scan-page)
               (run-wifi-page))
              ((components=? argument exit-button)
-              (raise
-               (condition
-                (&installer-step-abort))))
+              (abort-to-prompt 'installer-step 'abort))
              ((components=? argument listbox)
               (let ((result (connect-wifi-service listbox service-items)))
                 (unless result

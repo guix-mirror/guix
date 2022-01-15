@@ -46,9 +46,7 @@ to choose from them later when you log in.")
      #:checkbox-tree-height 9
      #:exit-button-callback-procedure
      (lambda ()
-       (raise
-        (condition
-         (&installer-step-abort)))))))
+       (abort-to-prompt 'installer-step 'abort)))))
 
 (define (run-networking-cbt-page)
   "Run a page allowing the user to select networking services."
@@ -65,9 +63,7 @@ system.")
      #:checkbox-tree-height 5
      #:exit-button-callback-procedure
      (lambda ()
-       (raise
-        (condition
-         (&installer-step-abort)))))))
+       (abort-to-prompt 'installer-step 'abort)))))
 
 (define (run-printing-services-cbt-page)
   "Run a page allowing the user to select document services such as CUPS."
@@ -85,9 +81,7 @@ system.")
      #:checkbox-tree-height 9
      #:exit-button-callback-procedure
      (lambda ()
-       (raise
-        (condition
-         (&installer-step-abort)))))))
+       (abort-to-prompt 'installer-step 'abort)))))
 
 (define (run-console-services-cbt-page)
   "Run a page to select various system adminstration services for non-graphical
@@ -130,9 +124,7 @@ client may be enough for a server.")
      #:button-text (G_ "Exit")
      #:button-callback-procedure
      (lambda _
-       (raise
-        (condition
-         (&installer-step-abort)))))))
+       (abort-to-prompt 'installer-step 'abort)))))
 
 (define (run-services-page)
   (let ((desktop (run-desktop-environments-cbt-page)))

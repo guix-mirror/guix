@@ -65,9 +65,7 @@ connection is pending."
      (run-error-page
       (G_ "No ethernet service available, please try again.")
       (G_ "No service"))
-     (raise
-      (condition
-       (&installer-step-abort))))
+     (abort-to-prompt 'installer-step 'abort))
     ((service)
      ;; Only one service is available so return it directly.
      service)
@@ -81,7 +79,5 @@ connection is pending."
       #:button-text (G_ "Exit")
       #:button-callback-procedure
       (lambda _
-        (raise
-         (condition
-          (&installer-step-abort))))
+        (abort-to-prompt 'installer-step 'abort))
       #:listbox-callback-procedure connect-ethernet-service))))

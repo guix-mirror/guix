@@ -65,12 +65,8 @@ Internet and return the selected technology. For now, only technologies with
             (G_ "Exit")
             (G_ "The install process requires Internet access but no \
 network devices were found. Do you want to continue anyway?"))
-       ((1) (raise
-             (condition
-              (&installer-step-break))))
-       ((2) (raise
-             (condition
-              (&installer-step-abort))))))
+       ((1) (abort-to-prompt 'installer-step 'break))
+       ((2) (abort-to-prompt 'installer-step 'abort))))
     ((technology)
      ;; Since there's only one technology available, skip the selection
      ;; screen.
@@ -86,9 +82,7 @@ network devices were found. Do you want to continue anyway?"))
       #:button-text (G_ "Exit")
       #:button-callback-procedure
       (lambda _
-        (raise
-         (condition
-          (&installer-step-abort))))))))
+        (abort-to-prompt 'installer-step 'abort))))))
 
 (define (find-technology-by-type technologies type)
   "Find and return a technology with the given TYPE in TECHNOLOGIES list."
@@ -156,9 +150,7 @@ FULL-VALUE tentatives, spaced by 1 second."
        (G_ "The selected network does not provide access to the \
 Internet and the Guix substitute server, please try again.")
        (G_ "Connection error"))
-      (raise
-       (condition
-        (&installer-step-abort))))))
+      (abort-to-prompt 'installer-step 'abort))))
 
 (define (run-network-page)
   "Run a page to allow the user to configure connman so that it can access the

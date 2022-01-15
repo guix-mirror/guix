@@ -20,7 +20,6 @@
 
 (define-module (gnu installer newt user)
   #:use-module (gnu installer user)
-  #:use-module ((gnu installer steps) #:select (&installer-step-abort))
   #:use-module (gnu installer newt page)
   #:use-module (gnu installer newt utils)
   #:use-module (gnu installer utils)
@@ -257,9 +256,7 @@ administrator (\"root\").")
                    (run users))
                  (reverse users))
                 ((components=? argument exit-button)
-                 (raise
-                  (condition
-                   (&installer-step-abort))))))
+                 (abort-to-prompt 'installer-step 'abort))))
               ('exit-fd-ready
                ;; Read the complete user list at once.
                (match argument

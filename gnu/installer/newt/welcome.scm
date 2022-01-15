@@ -84,7 +84,7 @@ we want this page to occupy all the screen space available."
                       (string=? str (listbox-item->text item))))
                    keys)
         ((key . item) item)
-        (#f (raise (condition (&installer-step-abort))))))
+        (#f (abort-to-prompt 'installer-step 'abort))))
 
     (set-textbox-text logo-textbox (read-all logo))
 

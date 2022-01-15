@@ -59,9 +59,7 @@ different layout at any time from the parameters menu.")))
        ((param) (const #f))
        (else
         (lambda _
-          (raise
-           (condition
-            (&installer-step-abort)))))))))
+          (abort-to-prompt 'installer-step 'abort)))))))
 
 (define (run-variant-page variants variant->text)
   (let ((title (G_ "Variant")))
@@ -74,9 +72,7 @@ different layout at any time from the parameters menu.")))
      #:button-text (G_ "Back")
      #:button-callback-procedure
      (lambda _
-       (raise
-        (condition
-         (&installer-step-abort)))))))
+       (abort-to-prompt 'installer-step 'abort)))))
 
 (define (sort-layouts layouts)
   "Sort LAYOUTS list by putting the US layout ahead and return it."

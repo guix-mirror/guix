@@ -65,9 +65,7 @@ returned."
          #:button-callback-procedure
          (if (null? path)
              (lambda _
-               (raise
-                (condition
-                 (&installer-step-abort))))
+               (abort-to-prompt 'installer-step 'abort))
              (lambda _
                (loop (all-but-last path))))
          #:listbox-callback-procedure

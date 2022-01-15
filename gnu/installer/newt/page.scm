@@ -488,7 +488,7 @@ the current listbox item has to be selected by key."
                         (string=? str (listbox-item->text item))))
                      keys)
           ((key . item) item)
-          (#f (raise (condition (&installer-step-abort))))))
+          (#f (abort-to-prompt 'installer-step 'abort))))
 
       ;; On every listbox element change, check if we need to skip it. If yes,
       ;; depending on the 'last-listbox-key', jump forward or backward. If no,
@@ -690,7 +690,7 @@ ITEMS when 'Ok' is pressed."
                         (string=? str (item->text item))))
                      keys)
           ((key . item) item)
-          (#f (raise (condition (&installer-step-abort))))))
+          (#f (abort-to-prompt 'installer-step 'abort))))
 
       (add-form-to-grid grid form #t)
       (make-wrapped-grid-window grid title)
