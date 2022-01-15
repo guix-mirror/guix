@@ -343,8 +343,7 @@ fail. See rereadpt function in wipefs.c of util-linux for an explanation."
 
 (define (remove-logical-devices)
   "Remove all active logical devices."
-  (with-null-output-ports
-   (invoke "dmsetup" "remove_all")))
+   ((run-command-in-installer) "dmsetup" "remove_all"))
 
 (define (installer-root-partition-path)
   "Return the root partition path, or #f if it could not be detected."
@@ -1115,53 +1114,37 @@ list and return the updated list."
             (file-name file-name))))
        user-partitions))
 
-(define-syntax-rule (with-null-output-ports exp ...)
-  "Evaluate EXP with both the output port and the error port pointing to the
-bit bucket."
-  (with-output-to-port (%make-void-port "w")
-    (lambda ()
-      (with-error-to-port (%make-void-port "w")
-        (lambda () exp ...)))))
-
 (define (create-btrfs-file-system partition)
   "Create a btrfs file-system for PARTITION file-name."
-  (with-null-output-ports
-   (invoke "mkfs.btrfs" "-f" partition)))
+   ((run-command-in-installer) "mkfs.btrfs" "-f" partition))
 
 (define (create-ext4-file-system partition)
   "Create an ext4 file-system for PARTITION file-name."
-  (with-null-output-ports
-   (invoke "mkfs.ext4" "-F" partition)))
+   ((run-command-in-installer) "mkfs.ext4" "-F" partition))
 
 (define (create-fat16-file-system partition)
   "Create a fat16 file-system for PARTITION file-name."
-  (with-null-output-ports
-   (invoke "mkfs.fat" "-F16" partition)))
+   ((run-command-in-installer) "mkfs.fat" "-F16" partition))
 
 (define (create-fat32-file-system partition)
   "Create a fat32 file-system for PARTITION file-name."
-  (with-null-output-ports
-   (invoke "mkfs.fat" "-F32" partition)))
+   ((run-command-in-installer) "mkfs.fat" "-F32" partition))
 
 (define (create-jfs-file-system partition)
   "Create a JFS file-system for PARTITION file-name."
-  (with-null-output-ports
-   (invoke "jfs_mkfs" "-f" partition)))
+   ((run-command-in-installer) "jfs_mkfs" "-f" partition))
 
 (define (create-ntfs-file-system partition)
   "Create a JFS file-system for PARTITION file-name."
-  (with-null-output-ports
-   (invoke "mkfs.ntfs" "-F" "-f" partition)))
+   ((run-command-in-installer) "mkfs.ntfs" "-F" "-f" partition))
 
 (define (create-xfs-file-system partition)
   "Create an XFS file-system for PARTITION file-name."
-  (with-null-output-ports
-   (invoke "mkfs.xfs" "-f" partition)))
+   ((run-command-in-installer) "mkfs.xfs" "-f" partition))
 
 (define (create-swap-partition partition)
   "Set up swap area on PARTITION file-name."
-  (with-null-output-ports
-   (invoke "mkswap" "-f" partition)))
+   ((run-command-in-installer) "mkswap" "-f" partition))
 
 (define (call-with-luks-key-file password proc)
   "Write PASSWORD in a temporary file and pass it to PROC as argument."
@@ -1190,15 +1173,16 @@ USER-PARTITION if it is encrypted, or the plain file-name otherwise."
      (lambda (key-file)
        (installer-log-line "formatting and opening LUKS entry ~s at ~s"
                label file-name)
-       (system* "cryptsetup" "-q" "luksFormat" file-name key-file)
-       (system* "cryptsetup" "open" "--type" "luks"
-                "--key-file" key-file file-name label)))))
+       ((run-command-in-installer) "cryptsetup" "-q" "luksFormat"
+        file-name key-file)
+       ((run-command-in-installer) "cryptsetup" "open" "--type" "luks"
+        "--key-file" key-file file-name label)))))
 
 (define (luks-close user-partition)
   "Close the encrypted partition pointed by USER-PARTITION."
   (let ((label (user-partition-crypt-label user-partition)))
     (installer-log-line "closing LUKS entry ~s" label)
-    (system* "cryptsetup" "close" label)))
+    ((run-command-in-installer) "cryptsetup" "close" label)))
 
 (define (format-user-partitions user-partitions)
   "Format the <user-partition> records in USER-PARTITIONS list with
