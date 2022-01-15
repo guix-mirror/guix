@@ -1234,7 +1234,7 @@ and a partitioning of the heap between kinds of memory (for NUMA).")
         (origin
           (method git-fetch)
           (uri (git-reference
-                 (url "https://git.kernel.org/pub/scm/linux/kernel/git/cjb/mmc-utils.git")
+                 (url "https://git.kernel.org/pub/scm/utils/mmc/mmc-utils.git")
                  (commit commit)))
           (file-name (git-file-name name version))
           (sha256
@@ -1255,7 +1255,8 @@ and a partitioning of the heap between kinds of memory (for NUMA).")
                (let* ((out (assoc-ref outputs "out"))
                       (man1 (string-append out "/share/man/man1")))
                  (install-file "man/mmc.1" man1)))))))
-      (home-page "https://git.kernel.org/pub/scm/linux/kernel/git/cjb/mmc-utils.git/")
+      (home-page
+       "https://www.kernel.org/doc/html/latest/driver-api/mmc/mmc-tools.html")
       (synopsis "Configure MMC storage devices from userspace")
       (description "mmc-utils is a command-line tool for configuring and
 inspecting MMC storage devices from userspace.")
