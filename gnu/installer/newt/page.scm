@@ -812,6 +812,7 @@ ITEMS when 'Ok' is pressed."
               (destroy-form-and-pop form))))
 
         (if (and (eq? exit-reason 'exit-component)
+                 edit-button
                  (components=? argument edit-button))
             (loop)                                ;recurse in tail position
             result)))))
