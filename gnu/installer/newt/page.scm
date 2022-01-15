@@ -22,6 +22,7 @@
   #:use-module (gnu installer steps)
   #:use-module (gnu installer utils)
   #:use-module (gnu installer newt utils)
+  #:use-module (guix build utils)
   #:use-module (guix i18n)
   #:use-module (ice-9 i18n)
   #:use-module (ice-9 match)
@@ -727,8 +728,7 @@ ITEMS when 'Ok' is pressed."
   (newt-suspend)
   ;; Use Nano because it syntax-highlights Scheme by default.
   ;; TODO: Add a menu to choose an editor?
-  (run-command (list "/run/current-system/profile/bin/nano" file)
-               #:locale locale)
+  (invoke "nano" file)
   (newt-resume))
 
 (define* (run-file-textbox-page #:key
