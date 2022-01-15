@@ -37,7 +37,12 @@
             run-command
 
             syslog-port
+            %syslog-line-hook
             syslog
+            installer-log-port
+            %installer-log-line-hook
+            %default-installer-line-hooks
+            installer-log-line
             call-with-time
             let/time
 
@@ -142,6 +147,9 @@ values."
         (set! port (open-syslog-port)))
       (or port (%make-void-port "w")))))
 
+(define (%syslog-line-hook line)
+  (format (syslog-port) "installer[~d]: ~a~%" (getpid) line))
+
 (define-syntax syslog
   (lambda (s)
     "Like 'format', but write to syslog."
@@ -151,6 +159,43 @@ values."
        (with-syntax ((fmt (string-append "installer[~d]: "
                                          (syntax->datum #'fmt))))
          #'(format (syslog-port) fmt (getpid) args ...))))))
+
+(define (open-new-log-port)
+  (define now (localtime (time-second (current-time))))
+  (define filename
+    (format #f "/tmp/installer.~a.log"
+            (strftime "%F.%T" now)))
+  (open filename (logior O_RDWR
+                         O_CREAT)))
+
+(define installer-log-port
+  (let ((port #f))
+    (lambda ()
+      "Return an input and output port to the installer log."
+      (unless port
+        (set! port (open-new-log-port)))
+      port)))
+
+(define (%installer-log-line-hook line)
+  (format (installer-log-port) "~a~%" line))
+
+(define (%display-line-hook line)
+  (display line)
+  (newline))
+
+(define %default-installer-line-hooks
+  (list %syslog-line-hook
+        %installer-log-line-hook))
+
+(define-syntax installer-log-line
+  (lambda (s)
+    "Like 'format', but uses the default line hooks, and only formats one line."
+    (syntax-case s ()
+      ((_ fmt args ...)
+       (string? (syntax->datum #'fmt))
+       #'(let ((formatted (format #f fmt args ...)))
+               (for-each (lambda (f) (f formatted))
+                         %default-installer-line-hooks))))))
 
 
 ;;;
