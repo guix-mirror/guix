@@ -15095,7 +15095,7 @@ library.")
       (build-system emacs-build-system)
       (arguments
        `(#:emacs ,emacs))               ;need libxml support
-      (inputs
+      (propagated-inputs
        (list emacs-plz emacs-ts))
       (home-page "https://github.com/alphapapa/ement.el")
       (synopsis "Matrix client for Emacs")
