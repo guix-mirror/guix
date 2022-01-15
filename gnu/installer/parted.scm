@@ -635,8 +635,14 @@ determined by MAX-LENGTH-COLUMN procedure."
 (define (mklabel device type-name)
   "Create a partition table on DEVICE. TYPE-NAME is the type of the partition
 table, \"msdos\" or \"gpt\"."
-  (let ((type (disk-type-get type-name)))
-    (disk-new-fresh device type)))
+  (let* ((type (disk-type-get type-name))
+         (disk (disk-new-fresh device type)))
+    (or disk
+        (raise
+         (condition
+          (&error)
+          (&message (message (format #f "Cannot create partition table of type
+~a on device ~a." type-name (device-path device)))))))))
 
 
 ;;
