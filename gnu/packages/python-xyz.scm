@@ -92,8 +92,8 @@
 ;;; Copyright © 2020 Liliana Marie Prikler <liliana.prikler@gmail.com>
 ;;; Copyright © 2019 Kristian Trandem <kristian@devup.no>
 ;;; Copyright © 2020, 2021 Zheng Junjie <873216071@qq.com>
-;;; Copyright © 2021 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;; Copyright © 2020 EuAndreh <eu@euandre.org>
+;;; Copyright © 2021, 2022 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2021 Ellis Kenyő <me@elken.dev>
 ;;; Copyright © 2021 LibreMiami <packaging-guix@libremiami.org>
@@ -115,6 +115,7 @@
 ;;; Copyright © 2021 Filip Lajszczak <filip@lajszczak.dev>
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2022 John Kehayias <john.kehayias@protonmail.com>
+;;; Copyright © 2022 Aleksandr Vityazev <avityazev@posteo.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -9147,6 +9148,26 @@ parsing (browser/HTTP) user agent strings.")
 
 (define-public python2-user-agents
   (package-with-python2 python-user-agents))
+
+(define-public python-pydbus
+  (package
+    (name "python-pydbus")
+    (version "0.6.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pydbus" version))
+        (sha256
+          (base32 "0b0gipvz7vcfa9ddmwq2jrx16d4apb0hdnl5q4i3h8jlzwp1c1s2"))))
+    (build-system python-build-system)
+    (propagated-inputs (list python-pygobject))
+    (home-page "https://github.com/LEW21/pydbus")
+    (synopsis "Pythonic D-Bus library")
+    (description "Pydbus provides a pythonic interface to the D-Bus
+message bus system.  Pydbus can be used to access remote objects and
+also for object publication.  It is based on PyGI, the Python GObject
+Introspection bindings, which is the recommended way to use GLib from Python.")
+    (license license:lgpl2.1+)))
 
 (define-public python-dbus
   (package
