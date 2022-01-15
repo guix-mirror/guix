@@ -817,7 +817,7 @@ style.")
     (native-inputs
      (list `(,glib "bin")))  ; for glib-compile-resources
     (home-page "https://github.com/jeffchannell/jiggle")
-    (synopsis "Mouse cursor enlargment for small and fast movements")
+    (synopsis "Mouse cursor enlargement for small and fast movements")
     (description "Jiggle is a Gnome Shell extension that highlights the cursor
 position when the mouse is moved rapidly.")
     (license license:gpl2)))
