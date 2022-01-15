@@ -43,6 +43,7 @@
   #:autoload   (gnu packages gnupg) (guile-gcrypt)
   #:use-module (gnu packages iso-codes)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages nano)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages tls)
@@ -336,6 +337,7 @@ selected keymap."
                        kbd ;chvt
                        guix ;guix system init call
                        util-linux ;mkwap
+                       nano
                        shadow
                        tar ;dump
                        gzip ;dump
