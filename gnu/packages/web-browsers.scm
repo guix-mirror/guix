@@ -902,14 +902,14 @@ interface.")
 (define-public telescope
   (package
     (name "telescope")
-    (version "0.7")
+    (version "0.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/omar-polo/telescope/releases/download/"
                            version "/telescope-" version ".tar.gz"))
        (sha256
-        (base32 "0b606caw2n02rny5yf1xh3lg0r3bwpxmcz6m4bv3mdd2ym8jjs84"))))
+        (base32 "055iqld99l4jshs10mhl2ml0p74wcyyv5kxjy8izzysw9lnkjjb5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ;no tests
