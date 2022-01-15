@@ -79,6 +79,13 @@ problem. The backtrace is displayed below~a. Please report it by email to \
   (newt-finish)
   (clear-screen))
 
+(define (newt-run-command . args)
+  (newt-suspend)
+  (clear-screen)
+  (define result (run-command args))
+  (newt-resume)
+  result)
+
 (define (final-page result prev-steps)
   (run-final-page result prev-steps))
 
@@ -150,4 +157,5 @@ problem. The backtrace is displayed below~a. Please report it by email to \
    (welcome-page welcome-page)
    (parameters-menu parameters-menu)
    (parameters-page parameters-page)
-   (dump-page dump-page)))
+   (dump-page dump-page)
+   (run-command newt-run-command)))

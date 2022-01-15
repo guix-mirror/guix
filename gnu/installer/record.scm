@@ -42,7 +42,8 @@
             installer-welcome-page
             installer-parameters-menu
             installer-parameters-page
-            installer-dump-page))
+            installer-dump-page
+            installer-run-command))
 
 
 ;;;
@@ -94,4 +95,6 @@
   ;; procedure (keyboard-layout-selection) -> void
   (parameters-page installer-parameters-page)
   ;; procedure (dump) -> void
-  (dump-page installer-dump-page))
+  (dump-page installer-dump-page)
+  ;; procedure command -> bool
+  (run-command installer-run-command))

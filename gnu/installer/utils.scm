@@ -25,6 +25,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (ice-9 control)
   #:use-module (ice-9 match)
   #:use-module (ice-9 popen)
@@ -39,6 +40,7 @@
             run-external-command-with-handler
             run-external-command-with-line-hooks
             run-command
+            run-command-in-installer
 
             syslog-port
             %syslog-line-hook
@@ -167,6 +169,14 @@ successfully, #f otherwise."
   (newline)
   (pause)
   succeeded?)
+
+(define run-command-in-installer
+  (make-parameter
+   (lambda (. args)
+     (raise
+      (condition
+       (&serious)
+       (&message (message "run-command-in-installer not set")))))))
 
 
 ;;;

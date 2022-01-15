@@ -416,44 +416,47 @@ selected keymap."
             (define steps (#$steps current-installer))
             ((installer-init current-installer))
 
-            (catch #t
-              (lambda ()
-                (define results
-                  (run-installer-steps
-                   #:rewind-strategy 'menu
-                   #:menu-proc (installer-menu-page current-installer)
-                   #:steps steps))
+            (parameterize
+                ((run-command-in-installer
+                  (installer-run-command current-installer)))
+              (catch #t
+                (lambda ()
+                  (define results
+                    (run-installer-steps
+                     #:rewind-strategy 'menu
+                     #:menu-proc (installer-menu-page current-installer)
+                     #:steps steps))
 
-                (match (result-step results 'final)
-                  ('success
-                   ;; We did it!  Let's reboot!
-                   (sync)
-                   (stop-service 'root))
-                  (_
-                   ;; The installation failed, exit so that it is restarted
-                   ;; by login.
-                   #f)))
-              (const #f)
-              (lambda (key . args)
-                (installer-log-line "crashing due to uncaught exception: ~s ~s"
-                        key args)
-                (let ((error-file "/tmp/last-installer-error")
-                      (dump-archive "/tmp/dump.tgz"))
-                  (call-with-output-file error-file
-                    (lambda (port)
-                      (display-backtrace (make-stack #t) port)
-                      (print-exception port
-                                       (stack-ref (make-stack #t) 1)
-                                       key args)))
-                  (make-dump dump-archive
-                             #:result %current-result
-                             #:backtrace error-file)
-                  (let ((report
-                         ((installer-dump-page current-installer)
-                          dump-archive)))
-                    ((installer-exit-error current-installer)
-                     error-file report key args)))
-                (primitive-exit 1)))
+                  (match (result-step results 'final)
+                    ('success
+                     ;; We did it!  Let's reboot!
+                     (sync)
+                     (stop-service 'root))
+                    (_
+                     ;; The installation failed, exit so that it is restarted
+                     ;; by login.
+                     #f)))
+                (const #f)
+                (lambda (key . args)
+                  (installer-log-line "crashing due to uncaught exception: ~s ~s"
+                          key args)
+                  (let ((error-file "/tmp/last-installer-error")
+                        (dump-archive "/tmp/dump.tgz"))
+                    (call-with-output-file error-file
+                      (lambda (port)
+                        (display-backtrace (make-stack #t) port)
+                        (print-exception port
+                                         (stack-ref (make-stack #t) 1)
+                                         key args)))
+                    (make-dump dump-archive
+                               #:result %current-result
+                               #:backtrace error-file)
+                    (let ((report
+                           ((installer-dump-page current-installer)
+                            dump-archive)))
+                      ((installer-exit-error current-installer)
+                       error-file report key args)))
+                  (primitive-exit 1))))
 
             ((installer-exit current-installer))))))
 
