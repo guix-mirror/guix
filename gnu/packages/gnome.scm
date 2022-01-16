@@ -11521,7 +11521,7 @@ library which detects when a file or a directory has been modified.")
      (list glib gtk+))
     (synopsis "Mahjongg tile-matching game")
     (description "GNOME Mahjongg is a game based on the classic Chinese
-tile-matching game Mahjong.  It features multiple board layouts, tile themes,
+tile-matching game Mahjongg.  It features multiple board layouts, tile themes,
 and a high score table.")
     (home-page "https://wiki.gnome.org/Apps/Mahjongg")
     (license license:gpl2+)))
