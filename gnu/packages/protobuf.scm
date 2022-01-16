@@ -210,7 +210,7 @@ code.")
 (define-public protozero
   (package
     (name "protozero")
-    (version "1.7.0")
+    (version "1.7.1")
     (source
      (origin
        (method git-fetch)
@@ -219,7 +219,7 @@ code.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0fdihfl5j68wayjjxvpvhvnjq1anzcfnfl09f68wpzbkg3zmhblz"))))
+        (base32 "052cq5mdjjgcsgk612zkqi8k08p3ikl22r59dk6i6fq41dxldja7"))))
     (build-system cmake-build-system)
     (home-page "https://github.com/mapbox/protozero")
     (synopsis "Minimalistic protocol buffer decoder and encoder in C++")
