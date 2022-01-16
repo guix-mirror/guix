@@ -2400,26 +2400,6 @@ environment variable is set and output is to tty.")
     (home-page "http://mama.indstate.edu/users/ice/tree/")
     (license license:gpl2+)))
 
-(define-public tree-1
-  ;; tree 2.0.0 introduced a feature called ‘stddata’ that emits JSON when
-  ;; output is directed to file descriptor 3.  At least password-store still
-  ;; requires the old version.
-  (package
-    (inherit tree)
-    (version "1.8.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://mama.indstate.edu/users/ice/tree/src/tree-"
-                    version ".tgz"))
-              (sha256
-               (base32 "1hmpz6k0mr6salv0nprvm1g0rdjva1kx03bdf1scw8a38d5mspbi"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments tree)
-       ((#:make-flags flags '())
-        #~(append #$flags
-                  (list (string-append "prefix=" #$output))))))))
-
 (define-public lr
   (package
     (name "lr")

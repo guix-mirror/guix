@@ -554,8 +554,7 @@ any X11 window.")
            gnupg
            qrencode
            sed
-	   ;; XXX v1.7.4 tests are broken with tree@2: <issues.guix.gnu.org/53238>.
-           tree-1
+           tree
            which
            wl-clipboard
            xclip
