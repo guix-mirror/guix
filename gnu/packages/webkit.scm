@@ -99,21 +99,21 @@ the WPE-flavored port of WebKit.")
 (define-public wpebackend-fdo
   (package
     (name "wpebackend-fdo")
-    (version "1.6.1")
+    (version "1.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://wpewebkit.org/releases/"
                                   "wpebackend-fdo-" version ".tar.xz"))
               (sha256
                (base32
-                "1jdi43gciqjgvhnqxs160f3hmp1hkqhrllb0hhmldyxc4wryw3kl"))))
-    (build-system cmake-build-system)
+                "1b3l02dns1yxw3rq18cv00qan4hp95mxw5b3ssc0fh93ap0wjfb2"))))
+    (build-system meson-build-system)
     (arguments
      `(#:tests? #f))                    ;no tests
     (native-inputs
      (list pkg-config))
     (inputs
-     (list glib libwpe mesa wayland))
+     (list glib libepoxy libwpe mesa wayland))
     (home-page "https://wpewebkit.org/")
     (synopsis "Wayland WPE backend")
     (description
