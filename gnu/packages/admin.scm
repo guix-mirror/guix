@@ -2041,9 +2041,7 @@ command.")
            (lambda _
              (substitute* "src/drivers/drivers.mak"
                (("pkg-config")
-                (or (which "pkg-config")
-                    (string-append ,(%current-target-system)
-                                   "-pkg-config"))))))
+                ,(pkg-config-for-target)))))
          (add-after 'install 'install-man-pages
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
