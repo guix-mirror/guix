@@ -28,6 +28,7 @@
  (entry (commit "c4fe13c294cc1e31dd8a49ce3981f603fb169e0a")
         (title
          (en "@command{guix style} can format package definitions")
+         (de "@command{guix style} kann Paketdefinitionen formatieren")
          (fr "@command{guix style} peut mettre en forme les définitions de paquets"))
         (body
          (en "The recently-introduced @command{guix style} command can now be
@@ -42,6 +43,20 @@ The new @option{--styling} option can currently be passed one of the following
 previously it was equivalent to @samp{--styling=inputs}.
 
 Run @code{info \"(guix) Invoking guix style\"}, for more info.")
+         (de "Der kürzlich eingeführte Befehl @command{guix style} kann jetzt
+benutzt werden, um Paketdefinitionen automatisch nach den
+Formatierungsrichtlinien des Guix-Projekts zu formatieren. Wenn Sie Pakete zu
+Guix oder zu einem Drittanbieterkanal beitragen, könnte Ihnen das helfen.
+
+Für die neue Befehlszeilenoption @option{--styling} können Sie derzeit eine
+der folgenden @dfn{Stilregeln} angeben: @code{format}, wodurch
+Paketdefinitionen formatiert werden, oder @code{inputs}, wodurch die
+Bezeichnungen aus Paketeingaben entfernt werden. Wenn Sie {--styling}
+weglassen, passiert das Gleiche wie wenn Sie @samp{--styling=format} angeben;
+früher war es das Gleiche wie @samp{--styling=inputs}.
+
+Führen Sie @command{info \"(guix) Invoking guix style\"} aus, um mehr
+Informationen zu erhalten.")
          (fr "La commande @command{guix style}, récemment introduite, peut
 désormais être utilisée pour mettre en forme des définitions de paquets
 suivant les règles de style du projet Guix.  Si vous contribuez des paquets à
