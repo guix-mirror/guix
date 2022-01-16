@@ -2023,46 +2023,41 @@ command.")
                 "0pcik0a6yin9nib02frjhaglmg44hwik086iwg1751b7kdwpqvi0"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda _
-             ;; This is mostly copied from 'wpa-supplicant' above.
-             (chdir "hostapd")
-             (copy-file "defconfig" ".config")
-             (let ((port (open-file ".config" "al")))
-               (display "
-      CONFIG_LIBNL32=y
-      CONFIG_IEEE80211R=y
-      CONFIG_IEEE80211N=y
-      CONFIG_IEEE80211AC=y\n" port)
-               (close-port port))))
-         (add-after 'unpack 'patch-pkg-config
-           (lambda _
-             (substitute* "src/drivers/drivers.mak"
-               (("pkg-config")
-                ,(pkg-config-for-target)))))
-         (add-after 'install 'install-man-pages
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out  (assoc-ref outputs "out"))
-                    (man  (string-append out "/share/man"))
-                    (man1 (string-append man "/man1"))
-                    (man8 (string-append man "/man8")))
-               (define (copy-man-page target)
-                 (lambda (file)
-                   (install-file file target)))
-
-               (for-each (copy-man-page man1)
-                         (find-files "." "\\.1"))
-               (for-each (copy-man-page man8)
-                         (find-files "." "\\.8"))))))
-
-      #:make-flags (list (string-append "CC=" ,(cc-for-target))
-                         (string-append "BINDIR=" (assoc-ref %outputs "out")
-                                        "/sbin")
-                         (string-append "LIBDIR=" (assoc-ref %outputs "out")
-                                        "/lib"))
-      #:tests? #f))
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (replace 'configure
+                 (lambda _
+                   ;; This is mostly copied from 'wpa-supplicant' above.
+                   (chdir "hostapd")
+                   (copy-file "defconfig" ".config")
+                   (let ((port (open-file ".config" "al")))
+                     (display "CONFIG_LIBNL32=y
+                               CONFIG_IEEE80211R=y
+                               CONFIG_IEEE80211N=y
+                               CONFIG_IEEE80211AC=y\n" port)
+                     (close-port port))))
+               (add-after 'unpack 'patch-pkg-config
+                 (lambda _
+                   (substitute* "src/drivers/drivers.mak"
+                     (("pkg-config")
+                      #$(pkg-config-for-target)))))
+               (add-after 'install 'install-man-pages
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let* ((man  (string-append #$output "/share/man"))
+                          (man1 (string-append man "/man1"))
+                          (man8 (string-append man "/man8")))
+                     (define (copy-man-page target)
+                       (lambda (file)
+                         (install-file file target)))
+                     (for-each (copy-man-page man1)
+                               (find-files "." "\\.1"))
+                     (for-each (copy-man-page man8)
+                               (find-files "." "\\.8"))))))
+           #:make-flags
+           #~(list (string-append "CC=" #$(cc-for-target))
+                   (string-append "BINDIR=" #$output "/sbin")
+                   (string-append "LIBDIR=" #$output "/lib"))
+           #:tests? #f))
     (native-inputs (list pkg-config))
 
     ;; There's an optional dependency on SQLite.
