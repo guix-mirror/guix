@@ -587,7 +587,14 @@ decentralized calling using P2P-DHT.")
                (("// clang-format on.*" anchor)
                 (string-append "const char VERSION_STRING[] = \""
                                ,version "\";\n"
-                               anchor))))))))
+                               anchor)))))
+         (add-after 'change-directory/maybe 'use-desktop-opengl
+           ;; TODO: Remove after next release; this is no longer specified in
+           ;; the source following the update to Qt 6.
+           (lambda _
+             (substitute* "src/main.cpp"
+               (("Qt::AA_UseOpenGLES")
+                "Qt::AA_UseDesktopOpenGL")))))))
     (native-inputs
      (list pkg-config python qttools doxygen graphviz))
     (inputs
