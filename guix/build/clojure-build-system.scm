@@ -78,8 +78,11 @@ priority over TEST-INCLUDE."
         (for-each (lambda (jar)
                     (eval-with-clojure `(do (apply require
                                                    '(clojure.test ,@libs*))
-                                            (apply clojure.test/run-tests
-                                                   ',libs*))
+                                            (if (clojure.test/successful?
+                                                 (apply clojure.test/run-tests
+                                                        ',libs*))
+                                                (System/exit 0)
+                                                (System/exit 1)))
                                        (cons jar test-dirs)))
                   jar-names)))
   #t)
