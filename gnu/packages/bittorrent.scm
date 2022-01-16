@@ -568,6 +568,9 @@ features.")
          (add-after 'install 'wrap
            (lambda* (#:key native-inputs inputs outputs #:allow-other-keys)
              (let ((out               (assoc-ref outputs "out"))
+                   ;; "librsvg" input is only needed at build time and it
+                   ;; conflit with the "librsvg" propageted by "gtk+", so we
+                   ;; make sure there is no reference to it in the wrapper.
                    (gi-typelib-path
                     (string-join (filter
                                   (lambda (x) (not (string-prefix?
