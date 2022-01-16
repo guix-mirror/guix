@@ -1659,16 +1659,16 @@ to preview files on the GNOME desktop.")
        (list "-Dplugins=external,gst-launch,lms,media-export,
 mpris,playbin,ruih,tracker3")))
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
-       ("gobject-introspection" ,gobject-introspection)
-       ("gtk-doc" ,gtk-doc/stable)
-       ("pkg-config" ,pkg-config)
-       ("python" ,python)
-       ("vala" ,vala)
-       ("docbook-xml" ,docbook-xml)
-       ("dockbook-xsl" ,docbook-xsl)
-       ("xsltproc" ,libxslt)))
+     (list gettext-minimal
+           `(,glib "bin")               ; for glib-compile-schemas, etc.
+           gobject-introspection
+           gtk-doc/stable
+           pkg-config
+           python
+           vala
+           docbook-xml
+           docbook-xsl
+           libxslt))
     (inputs
      (list gdk-pixbuf
            gssdp
