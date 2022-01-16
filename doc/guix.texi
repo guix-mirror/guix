@@ -1178,6 +1178,11 @@ user @file{nobody};
 a writable @file{/tmp} directory.
 @end itemize
 
+The chroot does contain a @file{/home} directory, and the @env{HOME}
+environment variable is set to the non-existent
+@file{/homeless-shelter}.  This helps to highlight inappropriate uses of
+@env{HOME} in the build scripts of packages.
+
 You can influence the directory where the daemon stores build trees
 @i{via} the @env{TMPDIR} environment variable.  However, the build tree
 within the chroot is always called @file{/tmp/guix-build-@var{name}.drv-0},
