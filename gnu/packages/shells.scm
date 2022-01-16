@@ -72,6 +72,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix gexp)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils))
@@ -827,14 +828,14 @@ Shell (pdksh).")
 (define-public oil
   (package
     (name "oil")
-    (version "0.9.5")
+    (version "0.9.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.oilshell.org/download/oil-"
                            version ".tar.gz"))
        (sha256
-        (base32 "0q29k500is2iif77dkpr7zncjg6ghzmmxs7c9pr2hjz8vvykv58x"))))
+        (base32 "01lmj4diqpla1gwwb1gh1shf4y74qhanpkzcsnb28458rxm1sq32"))))
     (build-system gnu-build-system)
     (arguments
      `(#:strip-binaries? #f             ; strip breaks the binary
