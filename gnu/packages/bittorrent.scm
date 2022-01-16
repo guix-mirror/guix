@@ -45,6 +45,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages adns)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
@@ -533,23 +534,24 @@ features.")
         (base32
          "1n15dzfnz1gvb4cf046yhi404i3gs933qgz0ichna6r1znmh9gf4"))))
     (build-system python-build-system)
+    (inputs (list bash-minimal))
     (propagated-inputs
-     `(("gtk+" ,gtk+)
-       ("libtorrent" ,libtorrent-rasterbar)
-       ("python-pycairo" ,python-pycairo)
-       ("python-chardet" ,python-chardet)
-       ("python-dbus" ,python-dbus)
-       ("python-mako" ,python-mako)
-       ("python-pygobject" ,python-pygobject)
-       ("python-pillow" ,python-pillow)
-       ("python-pyopenssl" ,python-pyopenssl)
-       ("python-pyxdg" ,python-pyxdg)
-       ("python-rencode" ,python-rencode)
-       ("python-service-identity" ,python-service-identity)
-       ("python-setproctitle" ,python-setproctitle)
-       ("python-six" ,python-six)
-       ("python-twisted" ,python-twisted)
-       ("python-zope-interface" ,python-zope-interface)))
+     (list gtk+
+           libtorrent-rasterbar
+           python-pycairo
+           python-chardet
+           python-dbus
+           python-mako
+           python-pygobject
+           python-pillow
+           python-pyopenssl
+           python-pyxdg
+           python-rencode
+           python-service-identity
+           python-setproctitle
+           python-six
+           python-twisted
+           python-zope-interface))
     (native-inputs
      (list intltool python-wheel
            (if (string-prefix? "x86_64-" (%current-system))
