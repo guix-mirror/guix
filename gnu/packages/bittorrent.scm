@@ -14,6 +14,7 @@
 ;;; Copyright © 2021 Justin Veilleux <terramorpha@cock.li>
 ;;; Copyright © 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2021 Josselin Poiret <josselin.poiret@protonmail.ch>
+;;; Copyright © 2022 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -521,7 +522,7 @@ features.")
 (define-public deluge
   (package
     (name "deluge")
-    (version "2.0.3")
+    (version "2.0.5")
     (source
      (origin
        (method url-fetch)
@@ -530,7 +531,7 @@ features.")
              (version-major+minor version) "/deluge-" version ".tar.xz"))
        (sha256
         (base32
-         "14d8kn2pvr1qv8mwqrxmj85jycr73vwfqz12hzag0ararbkfhyky"))))
+         "1n15dzfnz1gvb4cf046yhi404i3gs933qgz0ichna6r1znmh9gf4"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("gtk+" ,gtk+)
@@ -562,13 +563,6 @@ features.")
      `(#:tests? #f
        #:phases
        (modify-phases %standard-phases
-         ;; Remove this phase when upgrading to version 2.0.4 or beyond, as
-         ;; the issue is fixed upstream.
-         (add-after 'unpack 'fix-gettext-warning
-           (lambda _
-             (substitute* "deluge/i18n/util.py"
-               (("names='ngettext'") "names=['ngettext']"))
-             #t))
          (add-after 'install 'wrap
            (lambda* (#:key native-inputs inputs outputs #:allow-other-keys)
              (let ((out               (assoc-ref outputs "out"))
