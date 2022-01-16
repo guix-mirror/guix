@@ -124,7 +124,7 @@ engine that uses Wayland for graphics output.")
 (define-public wpewebkit
   (package
     (name "wpewebkit")
-    (version "2.30.5")
+    (version "2.34.3")
     (source
      (origin
        (method url-fetch)
@@ -132,7 +132,7 @@ engine that uses Wayland for graphics output.")
         (string-append "https://wpewebkit.org/releases/"
                        name "-" version ".tar.xz"))
        (sha256
-        (base32 "16imr0kmzhs7dz6jva9750xbsdz9v50playnagabajy30x7pymsb"))))
+        (base32 "1z20bza01ld4jvi0qx8xsl5y4czaniwpi8hxdjyirj1mrszy8pf3"))))
     (build-system cmake-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -162,6 +162,15 @@ engine that uses Wayland for graphics output.")
                                   "/xml/dtd/docbook/docbookx.dtd"))))
               (find-files "Source" "\\.sgml$"))
              #t))
+         (add-after 'unpack 'patch-cmake
+           (lambda _
+             (substitute* "Source/PlatformWPE.cmake"
+               (("(Documentation/wpe(-webextensions)?-)\\$\\{WPE_API_VERSION\\}"
+                 all prefix)
+                (string-append prefix "${WPE_API_DOC_VERSION}"))
+               (("(html/wpe(-webextensions)?-)\\$\\{WPE_API_VERSION\\}"
+                 all prefix)
+                (string-append prefix "${WPE_API_DOC_VERSION}")))))
          (add-after 'install 'move-doc-files
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -194,6 +203,7 @@ engine that uses Wayland for graphics output.")
        ("gst-plugins-base" ,gst-plugins-base)
        ("harfbuzz" ,harfbuzz)
        ("icu" ,icu4c)
+       ("lcms" ,lcms)
        ("libepoxy" ,libepoxy)
        ("libgcrypt" ,libgcrypt)
        ("libjpeg" ,libjpeg-turbo)
