@@ -7,7 +7,7 @@
 ;;; Copyright © 2016, 2017 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2017, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017, 2019–2021 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2019–2022 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018, 2019, 2020 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -1168,15 +1168,15 @@ including a built-in database engine and a GUI system.")
         (base32 "0waj22rzxmc0yx1yr0pzw9lwp6my5abfpfi6vq932bmli8y9prpd"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags
-       (list
-         (string-append "DESTDIR=" (assoc-ref %outputs "out"))
-         (string-append "PREFIX=")
-         (string-append "CC=" ,(cc-for-target)))
-       #:test-target "test"
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure))))
+     (list #:make-flags
+           #~(list
+              (string-append "DESTDIR=" #$output)
+              (string-append "PREFIX=")
+              (string-append "CC=" #$(cc-for-target)))
+           #:test-target "test"
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure))))
     (home-page "https://janet-lang.org/")
     (synopsis "Functional, imperative and embeddable programming language")
     (description
