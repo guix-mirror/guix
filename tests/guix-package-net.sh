@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014, 2015, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012-2015, 2017, 2019, 2022 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 # Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
 #
@@ -50,7 +50,10 @@ profile="t-profile-$$"
 profile_alt="t-profile-alt-$$"
 rm -f "$profile"
 
-trap 'rm -f "$profile" "$profile_alt" "$profile-"[0-9]* "$profile_alt-"[0-9]* ; rm -rf t-home-'"$$" EXIT
+module_dir="t-guix-package-net-$$"
+mkdir "$module_dir"
+
+trap 'rm -f "$profile" "$profile_alt" "$profile.lock" "$profile_alt.lock" "$profile-"[0-9]* "$profile_alt-"[0-9]* ; rm -r "$module_dir" t-home-'"$$" EXIT
 
 
 guix package --bootstrap -p "$profile" -i guile-bootstrap
@@ -177,10 +180,6 @@ guix package -p "$profile" -p "$profile_alt" --search-paths \
      | grep "LIBRARY_PATH.*$profile/lib.$profile_alt/lib"
 
 # Simulate an upgrade and make sure the package order is preserved.
-module_dir="t-guix-package-net-$$"
-trap 'rm -rf "$module_dir"' EXIT
-
-mkdir "$module_dir"
 cat > "$module_dir/new.scm" <<EOF
 (define-module (new)
   #:use-module (guix)
