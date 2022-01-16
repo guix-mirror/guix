@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2015, 2016, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2015-2016, 2019-2020, 2022 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2019 Simon Tournier <zimon.toutoune@gmail.com>
 #
 # This file is part of GNU Guix.
@@ -23,11 +23,10 @@
 
 module_dir="t-guix-graph-$$"
 mkdir "$module_dir"
-trap "rm -rf $module_dir" EXIT
 
 tmpfile1="$module_dir/t-guix-graph1-$$"
 tmpfile2="$module_dir/t-guix-graph2-$$"
-trap 'rm -f "$tmpfile1" "$tmpfile2"' EXIT
+trap 'rm -r "$module_dir"' EXIT
 
 
 cat > "$module_dir/foo.scm"<<EOF
