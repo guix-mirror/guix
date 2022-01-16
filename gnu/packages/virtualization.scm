@@ -1135,7 +1135,7 @@ It started as a side project of LXC but can be used by any run-time.")
 (define-public lxd
   (package
     (name "lxd")
-    (version "4.17")
+    (version "4.22")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1143,7 +1143,7 @@ It started as a side project of LXC but can be used by any run-time.")
                     "lxd-" version "/lxd-" version ".tar.gz"))
               (sha256
                (base32
-                "1kzmgyg5kw3zw9qa6jabld6rmb53b6yy69h7y9znsdlf74jllljl"))))
+                "119345936fcm1vv06k82k9hvj5yjf9jdrwqm9ccphhl5mswf8xq9"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/lxc/lxd"
@@ -1157,22 +1157,17 @@ It started as a side project of LXC but can be used by any run-time.")
          (add-after 'unpack 'unpack-dist
            (lambda* (#:key import-path #:allow-other-keys)
              (with-directory-excursion (string-append "src/" import-path)
-               ;; remove the link back to the top level
-               (delete-file (string-append "_dist/src/" import-path))
-               ;; move all the deps into the src directory
-               (copy-recursively "_dist/src" "../../.."))
-             #t))
+               ;; Move all the dependencies into the src directory.
+               (copy-recursively "_dist/src" "../../.."))))
          (replace 'build
            (lambda* (#:key import-path #:allow-other-keys)
              (with-directory-excursion (string-append "src/" import-path)
-               (invoke "make" "build" "CC=gcc" "TAG_SQLITE3=libsqlite3")
-               #t)))
+               (invoke "make" "build" "CC=gcc" "TAG_SQLITE3=libsqlite3"))))
          (replace 'check
            (lambda* (#:key tests? import-path #:allow-other-keys)
              (when tests?
                (with-directory-excursion (string-append "src/" import-path)
-                 (invoke "make" "check" "CC=gcc" "TAG_SQLITE3=libsqlite3")))
-             #t))
+                 (invoke "make" "check" "CC=gcc" "TAG_SQLITE3=libsqlite3")))))
          (replace 'install
            (lambda* (#:key inputs outputs import-path #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1183,7 +1178,7 @@ It started as a side project of LXC but can be used by any run-time.")
                     (completions-dir
                      (string-append out "/share/bash-completion/completions")))
                (with-directory-excursion (string-append "src/" import-path)
-                 ;; wrap lxd with runtime dependencies
+                 ;; Wrap lxd with run-time dependencies.
                  (wrap-program (string-append bin-dir "lxd")
                    `("PATH" ":" prefix
                      ,(fold (lambda (input paths)
@@ -1196,20 +1191,19 @@ It started as a side project of LXC but can be used by any run-time.")
                             '("bash" "acl" "rsync" "tar" "xz" "btrfs-progs"
                               "gzip" "dnsmasq" "squashfs-tools" "iproute2"
                               "criu" "iptables"))))
-                 ;; remove unwanted binaries
+                 ;; Remove unwanted binaries.
                  (for-each (lambda (prog)
                              (delete-file (string-append bin-dir prog)))
                            '("deps" "macaroon-identity" "generate"))
-                 ;; install documentation
+                 ;; Install documentation.
                  (for-each (lambda (file)
                              (install-file file doc-dir))
                            (find-files "doc"))
-                 ;; install bash completion
+                 ;; Install bash completion.
                  (rename-file "scripts/bash/lxd-client" "scripts/bash/lxd")
-                 (install-file "scripts/bash/lxd" completions-dir)))
-             #t)))))
+                 (install-file "scripts/bash/lxd" completions-dir))))))))
     (native-inputs
-     (list ;; test dependencies:
+     (list ;; Test dependencies:
            ;; ("go-github-com-rogpeppe-godeps" ,go-github-com-rogpeppe-godeps)
            ;; ("go-github-com-tsenart-deadcode" ,go-github-com-tsenart-deadcode)
            ;; ("go-golang-org-x-lint" ,go-golang-org-x-lint)
@@ -1221,7 +1215,7 @@ It started as a side project of LXC but can be used by any run-time.")
        ("libraft" ,libraft)
        ("libcap" ,libcap)
        ("lxc" ,lxc)
-       ;; runtime dependencies:
+       ;; Run-time dependencies.
        ("bash" ,bash-minimal)
        ("rsync" ,rsync)
        ("tar" ,tar)
