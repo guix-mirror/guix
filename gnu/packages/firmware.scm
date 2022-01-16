@@ -578,18 +578,14 @@ Virtual Machines.  OVMF contains a sample UEFI firmware for QEMU and KVM.")
     (native-inputs
      `(,@(if (and (not (string-prefix? "aarch64" (%current-system)))
                   (string-prefix? "aarch64" arch))
-           ;; Needs newer gcc version for some targets
-           `(("cross-gcc" ,(cross-gcc "aarch64-linux-gnu" #:xgcc gcc-9))
+           `(("cross-gcc" ,(cross-gcc "aarch64-linux-gnu"))
              ("cross-binutils" ,(cross-binutils "aarch64-linux-gnu")))
            '())
        ,@(if (and (not (string-prefix? "armhf" (%current-system)))
                   (string-prefix? "armhf" arch))
-           ;; Needs newer gcc version for some targets
-           `(("cross-gcc" ,(cross-gcc "arm-linux-gnueabihf" #:xgcc gcc-9))
+           `(("cross-gcc" ,(cross-gcc "arm-linux-gnueabihf"))
              ("cross-binutils" ,(cross-binutils "arm-linux-gnueabihf")))
-           '())
-       ;; Needs newer gcc version for some targets
-       ("gcc" ,gcc-9)))
+           '())))
     (home-page "https://www.trustedfirmware.org/")
     (synopsis "Implementation of \"secure world software\"")
     (description
