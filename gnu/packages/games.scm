@@ -1363,6 +1363,7 @@ effects and music to make a completely free game.")
      `(#:configure-flags
        (list
         (string-append "CFLAGS="
+                       "-fcommon "      ; XXX needed to build with GCC 10
                        "-I" (assoc-ref %build-inputs "sdl-gfx") "/include/SDL "
                        "-I" (assoc-ref %build-inputs "sdl-image") "/include/SDL "
                        "-I" (assoc-ref %build-inputs "sdl-mixer") "/include/SDL")
