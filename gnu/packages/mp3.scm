@@ -585,15 +585,14 @@ command-line tool.")
 (define-public chromaprint
   (package
     (name "chromaprint")
-    (version "1.5.0")
+    (version "1.5.1")
     (source (origin
       (method url-fetch)
       (uri (string-append
             "https://github.com/acoustid/chromaprint/releases/download/v"
             version "/chromaprint-" version ".tar.gz"))
       (sha256
-       (base32
-        "0sknmyl5254rc55bvkhfwpl4dfvz45xglk1rq8zq5crmwq058fjp"))))
+       (base32 "072y6c7ijkm6r674f6z089rbdazrmxzpdcsm6y6vf64b7gxdiam1"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; tests require googletest *sources*
