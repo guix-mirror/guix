@@ -2829,14 +2829,14 @@ can be whipped up with little effort.")
 (define-public mtr
   (package
     (name "mtr")
-    (version "0.94")
+    (version "0.95")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "ftp://ftp.bitwizard.nl/mtr/"
                            "mtr-" version ".tar.gz"))
        (sha256
-        (base32 "1glxvlqskcmjkxlqk9i12hcfaxb389cx2n8ji7776gmix3aq4z1z"))))
+        (base32 "0haanralbvd12pvkyihgkmx9ld74dnzm1s7mzparfandl416ibff"))))
     (build-system gnu-build-system)
     (inputs
      (list libcap ncurses))
