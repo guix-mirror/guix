@@ -11493,16 +11493,15 @@ library which detects when a file or a directory has been modified.")
 (define-public gnome-mahjongg
   (package
     (name "gnome-mahjongg")
-    (version "3.35.1")
+    (version "3.38.3")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://gitlab.gnome.org/GNOME/gnome-mahjongg.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/" name "-"
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "019a66a4m5w4kkb0sm6gxj0wi54n06zdxdlmyqw7h8kbakjizv7l"))))
+                "144ia3zn9rhwa1xbdkvsz6m0dsysl6mxvqw9bnrlh845hmyy9cfj"))))
     (build-system meson-build-system)
     (arguments
      `(#:meson ,meson-0.59
