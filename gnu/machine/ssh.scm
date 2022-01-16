@@ -93,6 +93,8 @@
                   (default #t))
   (allow-downgrades? machine-ssh-configuration-allow-downgrades? ; boolean
                      (default #f))
+  (safety-checks?    machine-ssh-configuration-safety-checks? ;boolean
+                     (default #t))
   (port           machine-ssh-configuration-port           ; integer
                   (default 22))
   (user           machine-ssh-configuration-user           ; string
@@ -240,18 +242,21 @@ exist on the machine."
         (raise (formatted-message (G_ "no file system with UUID '~a'")
                                   (uuid->string (file-system-device fs)))))))
 
-  (append (map check-literal-file-system
-               (filter (lambda (fs)
-                         (string? (file-system-device fs)))
-                       file-systems))
-          (map check-labeled-file-system
-               (filter (lambda (fs)
-                         (file-system-label? (file-system-device fs)))
-                       file-systems))
-          (map check-uuid-file-system
-               (filter (lambda (fs)
-                         (uuid? (file-system-device fs)))
-                       file-systems))))
+  (if (machine-ssh-configuration-safety-checks?
+       (machine-configuration machine))
+      (append (map check-literal-file-system
+                   (filter (lambda (fs)
+                             (string? (file-system-device fs)))
+                           file-systems))
+              (map check-labeled-file-system
+                   (filter (lambda (fs)
+                             (file-system-label? (file-system-device fs)))
+                           file-systems))
+              (map check-uuid-file-system
+                   (filter (lambda (fs)
+                             (uuid? (file-system-device fs)))
+                           file-systems)))
+      '()))
 
 (define (machine-check-initrd-modules machine)
   "Return a list of <remote-assertion> that raise a '&message' error condition
@@ -291,7 +296,10 @@ not available in the initrd."
                                   (file-system-device fs)
                                   missing)))))
 
-  (map missing-modules file-systems))
+  (if (machine-ssh-configuration-safety-checks?
+       (machine-configuration machine))
+      (map missing-modules file-systems)
+      '()))
 
 (define* (machine-check-forward-update machine)
   "Check whether we are making a forward update for MACHINE.  Depending on its

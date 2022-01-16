@@ -35682,6 +35682,16 @@ returned by @command{guix describe}) to determine whether commits
 currently in use are descendants of those deployed.  When this is not
 the case and @code{allow-downgrades?} is false, it raises an error.
 This ensures you do not accidentally downgrade remote machines.
+
+@item @code{safety-checks?} (default: @code{#t})
+Whether to perform ``safety checks'' before deployment.  This includes
+verifying that devices and file systems referred to in the operating
+system configuration actually exist on the target machine, and making
+sure that Linux modules required to access storage devices at boot time
+are listed in the @code{initrd-modules} field of the operating system.
+
+These safety checks ensure that you do not inadvertently deploy a system
+that would fail to boot.  Be careful before turning them off!
 @end table
 @end deftp
 
