@@ -4,7 +4,7 @@
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -74,7 +74,7 @@
 (define-public wine
   (package
     (name "wine")
-    (version "6.20")
+    (version "7.0")
     (source
      (origin
        (method url-fetch)
@@ -86,7 +86,7 @@
               (string-append "https://dl.winehq.org/wine/source/" dir
                              "wine-" version ".tar.xz")))
        (sha256
-        (base32 "0wc4a8slb3k859sdw9wwy92zc4pq7xw1kbq4frnxbzbvkiz26a20"))))
+        (base32 "0sq8vsr8jf1a8fanh76rq7vyxm8h0cc4ckirjy7v2p08biyy4hsv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -95,28 +95,25 @@
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
     (inputs
+     ;; Some libraries like libjpeg are now compiled into native PE objects.
+     ;; The ELF objects provided by Guix packages are of no use.  Whilst this
+     ;; is technically bundling, it's quite defensible.  It might be possible
+     ;; to build some of these from Guix PACKAGE-SOURCE but attempts were not
+     ;; fruitful so far.  See <https://www.winehq.org/announce/7.0>.
      `(("alsa-lib" ,alsa-lib)
        ("dbus" ,dbus)
        ("cups" ,cups)
        ("eudev" ,eudev)
-       ("faudio" ,faudio)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("gnutls" ,gnutls)
        ("gst-plugins-base" ,gst-plugins-base)
-       ("lcms" ,lcms)
-       ("libxml2" ,libxml2)
-       ("libxslt" ,libxslt)
        ("libgphoto2" ,libgphoto2)
-       ("libmpg123" ,mpg123)
        ("libldap" ,openldap)
        ("libnetapi" ,samba)
        ("libsane" ,sane-backends)
        ("libpcap" ,libpcap)
-       ("libpng" ,libpng)
-       ("libjpeg" ,libjpeg-turbo)
        ("libusb" ,libusb)
-       ("libtiff" ,libtiff)
        ("libICE" ,libice)
        ("libX11" ,libx11)
        ("libXi" ,libxi)
@@ -179,10 +176,15 @@
                         `("VK_ICD_FILENAMES" ":" =
                           (,(string-append icd
                                            "/radeon_icd.i686.json" ":"
-                                           icd "/intel_icd.i686.json"))))
-                      #t)))))
+                                           icd "/intel_icd.i686.json")))))))))
              (_
               `()))
+         (add-after 'unpack 'patch-SHELL
+           (lambda _
+             (substitute* "configure"
+               ;; configure first respects CONFIG_SHELL, clobbers SHELL later.
+               (("/bin/sh")
+                (which "bash")))))
          (add-after 'configure 'patch-dlopen-paths
            ;; Hardcode dlopened sonames to absolute paths.
            (lambda _
@@ -192,8 +194,7 @@
                                (search-path library-path soname))))
                (substitute* "include/config.h"
                  (("(#define SONAME_.* )\"(.*)\"" _ defso soname)
-                  (format #f "~a\"~a\"" defso (find-so soname))))
-               #t)))
+                  (format #f "~a\"~a\"" defso (find-so soname)))))))
          (add-after 'patch-generated-file-shebangs 'patch-makedep
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "tools/makedep.c"
@@ -259,6 +260,12 @@ integrate Windows applications into your desktop.")
                       #t)))))
              (_
               `()))
+         (add-after 'unpack 'patch-SHELL
+           (lambda _
+             (substitute* "configure"
+               ;; configure first respects CONFIG_SHELL, clobbers SHELL later.
+               (("/bin/sh")
+                (which "bash")))))
          (add-after 'patch-generated-file-shebangs 'patch-makedep
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "tools/makedep.c"
@@ -275,23 +282,20 @@ integrate Windows applications into your desktop.")
                ;; Copy the real 32-bit wine-preloader instead of the wrapped
                ;; version.
                (copy-file (string-append wine32 "/bin/.wine-preloader-real")
-                          (string-append out "/bin/wine-preloader"))
-               #t)))
+                          (string-append out "/bin/wine-preloader")))))
          (add-after 'install 'copy-wine32-libraries
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((wine32 (assoc-ref %build-inputs "wine"))
                     (out (assoc-ref %outputs "out")))
                (copy-recursively (string-append wine32 "/lib/wine32")
-                                 (string-append out "/lib/wine32"))
-               #t)))
+                                 (string-append out "/lib/wine32")))))
          (add-after 'compress-documentation 'copy-wine32-manpage
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((wine32 (assoc-ref %build-inputs "wine"))
                     (out (assoc-ref %outputs "out")))
                ;; Copy the missing man file for the wine binary from wine.
                (copy-file (string-append wine32 "/share/man/man1/wine.1.gz")
-                          (string-append out "/share/man/man1/wine.1.gz"))
-               #t)))
+                          (string-append out "/share/man/man1/wine.1.gz")))))
          (add-after 'configure 'patch-dlopen-paths
            ;; Hardcode dlopened sonames to absolute paths.
            (lambda _
@@ -301,8 +305,7 @@ integrate Windows applications into your desktop.")
                                (search-path library-path soname))))
                (substitute* "include/config.h"
                  (("(#define SONAME_.* )\"(.*)\"" _ defso soname)
-                  (format #f "~a\"~a\"" defso (find-so soname))))
-               #t))))
+                  (format #f "~a\"~a\"" defso (find-so soname))))))))
        #:configure-flags
        (list "--enable-win64"
              (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib/wine64"))
@@ -325,6 +328,12 @@ integrate Windows applications into your desktop.")
      `(#:validate-runpath? #f
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-SHELL
+           (lambda _
+             (substitute* "configure"
+               ;; configure first respects CONFIG_SHELL, clobbers SHELL later.
+               (("/bin/sh")
+                (which "bash")))))
          (add-after 'configure 'patch-dlopen-paths
            ;; Hardcode dlopened sonames to absolute paths.
            (lambda _
@@ -334,8 +343,7 @@ integrate Windows applications into your desktop.")
                                (search-path library-path soname))))
                (substitute* "include/config.h"
                  (("(#define SONAME_.* )\"(.*)\"" _ defso soname)
-                  (format #f "~a\"~a\"" defso (find-so soname))))
-               #t))))
+                  (format #f "~a\"~a\"" defso (find-so soname))))))))
        #:configure-flags
        (list "--without-freetype"
              "--without-x")
