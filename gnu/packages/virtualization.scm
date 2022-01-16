@@ -132,6 +132,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix gexp)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -1080,24 +1081,23 @@ all common programming languages.  Vala bindings are also provided.")
     (inputs
      (list gnutls libcap libseccomp libselinux))
     (arguments
-     `(#:configure-flags
-       (list (string-append "--docdir=" (assoc-ref %outputs "out")
-                            "/share/doc/" ,name "-" ,version)
-             "--sysconfdir=/etc"
-             "--localstatedir=/var")
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out         (assoc-ref outputs "out"))
-                    (bashcompdir (string-append out "/etc/bash_completion.d")))
-               (invoke "make" "install"
-                       (string-append "bashcompdir=" bashcompdir)
-                       ;; Don't install files into /var and /etc.
-                       "LXCPATH=/tmp/var/lib/lxc"
-                       "localstatedir=/tmp/var"
-                       "sysconfdir=/tmp/etc"
-                       "sysconfigdir=/tmp/etc/default")))))))
+     (list #:configure-flags
+           #~(list (string-append "--docdir=" #$output "/share/doc/"
+                                  #$name "-" #$version)
+                   "--sysconfdir=/etc"
+                   "--localstatedir=/var")
+           #:phases
+           #~(modify-phases %standard-phases
+               (replace 'install
+                 (lambda _
+                   (invoke "make" "install"
+                           (string-append "bashcompdir=" #$output
+                                          "/etc/bash_completion.d")
+                           ;; Don't install files into /var and /etc.
+                           "LXCPATH=/tmp/var/lib/lxc"
+                           "localstatedir=/tmp/var"
+                           "sysconfdir=/tmp/etc"
+                           "sysconfigdir=/tmp/etc/default"))))))
     (synopsis "Linux container tools")
     (home-page "https://linuxcontainers.org/")
     (description
