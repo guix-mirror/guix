@@ -9142,7 +9142,8 @@ if (extension_path)
            `(,glib "bin")         ; for glib-mkenums, etc.
            gobject-introspection
            intltool
-           pkg-config))
+           pkg-config
+           python))
     (inputs
      (list dconf
            gexiv2
