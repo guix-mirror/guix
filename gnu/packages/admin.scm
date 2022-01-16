@@ -2013,17 +2013,14 @@ command.")
 (define-public hostapd
   (package
     (name "hostapd")
-    (version "2.9")
+    (version "2.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://w1.fi/releases/hostapd-" version
                                   ".tar.gz"))
               (sha256
                (base32
-                "1mrbvg4v7vm7mknf0n29mf88k3s4a4qj6r4d51wq8hmjj1m7s7c8"))
-              (patches
-               (search-patches "wpa-supplicant-CVE-2021-27803.patch"
-                               "wpa-supplicant-CVE-2021-30004.patch"))))
+                "0pcik0a6yin9nib02frjhaglmg44hwik086iwg1751b7kdwpqvi0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -2039,16 +2036,14 @@ command.")
       CONFIG_IEEE80211R=y
       CONFIG_IEEE80211N=y
       CONFIG_IEEE80211AC=y\n" port)
-               (close-port port))
-             #t))
+               (close-port port))))
          (add-after 'unpack 'patch-pkg-config
            (lambda _
              (substitute* "src/drivers/drivers.mak"
                (("pkg-config")
                 (or (which "pkg-config")
                     (string-append ,(%current-target-system)
-                                   "-pkg-config"))))
-             #t))
+                                   "-pkg-config"))))))
          (add-after 'install 'install-man-pages
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
@@ -2062,8 +2057,7 @@ command.")
                (for-each (copy-man-page man1)
                          (find-files "." "\\.1"))
                (for-each (copy-man-page man8)
-                         (find-files "." "\\.8"))
-               #t))))
+                         (find-files "." "\\.8"))))))
 
       #:make-flags (list (string-append "CC=" ,(cc-for-target))
                          (string-append "BINDIR=" (assoc-ref %outputs "out")
