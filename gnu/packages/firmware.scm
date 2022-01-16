@@ -6,7 +6,7 @@
 ;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2020, 2021 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2020, 2021, 2022 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -28,6 +28,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
@@ -621,3 +622,13 @@ such as:
        `(("cross32-gcc" ,(cross-gcc "arm-none-eabi"))
          ("cross32-binutils", (cross-binutils "arm-none-eabi"))
          ,@(package-native-inputs base))))))
+
+(define-public arm-trusted-firmware-imx8mq
+  (let ((base (make-arm-trusted-firmware "imx8mq")))
+    (package
+      (inherit base)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:make-flags flags ''())
+          ;; Adding debug symbols causes the size to exceed limits.
+          #~(delete "DEBUG=1" #$flags)))))))
