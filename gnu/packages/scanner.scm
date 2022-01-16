@@ -265,7 +265,8 @@ package contains the library and drivers.")))
     (arguments
      (list #:configure-flags
            #~(list "--disable-debug"
-                   "--sysconfdir=/etc")
+                   "--sysconfdir=/etc"
+                   "CFLAGS=-Wno-error") ; warnings should never be fatal
            #:phases
            #~(modify-phases %standard-phases
                (replace 'install
