@@ -2658,7 +2658,10 @@ speedtest.net.")
                (base32
                 "12vidchglhyc20znq5wdsbhi9mqg90jnl7qr9qs8hbvaz4fkdvmg"))))
     (build-system gnu-build-system)
-    (arguments `(#:tests? #f)) ; no test target
+    (arguments
+     (list #:tests? #f                  ; no test target
+           #:configure-flags
+           #~(list "CFLAGS=-fcommon")))   ; XXX fix 5.2 build with GCC 10
     (synopsis "HPA's tftp client")
     (description
      "This is a tftp client derived from OpenBSD tftp with some extra options
