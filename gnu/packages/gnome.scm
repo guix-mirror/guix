@@ -11518,7 +11518,7 @@ library which detects when a file or a directory has been modified.")
     (propagated-inputs
      (list dconf))
     (inputs
-     (list glib gtk+ librsvg))
+     (list glib gtk+))
     (synopsis "Mahjongg tile-matching game")
     (description "GNOME Mahjongg is a game based on the classic Chinese
 tile-matching game Mahjong.  It features multiple board layouts, tile themes,
