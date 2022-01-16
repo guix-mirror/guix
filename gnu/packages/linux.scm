@@ -356,6 +356,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 ;; The current "stable" kernels. That is, the most recently released major
 ;; versions that are still supported upstream.
+
+;; Currently, no stable kernels are packaged.
+
+;; The "longterm" kernels — the older releases with long-term upstream support.
+;; Here are the support timelines:
+;; <https://www.kernel.org/category/releases.html>
 (define-public linux-libre-5.15-version "5.15.15")
 (define-public linux-libre-5.15-gnu-revision "gnu")
 (define deblob-scripts-5.15
@@ -371,9 +377,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.15)))
 
-;; The "longterm" kernels — the older releases with long-term upstream support.
-;; Here are the support timelines:
-;; <https://www.kernel.org/category/releases.html>
 (define-public linux-libre-5.10-version "5.10.92")
 (define-public linux-libre-5.10-gnu-revision "gnu1")
 (define deblob-scripts-5.10
@@ -977,11 +980,11 @@ It has been modified to remove all non-free binary blobs.")
 ;; Linux-Libre.
 ;; Reference: https://jxself.org/linux-libre/
 
-(define-public linux-libre-lts-version         linux-libre-5.10-version)
-(define-public linux-libre-lts-gnu-revision    linux-libre-5.10-gnu-revision)
-(define-public linux-libre-lts-pristine-source linux-libre-5.10-pristine-source)
-(define-public linux-libre-lts-source          linux-libre-5.10-source)
-(define-public linux-libre-lts                 linux-libre-5.10)
+(define-public linux-libre-lts-version         linux-libre-5.15-version)
+(define-public linux-libre-lts-gnu-revision    linux-libre-5.15-gnu-revision)
+(define-public linux-libre-lts-pristine-source linux-libre-5.15-pristine-source)
+(define-public linux-libre-lts-source          linux-libre-5.15-source)
+(define-public linux-libre-lts                 linux-libre-5.15)
 
 
 ;;;
