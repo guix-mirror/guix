@@ -119,6 +119,7 @@ the entire document.")
   (package
     (name "expat")
     (version "2.4.1")
+    (replacement expat/fixed)
     (source (let ((dot->underscore (lambda (c) (if (char=? #\. c) #\_ c))))
               (origin
                 (method url-fetch)
@@ -153,6 +154,23 @@ the entire document.")
 stream-oriented parser in which an application registers handlers for
 things the parser might find in the XML document (like start tags).")
     (license license:expat)))
+
+(define expat/fixed
+  (package
+    (inherit expat)
+    (version "2.4.3")
+    (source (let ((dot->underscore (lambda (c) (if (char=? #\. c) #\_ c))))
+              (origin
+                (method url-fetch)
+                (uri (list (string-append "mirror://sourceforge/expat/expat/"
+                                          version "/expat-" version ".tar.xz")
+                           (string-append
+                            "https://github.com/libexpat/libexpat/releases/download/R_"
+                            (string-map dot->underscore version)
+                            "/expat-" version ".tar.xz")))
+                (sha256
+                 (base32
+                  "12kp4h40cpyqqpjqaldag0xq4ig1ljzpkzy9i2marc7blnqz3ydi")))))))
 
 (define-public libebml
   (package
