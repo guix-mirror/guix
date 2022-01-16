@@ -263,29 +263,28 @@ package contains the library and drivers.")))
         (base32 "0pvy4qirfjdfm8aj6x5rkbgl7hk3jfa2s21qkk8ic5dqfjjab75n"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags
-       (list "--disable-debug"
-             "--sysconfdir=/etc")
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'install
-           (lambda* (#:key make-flags outputs #:allow-other-keys)
-             (let* ((out  (assoc-ref outputs "out"))
-                    (conf (string-append out "/etc/scanbd")))
-               (apply invoke "make" "install"
-                      ;; Install example configuration to the store, not /etc.
-                      ;; These don't inherit from each other, so we need both.
-                      (string-append "scanbdconfdir="  conf)
-                      (string-append "scannerconfdir=" conf "/scanner.d")
-                      make-flags))))
-         (add-after 'install 'install-extra-documentation
-           ;; The README provides more detailed set-up instructions than the
-           ;; man page.
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (doc (string-append out "/share/doc/"
-                                        ,name "-" ,version)))
-               (install-file "doc/README.txt" doc)))))))
+     (list #:configure-flags
+           #~(list "--disable-debug"
+                   "--sysconfdir=/etc")
+           #:phases
+           #~(modify-phases %standard-phases
+               (replace 'install
+                 (lambda* (#:key make-flags #:allow-other-keys)
+                   (let ((conf (string-append #$output "/etc/scanbd")))
+                     (apply invoke "make" "install"
+                            ;; Install example configuration to the store, not
+                            ;; /etc.  These don't inherit from each other, so
+                            ;; we need both.
+                            (string-append "scanbdconfdir="  conf)
+                            (string-append "scannerconfdir=" conf "/scanner.d")
+                            make-flags))))
+               (add-after 'install 'install-extra-documentation
+                 ;; The README provides more detailed set-up instructions than
+                 ;; the man page.
+                 (lambda _
+                   (let ((doc (string-append #$output "/share/doc/"
+                                             #$name "-" #$version)))
+                     (install-file "doc/README.txt" doc)))))))
     (native-inputs
      (list pkg-config))
     (inputs
