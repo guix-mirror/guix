@@ -30,6 +30,7 @@
   #:use-module (guix utils)
   #:use-module (guix build utils)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
@@ -70,7 +71,7 @@
 (define-public libwpe
   (package
     (name "libwpe")
-    (version "1.6.0")
+    (version "1.12.0")
     (source
      (origin
        (method url-fetch)
@@ -78,8 +79,8 @@
         (string-append "https://wpewebkit.org/releases/libwpe-"
                        version ".tar.xz"))
        (sha256
-        (base32 "141w35b488jjhanl3nrm0awrbcy6hb579fk8n9vbpx07m2wcd1rm"))))
-    (build-system cmake-build-system)
+        (base32 "13618imck69w7fbmljlh62j4gnlspb9zfqzv9hlkck3bi8icmvp8"))))
+    (build-system meson-build-system)
     (arguments
      `(#:tests? #f))                    ;no tests
     (native-inputs
