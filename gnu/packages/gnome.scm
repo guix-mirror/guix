@@ -11505,7 +11505,8 @@ library which detects when a file or a directory has been modified.")
                 "019a66a4m5w4kkb0sm6gxj0wi54n06zdxdlmyqw7h8kbakjizv7l"))))
     (build-system meson-build-system)
     (arguments
-     `(#:glib-or-gtk? #t))
+     `(#:meson ,meson-0.59
+       #:glib-or-gtk? #t))
     (native-inputs
      `(("appstream-glib" ,appstream-glib)
        ("gettext" ,gettext-minimal)
