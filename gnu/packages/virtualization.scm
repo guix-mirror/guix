@@ -1065,7 +1065,7 @@ all common programming languages.  Vala bindings are also provided.")
 (define-public lxc
   (package
     (name "lxc")
-    (version "4.0.10")
+    (version "4.0.11")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1073,7 +1073,7 @@ all common programming languages.  Vala bindings are also provided.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1sgsic9dzj3wv2k5bx2vhcgappivhp1glkqfc2yrgr6jas052351"))))
+                "0b7hv4n8b3lndhr0jf9j1gkbzxm8897a1myjsfgwzad9gkhq395g"))))
     (build-system gnu-build-system)
     (native-inputs
      (list pkg-config docbook2x))
