@@ -838,26 +838,25 @@ Shell (pdksh).")
         (base32 "01lmj4diqpla1gwwb1gh1shf4y74qhanpkzcsnb28458rxm1sq32"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:strip-binaries? #f             ; strip breaks the binary
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (setenv "CC" ,(cc-for-target))
-               (substitute* "configure"
-                 ((" cc ") " $CC "))
-               (invoke "./configure" (string-append "--prefix=" out)
-                       "--with-readline"))))
-         (replace 'check
-           ;; The tests are not distributed in the tarballs but upstream
-           ;; recommends running this smoke test.
-           ;; https://github.com/oilshell/oil/blob/release/0.8.0/INSTALL.txt#L38-L48
-           (lambda* (#:key tests? #:allow-other-keys)
-             (when tests?
-               (let* ((oil "_bin/oil.ovm"))
-                 (invoke/quiet oil "osh" "-c" "echo hi")
-                 (invoke/quiet oil "osh" "-n" "configure"))))))))
+     (list #:strip-binaries? #f         ; strip breaks the binary
+           #:phases
+           #~(modify-phases %standard-phases
+               (replace 'configure
+                 (lambda _
+                   (setenv "CC" #$(cc-for-target))
+                   (substitute* "configure"
+                     ((" cc ") " $CC "))
+                   (invoke "./configure" (string-append "--prefix=" #$output)
+                           "--with-readline")))
+               (replace 'check
+                 ;; The tests are not distributed in the tarballs but upstream
+                 ;; recommends running this smoke test.
+                 ;; https://github.com/oilshell/oil/blob/release/0.8.0/INSTALL.txt#L38-L48
+                 (lambda* (#:key tests? #:allow-other-keys)
+                   (when tests?
+                     (let* ((oil "_bin/oil.ovm"))
+                       (invoke/quiet oil "osh" "-c" "echo hi")
+                       (invoke/quiet oil "osh" "-n" "configure"))))))))
     (inputs
      (list readline))
     (home-page "https://www.oilshell.org")
