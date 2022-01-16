@@ -106,6 +106,7 @@
 ;;; Copyright © 2021 la snesne <lasnesne@lagunposprasihopre.org>
 ;;; Copyright © 2021 Brian Kubisiak <brian@kubisiak.com>
 ;;; Copyright © 2021, 2022 Taiju HIGASHI <higashi@taiju.info>
+;;; Copyright © 2022 Brandon Lucas <br@ndon.dk>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29748,3 +29749,23 @@ Unlike Emacs' generic ASM mode, it understands NASM-specific syntax.")
 wraps GNU Global calls and integration to editor using this API with
 project.el and xref.el.")
       (license license:gpl3+))))
+
+(define-public emacs-fennel-mode
+  (package
+    (name "emacs-fennel-mode")
+    (version "0.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/technomancy/fennel-mode")
+             (commit version)))
+       (sha256
+        (base32 "0dwas3ivhxdyw6njkcadc8c17cirq325cmby04qls8zkmrvlil1w"))))
+    (build-system emacs-build-system)
+    (home-page "https://gitlab.com/technomancy/fennel-mode")
+    (synopsis "Emacs major-mode for editing Fennel code")
+    (description
+     "Fennel mode provides font-lock, indentation, navigation, and REPL for
+ Fennel code within Emacs.")
+    (license license:gpl3+)))
