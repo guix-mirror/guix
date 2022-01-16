@@ -1587,6 +1587,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/pam-krb5-CVE-2020-10595.patch		\
   %D%/packages/patches/pango-skip-libthai-test.patch		\
   %D%/packages/patches/passwordsafe-meson-remove-extra-argument.patch \
+  %D%/packages/patches/password-store-tree-compat.patch		\
   %D%/packages/patches/pciutils-hurd-configure.patch		\
   %D%/packages/patches/pciutils-hurd-fix.patch			\
   %D%/packages/patches/pitivi-fix-build-with-meson-0.60.patch	\

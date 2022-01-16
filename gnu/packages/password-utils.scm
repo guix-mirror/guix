@@ -484,6 +484,7 @@ any X11 window.")
               (sha256
                (base32
                 "17zp9pnb3i9sd2zn9qanngmsywrb7y495ngcqs6313pv3gb83v53"))
+              (patches (search-patches "password-store-tree-compat.patch"))
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
