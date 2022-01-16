@@ -1109,7 +1109,7 @@ manage system or application containers.")
 (define-public lxcfs
   (package
     (name "lxcfs")
-    (version "4.0.9")
+    (version "4.0.11")
     (home-page "https://github.com/lxc/lxcfs")
     (source (origin
               (method git-fetch)
@@ -1118,7 +1118,7 @@ manage system or application containers.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0zx58lair8hwi4bxm5h7i8n1j5fcdgw5cr6f4wk9qhks0sr5dip5"))))
+                "02cgzh97cgxh9iyf7gkn5ikdc0sfzqfjj6al0hikdf9rbwcscqwd"))))
     (arguments
      '(#:configure-flags '("--localstatedir=/var")))
     (native-inputs
