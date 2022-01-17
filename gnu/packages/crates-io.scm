@@ -53774,6 +53774,27 @@ service.")
      "This package provides a single-producer single-consumer lock-free buffer.")
     (license license:expat)))
 
+(define-public rust-sqlite3-src-0.3
+  (package
+    (name "rust-sqlite3-src")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "sqlite3-src" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "18ygmfcpkccs8s9m5s9q31rrx1mrdps387w9yp3481jswxyb0q52"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cc" ,rust-cc-1)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))
+    (home-page "https://github.com/stainless-steel/sqlite3-src")
+    (synopsis "Provider of SQLite")
+    (description "The package provides SQLite.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-st-map-0.1
   (package
     (name "rust-st-map")
