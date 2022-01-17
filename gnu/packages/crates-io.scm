@@ -19235,6 +19235,27 @@ by @file{sysexits.h}.")
      "This package provides a minimalistic snapshot testing library.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-expectest-0.12
+  (package
+    (name "rust-expectest")
+    (version "0.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "expectest" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0y290ak3q5l8l8ajg00mqx1lx9f1pagk6ckmplzibf5ach5pr0bq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-num-traits" ,rust-num-traits-0.2))))
+    (home-page "https://github.com/zummenix/expectest")
+    (synopsis "Matchers and matcher functions for unit testing")
+    (description "This crate provides matchers and matcher functions for unit
+testing.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-expectest-0.9
   (package
     (name "rust-expectest")
