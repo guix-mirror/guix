@@ -5153,6 +5153,39 @@ built on the Actix ecosystem.")
         ("rust-actix-web" ,rust-actix-web-2)
         ("rust-brotli" ,rust-brotli-3))))))
 
+(define-public rust-awc-0.2
+  (package
+    (inherit rust-awc-2)
+    (name "rust-awc-2")
+    (version "0.2.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "awc" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1i5qinnh37bwpx86m2yyq1q1bnsa31vlwlz7942bzlwd4y1m56ay"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-actix-codec" ,rust-actix-codec-0.1)
+        ("rust-actix-http" ,rust-actix-http-0.2)
+        ("rust-actix-service" ,rust-actix-service-0.4)
+        ("rust-base64" ,rust-base64-0.10)
+        ("rust-bytes" ,rust-bytes-0.4)
+        ("rust-derive-more" ,rust-derive-more-0.15)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-mime" ,rust-mime-0.3)
+        ("rust-openssl" ,rust-openssl-0.10)
+        ("rust-percent-encoding" ,rust-percent-encoding-2)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-rustls" ,rust-rustls-0.15)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-serde-urlencoded" ,rust-serde-urlencoded-0.6)
+        ("rust-tokio-timer" ,rust-tokio-timer-0.2))))))
+
 (define-public rust-az-1
   (package
     (name "rust-az")
