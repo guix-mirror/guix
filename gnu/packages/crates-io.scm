@@ -11833,6 +11833,27 @@ to guess the type of content.")
 semantics than those provided by @code{as} or @code{From}/@code{Into}.")
     (license license:expat)))
 
+(define-public rust-convert-case-0.4
+  (package
+    (name "rust-convert-case")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "convert-case" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "03jaf1wrsyqzcaah9jf8l1iznvdw5mlsca2qghhzr9w27sddaib2"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-rand" ,rust-rand-0.7))))
+    (home-page "https://github.com/rutrum/convert-case")
+    (synopsis "Convert strings into any case")
+    (description "Convert strings into any case.")
+    (license license:expat)))
+
 (define-public rust-cookie-0.12
   (package
     (name "rust-cookie")
