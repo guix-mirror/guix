@@ -26,7 +26,7 @@
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018, 2019, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2018, 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2018, 2020, 2021, 2022 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2019 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
@@ -166,6 +166,32 @@ Reddit’s API.  It aims to be easy to use and internally follows all of Reddit�
 API rules.")
     (home-page "https://praw.readthedocs.io/en/latest/")
     (license license:bsd-2)))
+
+(define-public python-frozenlist
+  (package
+    (name "python-frozenlist")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "frozenlist" version))
+       (sha256
+        (base32 "1pkr23by7pk9lsmsh0wiqirpkq3f1f08b0615nbzysn51bk1n838"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "tests")))))))
+    (native-inputs (list python-pytest))
+    (home-page "https://github.com/aio-libs/frozenlist")
+    (synopsis "List-like data structure for Python")
+    (description "@code{frozenlist.FrozenList} is a list-like structure which
+implements @code{collections.abc.MutableSequence}.  It can be made immutable
+by calling @code{FrozenList.freeze}.")
+    (license license:asl2.0)))
 
 (define-public python-aiohttp
   (package
