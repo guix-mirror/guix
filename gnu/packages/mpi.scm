@@ -448,12 +448,12 @@ arrays) that expose a buffer interface.")
                 "1farz5zfx4cd0c3a0wb9pgfypzw0xxql1j1294z1sxslga1ziyjb"))))
     (build-system gnu-build-system)
     (inputs
-     `(("zlib" ,zlib)
-       ("hwloc" ,hwloc-2 "lib")
-       ("slurm" ,slurm)
+     `(,zlib
+       (,hwloc-2 "lib")
+       ,slurm
        ,@(if (and (not (%current-target-system))
                   (member (%current-system) (package-supported-systems ucx)))
-             `(("ucx" ,ucx))
+             (list ucx)
              '())))
     (native-inputs
      (list perl which gfortran))
@@ -490,8 +490,7 @@ arrays) that expose a buffer interface.")
                       (substitute* (find-files "." "f77tof90")
                         (("/usr/bin/env") (which "env")))
                       (substitute* (find-files "." "\\.sh$")
-                        (("/bin/sh") (which "sh")))
-                      #t))
+                        (("/bin/sh") (which "sh")))))
                   (add-before 'configure 'fix-makefile
                     (lambda _
                       ;; Remove "@hwloclib@" from 'pmpi_convenience_libs'.
@@ -501,8 +500,7 @@ arrays) that expose a buffer interface.")
                         (("^pmpi_convenience_libs = (.*) @hwloclib@ (.*)$" _
                           before after)
                          (string-append "pmpi_convenience_libs = "
-                                        before " " after)))
-                      #t))
+                                        before " " after)))))
                   (add-before 'configure 'define-gfortran-wrapper
                     (lambda* (#:key inputs #:allow-other-keys)
                       ;; 'configure' checks whether the Fortran compiler
