@@ -11485,14 +11485,14 @@ Lua programming language}.")
         (base32 "1bs2s5g79vrbk8544lvp388cdbig0s121kwk0h10hif4kp56ka9w"))))
     (build-system emacs-build-system)
     (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'install-doc
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "make" "ebuild-mode.info")
-             (install-file "ebuild-mode.info"
-                           (string-append (assoc-ref outputs "out")
-                                          "/share/info")))))))
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'install 'install-doc
+            (lambda _
+              (invoke "make" "ebuild-mode.info")
+              (install-file "ebuild-mode.info"
+                            (string-append #$output "/share/info")))))))
     (native-inputs
      (list texinfo))
     (home-page "https://devmanual.gentoo.org")
