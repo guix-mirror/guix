@@ -14068,30 +14068,36 @@ requests")
 (define-public rust-curve25519-dalek-3
   (package
     (name "rust-curve25519-dalek")
-    (version "3.0.0")
+    (version "3.2.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "curve25519-dalek" version))
-        (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-          (base32 "01xknhlwagv601k6125372vr0lw2j6xjsvnnl74hprp943j2sjf8"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "curve25519-dalek" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0q8v97275cy6v4ly6y2qwv9a8phnpjg9sy8kv7r6mgdjfacxz7qb"))))
     (build-system cargo-build-system)
     (arguments
-      `(#:skip-build? #t
-        #:cargo-inputs
-        (("rust-byteorder" ,rust-byteorder-1)
-         ("rust-digest" ,rust-digest-0.9)
-         ("rust-packed-simd" ,rust-packed-simd-0.3)
-         ("rust-rand-core" ,rust-rand-core-0.5)
-         ("rust-serde" ,rust-serde-1)
-         ("rust-subtle" ,rust-subtle-2)
-         ("rust-zeroize" ,rust-zeroize-1))))
+     `(#:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1)
+        ("rust-digest" ,rust-digest-0.9)
+        ("rust-fiat-crypto" ,rust-fiat-crypto-0.1)
+        ("rust-packed-simd-2" ,rust-packed-simd-2-0.3)
+        ("rust-rand-core" ,rust-rand-core-0.5)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-subtle" ,rust-subtle-2)
+        ("rust-zeroize" ,rust-zeroize-1))
+       #:cargo-development-inputs
+       (("rust-bincode" ,rust-bincode-1)
+        ("rust-criterion" ,rust-criterion-0.3)
+        ("rust-hex" ,rust-hex-0.4)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-sha2" ,rust-sha2-0.9))))
     (home-page "https://dalek.rs/curve25519-dalek")
     (synopsis "Group operations on ristretto255 and Curve25519")
     (description
-      "This package provides a pure-Rust implementation of group operations on
-ristretto255 and Curve25519")
+     "This package provides a pure-Rust implementation of group operations on
+ristretto255 and Curve25519.")
     (license license:bsd-3)))
 
 (define-public rust-custom-derive-0.1
