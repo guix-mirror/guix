@@ -6468,6 +6468,32 @@ streams in big-endian and little-endian formats.")
      "This package provides a crate for manipulating memory, bit by bit.")
     (license license:expat)))
 
+(define-public rust-blake2-0.9
+  (package
+    (name "rust-blake2")
+    (version "0.9.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "blake2" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0x7i67c0hn3bzcwny08rgjrrnarqnqw10qpmh2blbx9hd78kfkha"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-crypto-mac" ,rust-crypto-mac-0.8)
+        ("rust-digest" ,rust-digest-0.9)
+        ("rust-opaque-debug" ,rust-opaque-debug-0.3))
+       #:cargo-development-inputs
+       (("rust-crypto-mac" ,rust-crypto-mac-0.8)
+        ("rust-digest" ,rust-digest-0.9)
+        ("rust-hex-literal" ,rust-hex-literal-0.2))))
+    (home-page "https://github.com/RustCrypto/hashes")
+    (synopsis "BLAKE2 hash functions")
+    (description "This package provides BLAKE2 hash functions in Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-blake2-0.8
   (package
     (name "rust-blake2")
