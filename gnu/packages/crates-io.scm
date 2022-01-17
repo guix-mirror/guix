@@ -68017,6 +68017,28 @@ trust these primitives.")
         ("rust-serde" ,rust-serde-1)
         ("rust-winapi" ,rust-winapi-0.3))))))
 
+(define-public rust-winres-0.1
+  (package
+    (name "rust-winres")
+    (version "0.1.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "winres" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0v2gvqnd8iwwvb6fs69nv0mmk1z96430527n0qlfbsarxxhv53dn"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-toml" ,rust-toml-0.5))))
+    (home-page "https://github.com/mxre/winres")
+    (synopsis "Create and set windows icons and metadata for executables")
+    (description "A simple library to facilitate adding metainformation and
+icons to windows executables and dynamic libraries.")
+    (license license:expat)))
+
 (define-public rust-winutil-0.1
   (package
     (name "rust-winutil")
