@@ -11865,6 +11865,36 @@ contents of the OS-level clipboard.")
 numbers using the CORDIC method.")
     (license license:bsd-3)))
 
+(define-public rust-cookie-0.15
+  (package
+    (name "rust-cookie")
+    (version "0.15.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cookie" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "03gql9c2l0wg3hpfp67wg2ns21wysk0xsjxwdbjrf0s6grrcgwfm"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-aes-gcm" ,rust-aes-gcm-0.8)
+        ("rust-base64" ,rust-base64-0.13)
+        ("rust-hkdf" ,rust-hkdf-0.10)
+        ("rust-hmac" ,rust-hmac-0.10)
+        ("rust-percent-encoding" ,rust-percent-encoding-2)
+        ("rust-rand" ,rust-rand-0.8)
+        ("rust-sha2" ,rust-sha2-0.9)
+        ("rust-subtle" ,rust-subtle-2)
+        ("rust-time" ,rust-time-0.2)
+        ("rust-version-check" ,rust-version-check-0.9))))
+    (home-page "https://github.com/SergioBenitez/cookie-rs")
+    (synopsis "HTTP cookie parsing and cookie jar management")
+    (description "This package provides HTTP cookie parsing and cookie jar
+management.  It supports signed and private (encrypted, authenticated) jars.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-cookie-0.14
   (package
     (name "rust-cookie")
