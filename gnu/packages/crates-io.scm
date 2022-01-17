@@ -65896,6 +65896,30 @@ for terminal and other window-less applications.")
 available on a platform.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-webpki-0.22
+  (package
+    (name "rust-webpki")
+    (version "0.22.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "webpki" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1gd1gxip5kgdwmrvhj5gjxij2mgg2mavq1ych4q1h272ja0xg5gh"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-ring" ,rust-ring-0.16)
+        ("rust-untrusted" ,rust-untrusted-0.7))
+       #:cargo-development-inputs
+       (("rust-base64" ,rust-base64-0.9))))
+    (home-page "https://github.com/briansmith/webpki")
+    (synopsis "Web PKI X.509 Certificate Verification")
+    (description "This package provides Web PKI X.509 Certificate
+Verification.")
+    (license license:isc)))
+
 (define-public rust-webpki-0.21
   (package
     (name "rust-webpki")
