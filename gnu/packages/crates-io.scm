@@ -49991,6 +49991,28 @@ macOS and iOS.")
      "Semantic version parsing and comparison.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-semver-0.6
+  (package
+    (inherit rust-semver-0.9)
+    (name "rust-semver")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "semver" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0drmjiwkq0znj33q9x9hw7ld8f28n9diyjs3jlh1l1v5kvn8ccbs"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-semver-parser" ,rust-semver-parser-0.7))
+       #:cargo-development-inputs
+       (("rust-crates-index" ,rust-crates-index-0.5)
+        ("rust-tempdir" ,rust-tempdir-0.3))))))
+
 (define-public rust-semver-0.1
   (package
     (name "rust-semver")
