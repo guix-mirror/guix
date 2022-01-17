@@ -6579,6 +6579,29 @@ streams in big-endian and little-endian formats.")
 BLAKE2bp hash functions.")
     (license license:expat)))
 
+(define-public rust-blakeout-0.3
+  (package
+    (name "rust-blakeout")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "blakeout" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0dxcg3sjxd82mn7mq4ammrfpidqf9zsagvhfzgblsi8g4b2fgvw1"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-blake2" ,rust-blake2-0.9)
+        ("rust-digest" ,rust-digest-0.9))))
+    (home-page "https://github.com/Revertron/Blakeout")
+    (synopsis "Memory hard hashing algorithm based on Blake2s")
+    (description "This package provides memory hard hashing algorithm
+based on Blake2s.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-blas-sys-0.7
   (package
     (name "rust-blas-sys")
