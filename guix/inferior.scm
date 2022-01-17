@@ -816,7 +816,7 @@ determines whether CHANNELS are authenticated."
                   (return cached))
                 (mbegin %store-monad
                   (add-temp-root* (derivation->output-path profile))
-                  (return profile))))))))
+                  (return (derivation->output-path profile)))))))))
 
 (define* (inferior-for-channels channels
                                 #:key
