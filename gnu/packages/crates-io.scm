@@ -50314,14 +50314,14 @@ TOML/JSON/MessagePack strings and serializable values.")
 (define-public rust-serde-derive-1
   (package
     (name "rust-serde-derive")
-    (version "1.0.130")
+    (version "1.0.133")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "serde-derive" version))
-       (file-name (string-append name "-" version ".crate"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "12shxhi47db54i4j44ic2nl299x5p89ngna0w3m6854nn4d1mg6p"))))
+        (base32 "0dym0l8a0pch0mkqnhrf89n4wngzwf0d1z88hb8dhs456acic87d"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -50334,7 +50334,7 @@ TOML/JSON/MessagePack strings and serializable values.")
     (synopsis
      "Macros 1.1 implementation of #[derive(Serialize, Deserialize)]")
     (description
-     "Macros 1.1 implementation of #[derive(Serialize, Deserialize)]")
+     "Macros 1.1 implementation of #[derive(Serialize, Deserialize)].")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-serde-derive-0.9
