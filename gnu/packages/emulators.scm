@@ -1736,7 +1736,7 @@ This is a part of the TiLP project.")
       #~(cons*
          ;; A 'strict-overflow' error pops up on i686 so disable '-Werror'.
          "NOWERROR=1"
-         (string-append "QT_HOME=" #$(this-package-input "qtbase-5"))
+         (string-append "QT_HOME=" #$(this-package-input "qtbase"))
          (string-append "SDL_INI_PATH=" #$output "/share/mame/ini")
          (map (lambda (lib)
                 (string-append "USE_SYSTEM_LIB_" (string-upcase lib) "=1"))
