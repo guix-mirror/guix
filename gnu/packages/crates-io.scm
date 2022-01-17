@@ -50121,16 +50121,14 @@ fragment of code.")
 (define-public rust-serde-cbor-0.11
   (package
     (name "rust-serde-cbor")
-    (version "0.11.1")
+    (version "0.11.2")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "serde-cbor" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "08m62mfqjnpa543kd9r9cyxlqc6y73avhsl3n8svgs4h5zxaq60y"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "serde-cbor" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1xf1bq7ixha30914pd5jl3yw9v1x6car7xgrpimvfvs5vszjxvrb"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
