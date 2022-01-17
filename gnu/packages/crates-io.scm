@@ -51891,27 +51891,26 @@ words, like Python's shlex.")
 (define-public rust-signature-1
   (package
     (name "rust-signature")
-    (version "1.2.2")
+    (version "1.5.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "signature" version))
-        (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-          (base32 "04325sgl06mksq21a95sbdadg3r3jn3l3nhhxj839qs7s6kn1w19"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "signature" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1r4x94n6ibdd1f85cwmvi29jvyyf1l379n9yybb7jlg9lv0wcm7h"))))
     (build-system cargo-build-system)
     (arguments
-      `(#:skip-build? #t
-        #:cargo-inputs
-        (("rust-digest" ,rust-digest-0.9)
-         ("rust-rand-core" ,rust-rand-core-0.5)
-         ("rust-signature-derive"
-          ,rust-signature-derive-1))))
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-digest" ,rust-digest-0.10)
+        ("rust-rand-core" ,rust-rand-core-0.6)
+        ("rust-signature-derive" ,rust-signature-derive-1))))
     (home-page "")
     (synopsis "Traits for cryptographic signature algorithms (e.g. ECDSA,
 Ed25519)")
     (description
-      "This package contains traits which provide generic, object-safe APIs
+     "This package contains traits which provide generic, object-safe APIs
 for generating and verifying digital signatures.")
     (license (list license:asl2.0 license:expat))))
 
