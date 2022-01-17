@@ -34712,6 +34712,26 @@ while still providing platform specific APIs.")
         (base32
          "1kmxdlmvnmq8cfpmr3g6wk37rwi2ybdvp1z6z3831m1p23p2nwkc"))))))
 
+(define-public rust-nix-0.8
+  (package
+    (inherit rust-nix-0.15)
+    (name "rust-nix")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nix" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "11v4idygamcdgqvqbz9qcz83nwiyc8bv62k2x72kawcqh9lrzr27"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-0.7)
+        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-void" ,rust-void-1))))))
+
 (define-public rust-nl80211-0.0.2
   (package
     (name "rust-nl80211")
