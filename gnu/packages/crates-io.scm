@@ -62313,22 +62313,20 @@ the Trust-DNS client to use rustls for TLS.")
 (define-public rust-trybuild-1
   (package
     (name "rust-trybuild")
-    (version "1.0.38")
+    (version "1.0.54")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "trybuild" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0l5kicbqkk8b9grdg5l2f2w9l47h0s1kjnv6lywvwk292236zc0p"))))
+        (base32 "0gzxbal0zdjnwilsisgbm59c242gvym8dafwsl5s8b5nhvzl6hzh"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-dissimilar" ,rust-dissimilar-1)
         ("rust-glob" ,rust-glob-0.3)
-        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-once-cell" ,rust-once-cell-1)
         ("rust-serde" ,rust-serde-1)
         ("rust-serde-json" ,rust-serde-json-1)
         ("rust-termcolor" ,rust-termcolor-1)
