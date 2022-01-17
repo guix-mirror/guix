@@ -6432,6 +6432,40 @@ streams in big-endian and little-endian formats.")
          "00a6wy54s1dmadm5xz8k2cbsd7ixvm48mlc45bk0fdy0pbra6jk1"))))
     (arguments `(#:skip-build? #t))))
 
+(define-public rust-bitvec-0.22
+  (package
+    (name "rust-bitvec")
+    (version "0.22.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bitvec" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "09xm84dg04y8k3cm7aa81n2xfvcnidahx0qpqc60l4w6ih5g0dsj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-funty" ,rust-funty-1.2)
+        ("rust-radium" ,rust-radium-0.6)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-tap" ,rust-tap-1)
+        ("rust-wyz" ,rust-wyz-0.4))
+       #:cargo-development-inputs
+       (("rust-bincode" ,rust-bincode-1)
+        ("rust-criterion" ,rust-criterion-0.3)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-serde-test" ,rust-serde-test-1)
+        ("rust-static-assertions" ,rust-static-assertions-1))))
+    (home-page "https://bitvecto-rs.github.io/bitvec")
+    (synopsis "Manipulate memory, bit by bit")
+    (description
+     "This package provides a crate for manipulating memory, bit by bit.")
+    (license license:expat)))
+
 (define-public rust-bitvec-0.19
   (package
     (name "rust-bitvec")
