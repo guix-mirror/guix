@@ -20447,7 +20447,7 @@ cross platform API.")
 (define-public rust-flate2-1
   (package
     (name "rust-flate2")
-    (version "1.0.20")
+    (version "1.0.22")
     (source
      (origin
        (method url-fetch)
@@ -20456,7 +20456,7 @@ cross platform API.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1q5b4r2rclhjbcxlbv5231avp1y6y8bynrf5v3brdzhhvr9yqfnd"))))
+         "0gy5iwfqylb2f0dd9n7r8w2xwbzlrqlsairvyj2w9jf1jzl8hs8y"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
