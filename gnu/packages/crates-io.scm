@@ -27805,6 +27805,27 @@ primitives to an @code{io::Write}.")
     (description "This package provides a simple ivf muxer.")
     (license license:bsd-2)))
 
+(define-public rust-javascriptcore-rs-sys-0.2
+  (package
+    (name "rust-javascriptcore-rs-sys")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "javascriptcore-rs-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1619vl48yw3wrjw4c3dfm3s5s9sizgxp5s7s1ahpbkcdl2lasiiz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://github.com/tauri-apps/javascriptcore-rs")
+    (synopsis "JavaScriptCore bindings and wrappers for Rust")
+    (description
+     "Sys functions for the Rust bindings of the javacriptcore library.")
+    (license license:expat)))
+
 (define-public rust-jemalloc-sys-0.3
   (package
     (name "rust-jemalloc-sys")
