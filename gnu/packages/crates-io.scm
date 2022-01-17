@@ -27257,6 +27257,27 @@ functions, and macros.")
        (("rust-permutohedron" ,rust-permutohedron-0.2)
         ("rust-quickcheck" ,rust-quickcheck-0.5))))))
 
+(define-public rust-itertools-0.6
+  (package
+    (inherit rust-itertools-0.10)
+    (name "rust-itertools")
+    (version "0.6.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "itertools" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "08fx60wxmjakssqn3w9045dasqvaf1gmgzg5kag062k9l56vxwnk"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-either" ,rust-either-1))
+       #:cargo-development-inputs
+       (("rust-permutohedron" ,rust-permutohedron-0.2)
+        ("rust-quickcheck" ,rust-quickcheck-0.4))))))
+
 (define-public rust-itertools-0.5
   (package
     (inherit rust-itertools-0.7)
