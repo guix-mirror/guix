@@ -21286,6 +21286,31 @@ pseudorandom number generator")
     (description "Low-level Rust bindings for the Zircon kernel.")
     (license license:bsd-3)))
 
+(define-public rust-funty-1.2
+  (package
+    (name "rust-funty")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "funty" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "07lb1f8yih3g694id3n90anlgxf8m6p98bllsnn6dmb5rfwsniqq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-static-assertions" ,rust-static-assertions-1))))
+    (home-page "https://github.com/myrrlyn/funty")
+    (synopsis "Trait generalization over the primitive types")
+    (description
+     "Prior to 1.0, Rust had traits for the numeric primitive types to permit
+code to generalize over which specific type it accepted. This was never
+stabilized, and eventually removed.  This library reïnstates these traits.")
+    (license license:expat)))
+
 (define-public rust-funty-1
   (package
     (name "rust-funty")
