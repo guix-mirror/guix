@@ -10314,6 +10314,41 @@ colorization.")
 pitfalls in Rust.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-clippy-lints-0.0.153
+  (package
+    (name "rust-clippy-lints")
+    (version "0.0.153")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "clippy-lints" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "021w4cv2qwczkk0w4d6zy52yx6afi4yz5y29wq6xmb0wqwzp55ca"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-itertools" ,rust-itertools-0.6)
+        ("rust-lazy-static" ,rust-lazy-static-0.2)
+        ("rust-matches" ,rust-matches-0.1)
+        ("rust-pulldown-cmark" ,rust-pulldown-cmark-0.0.15)
+        ("rust-quine-mc-cluskey" ,rust-quine-mc-cluskey-0.2)
+        ("rust-regex-syntax" ,rust-regex-syntax-0.4)
+        ("rust-semver" ,rust-semver-0.6)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-toml" ,rust-toml-0.4)
+        ("rust-unicode-normalization" ,rust-unicode-normalization-0.1))))
+    (home-page "https://github.com/rust-lang-nursery/rust-clippy")
+    (synopsis "A bunch of helpful lints to avoid common pitfalls in Rust")
+    (description
+     "This package provides a bunch of helpful lints to avoid common pitfalls
+in Rust")
+    (license license:mpl2.0)))
+
 (define-public rust-clircle-0.3
   (package
     (name "rust-clircle")
