@@ -585,6 +585,28 @@ during testing.")
     (description "This package provides Actix runtime.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-actix-rt-0.2
+  (package
+    (inherit rust-actix-rt-1)
+    (name "rust-actix-rt")
+    (version "0.2.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-rt" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "13h9dph54lhxlzcz6wxmsv96qqpbh1dzr4365gn84gb00qfxmjc8"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-actix-threadpool" ,rust-actix-threadpool-0.1)
+        ("rust-copyless" ,rust-copyless-0.1)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-tokio-current-thread" ,rust-tokio-current-thread-0.1)
+        ("rust-tokio-executor" ,rust-tokio-executor-0.1)
+        ("rust-tokio-reactor" ,rust-tokio-reactor-0.1)
+        ("rust-tokio-timer" ,rust-tokio-timer-0.2))))))
+
 (define-public rust-actix-server-1
   (package
     (name "rust-actix-server")
