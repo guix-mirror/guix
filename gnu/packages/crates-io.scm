@@ -12056,6 +12056,7 @@ management.  It supports signed and private (encrypted, authenticated) jars.")
 
 (define-public rust-cookie-store-0.12
   (package
+    (inherit rust-cookie-store-0.15)
     (name "rust-cookie-store")
     (version "0.12.0")
     (source
@@ -12066,7 +12067,6 @@ management.  It supports signed and private (encrypted, authenticated) jars.")
        (sha256
         (base32
          "1lqhmdwgnyvi1mjmw4rbgd02fwav4aabpg4vcld23d8c9g5dy61q"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-cookie" ,rust-cookie-0.14)
@@ -12080,11 +12080,7 @@ management.  It supports signed and private (encrypted, authenticated) jars.")
         ("rust-url" ,rust-url-2))
        #:cargo-development-inputs
        (("rust-env-logger" ,rust-env-logger-0.7)
-        ("rust-pretty-assertions" ,rust-pretty-assertions-0.6))))
-    (home-page "https://github.com/pfernie/cookie_store")
-    (synopsis "Cookie storage and retrieval")
-    (description "This package implements cookie storage and retrieval.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-pretty-assertions" ,rust-pretty-assertions-0.6))))))
 
 (define-public rust-core-affinity-0.5
   (package
