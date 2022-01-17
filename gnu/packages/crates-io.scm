@@ -176,6 +176,43 @@ library in Rust.")
     (description "This package provides Actix actor framework for Rust.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-actix-0.8
+  (package
+    (inherit rust-actix-0.10)
+    (name "rust-actix")
+    (version "0.8.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1xqyrwq7hgi640h5czy73zrkxl1s0yhm7laxga13dwhkfg9f6737"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-actix-http" ,rust-actix-http-0.2)
+        ("rust-actix-rt" ,rust-actix-rt-0.2)
+        ("rust-actix-derive" ,rust-actix-derive-0.4)
+        ("rust-bitflags" ,rust-bitflags-1)
+        ("rust-bytes" ,rust-bytes-0.4)
+        ("rust-crossbeam-channel" ,rust-crossbeam-channel-0.3)
+        ("rust-derive-more" ,rust-derive-more-0.14)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-hashbrown" ,rust-hashbrown-0.3)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-parking-lot" ,rust-parking-lot-0.8)
+        ("rust-smallvec" ,rust-smallvec-0.6)
+        ("rust-tokio-codec" ,rust-tokio-codec-0.1)
+        ("rust-tokio-executor" ,rust-tokio-executor-0.1)
+        ("rust-tokio-io" ,rust-tokio-io-0.1)
+        ("rust-tokio-tcp" ,rust-tokio-tcp-0.1)
+        ("rust-tokio-timer" ,rust-tokio-timer-0.2)
+        ("rust-trust-dns-resolver" ,rust-trust-dns-resolver-0.11))
+       #:cargo-development-inputs
+       (("rust-doc-comment" ,rust-doc-comment-0.3))))))
+
 (define-public rust-actix-codec-0.3
   (package
     (name "rust-actix-codec")
