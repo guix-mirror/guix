@@ -11897,6 +11897,7 @@ management.  It supports signed and private (encrypted, authenticated) jars.")
 
 (define-public rust-cookie-0.14
   (package
+    (inherit rust-cookie-0.15)
     (name "rust-cookie")
     (version "0.14.2")
     (source
@@ -11907,7 +11908,6 @@ management.  It supports signed and private (encrypted, authenticated) jars.")
        (sha256
         (base32
          "1q56fl2cqrci9ksa80d7g220phq02nf1yfbvxkpk9g1p95ma2wqk"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-aes-gcm" ,rust-aes-gcm-0.6)
@@ -11919,12 +11919,7 @@ management.  It supports signed and private (encrypted, authenticated) jars.")
         ("rust-sha2" ,rust-sha2-0.9)
         ("rust-time" ,rust-time-0.2))
        #:cargo-development-inputs
-       (("rust-version-check" ,rust-version-check-0.9))))
-    (home-page "https://github.com/SergioBenitez/cookie-rs")
-    (synopsis "HTTP cookie parsing and cookie jar management")
-    (description "This package provides HTTP cookie parsing and cookie jar
-management.  It supports signed and private (encrypted, authenticated) jars.")
-    (license (list license:expat license:asl2.0))))
+       (("rust-version-check" ,rust-version-check-0.9))))))
 
 (define-public rust-cookie-store-0.12
   (package
