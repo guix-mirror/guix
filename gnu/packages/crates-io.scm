@@ -12459,6 +12459,28 @@ to @code{is_x86_feature_detected}.")
      "Library for retrieving and interacting with the crates.io index.")
     (license license:asl2.0)))
 
+(define-public rust-crates-index-0.5
+  (package
+    (inherit rust-crates-index-0.13)
+    (name "rust-crates-index-5")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "crates-index" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1gak1czvvdz7l00vkkj61srrfa1sj2yl4ydghhgywydby5qh3mlg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f                      ;"curl error: Could not resolve host: github.com\n"
+       #:cargo-inputs
+       (("rust-git2" ,rust-git2-0.6)
+        ("rust-glob" ,rust-glob-0.2)
+        ("rust-rustc-serialize" ,rust-rustc-serialize-0.3))))
+    (native-inputs (list pkg-config))
+    (inputs (list zlib openssl libssh2 curl cmake))))
+
 (define-public rust-crates-io-0.33
   (package
     (name "rust-crates-io")
