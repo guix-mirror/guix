@@ -63374,7 +63374,7 @@ a member of a certain category of Unicode characters.")
 (define-public rust-unicode-normalization-0.1
   (package
     (name "rust-unicode-normalization")
-    (version "0.1.11")
+    (version "0.1.19")
     (source
      (origin
        (method url-fetch)
@@ -63382,11 +63382,11 @@ a member of a certain category of Unicode characters.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1kxxb5ndb5dzyp1flajjdxnbwyjw6ml9xvy0pz7b8srjn9ky4qdm"))))
+        (base32 "1yabhmg8zlcksda3ajly9hpbzqgbhknxwch8dwkfkaa1569r0ifm"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-smallvec" ,rust-smallvec-1))))
+       (("rust-tinyvec" ,rust-tinyvec-1))))
     (home-page "https://github.com/unicode-rs/unicode-normalization")
     (synopsis
      "This crate provides functions for normalization of Unicode strings")
