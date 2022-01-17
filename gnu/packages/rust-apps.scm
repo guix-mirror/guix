@@ -15,6 +15,7 @@
 ;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
 ;;; Copyright © 2021 jgart <jgart@dismail.de>
 ;;; Copyright © 2021 Nicolas Graves <ngraves@ngraves.fr>
+;;; Copyright © 2022 Aleksandr Vityazev <avityazev@posteo.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -64,6 +65,7 @@
   #:use-module (gnu packages rust)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
+  #:use-module (gnu packages webkit)
   #:use-module (gnu packages xorg))
 
 (define-public agate
@@ -100,6 +102,88 @@ programming language.  It has very few features, and can only serve static
 files.  It uses async I/O, and should be quite efficient even when running on
 low-end hardware and serving many concurrent requests.")
     (license (list license:expat license:asl2.0))))
+
+(define-public alfis
+  (package
+    (name "alfis")
+    (version "0.6.10")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Revertron/Alfis")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1kgzz92mkyzn7mbsdpik1q21kl38i4almn01k99nww3p0vgx9514"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-test-flags
+       '("--release" "--"
+         "--skip=dns::client::tests::test_tcp_client"
+         "--skip=dns::client::tests::test_udp_client")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'relax-requirements
+           (lambda _
+             (substitute*
+                 "guix-vendor/rust-x25519-dalek-1.2.0.tar.gz/Cargo.toml"
+               (("version = \"=1.3\"") "version = \"^1.3\"")))))
+       #:cargo-inputs
+       (("rust-getopts" ,rust-getopts-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-simplelog" ,rust-simplelog-0.11)
+        ("rust-toml" ,rust-toml-0.5)
+        ("rust-digest" ,rust-digest-0.10)
+        ("rust-sha2" ,rust-sha2-0.10)
+        ("rust-ed25519-dalek" ,rust-ed25519-dalek-1)
+        ("rust-x25519-dalek" ,rust-x25519-dalek-1)
+        ("rust-ecies-ed25519" ,rust-ecies-ed25519-0.5)
+        ("rust-chacha20poly1305" ,rust-chacha20poly1305-0.9)
+        ("rust-signature" ,rust-signature-1)
+        ("rust-blakeout" ,rust-blakeout-0.3)
+        ("rust-num-cpus" ,rust-num-cpus-1)
+        ("rust-byteorder" ,rust-byteorder-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-bincode" ,rust-bincode-1)
+        ("rust-serde-cbor" ,rust-serde-cbor-0.11)
+        ("rust-base64" ,rust-base64-0.13)
+        ("rust-num-bigint" ,rust-num-bigint-0.4)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-rand" ,rust-rand-0.8)
+        ("rust-rand-0.7" ,rust-rand-0.7) ;For ed25519-dalek
+        ("rust-sqlite" ,rust-sqlite-0.26)
+        ("rust-uuid" ,rust-uuid-0.8)
+        ("rust-mio" ,rust-mio-0.8)
+        ("rust-ureq" ,rust-ureq-2)
+        ("rust-lru" ,rust-lru-0.7)
+        ("rust-derive-more" ,rust-derive-more-0.99)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-tinyfiledialogs" ,rust-tinyfiledialogs-3)
+        ("rust-web-view" ,rust-web-view-0.7)
+        ("rust-open" ,rust-open-2)
+        ("rust-thread-priority" ,rust-thread-priority-0.4)
+        ("rust-winres" ,rust-winres-0.1))
+       #:cargo-development-inputs
+       (("rust-serde-bytes" ,rust-serde-bytes-0.11)
+        ("rust-serde-derive" ,rust-serde-derive-1))))
+    (native-inputs
+     (list pkg-config))
+    (inputs
+     (list atk
+           gtk
+           glib
+           pango
+           webkitgtk-with-libsoup2))
+    (home-page "https://github.com/Revertron/Alfis")
+    (synopsis "Alternative Free Identity System")
+    (description
+     "This project represents a minimal blockchain without cryptocurrency,
+capable of sustaining any number of domain names in a bunch of original
+alternative zones.")
+    (license license:agpl3+)))
 
 (define-public bat
   (package
