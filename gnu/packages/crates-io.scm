@@ -43039,6 +43039,31 @@ integers, floats, tuples, booleans, lists, strings, options and results.")
        #:cargo-development-inputs
        (("rust-quickcheck" ,rust-quickcheck-0.8))))))
 
+(define-public rust-quine-mc-cluskey-0.2
+  (package
+    (name "rust-quine-mc-cluskey")
+    (version "0.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "quine-mc-cluskey" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0iazdlwffhrlksb8yhhs1prgwpa68rwjwqm4v26hr9hrswarcn07"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-quickcheck" ,rust-quickcheck-0.3))))
+    (home-page "https://github.com/oli-obk/quine-mc_cluskey")
+    (synopsis
+     "Rust implementation of the Quine-McCluskey algorithm and Petrick's method")
+    (description
+     "This package provides a Rust implementation of the Quine-McCluskey algorithm
+and Petrick's method, an algorithm to automatically minimize boolean expressions.")
+    (license license:expat)))
+
 (define-public rust-quote-1
   (package
     (name "rust-quote")
