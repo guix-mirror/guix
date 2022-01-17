@@ -4020,13 +4020,13 @@ templates.  A format string can be provided to control the output.")
 (define-public python-pystache
   (package
     (name "python-pystache")
-    (version "0.5.4")
+    (version "0.6.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pystache" version))
               (sha256
                (base32
-                "0nmqsfmiw4arjxqkmf9z66ml950pcdjk6aq4gin4sywmzdjw5fzp"))))
+                "03a73ppf5vxnsk6az5ackvc0hp6xqv2f4hi1s5c4nk4s2jr95gwk"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; FIXME: Python 3 tests are failing.
