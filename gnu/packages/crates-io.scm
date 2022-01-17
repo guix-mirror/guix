@@ -65922,6 +65922,7 @@ Verification.")
 
 (define-public rust-webpki-0.21
   (package
+    (inherit rust-webpki-0.22)
     (name "rust-webpki")
     (version "0.21.4")
     (source
@@ -65931,19 +65932,13 @@ Verification.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1sm4i8c5bw3bdhi7mjk0wpvwx55hvsmyn0k2lpa4cb161038rqxq"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:tests? #f ;; tests fail to build "missing file tests/ed25519/ee.der"
        #:cargo-inputs
        (("rust-ring" ,rust-ring-0.16)
         ("rust-untrusted" ,rust-untrusted-0.7))
        #:cargo-development-inputs
-       (("rust-base64" ,rust-base64-0.9))))
-    (home-page "https://github.com/briansmith/webpki")
-    (synopsis "Web PKI X.509 Certificate Verification")
-    (description "This package provides Web PKI X.509 Certificate
-Verification.")
-    (license license:isc)))
+       (("rust-base64" ,rust-base64-0.9))))))
 
 (define-public rust-webpki-0.19
   (package
