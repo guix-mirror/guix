@@ -662,6 +662,32 @@ during testing.")
 ecosystem.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-actix-server-config-0.1
+  (package
+    (name "rust-actix-server-config")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-server-config" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0c7zp4l63n5skljbpq6j0a0avdjv6w067bdc5ca96bb8kjc38fj8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-futures" ,rust-futures-0.1)
+        ("rust-rustls" ,rust-rustls-0.15)
+        ("rust-tokio-io" ,rust-tokio-io-0.1)
+        ("rust-tokio-openssl" ,rust-tokio-openssl-0.3)
+        ("rust-tokio-rustls" ,rust-tokio-rustls-0.9)
+        ("rust-tokio-tcp" ,rust-tokio-tcp-0.1)
+        ("rust-tokio-uds" ,rust-tokio-uds-0.2))))
+    (home-page "https://actix.rs")
+    (synopsis "Actix server config utils")
+    (description "Actix server config utils.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-actix-service-1
   (package
     (name "rust-actix-service")
