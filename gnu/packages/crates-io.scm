@@ -48408,6 +48408,29 @@ native certificate store.")
         ("rust-webpki" ,rust-webpki-0.21)
         ("rust-webpki-roots" ,rust-webpki-roots-0.20))))))
 
+(define-public rust-rustls-pemfile-0.2
+  (package
+    (name "rust-rustls-pemfile")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustls-pemfile" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1jfi97lqnnnnxhmfy6ygrsp0x70m8wsdpaw45svvz1qc6vmymssy"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-base64" ,rust-base64-0.13))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3))))
+    (home-page "https://github.com/rustls/pemfile")
+    (synopsis "Basic parser for PEM formatted keys and certificates")
+    (description "This package provides a very basic parser for the
+PEM-encodings commonly used to store keys and certificates at rest.")
+    (license (list license:asl2.0 license:isc license:expat))))
+
 (define-public rust-rusttype-0.9
   (package
     (name "rust-rusttype")
