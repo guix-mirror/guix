@@ -352,9 +352,7 @@ easy.")
                  (format port "#!~a\n~a '~a'" bash xdg-open snap)))
              (chmod script #o555))))))
     (inputs
-     `(("bash" ,bash-minimal)
-       ("js-filesaver" ,js-filesaver)
-       ("xdg-utils" ,xdg-utils)))
+     (list bash-minimal js-filesaver xdg-utils))
     (home-page "https://snap.berkeley.edu")
     (synopsis "Visual, blocks based programming language")
     (description "Snap! (formerly BYOB) is a visual, drag-and-drop
