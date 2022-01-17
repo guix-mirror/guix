@@ -40497,6 +40497,33 @@ library.")
 @code{kqueue}, @code{event ports}, and @code{wepoll}.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-poly1305-0.7
+  (package
+    (name "rust-poly1305")
+    (version "0.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "poly1305" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1pkf4jlriskq9rvz8y5fjj9dw42q6yg5djijlin4n6p1dd3yp2h4"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cpufeatures" ,rust-cpufeatures-0.2)
+        ("rust-opaque-debug" ,rust-opaque-debug-0.3)
+        ("rust-universal-hash" ,rust-universal-hash-0.4)
+        ("rust-zeroize" ,rust-zeroize-1))
+       #:cargo-development-inputs
+       (("rust-hex-literal" ,rust-hex-literal-0.3))))
+    (home-page "https://github.com/RustCrypto/universal-hashes")
+    (synopsis "Poly1305 universal hash")
+    (description
+     "Poly1305 is a universal hash function which, when combined with
+a cipher, can be used as a Message Authentication Code (MAC).")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-polyval-0.4
   (package
     (name "rust-polyval")
