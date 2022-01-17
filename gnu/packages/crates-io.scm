@@ -37213,6 +37213,27 @@ under its new name.")
      "A cross-platform library for opening OS pipes.")
     (license license:expat)))
 
+(define-public rust-os-pipe-0.5
+  (package
+    (inherit rust-os-pipe-0.9)
+    (name "rust-os-pipe")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "os-pipe" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ccwc7caq3hhgxyrglkl2fw8qzkx0kxanh9azs852w9f0jrzp2wr"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-kernel32-sys" ,rust-kernel32-sys-0.2)
+        ("rust-nix" ,rust-nix-0.8)
+        ("rust-winapi" ,rust-winapi-0.2))))))
+
 (define-public rust-os-str-bytes-2
   (package
     (name "rust-os-str-bytes")
