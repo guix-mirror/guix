@@ -452,17 +452,19 @@ documents.")
 (define-public python-sphinxcontrib-svg2pdfconverter
   (package
     (name "python-sphinxcontrib-svg2pdfconverter")
-    (version "1.0.1")
+    (version "1.2.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "sphinxcontrib-svg2pdfconverter" version))
               (sha256
                (base32
-                "1hhaxmqc7wh8gnyw5jaqckliknvk0p21y12wk3bdmncgkaf9ar8f"))))
+                "07c5nmkyx2y0gwfjq66fhy68c24mclvs2qqv1z9ilvvypii4blb0"))))
     (build-system python-build-system)
+    (arguments '(#:tests? #f))         ;no tests
     (propagated-inputs
      (list python-sphinx))
-    (home-page "https://github.com/missinglinkelectronics/sphinxcontrib-svg2pdfconverter")
+    (home-page
+     "https://github.com/missinglinkelectronics/sphinxcontrib-svg2pdfconverter")
     (synopsis "Sphinx SVG to PDF converter extension")
     (description "A Sphinx extension to convert SVG images to PDF in case the
 builder does not support SVG images natively (e.g. LaTeX).")
