@@ -394,6 +394,25 @@ protocols.")
      "This package provides proc macros for the Rust actor framework Actix.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-actix-derive-0.4
+  (package
+    (inherit rust-actix-derive-0.5)
+    (name "rust-actix-derive")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-derive" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0v0mvq883aq5z6d0893bh32bfddvfajh5bm7nkl0l8idpzbzdx8b"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-quote" ,rust-quote-0.6)
+        ("rust-syn" ,rust-syn-0.15))))))
+
 (define-public rust-actix-http-2
   (package
     (name "rust-actix-http")
