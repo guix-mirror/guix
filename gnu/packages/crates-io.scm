@@ -66962,6 +66962,49 @@ modifications.")
 for terminal and other window-less applications.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-web-view-0.7
+  (package
+    (name "rust-web-view")
+    (version "0.7.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "web-view" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1smgmc00nk2wn8kpagp0mpsd0d9f5mvljidf2x7plbi3bymac7gf"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f                      ;missing files
+       #:cargo-inputs
+       (("rust-boxfnonce" ,rust-boxfnonce-0.1)
+        ("rust-tinyfiledialogs" ,rust-tinyfiledialogs-3)
+        ("rust-urlencoding" ,rust-urlencoding-1)
+        ("rust-webview-sys" ,rust-webview-sys-0.6))
+       #:cargo-development-inputs
+       (("rust-actix-rt" ,rust-actix-rt-0.2)
+        ("rust-actix-web" ,rust-actix-web-1)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-grep" ,rust-grep-0.2)
+        ("rust-mime-guess" ,rust-mime-guess-2)
+        ("rust-rust-embed" ,rust-rust-embed-5)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-walkdir" ,rust-walkdir-2))))
+    (native-inputs
+     (list pkg-config))
+    (inputs
+     (list gtk+
+           webkitgtk-with-libsoup2))
+    (home-page "https://github.com/Boscop/web-view")
+    (synopsis "Rust bindings for webview")
+    (description
+     "This library provides a Rust binding to the original implementation of
+webview, a tiny cross-platform library to render web-based GUIs as desktop
+applications.")
+    (license license:expat)))
+
 (define-public rust-web-sys-0.3
   (package
     (name "rust-web-sys")
