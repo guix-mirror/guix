@@ -8967,6 +8967,25 @@ metadata}.")
        (;("rust-docopt" ,rust-docopt-0.8)
         ("rust-clap" ,rust-clap-2))))))
 
+(define-public rust-cargo-metadata-0.2
+  (package
+    (inherit rust-cargo-metadata-0.9)
+    (name "rust-cargo-metadata")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cargo-metadata" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0ywd10r8gnfcmpg2cjv99gcwydgrn0syw252qcsgd1118sw5f45y"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-serde" ,rust-serde-1)
+        ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-serde-json" ,rust-serde-json-1))))))
+
 (define-public rust-cargo-platform-0.1
   (package
     (name "rust-cargo-platform")
