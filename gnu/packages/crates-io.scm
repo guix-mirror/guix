@@ -26061,26 +26061,21 @@ with hyper.")
 (define-public rust-idna-0.2
   (package
     (name "rust-idna")
-    (version "0.2.0")
+    (version "0.2.3")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "idna" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "1a9066imqpdrm1aavfasdyb1zahqaz8jmdcwdawvb1pf60y6gqh2"))))
+        (base32 "1y7ca2w5qp9msgl57n03zqp78gq1bk2crqzg6kv7a542mdphm2j1"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-matches" ,rust-matches-0.1)
         ("rust-unicode-bidi" ,rust-unicode-bidi-0.3)
-        ("rust-unicode-normalization" ,rust-unicode-normalization-0.1))
-       #:cargo-development-inputs
-       (("rust-rustc-test" ,rust-rustc-test-0.3)
-        ("rust-serde-json" ,rust-serde-json-1))))
+        ("rust-unicode-normalization" ,rust-unicode-normalization-0.1))))
     (home-page "https://github.com/servo/rust-url/")
     (synopsis "Internationalizing Domain Names in Applications and Punycode")
     (description
