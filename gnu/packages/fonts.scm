@@ -42,6 +42,7 @@
 ;;; Copyright © 2021 Sergiu Ivanov <sivanov@colimite.fr>
 ;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;; Copyright © 2021 Paul A. Patience <paul@apatience.com>
+;;; Copyright © 2021 Taiju HIGASHI <higashi@taiju.info>
 ;;; Copyright © 2022 Philip McGrath <philip@philipmcgrath.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -1883,6 +1884,25 @@ files (TTF).")
      "Mononoki is a typeface by Matthias Tellen, created to enhance code
 formatting.")
     (home-page "https://madmalik.github.io/mononoki/")
+    (license license:silofl1.1)))
+
+(define-public font-plemoljp
+  (package
+    (name "font-plemoljp")
+    (version "1.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/yuru7/PlemolJP/releases/download/"
+                    "v" version "/PlemolJP_v" version ".zip"))
+              (sha256
+               (base32
+                "03cwzkqg09c87lmsx9xfzdrlgjml93bhhp1dqq3qkpdfww30wkaw"))))
+    (build-system font-build-system)
+    (home-page "https://github.com/yuru7/PlemolJP")
+    (synopsis "Plex Mono Language JP")
+    (description "PlemolJP (Plex Mono Language JP) is a Japanese programming
+font that is a composite of IBM Plex Mono and IBM Plex Sans JP.")
     (license license:silofl1.1)))
 
 (define-public font-public-sans
