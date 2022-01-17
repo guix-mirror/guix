@@ -43559,27 +43559,21 @@ that must be shared-mutable, but merely may use atomic instructions to do so.")
 
 (define-public rust-radium-0.5
   (package
+    (inherit rust-radium-0.6)
     (name "rust-radium")
     (version "0.5.3")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "radium" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "1f5vj5zy4kcsw8p87y976dm5pln6v6jfw5f0fkj7qbwfipbsj6wl"))))
-    (build-system cargo-build-system)
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "radium" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1f5vj5zy4kcsw8p87y976dm5pln6v6jfw5f0fkj7qbwfipbsj6wl"))))
     (arguments
      `(#:cargo-development-inputs
-       (("rust-static-assertions" ,rust-static-assertions-1))))
-    (home-page "https://github.com/mystor/radium")
-    (synopsis "Portable interfaces for maybe-atomic types")
-    (description
-     "@code{radium} provides abstractions and graceful degradation for behavior
-that must be shared-mutable, but merely may use atomic instructions to do so.")
-    (license license:expat)))
+       (("rust-static-assertions" ,rust-static-assertions-1))))))
 
 (define-public rust-radix-fmt-1
   (package
