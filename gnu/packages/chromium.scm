@@ -579,7 +579,9 @@
               ;; Don't use bundled sources.
               "rtc_build_json=true"  ;FIXME: libc++ std::string ABI difference
               "rtc_build_libevent=false"
-              "rtc_build_libvpx=false"
+              ;; XXX: Use the bundled libvpx for WebRTC because unbundling
+              ;; currently fails (see above), and the versions must match.
+              "rtc_build_libvpx=true"
               "rtc_build_opus=false"
               "rtc_build_libsrtp=true"  ;FIXME: fails to find headers
               "rtc_build_usrsctp=true"  ;TODO: package this
