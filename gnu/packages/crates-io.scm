@@ -57357,6 +57357,28 @@ directories.")
         ("rust-redox-syscall" ,rust-redox-syscall-0.1)
         ("rust-winapi" ,rust-winapi-0.2))))))
 
+(define-public rust-temporary-0.6
+  (package
+    (name "rust-temporary")
+    (version "0.6.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "temporary" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1z0vg6yb54xlb5aapdwga57s5xbcvgzw2n21m2zv7flx8b4dsd5n"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-random" ,rust-random-0.12))))
+    (home-page "https://github.com/stainless-steel/temporary")
+    (synopsis "Temporary files and directories")
+    (description
+     "The package provides means of managing temporary files and directories.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-tendril-0.4
   (package
     (name "rust-tendril")
