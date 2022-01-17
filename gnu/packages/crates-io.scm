@@ -53985,7 +53985,7 @@ deeply recursive algorithms that may accidentally blow the stack.")
 (define-public rust-standback-0.2
   (package
     (name "rust-standback")
-    (version "0.2.10")
+    (version "0.2.17")
     (source
      (origin
        (method url-fetch)
@@ -53993,7 +53993,7 @@ deeply recursive algorithms that may accidentally blow the stack.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1rnqv9dbq9c4nz7097v0f1d04fjwwsvvyy8rmz8lg1szxahix9rk"))))
+         "1zr8zy3kzryaggz3k0j4135m3zbd31pyqmja8cyj8yp07mpzn4z1"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-development-inputs
