@@ -4384,7 +4384,8 @@ tools for styling them, including a built-in real-time video preview.")
      `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
        ("itstool" ,itstool)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("python" ,python)))
      (arguments
       `(#:glib-or-gtk? #t
         #:phases
