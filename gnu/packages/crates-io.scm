@@ -1417,6 +1417,61 @@ Rust.")
         ("rust-time" ,rust-time-0.1)
         ("rust-url" ,rust-url-2))))))
 
+(define-public rust-actix-web-1
+  (package
+    (inherit rust-actix-web-3)
+    (name "rust-actix-web")
+    (version "1.0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-web" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "00wvayn7v2s61hylisr53f48s2bzg8jp3bmrqh1vkb6vgjb1nfmg"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-actix-codec" ,rust-actix-codec-0.1)
+        ("rust-actix-http" ,rust-actix-http-0.2)
+        ("rust-actix-router" ,rust-actix-router-0.1)
+        ("rust-actix-rt" ,rust-actix-rt-0.2)
+        ("rust-actix-server" ,rust-actix-server-0.6)
+        ("rust-actix-server-config" ,rust-actix-server-config-0.1)
+        ("rust-actix-service" ,rust-actix-service-0.4)
+        ("rust-actix-testing" ,rust-actix-testing-0.1)
+        ("rust-actix-threadpool" ,rust-actix-threadpool-0.1)
+        ("rust-actix-utils" ,rust-actix-utils-0.4)
+        ("rust-actix-web-codegen" ,rust-actix-web-codegen-0.1)
+        ("rust-awc" ,rust-awc-0.2)
+        ("rust-bytes" ,rust-bytes-0.4)
+        ("rust-derive-more" ,rust-derive-more-0.15)
+        ("rust-encoding-rs" ,rust-encoding-rs-0.8)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-hashbrown" ,rust-hashbrown-0.6)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-mime" ,rust-mime-0.3)
+        ("rust-net2" ,rust-net2-0.2)
+        ("rust-openssl" ,rust-openssl-0.10)
+        ("rust-parking-lot" ,rust-parking-lot-0.9)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-rustls" ,rust-rustls-0.15)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-serde-urlencoded" ,rust-serde-urlencoded-0.6)
+        ("rust-time" ,rust-time-0.1)
+        ("rust-url" ,rust-url-2))
+       #:cargo-development-inputs
+       (("rust-actix" ,rust-actix-0.8)
+        ("rust-actix-connect" ,rust-actix-connect-0.2)
+        ("rust-actix-http-test" ,rust-actix-http-test-0.2)
+        ("rust-brotli2" ,rust-brotli2-0.3)
+        ("rust-env-logger" ,rust-env-logger-0.6)
+        ("rust-flate2" ,rust-flate2-1)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-tokio-timer" ,rust-tokio-timer-0.2))))))
+
 (define-public rust-actix-web-codegen-0.4
   (package
     (name "rust-actix-web-codegen")
