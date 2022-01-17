@@ -24954,6 +24954,27 @@ hash map.")
         ("rust-rustc-hash" ,rust-rustc-hash-1)
         ("rust-serde-test" ,rust-serde-test-1))))))
 
+(define-public rust-hashbrown-0.3
+  (package
+    (inherit rust-hashbrown-0.8)
+    (name "rust-hashbrown")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hashbrown" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "063fy36q5796kd836sc5dgcc58bkgr7sw1hczmnmhbblwjmskyr9"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-compiler-builtins" ,rust-compiler-builtins-0.1)
+        ("rust-rayon" ,rust-rayon-1)
+        ("rust-rustc-std-workspace-alloc" ,rust-rustc-std-workspace-alloc-1)
+        ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1)
+        ("rust-serde" ,rust-serde-1))))))
+
 (define-public rust-hashbrown-0.1
   (package
     (inherit rust-hashbrown-0.5)
