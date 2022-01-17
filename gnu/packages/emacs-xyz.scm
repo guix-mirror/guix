@@ -299,19 +299,19 @@ e.g. emacs-geiser-guile for Guile.")
         (base32 "0fk5rr7mjmb4waiagi80dhddas5mrsgqr0flag5v5b0piblixxq6"))))
     (build-system emacs-build-system)
     (arguments
-     '(#:include (cons "^src/" %default-include)
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'make-autoloads 'patch-autoloads
-           (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* (string-append
-                           (elpa-directory (assoc-ref outputs "out"))
-                           "/geiser-guile-autoloads.el")
-               ;; Activating implementations fails when Geiser is not yet
-               ;; loaded, so let's defer that until it is.
-               (("\\(geiser-activate-implementation .*\\)" all)
-                (string-append
-                 "(eval-after-load 'geiser-impl '" all ")"))))))))
+     (list
+      #:include #~(cons "^src/" %default-include)
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'make-autoloads 'patch-autoloads
+            (lambda _
+              (substitute* (string-append (elpa-directory #$output)
+                                          "/geiser-guile-autoloads.el")
+                ;; Activating implementations fails when Geiser is not yet
+                ;; loaded, so let's defer that until it is.
+                (("\\(geiser-activate-implementation .*\\)" all)
+                 (string-append
+                  "(eval-after-load 'geiser-impl '" all ")"))))))))
     (inputs
      (list guile-3.0))
     (propagated-inputs
