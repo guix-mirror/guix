@@ -635,6 +635,28 @@ during testing.")
     (description "This package provides resource path matching library.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-actix-router-0.1
+  (package
+    (inherit rust-actix-router-0.2)
+    (name "rust-actix-router")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-router" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1xyc0kzawfwjfiw4znb7xx6hh4r7nnwjq44i08fjc1724ysln8i3"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bytes" ,rust-bytes-0.4)
+        ("rust-http" ,rust-http-0.1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-string" ,rust-string-0.2))))))
+
 (define-public rust-actix-rt-1
   (package
     (name "rust-actix-rt")
