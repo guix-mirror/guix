@@ -1472,7 +1472,12 @@ standards of the IceCat project.")
                        (string-append (getcwd) "/mach_state"))
                (setenv "MOZCONFIG"
                        (string-append (getcwd) "/.mozconfig"))
-               (setenv "CC" "gcc")
+
+               (setenv "AR" "llvm-ar")
+               (setenv "NM" "llvm-nm")
+               (setenv "CC" "clang")
+               (setenv "CXX" "clang++")
+
                (setenv "MOZ_NOSPAM" "1")
                (setenv "MACH_USE_SYSTEM_PYTHON" "1")
                (setenv "PYTHON"
@@ -1623,8 +1628,8 @@ standards of the IceCat project.")
               (base32
                "0aj8a8qbm71n34yi58y04bn4h9zz2rciz0cm3hh58rsmcqs1s9ym")))))
        ("cargo" ,rust "cargo")
-       ("clang" ,clang)
-       ("llvm" ,llvm)
+       ("clang" ,clang-11)
+       ("llvm" ,llvm-11)
        ("m4" ,m4)
        ("nasm" ,nasm)
        ("node" ,node)
