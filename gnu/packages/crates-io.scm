@@ -59809,6 +59809,30 @@ different for every thread.")
      `(#:cargo-inputs
        (("rust-thread-id" ,rust-thread-id-2))))))
 
+(define-public rust-thread-priority-0.4
+  (package
+    (name "rust-thread-priority")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "thread-priority" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1ccidjv5ra017knav1h34bzlscpx856fhz7kln3zhszh3jpr8qqg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/vityafx/thread-priority")
+    (synopsis "Library for managing threads priority and schedule policies")
+    (description
+     "Library for managing threads priority and schedule policies.")
+    (license license:expat)))
+
 (define-public rust-thread-tree-0.3
   (package
     (name "rust-thread-tree")
