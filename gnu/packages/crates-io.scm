@@ -52066,6 +52066,25 @@ exactly where a binary came from and how it was built.")
      "A library for using child processes from multiple threads.")
     (license license:expat)))
 
+(define-public rust-shared-child-0.2
+  (package
+    (inherit rust-shared-child-0.3)
+    (name "rust-shared-child")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "shared-child" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1k0ldvk9p1l0b38bwd3a29ylmwbj60c37hnqzh0hljmyin93i6q9"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-kernel32-sys" ,rust-kernel32-sys-0.2)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-winapi" ,rust-winapi-0.2))))))
+
 (define-public rust-shared-library-0.1
   (package
     (name "rust-shared-library")
