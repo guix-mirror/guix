@@ -48589,6 +48589,7 @@ native certificate store.")
 
 (define-public rust-rustls-native-certs-0.5
   (package
+    (inherit rust-rustls-native-certs-0.6)
     (name "rust-rustls-native-certs")
     (version "0.5.0")
     (source
@@ -48598,20 +48599,13 @@ native certificate store.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "14i0bbbigk6r6262hvc51vz4dvqk1f3vg2f264wfvn2vi30vf1ss"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-openssl-probe" ,rust-openssl-probe-0.1)
         ("rust-rustls" ,rust-rustls-0.19)
         ("rust-schannel" ,rust-schannel-0.1)
-        ("rust-security-framework" ,rust-security-framework-2))))
-    (home-page "https://github.com/ctz/rustls-native-certs")
-    (synopsis "Use the platform native certificate store with rustls")
-    (description "@code{rustls-native-certs} allows rustls to use the platform
-native certificate store.")
-    (license
-     (list license:asl2.0 license:isc license:expat))))
+        ("rust-security-framework" ,rust-security-framework-2))))))
 
 (define-public rust-rustls-native-certs-0.4
   (package
