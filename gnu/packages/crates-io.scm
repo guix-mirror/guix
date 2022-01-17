@@ -66033,6 +66033,33 @@ non-cryptographic hashing algorithm and random number generator.")
      "This package provides a collection of utility functions.")
     (license license:expat)))
 
+(define-public rust-x25519-dalek-1
+  (package
+    (name "rust-x25519-dalek")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "x25519-dalek" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0xz0m1pczss9r25d1r52420dl2picdypbcn5ycmlwssp9awvd4i3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-curve25519-dalek" ,rust-curve25519-dalek-3)
+        ("rust-rand-core" ,rust-rand-core-0.5)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-zeroize" ,rust-zeroize-1))))
+    (home-page "https://dalek.rs/")
+    (synopsis "X25519 elliptic curve Diffie-Hellman key exchange")
+    (description
+     "This crate provides a pure-Rust implementation of x25519 elliptic curve
+Diffie-Hellman key exchange, with curve operations provided by
+@code{curve25519-dalek}.")
+    (license license:bsd-3)))
+
 (define-public rust-x86-0.33
   (package
     (name "rust-x86")
