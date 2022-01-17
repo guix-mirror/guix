@@ -223,7 +223,8 @@ a task.")
        ("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
        ("gtk+:bin" ,gtk+ "bin")
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("python" ,python)))
     (inputs
      (list appstream-glib
            gsettings-desktop-schemas
