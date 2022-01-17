@@ -84,6 +84,8 @@
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages webkit)
   #:use-module (srfi srfi-1))
 
 ;;;
@@ -66557,6 +66559,41 @@ with webpki.")
      `(#:cargo-inputs
        (("rust-untrusted" ,rust-untrusted-0.6)
         ("rust-webpki" ,rust-webpki-0.18))))))
+
+(define-public rust-webview-sys-0.6
+  (package
+    (name "rust-webview-sys")
+    (version "0.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "webview-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1jb6h261lzp4b9rp7iwssbc7vs5d3q4wp08a4wvgwps2q4jz0080"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cc" ,rust-cc-1)
+        ("rust-gdk-sys" ,rust-gdk-sys-0.10)
+        ("rust-gio-sys" ,rust-gio-sys-0.10)
+        ("rust-glib-sys" ,rust-glib-sys-0.10)
+        ("rust-gobject-sys" ,rust-gobject-sys-0.10)
+        ("rust-gtk-sys" ,rust-gtk-sys-0.10)
+        ("rust-javascriptcore-rs-sys" ,rust-javascriptcore-rs-sys-0.2)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-pkg-config" ,rust-pkg-config-0.3)
+        ("rust-webkit2gtk-sys" ,rust-webkit2gtk-sys-0.12))))
+    (native-inputs
+     (list pkg-config))
+    (inputs
+     (list gtk+ webkitgtk-with-libsoup2))
+    (home-page "https://github.com/Boscop/web-view")
+    (synopsis "Rust native ffi bindings for webview")
+    (description "This library provides a Rust binding to the original
+implementation of webview, a tiny cross-platform library to render web-based
+GUIs as desktop applications.")
+    (license license:expat)))
 
 (define-public rust-weedle-0.10
   (package
