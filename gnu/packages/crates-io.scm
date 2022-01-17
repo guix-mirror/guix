@@ -536,6 +536,68 @@ protocols.")
        #:cargo-development-inputs
        (("rust-actix-http-test" ,rust-actix-http-test-1))))))
 
+(define-public rust-actix-http-0.2
+  (package
+    (inherit rust-actix-http-2)
+    (name "rust-actix-http")
+    (version "0.2.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-http" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0fdi9pi33am22qbqni5dn2in11xfbchgsjnm9ws0s918rmvhzdgw"))))
+    ;; XXX: The crate fails to't build without rust-actix-http-test-0.2 making
+    ;; a circular dependency with rust-awc-0.2
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-actix-codec" ,rust-actix-codec-0.1)
+        ("rust-actix-connect" ,rust-actix-connect-0.2)
+        ("rust-actix-server-config" ,rust-actix-server-config-0.1)
+        ("rust-actix-service" ,rust-actix-service-0.4)
+        ("rust-actix-threadpool" ,rust-actix-threadpool-0.1)
+        ("rust-actix-utils" ,rust-actix-utils-0.4)
+        ("rust-base64" ,rust-base64-0.10)
+        ("rust-bitflags" ,rust-bitflags-1)
+        ("rust-brotli2" ,rust-brotli2-0.3)
+        ("rust-bytes" ,rust-bytes-0.4)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-copyless" ,rust-copyless-0.1)
+        ("rust-derive-more" ,rust-derive-more-0.15)
+        ("rust-either" ,rust-either-1)
+        ("rust-encoding-rs" ,rust-encoding-rs-0.8)
+        ("rust-failure" ,rust-failure-0.1)
+        ("rust-flate2" ,rust-flate2-1)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-h2" ,rust-h2-0.1)
+        ("rust-hashbrown" ,rust-hashbrown-0.6)
+        ("rust-http" ,rust-http-0.1)
+        ("rust-httparse" ,rust-httparse-1)
+        ("rust-indexmap" ,rust-indexmap-1)
+        ("rust-language-tags" ,rust-language-tags-0.2)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-mime" ,rust-mime-0.3)
+        ("rust-openssl" ,rust-openssl-0.10)
+        ("rust-percent-encoding" ,rust-percent-encoding-2)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-ring" ,rust-ring-0.14)
+        ("rust-rustls" ,rust-rustls-0.15)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-serde-urlencoded" ,rust-serde-urlencoded-0.6)
+        ("rust-sha1" ,rust-sha1-0.6)
+        ("rust-slab" ,rust-slab-0.4)
+        ("rust-time" ,rust-time-0.1)
+        ("rust-tokio-current-thread" ,rust-tokio-current-thread-0.1)
+        ("rust-tokio-tcp" ,rust-tokio-tcp-0.1)
+        ("rust-tokio-timer" ,rust-tokio-timer-0.2)
+        ("rust-trust-dns-resolver" ,rust-trust-dns-resolver-0.11)
+        ("rust-webpki-roots" ,rust-webpki-roots-0.16))))))
+
 (define-public rust-actix-http-test-1
   (package
     (name "rust-actix-http-test")
