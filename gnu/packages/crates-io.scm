@@ -9138,15 +9138,15 @@ box''.")
 (define-public rust-cc-1
   (package
     (name "rust-cc")
-    (version "1.0.66")
+    (version "1.0.67")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "cc" version))
-        (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "0j7d7h4n81z5f22l3v8ggjvvw8m64636nlaqax4x1y44da1rc12c"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cc" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1z9p27ys80shv09zhknmlal8jjra78agdwg97i6jjd6lg83rpip3"))))
     (build-system cargo-build-system)
     (arguments
      `(#:tests? #f
@@ -20443,7 +20443,7 @@ cross platform API.")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-cfg-if" ,rust-cfg-if-1)
-        ("rust-cloudflare-zlib-sys" ,rust-cloudflare-zlib-sys-0.2)
+        ("rust-cloudflare-zlib-sys" ,rust-cloudflare-zlib-sys-0.3)
         ("rust-crc32fast" ,rust-crc32fast-1)
         ("rust-futures" ,rust-futures-0.1)
         ("rust-libc" ,rust-libc-0.2)
