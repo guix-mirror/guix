@@ -17439,6 +17439,30 @@ Rust.")
      "A library for running child processes.")
     (license license:expat)))
 
+(define-public rust-duct-0.8
+  (package
+    (inherit rust-duct-0.13)
+    (name "rust-duct")
+    (version "0.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "duct" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0p06yslfi1wa68c2x068wmi9pr2mzmm64d6qwq8zba58w1gs2np4"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-error-chain" ,rust-error-chain-0.8)
+        ("rust-lazycell" ,rust-lazycell-0.5)
+        ("rust-os-pipe" ,rust-os-pipe-0.5)
+        ("rust-shared-child" ,rust-shared-child-0.2))
+       #:cargo-development-inputs
+       (("rust-tempdir" ,rust-tempdir-0.3))))))
+
 (define-public rust-dunce-1
   (package
     (name "rust-dunce")
