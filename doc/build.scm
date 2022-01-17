@@ -825,6 +825,98 @@ from SOURCE."
 
   (computed-file "guix-manual-po" build))
 
+(define* (localization-helper-module source
+                                     #:optional (languages %languages))
+  "Return a file-like object for use as the (localization) module.  SOURCE
+must be the Guix top-level source directory, from which PO files are taken."
+  (define content
+    (with-extensions (list guile-json-3)
+      #~(begin
+          (define-module (localization)
+            #:use-module (json)
+            #:use-module (srfi srfi-1)
+            #:use-module (srfi srfi-19)
+            #:use-module (ice-9 match)
+            #:use-module (ice-9 popen)
+            #:export (normalize
+                      with-language
+                      translate
+                      language-code->name
+                      seconds->string))
+
+          (define (normalize language)            ;XXX: deduplicate
+            ;; Normalize LANGUAGE.  For instance, "zh_CN" becomes "zh-cn".
+            (string-map (match-lambda
+                          (#\_ #\-)
+                          (chr chr))
+                        (string-downcase language)))
+
+          (define-syntax-rule (with-language language exp ...)
+            (let ((lang (getenv "LANGUAGE")))
+              (dynamic-wind
+                (lambda ()
+                  (setenv "LANGUAGE" language)
+                  (setlocale LC_MESSAGES))
+                (lambda () exp ...)
+                (lambda ()
+                  (if lang
+                      (setenv "LANGUAGE" lang)
+                      (unsetenv "LANGUAGE"))
+                  (setlocale LC_MESSAGES)))))
+
+          ;; (put 'with-language 'scheme-indent-function 1)
+          (define* (translate str language
+                              #:key (domain "guix-manual"))
+            (define exp
+              `(begin
+                 (bindtextdomain "guix-manual"
+                                 #+(guix-manual-text-domain
+                                    source
+                                    languages))
+                 (bindtextdomain "iso_639-3"      ;language names
+                                 #+(file-append iso-codes
+                                                "/share/locale"))
+                 (write (gettext ,str ,domain))))
+
+            (with-language language
+              ;; Since the 'gettext' function caches msgid translations,
+              ;; regardless of $LANGUAGE, we have to spawn a new process each
+              ;; time we want to translate to a different language.  Bah!
+              (let* ((pipe (open-pipe* OPEN_READ
+                                       #+(file-append guile-3.0
+                                                      "/bin/guile")
+                                       "-c" (object->string exp)))
+                     (str  (read pipe)))
+                (close-pipe pipe)
+                str)))
+
+          (define %iso639-languages
+            (vector->list
+             (assoc-ref (call-with-input-file
+                            #+(file-append iso-codes
+                                           "/share/iso-codes/json/iso_639-3.json")
+                          json->scm)
+                        "639-3")))
+
+          (define (language-code->name code)
+            "Return the full name of a language from its ISO-639-3 code."
+            (let ((code (match (string-index code #\_)
+                          (#f    code)
+                          (index (string-take code index)))))
+              (any (lambda (language)
+                     (and (string=? (or (assoc-ref language "alpha_2")
+                                        (assoc-ref language "alpha_3"))
+                                    code)
+                          (assoc-ref language "name")))
+                   %iso639-languages)))
+
+          (define (seconds->string seconds language)
+            (let* ((time (make-time time-utc 0 seconds))
+                   (date (time-utc->date time)))
+              (with-language language (date->string date "~e ~B ~Y")))))))
+
+  (scheme-file "localization.scm" content))
+
 (define* (html-manual-indexes source
                               #:key (languages %languages)
                               (version "0.0")
@@ -834,207 +926,135 @@ from SOURCE."
                                          "GNU Guix Cookbook"))
                               (date 1))
   (define build
-    (with-extensions (list guile-json-3)
-      (with-imported-modules '((guix build utils))
-        #~(begin
-            (use-modules (guix build utils)
-                         (json)
-                         (ice-9 match)
-                         (ice-9 popen)
-                         (sxml simple)
-                         (srfi srfi-1)
-                         (srfi srfi-19))
+    (with-imported-modules `((guix build utils)
+                             ((localization)
+                              => ,(localization-helper-module
+                                   source languages)))
+      #~(begin
+          (use-modules (guix build utils)
+                       (localization)
+                       (sxml simple)
+                       (srfi srfi-1))
 
-            (define (normalize language)          ;XXX: deduplicate
-              ;; Normalize LANGUAGE.  For instance, "zh_CN" becomes "zh-cn".
-              (string-map (match-lambda
-                            (#\_ #\-)
-                            (chr chr))
-                          (string-downcase language)))
+          (define (guix-url path)
+            (string-append #$%web-site-url path))
 
-            (define-syntax-rule (with-language language exp ...)
-              (let ((lang (getenv "LANGUAGE")))
-                (dynamic-wind
-                  (lambda ()
-                    (setenv "LANGUAGE" language)
-                    (setlocale LC_MESSAGES))
-                  (lambda () exp ...)
-                  (lambda ()
-                    (if lang
-                        (setenv "LANGUAGE" lang)
-                        (unsetenv "LANGUAGE"))
-                    (setlocale LC_MESSAGES)))))
+          (define (sxml-index language title body)
+            ;; FIXME: Avoid duplicating styling info from guix-artwork.git.
+            `(html (@ (lang ,language))
+                   (head
+                    (title ,(string-append title " — GNU Guix"))
+                    (meta (@ (charset "UTF-8")))
+                    (meta (@ (name "viewport") (content "width=device-width, initial-scale=1.0")))
+                    ;; Menu prefetch.
+                    (link (@ (rel "prefetch") (href ,(guix-url "menu/index.html"))))
+                    ;; Base CSS.
+                    (link (@ (rel "stylesheet") (href ,(guix-url "static/base/css/elements.css"))))
+                    (link (@ (rel "stylesheet") (href ,(guix-url "static/base/css/common.css"))))
+                    (link (@ (rel "stylesheet") (href ,(guix-url "static/base/css/messages.css"))))
+                    (link (@ (rel "stylesheet") (href ,(guix-url "static/base/css/navbar.css"))))
+                    (link (@ (rel "stylesheet") (href ,(guix-url "static/base/css/breadcrumbs.css"))))
+                    (link (@ (rel "stylesheet") (href ,(guix-url "static/base/css/buttons.css"))))
+                    (link (@ (rel "stylesheet") (href ,(guix-url "static/base/css/footer.css"))))
 
-            ;; (put 'with-language 'scheme-indent-function 1)
-            (define* (translate str language
-                                #:key (domain "guix-manual"))
-              (define exp
-                `(begin
-                   (bindtextdomain "guix-manual"
-                                   #+(guix-manual-text-domain
-                                      source
-                                      languages))
-                   (bindtextdomain "iso_639-3"    ;language names
-                                   #+(file-append iso-codes
-                                                  "/share/locale"))
-                   (write (gettext ,str ,domain))))
+                    (link (@ (rel "stylesheet") (href ,(guix-url "static/base/css/page.css"))))
+                    (link (@ (rel "stylesheet") (href ,(guix-url "static/base/css/post.css")))))
+                   (body
+                    (header (@ (class "navbar"))
+                            (h1 (a (@ (class "branding")
+                                      (href #$%web-site-url)))
+                                (span (@ (class "a11y-offset"))
+                                      "Guix"))
+                            (nav (@ (class "menu"))))
+                    (nav (@ (class "breadcrumbs"))
+                         (a (@ (class "crumb")
+                               (href #$%web-site-url))
+                            "Home"))
+                    ,body
+                    (footer))))
 
-              (with-language language
-                ;; Since the 'gettext' function caches msgid translations,
-                ;; regardless of $LANGUAGE, we have to spawn a new process each
-                ;; time we want to translate to a different language.  Bah!
-                (let* ((pipe (open-pipe* OPEN_READ
-                                         #+(file-append guile-2.2
-                                                        "/bin/guile")
-                                         "-c" (object->string exp)))
-                       (str  (read pipe)))
-                  (close-pipe pipe)
-                  str)))
+          (define (language-index language)
+            (define title
+              (translate #$title language))
 
-            (define (seconds->string seconds language)
-              (let* ((time (make-time time-utc 0 seconds))
-                     (date (time-utc->date time)))
-                (with-language language (date->string date "~e ~B ~Y"))))
+            (sxml-index
+             language title
+             `(main
+               (article
+                (@ (class "page centered-block limit-width"))
+                (h2 ,title)
+                (p (@ (class "post-metadata centered-text"))
+                   #$version " — "
+                   ,(seconds->string #$date language))
 
-            (define (guix-url path)
-              (string-append #$%web-site-url path))
+                (div
+                 (ul
+                  (li (a (@ (href "html_node"))
+                         "HTML, with a separate page per node"))
+                  (li (a (@ (href
+                             ,(string-append
+                               #$manual
+                               (if (string=? language
+                                             "en")
+                                   ""
+                                   (string-append "."
+                                                  language))
+                               ".html")))
+                         "HTML, entirely on one page"))
+                  ,@(if (member language '("ru" "zh_CN"))
+                        '()
+                        `((li (a (@ (href ,(string-append
+                                            #$manual
+                                            (if (string=? language "en")
+                                                ""
+                                                (string-append "."
+                                                               language))
+                                            ".pdf"))))
+                              "PDF")))))))))
 
-            (define (sxml-index language title body)
-              ;; FIXME: Avoid duplicating styling info from guix-artwork.git.
-              `(html (@ (lang ,language))
-                     (head
-                      (title ,(string-append title " — GNU Guix"))
-                      (meta (@ (charset "UTF-8")))
-                      (meta (@ (name "viewport") (content "width=device-width, initial-scale=1.0")))
-                      ;; Menu prefetch.
-                      (link (@ (rel "prefetch") (href ,(guix-url "menu/index.html"))))
-                      ;; Base CSS.
-                      (link (@ (rel "stylesheet") (href ,(guix-url "static/base/css/elements.css"))))
-                      (link (@ (rel "stylesheet") (href ,(guix-url "static/base/css/common.css"))))
-                      (link (@ (rel "stylesheet") (href ,(guix-url "static/base/css/messages.css"))))
-                      (link (@ (rel "stylesheet") (href ,(guix-url "static/base/css/navbar.css"))))
-                      (link (@ (rel "stylesheet") (href ,(guix-url "static/base/css/breadcrumbs.css"))))
-                      (link (@ (rel "stylesheet") (href ,(guix-url "static/base/css/buttons.css"))))
-                      (link (@ (rel "stylesheet") (href ,(guix-url "static/base/css/footer.css"))))
-
-                      (link (@ (rel "stylesheet") (href ,(guix-url "static/base/css/page.css"))))
-                      (link (@ (rel "stylesheet") (href ,(guix-url "static/base/css/post.css")))))
-                     (body
-                      (header (@ (class "navbar"))
-                              (h1 (a (@ (class "branding")
-                                        (href #$%web-site-url)))
-                                  (span (@ (class "a11y-offset"))
-                                        "Guix"))
-                              (nav (@ (class "menu"))))
-                      (nav (@ (class "breadcrumbs"))
-                           (a (@ (class "crumb")
-                                 (href #$%web-site-url))
-                              "Home"))
-                      ,body
-                      (footer))))
-
-            (define (language-index language)
-              (define title
-                (translate #$title language))
-
-              (sxml-index
-               language title
-               `(main
-                 (article
-                  (@ (class "page centered-block limit-width"))
-                  (h2 ,title)
-                  (p (@ (class "post-metadata centered-text"))
-                     #$version " — "
-                     ,(seconds->string #$date language))
-
-                  (div
-                   (ul
-                    (li (a (@ (href "html_node"))
-                           "HTML, with a separate page per node"))
-                    (li (a (@ (href
-                               ,(string-append
-                                 #$manual
-                                 (if (string=? language
-                                               "en")
-                                     ""
-                                     (string-append "."
-                                                    language))
-                                 ".html")))
-                           "HTML, entirely on one page"))
-                    ,@(if (member language '("ru" "zh_CN"))
-                          '()
-                          `((li (a (@ (href ,(string-append
-                                              #$manual
-                                              (if (string=? language "en")
-                                                  ""
-                                                  (string-append "."
-                                                                 language))
-                                              ".pdf"))))
-                                "PDF")))))))))
-
-            (define %iso639-languages
-              (vector->list
-               (assoc-ref (call-with-input-file
-                              #+(file-append iso-codes
-                                             "/share/iso-codes/json/iso_639-3.json")
-                            json->scm)
-                          "639-3")))
-
-            (define (language-code->name code)
-              "Return the full name of a language from its ISO-639-3 code."
-              (let ((code (match (string-index code #\_)
-                            (#f    code)
-                            (index (string-take code index)))))
-               (any (lambda (language)
-                      (and (string=? (or (assoc-ref language "alpha_2")
-                                         (assoc-ref language "alpha_3"))
-                                     code)
-                           (assoc-ref language "name")))
-                    %iso639-languages)))
-
-            (define (top-level-index languages)
-              (define title #$title)
-              (sxml-index
-               "en" title
-               `(main
-                 (article
-                  (@ (class "page centered-block limit-width"))
-                  (h2 ,title)
-                  (div
-                   "This document is available in the following
+          (define (top-level-index languages)
+            (define title #$title)
+            (sxml-index
+             "en" title
+             `(main
+               (article
+                (@ (class "page centered-block limit-width"))
+                (h2 ,title)
+                (div
+                 "This document is available in the following
 languages:\n"
-                   (ul
-                    ,@(map (lambda (language)
-                             `(li (a (@ (href ,(normalize language)))
-                                     ,(translate
-                                       (language-code->name language)
-                                       language
-                                       #:domain "iso_639-3"))))
-                           languages)))))))
+                 (ul
+                  ,@(map (lambda (language)
+                           `(li (a (@ (href ,(normalize language)))
+                                   ,(translate
+                                     (language-code->name language)
+                                     language
+                                     #:domain "iso_639-3"))))
+                         languages)))))))
 
-            (define (write-html file sxml)
-              (call-with-output-file file
-                (lambda (port)
-                  (display "<!DOCTYPE html>\n" port)
-                  (sxml->xml sxml port))))
+          (define (write-html file sxml)
+            (call-with-output-file file
+              (lambda (port)
+                (display "<!DOCTYPE html>\n" port)
+                (sxml->xml sxml port))))
 
-            (setenv "GUIX_LOCPATH"
-                    #+(file-append glibc-utf8-locales "/lib/locale"))
-            (setenv "LC_ALL" "en_US.utf8")
-            (setlocale LC_ALL "en_US.utf8")
+          (setenv "GUIX_LOCPATH"
+                  #+(file-append glibc-utf8-locales "/lib/locale"))
+          (setenv "LC_ALL" "en_US.utf8")
+          (setlocale LC_ALL "en_US.utf8")
 
-            (for-each (lambda (language)
-                        (define directory
-                          (string-append #$output "/"
-                                         (normalize language)))
+          (for-each (lambda (language)
+                      (define directory
+                        (string-append #$output "/"
+                                       (normalize language)))
 
-                        (mkdir-p directory)
-                        (write-html (string-append directory "/index.html")
-                                    (language-index language)))
-                      '#$languages)
+                      (mkdir-p directory)
+                      (write-html (string-append directory "/index.html")
+                                  (language-index language)))
+                    '#$languages)
 
-            (write-html (string-append #$output "/index.html")
-                        (top-level-index '#$languages))))))
+          (write-html (string-append #$output "/index.html")
+                      (top-level-index '#$languages)))))
 
   (computed-file "html-indexes" build))
 
