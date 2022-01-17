@@ -698,6 +698,28 @@ asynchronous request/response operations.")
     (description "This package provides Actix thread pool for sync code.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-actix-threadpool-0.1
+  (package
+    (inherit rust-actix-threadpool-0.3)
+    (name "rust-actix-threadpool")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-threadpool" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0pfk6k09cdw0w63wh8glqm6bvqz0hlqwhyqvdfw6yzns2dfyhnkb"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-derive-more" ,rust-derive-more-0.15)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-num-cpus" ,rust-num-cpus-1)
+        ("rust-parking-lot" ,rust-parking-lot-0.9)
+        ("rust-threadpool" ,rust-threadpool-1))))))
+
 (define-public rust-actix-tls-2
   (package
     (name "rust-actix-tls")
