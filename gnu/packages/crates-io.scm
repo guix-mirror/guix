@@ -28490,6 +28490,22 @@ requires non-const function calls to be computed.")
      "This package provides a library providing a lazily filled Cell struct.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-lazycell-0.5
+  (package
+    (inherit rust-lazycell-1)
+    (name "rust-lazycell")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "lazycell" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "16w5c75sb7xjica1ys6w8ndxvy001y52fjz722m07yqid1x5nn1v"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-clippy" ,rust-clippy-0.0))))))
+
 (define-public rust-lettre-0.9
   (package
     (name "rust-lettre")
