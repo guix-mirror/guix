@@ -58528,14 +58528,14 @@ interoperable with the standard library, and is mostly compatible with
   (package
     (inherit rust-time-0.3)
     (name "rust-time")
-    (version "0.2.23")
+    (version "0.2.27")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "time" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "12z95k0005rmyn9pf9v4hq80khsns7y5wfydnjr5jpci2yiyxnmw"))))
+        (base32 "0hm209d078jfgxzjhi5xqim64q31rlj1h70zz57qbmpbirzsjlj7"))))
     (arguments
      `(#:cargo-inputs
        (("rust-const-fn" ,rust-const-fn-0.4)
