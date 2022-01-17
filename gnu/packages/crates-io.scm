@@ -905,6 +905,31 @@ the Actix ecosystem.")
         ("rust-pin-project" ,rust-pin-project-0.4)
         ("rust-slab" ,rust-slab-0.4))))))
 
+(define-public rust-actix-utils-0.4
+  (package
+    (inherit rust-actix-utils-2)
+    (name "rust-actix-utils")
+    (version "0.4.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-utils" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "15bv06z7pccnmh067l5zj0fvpmfagnil7lvznnl3fp4gjh4k334h"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-actix-codec" ,rust-actix-codec-0.1)
+        ("rust-actix-service" ,rust-actix-service-0.4)
+        ("rust-bytes" ,rust-bytes-0.4)
+        ("rust-either" ,rust-either-1)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-tokio-current-thread" ,rust-tokio-current-thread-0.1)
+        ("rust-tokio-timer" ,rust-tokio-timer-0.2))
+       #:cargo-development-inputs
+       (("rust-actix-rt" ,rust-actix-rt-0.2))))))
+
 (define-public rust-actix-web-3
   (package
     (name "rust-actix-web")
