@@ -83,7 +83,8 @@
     (native-inputs
      `(("check" ,check)
        ("gettext" ,gettext-minimal)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("python" ,python)))
     (inputs
      `(("curl" ,curl)
        ("giflib" ,giflib)
