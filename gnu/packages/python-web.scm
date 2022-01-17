@@ -193,6 +193,33 @@ implements @code{collections.abc.MutableSequence}.  It can be made immutable
 by calling @code{FrozenList.freeze}.")
     (license license:asl2.0)))
 
+(define-public python-aiosignal
+  (package
+    (name "python-aiosignal")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "aiosignal" version))
+       (sha256
+        (base32 "1wkxbdgw07ay8yzx3pg1jcm46p3d21rfb5g4k17ysz3vdkdngvbq"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "tests")))))))
+    (propagated-inputs (list python-frozenlist))
+    (native-inputs (list python-pytest python-pytest-asyncio))
+    (home-page "https://github.com/aio-libs/aiosignal")
+    (synopsis "Callback manager for Python @code{asyncio} projects")
+    (description "This Python module provides @code{Signal}, an abstraction to
+register asynchronous callbacks.  The @code{Signal} abstraction can be used
+for adding, removing and dropping callbacks.")
+    (license license:asl2.0)))
+
 (define-public python-aiohttp
   (package
     (name "python-aiohttp")
