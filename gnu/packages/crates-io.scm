@@ -662,6 +662,46 @@ during testing.")
 ecosystem.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-actix-server-0.5
+  (package
+    (inherit rust-actix-server-1)
+    (name "rust-actix-server")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-server" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1fyxkkgm3cbyzxgx0qw86i1dq9hrr891n1c7mc7450n8arir735s"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-actix-rt" ,rust-actix-rt-0.2)
+        ("rust-actix-server-config" ,rust-actix-server-config-0.1)
+        ("rust-actix-service" ,rust-actix-service-0.4)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-mio" ,rust-mio-0.6)
+        ("rust-native-tls" ,rust-native-tls-0.2)
+        ("rust-net2" ,rust-net2-0.2)
+        ("rust-num-cpus" ,rust-num-cpus-1)
+        ("rust-openssl" ,rust-openssl-0.10)
+        ("rust-rustls" ,rust-rustls-0.15)
+        ("rust-slab" ,rust-slab-0.4)
+        ("rust-tokio-io" ,rust-tokio-io-0.1)
+        ("rust-tokio-openssl" ,rust-tokio-openssl-0.3)
+        ("rust-tokio-reactor" ,rust-tokio-reactor-0.1)
+        ("rust-tokio-rustls" ,rust-tokio-rustls-0.9)
+        ("rust-tokio-signal" ,rust-tokio-signal-0.2)
+        ("rust-tokio-tcp" ,rust-tokio-tcp-0.1)
+        ("rust-tokio-timer" ,rust-tokio-timer-0.2)
+        ("rust-webpki" ,rust-webpki-0.19)
+        ("rust-webpki-roots" ,rust-webpki-roots-0.16))
+       #:cargo-development-inputs
+       (("rust-actix-codec" ,rust-actix-codec-0.1)
+        ("rust-bytes" ,rust-bytes-0.4)
+        ("rust-env-logger" ,rust-env-logger-0.6))))))
+
 (define-public rust-actix-server-config-0.1
   (package
     (name "rust-actix-server-config")
