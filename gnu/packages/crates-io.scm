@@ -51918,22 +51918,22 @@ for generating and verifying digital signatures.")
 (define-public rust-signature-derive-1
   (package
     (name "rust-signature-derive")
-    (version "1.0.0-pre.2")
+    (version "1.0.0-pre.4")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "signature_derive" version))
-        (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-          (base32 "0wp8b8ald7qixrcvvclhdcpmn8hkx049jlc29g57ql0304c6qrdh"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "signature-derive" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0p1x0wv6grrgdn226m9rsqpcnpfwkpji7rjpalkbk1ynv0xpvf57"))))
     (build-system cargo-build-system)
     (arguments
-      `(#:skip-build? #t
-        #:cargo-inputs
-        (("rust-proc-macro2" ,rust-proc-macro2-1)
-         ("rust-quote" ,rust-quote-1)
-         ("rust-syn" ,rust-syn-1)
-         ("rust-synstructure" ,rust-synstructure-0.12))))
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1)
+        ("rust-synstructure" ,rust-synstructure-0.12))))
     (home-page "signature_derive")
     (synopsis "Custom derive support for the 'signature' crate")
     (description "This package provides proc macros used by the signature
