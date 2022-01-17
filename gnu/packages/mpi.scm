@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2018, 2019 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014-2022 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
@@ -502,7 +502,30 @@ arrays) that expose a buffer interface.")
                           before after)
                          (string-append "pmpi_convenience_libs = "
                                         before " " after)))
-                      #t)))))
+                      #t))
+                  (add-before 'configure 'define-gfortran-wrapper
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      ;; 'configure' checks whether the Fortran compiler
+                      ;; allows argument type mismatch.  Since gfortran >= 10
+                      ;; does not, provide a wrapper that passes
+                      ;; '-fallow-argument-mismatch' to get the desired
+                      ;; behavior.
+                      (mkdir-p ".gfortran-wrapper/bin")
+                      (call-with-output-file ".gfortran-wrapper/bin/gfortran"
+                        (lambda (port)
+                          (display (string-append "#!" (which "sh") "\n")
+                                   port)
+                          (display
+                           (string-append "exec \"" (which "gfortran")
+                                          "\" -fallow-argument-mismatch"
+                                          " \"$@\"\n")
+                           port)
+                          (chmod port #o755)))
+
+                      (setenv "PATH"
+                              (string-append (getcwd) "/"
+                                             ".gfortran-wrapper/bin:"
+                                             (getenv "PATH"))))))))
     (home-page "https://www.mpich.org/")
     (synopsis "Implementation of the Message Passing Interface (MPI)")
     (description
