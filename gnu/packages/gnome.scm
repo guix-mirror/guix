@@ -6784,7 +6784,7 @@ a secret password store, an adblocker, and a modern UI.")
                                   "epiphany-" version ".tar.xz"))
               (sha256
                (base32
-                "0r7m34xzz3shdfxf2abxb069izak3yv3ijlg29qy4pfmyawkilfs"))
+                "0k7b22zq3z1kllzqxgwsvwb1lp0j6rjb3k1hvhna3i573wc4mpji"))
               (patches
                (search-patches "epiphany-update-libportal-usage.patch"))))
     (build-system meson-build-system)
