@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2015-2022 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2021 Tobias Geerinck-Rice <me@tobias.gr>
 #
 # This file is part of GNU Guix.
@@ -294,7 +294,7 @@ _guix_complete ()
 	    elif [[ "$command" = "size" ]]
 	    then
 		_guix_complete_available_package_or_store_file "$word_at_point"
-	    elif [[ "$command" = "system" ]]
+	    elif [[ "$command" = "system" || "$command" = "home" ]]
 	    then
 		case $((COMP_CWORD - command_index)) in
 		    1) _guix_complete_subcommand;;
