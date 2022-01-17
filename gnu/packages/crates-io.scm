@@ -53795,6 +53795,28 @@ service.")
     (description "The package provides SQLite.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-sqlite3-sys-0.13
+  (package
+    (name "rust-sqlite3-sys")
+    (version "0.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "sqlite3-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0m1f5r4xg5i3r6795q8vwqfdcq3gh1qlfjwkywnka57bz8lg1lh4"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-sqlite3-src" ,rust-sqlite3-src-0.3))))
+    (home-page "https://github.com/stainless-steel/sqlite3-sys")
+    (synopsis "Bindings to SQLite")
+    (description "The package provides bindings to SQLite.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-st-map-0.1
   (package
     (name "rust-st-map")
