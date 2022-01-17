@@ -28898,6 +28898,29 @@ library.")
         (snippet
          '(begin (delete-file-recursively "libgit2") #t))))))
 
+(define-public rust-libgit2-sys-0.6
+  (package
+    (inherit rust-libgit2-sys-0.10)
+    (name "rust-libgit2-sys-6")
+    (version "0.6.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "libgit2-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0myk79sxqj20bmj4ir3p81xnma9qnid5rrmlbkj5v68wgdpfdskf"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cc" ,rust-cc-1)
+        ("rust-cmake" ,rust-cmake-0.1)
+        ("rust-curl-sys" ,rust-curl-sys-0.4)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-libssh2-sys" ,rust-libssh2-sys-0.2)
+        ("rust-libz-sys" ,rust-libz-sys-1)
+        ("rust-openssl-sys" ,rust-openssl-sys-0.9)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))))
+
 (define-public rust-libloading-0.7
   (package
     (name "rust-libloading")
