@@ -10314,6 +10314,34 @@ colorization.")
 pitfalls in Rust.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-clippy-0.0.153
+  (package
+    (inherit rust-clippy-0.0)
+    (name "rust-clippy")
+    (version "0.0.153")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "clippy" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1b5c96303nc6ngphazjafafgjjfawfbsjrkr2c8m2xvg7finxf47"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cargo-metadata" ,rust-cargo-metadata-0.2)
+        ("rust-clippy-lints" ,rust-clippy-lints-0.0.153))
+       #:cargo-development-inputs
+       (("rust-clippy-mini-macro-test" ,rust-clippy-mini-macro-test-0.1)
+        ("rust-compiletest-rs" ,rust-compiletest-rs-0.2)
+        ("rust-duct" ,rust-duct-0.8)
+        ("rust-lazy-static" ,rust-lazy-static-0.2)
+        ("rust-regex" ,rust-regex-0.2)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-derive" ,rust-serde-derive-1))))))
+
 (define-public rust-clippy-lints-0.0.153
   (package
     (name "rust-clippy-lints")
