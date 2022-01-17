@@ -23,11 +23,16 @@
   #:use-module (gnu packages datastructures)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages engineering)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages haskell-xyz)
+  #:use-module (gnu packages libunwind)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages man)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
@@ -45,7 +50,8 @@
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
-  #:use-module (srfi srfi-26))
+  #:use-module (srfi srfi-26)
+  #:use-module (guix utils))
 
 (define-public babeltrace
   (package
@@ -280,3 +286,61 @@ daemon @code{lttng-sessiond} that acts as a tracing registry, the @command{lttng
 line for tracing control, a @code{lttng-ctl} library for tracing control and a
 @code{lttng-relayd} for network streaming.")
     (license (list  license:gpl2 license:lgpl2.1))))
+
+(define-public uftrace
+  (package
+    (name "uftrace")
+    (version "0.11")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/namhyung/uftrace")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "0gk0hv3rnf5czvazz1prg21rf9qlniz42g5b389n8a29hqj4q6xr"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list
+        (string-append "CC=" ,(cc-for-target)))
+       ;; runtest hang at some point -- probably dues to
+       ;; failed socket connection -- but we want to keep the
+       ;; unit tests.  Change the target to "test" when fixed.
+       #:test-target "unittest"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs target #:allow-other-keys)
+             (let ((arch ,(system->linux-architecture
+                           (or (%current-target-system)
+                               (%current-system)))))
+               (setenv "ARCH"
+                       (cond
+                        ((string=? arch "arm64") "aarch64")
+                        (else arch)))
+               (when target
+                 (setenv "CROSS_COMPILE" (string-append target "-"))))
+             (setenv "SHELL" (which "sh"))
+             (invoke "./configure"
+                     (string-append "--prefix="
+                                    (assoc-ref outputs "out"))))))))
+    (inputs
+     (list capstone
+           elfutils
+           libunwind
+           ncurses))
+    (native-inputs
+     (list luajit
+           pandoc
+           pkg-config
+           python-wrapper))
+    (home-page "https://github.com/namhyung/uftrace")
+    (synopsis "Function graph tracer for C/C++/Rust")
+    (description "uftrace is a tool for tracing and analyzing the execution of
+programs written in C/C++.  It is heavily inspired by the ftrace framework of
+the Linux kernel, while supporting userspace programs.  It supports various
+kind of commands and filters to help analysis of the program execution and
+performance.  It provides the command @command{uftrace}.  User that want to do
+scripting need to install python-3 or luajit in their profile.")
+    (license license:gpl2)))
