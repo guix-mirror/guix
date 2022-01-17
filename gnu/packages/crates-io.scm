@@ -43533,6 +43533,30 @@ Racer.")
 fashion.  It is mostly used in Racer.")
     (license license:expat)))
 
+(define-public rust-radium-0.6
+  (package
+    (name "rust-radium")
+    (version "0.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "radium" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ys4bpp2l701ghdniz90zhkvb5ykmfw2pj0m8pfcbi7bm10qygv4"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-static-assertions" ,rust-static-assertions-1))))
+    (home-page "https://github.com/bitvecto-rs/radium")
+    (synopsis "Portable interfaces for maybe-atomic types")
+    (description
+     "@code{radium} provides abstractions and graceful degradation for behavior
+that must be shared-mutable, but merely may use atomic instructions to do so.")
+    (license license:expat)))
+
 (define-public rust-radium-0.5
   (package
     (name "rust-radium")
