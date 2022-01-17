@@ -330,6 +330,43 @@ protocols.")
                 ,(package-version rust-trust-dns-proto-0.18)))
              #t)))))))
 
+(define-public rust-actix-connect-0.2
+  (package
+    (inherit rust-actix-connect-2)
+    (name "rust-actix-connect")
+    (version "0.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-connect" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "187whz05gjkp9pcza4i714v0a8yxlg3jdrzii7gaqsxl9fyykbcz"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-actix-codec" ,rust-actix-codec-0.1)
+        ("rust-actix-rt" ,rust-actix-rt-0.2)
+        ("rust-actix-service" ,rust-actix-service-0.4)
+        ("rust-actix-utils" ,rust-actix-utils-0.4)
+        ("rust-derive-more" ,rust-derive-more-0.15)
+        ("rust-either" ,rust-either-1)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-http" ,rust-http-0.1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-openssl" ,rust-openssl-0.10)
+        ("rust-rustls" ,rust-rustls-0.15)
+        ("rust-tokio-current-thread" ,rust-tokio-current-thread-0.1)
+        ("rust-tokio-openssl" ,rust-tokio-openssl-0.3)
+        ("rust-tokio-rustls" ,rust-tokio-rustls-0.9)
+        ("rust-tokio-tcp" ,rust-tokio-tcp-0.1)
+        ("rust-trust-dns-resolver" ,rust-trust-dns-resolver-0.11)
+        ("rust-webpki" ,rust-webpki-0.19))
+       #:cargo-development-inputs
+       (("rust-actix-server-config" ,rust-actix-server-config-0.1)
+        ("rust-actix-test-server" ,rust-actix-test-server-0.2)
+        ("rust-bytes" ,rust-bytes-0.4))))))
+
 (define-public rust-actix-derive-0.5
   (package
     (name "rust-actix-derive")
