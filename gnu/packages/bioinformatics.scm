@@ -8979,7 +8979,7 @@ communication networks from scRNA-seq data.")
 (define-public sambamba
   (package
     (name "sambamba")
-    (version "0.8.0")
+    (version "0.8.2")
     (source
      (origin
        (method git-fetch)
@@ -8989,7 +8989,7 @@ communication networks from scRNA-seq data.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "07dznzl6m8k7sw84jxw2kx6i3ymrapbmcmyh0fxz8wrybhw8fmwc"))))
+         "1zdkd1md5wk4la71p82pbclqqcm55abk23fk087da6186i1bsihl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there is no test target
@@ -8997,11 +8997,12 @@ communication networks from scRNA-seq data.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
-         (add-after 'unpack 'fix-ldc-version
-           (lambda _
+         (add-after 'unpack 'prepare-build-tools
+           (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "Makefile"
-               ;; We use ldc2 instead of ldmd2 to compile sambamba.
-               (("\\$\\(shell which ldmd2\\)") (which "ldc2")))))
+               (("\\$\\(shell which ldmd2\\)") (which "ldmd2")))
+             (setenv "CC" "gcc")
+             (setenv "D_LD" (which "ld.gold"))))
          (add-after 'unpack 'unbundle-prerequisites
            (lambda _
              (substitute* "Makefile"
@@ -9014,7 +9015,13 @@ communication networks from scRNA-seq data.")
                (copy-file (string-append "bin/sambamba-" ,version)
                           (string-append bin "/sambamba"))))))))
     (native-inputs
-     (list python))
+     `(("ld-gold-wrapper"
+        ;; Importing (gnu packages commencement) would introduce a cycle.
+        ,(module-ref (resolve-interface
+                      '(gnu packages commencement))
+                     'ld-gold-wrapper))
+       ("binutils-gold" ,binutils-gold)
+       ("python" ,python)))
     (inputs
      (list ldc lz4 zlib))
     (home-page "https://github.com/biod/sambamba")
