@@ -3172,6 +3172,51 @@ It also supports parsing JSON objects that may be bigger than memory with a stre
 API.")
       (license license:expat))))
 
+(define-public guile-srfi-189
+  (let ((commit "a0e3786702956c9e510d92746474ac988c2010ec")
+        (revision "0"))
+    (package
+      (name "guile-srfi-189")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               ;; This is a fork of:
+               ;; (url "https://github.com/scheme-requests-for-implementation/srfi-189")
+               ;; Upstream merge requested at:
+               ;; https://github.com/scheme-requests-for-implementation/srfi-189/pull/21
+               ;; TODO switch over to the official repo when the PR gets merged
+               (url "https://github.com/attila-lendvai-patches/srfi-189")
+               (commit commit)))
+         (sha256
+          (base32
+           "0iqv4sjwbp4k87r9l9abzbs5yjcljm69m91kb1ypb03b0rx7napy"))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             (delete-file "test-syntax.scm")
+             (delete-file "test.scm")))
+         (file-name (git-file-name name version))))
+      (build-system guile-build-system)
+      (arguments
+       '(#:not-compiled-file-regexp "srfi/189\\.scm$")) ; it's INCLUDE'd
+      (native-inputs
+       (list guile-3.0))
+      (propagated-inputs
+       (list guile-srfi-145))
+      (home-page "https://srfi.schemers.org/srfi-189/")
+      (synopsis "Scheme SRFI implementation of Maybe and Either")
+      (description
+       "This SRFI defines two disjoint immutable container types known as
+Maybe and Either, both of which can contain objects collectively known
+as their payload.  A Maybe object is either a Just object or the unique
+object Nothing (which has no payload); an Either object is either a Right
+object or a Left object.  Maybe represents the concept of optional values;
+Either represents the concept of values which are either correct (Right)
+or errors (Left).")
+      (license license:expat))))
+
 (define-public emacsy
   (package
     (name "emacsy")
