@@ -10349,6 +10349,27 @@ pitfalls in Rust.")
 in Rust")
     (license license:mpl2.0)))
 
+(define-public rust-clippy-mini-macro-test-0.1
+  (package
+    (name "rust-clippy-mini-macro-test")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "clippy-mini-macro-test" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1f1q09az4xk4aqnp8g1m6kf4hif75gr7rwzhh4yw7g1gqk94jsgq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t))
+    (home-page "https://github.com/rust-lang-nursery/rust-clippy")
+    (synopsis "Macro to test clippy's procedural macro checks")
+    (description
+     "This package provides a macro to test clippy's procedural macro
+checks.")
+    (license license:mpl2.0)))
+
 (define-public rust-clircle-0.3
   (package
     (name "rust-clircle")
