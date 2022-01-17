@@ -16466,6 +16466,25 @@ traits for both structs and enums.")
         ("rust-rustc-version" ,rust-rustc-version-0.2)
         ("rust-syn" ,rust-syn-0.15))))))
 
+(define-public rust-derive-more-0.14
+  (package
+    (inherit rust-derive-more-0.99)
+    (name "rust-derive-more-1")
+    (version "0.14.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "derive-more" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0fgq5ziyg0gwr5j7pghfrxgzqzmmadknivpigrsniliy0334m53d"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-quote" ,rust-quote-0.6)
+        ("rust-rustc-version" ,rust-rustc-version-0.2)
+        ("rust-syn" ,rust-syn-0.15))))))
+
 (define-public rust-derive-new-0.5
   (package
     (name "rust-derive-new")
