@@ -1348,6 +1348,37 @@ ciphers implementations.")
         ("rust-aesni" ,rust-aesni-0.6)
         ("rust-block-cipher-trait" ,rust-block-cipher-trait-0.6))))))
 
+(define-public rust-aes-gcm-0.8
+  (package
+    (name "rust-aes-gcm")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "aes-gcm" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1nl8iwlh209y1vj9n2lm1a70i69clvg2z6x69bi4dgdrpgxbay2j"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-aead" ,rust-aead-0.3)
+        ("rust-aes" ,rust-aes-0.6)
+        ("rust-cipher" ,rust-cipher-0.2)
+        ("rust-ctr" ,rust-ctr-0.6)
+        ("rust-ghash" ,rust-ghash-0.3)
+        ("rust-subtle" ,rust-subtle-2)
+        ("rust-zeroize" ,rust-zeroize-1))
+       #:cargo-development-inputs
+       (("rust-hex-literal" ,rust-hex-literal-0.2))))
+    (home-page "https://github.com/RustCrypto/AEADs")
+    (synopsis "AES-GCM (Galois/Counter Mode) Authenticated Encryption")
+    (description "This package provides a pure Rust implementation of the
+AES-GCM (Galois/Counter Mode) Authenticated Encryption with Associated
+Data (AEAD) Cipher with optional architecture-specific hardware
+acceleration.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-aes-gcm-0.6
   (package
     (name "rust-aes-gcm")
