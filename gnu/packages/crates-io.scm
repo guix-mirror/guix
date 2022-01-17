@@ -18455,14 +18455,14 @@ is configured via an environment variable.")
   (package
     (inherit rust-env-logger-0.9)
     (name "rust-env-logger")
-    (version "0.8.3")
+    (version "0.8.4")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "env-logger" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0gwx1pvbv99fj9wpicknyv4p2vj997xpva8ac5dg03m35q0jlf8p"))))
+        (base32 "1qzw8g11dbdfi7ixm44ldykwcqsxqkh8vx5cgpd88zmclgz8g4d1"))))
     (arguments
      `(#:cargo-inputs
        (("rust-atty" ,rust-atty-0.2)
