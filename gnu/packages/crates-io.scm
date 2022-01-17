@@ -37814,6 +37814,7 @@ the system.")
 
 (define-public rust-open-1
   (package
+    (inherit rust-open-2)
     (name "rust-open")
     (version "1.7.1")
     (source
@@ -37823,18 +37824,11 @@ the system.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "00828zcxdy3r38inz48jgnszgvqgi1a3bi2rrhij86mqsqq7msnw"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-pathdiff" ,rust-pathdiff-0.2)
-        ("rust-winapi" ,rust-winapi-0.3))))
-    (home-page "https://github.com/Byron/open-rs")
-    (synopsis "Open a path or URL using the program configured on the system")
-    (description
-     "Use this library to open a path or URL using the program configured on
-the system.")
-    (license license:expat)))
+        ("rust-winapi" ,rust-winapi-0.3))))))
 
 (define-public rust-opener-0.4
   (package
