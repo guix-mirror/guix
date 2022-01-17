@@ -10495,6 +10495,34 @@ contains all syscalls and related types.")
      `(#:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1))))))
 
+(define-public rust-cloudflare-zlib-sys-0.3
+  (package
+    (name "rust-cloudflare-zlib-sys")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cloudflare-zlib-sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0vyd0l0vprvh9hc1ikllybrk8xc0lz9f509d2xgxgrpyxp8vch10"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cc" ,rust-cc-1))))
+    (home-page "https://github.com/cloudflare/zlib")
+    (synopsis
+     "Cloudflare fork of zlib with massive performance improvements")
+    (description
+     "Cloudflare fork of zlib with massive performance improvements.")
+    (license
+     (list license:expat
+           license:asl2.0
+           license:zlib))))
+
 (define-public rust-cloudflare-zlib-sys-0.2
   (package
     (name "rust-cloudflare-zlib-sys")
