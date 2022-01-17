@@ -59604,6 +59604,32 @@ manipulation in Rust.")
 specified in FIPS-202, SP800-185 and KangarooTwelve.")
     (license license:cc0)))
 
+(define-public rust-tinyfiledialogs-3
+  (package
+    (name "rust-tinyfiledialogs")
+    (version "3.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tinyfiledialogs" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1sfx2wddmd6dg8vwn53iwlabrynn6gzfbnvhskhy89iwd9i7gidd"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cc" ,rust-cc-1)
+        ("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://github.com/jdm/tinyfiledialogs-rs")
+    (synopsis "High-level Rust binding for the tinyfiledialogs C library")
+    (description
+     "This package provides high-level Rust binding for the tinyfiledialogs
+C library.")
+    (license license:zlib)))
+
 (define-public rust-tinytemplate-1
   (package
     (name "rust-tinytemplate")
