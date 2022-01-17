@@ -12500,13 +12500,13 @@ Features:
 (define-public python-simpleeval
   (package
     (name "python-simpleeval")
-    (version "0.9.10")
+    (version "0.9.12")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "simpleeval" version))
        (sha256
-        (base32 "1skvl467kj83rzkhk01i0wm8m5vmh6j5znrfdizn6r18ii45a839"))))
+        (base32 "0diysdzvx865yy2rjfah75ha2qfxaxz7r108kp7j2kkd903ya2ry"))))
     (build-system python-build-system)
     (home-page "https://github.com/danthedeckie/simpleeval")
     (synopsis "Simple, safe single expression evaluator library")
