@@ -6468,18 +6468,18 @@ streams in big-endian and little-endian formats.")
 
 (define-public rust-bitvec-0.19
   (package
+    (inherit rust-bitvec-0.22)
     (name "rust-bitvec")
     (version "0.19.4")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "bitvec" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "10bz751jbsy8fj203ibjwil07p2fwfzvx7b326wfssaravlkbfm7"))))
-    (build-system cargo-build-system)
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bitvec" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "10bz751jbsy8fj203ibjwil07p2fwfzvx7b326wfssaravlkbfm7"))))
     (arguments
      `(#:cargo-inputs
        (("rust-funty" ,rust-funty-1)
@@ -6492,12 +6492,7 @@ streams in big-endian and little-endian formats.")
         ("rust-serde" ,rust-serde-1)
         ("rust-serde-json" ,rust-serde-json-1)
         ("rust-serde-test" ,rust-serde-test-1)
-        ("rust-static-assertions" ,rust-static-assertions-1))))
-    (home-page "https://myrrlyn.net/crates/bitvec")
-    (synopsis "Manipulate memory, bit by bit")
-    (description
-     "This package provides a crate for manipulating memory, bit by bit.")
-    (license license:expat)))
+        ("rust-static-assertions" ,rust-static-assertions-1))))))
 
 (define-public rust-blake2-0.9
   (package
