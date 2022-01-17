@@ -9,7 +9,7 @@
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
-;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020, 2022 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +27,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages samba)
+  #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -55,6 +56,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages time)
@@ -181,64 +183,58 @@ external dependencies.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.13.14")
+    (version "4.15.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.samba.org/pub/samba/stable/"
                            "samba-" version ".tar.gz"))
        (sha256
-        (base32 "103zy09mszjlfrsnm2vzrw5d9ph5jckddb9cxsrhrslkzblah4b6"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; XXX: Some bundled libraries (e.g, popt, cmocka) are used from
-           ;; the system, but their bundled sources must be kept as they
-           ;; include the WAF scripts used for detecting them.
-           (delete-file-recursively "third_party/pyiso8601")
-           #t))))
+        (base32 "1nrp85aya0pbbqdqjaqcw82cnzzys16yls37hi2h6mci8d09k4si"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags '("TEST_OPTIONS=--quick") ;some tests are very long
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'setup-docbook-stylesheets
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; Append Samba's own DTDs to XML_CATALOG_FILES
-             ;; (c.f. docs-xml/build/README).
-             (copy-file "docs-xml/build/catalog.xml.in"
-                        "docs-xml/build/catalog.xml")
-             (substitute* "docs-xml/build/catalog.xml"
-               (("/@abs_top_srcdir@")
-                (string-append (getcwd) "/docs-xml")))
-             ;; Honor XML_CATALOG_FILES.
-             (substitute* "buildtools/wafsamba/wafsamba.py"
-               (("XML_CATALOG_FILES=\"\\$\\{SAMBA_CATALOGS\\}" all)
-                (string-append all " $XML_CATALOG_FILES")))
-             #t))
-         (replace 'configure
-           ;; Samba uses a custom configuration script that runs WAF.
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out    (assoc-ref outputs "out"))
-                    (libdir (string-append out "/lib")))
-               (invoke "./configure"
-                       "--enable-selftest"
-                       "--enable-fhs"
-                       (string-append "--prefix=" out)
-                       "--sysconfdir=/etc"
-                       "--localstatedir=/var"
-                       ;; Install public and private libraries into
-                       ;; a single directory to avoid RPATH issues.
-                       (string-append "--libdir=" libdir)
-                       (string-append "--with-privatelibdir=" libdir)))))
-         (add-before 'install 'disable-etc,var-samba-directories-setup
-           (lambda _
-             (substitute* "dynconfig/wscript"
-               (("bld\\.INSTALL_DIR.*") ""))
-             #t)))
-       ;; FIXME: The test suite seemingly hangs after failing to provision the
-       ;; test environment.
-       #:tests? #f))
+     (list
+      #:make-flags #~(list "TEST_OPTIONS=--quick") ;some tests are very long
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'configure 'setup-docbook-stylesheets
+            (lambda* (#:key inputs #:allow-other-keys)
+              ;; Append Samba's own DTDs to XML_CATALOG_FILES
+              ;; (c.f. docs-xml/build/README).
+              (copy-file "docs-xml/build/catalog.xml.in"
+                         "docs-xml/build/catalog.xml")
+              (substitute* "docs-xml/build/catalog.xml"
+                (("/@abs_top_srcdir@")
+                 (string-append (getcwd) "/docs-xml")))
+              ;; Honor XML_CATALOG_FILES.
+              (substitute* "buildtools/wafsamba/wafsamba.py"
+                (("XML_CATALOG_FILES=\"\\$\\{SAMBA_CATALOGS\\}" all)
+                 (string-append all " $XML_CATALOG_FILES")))))
+          (replace 'configure
+            ;; Samba uses a custom configuration script that runs WAF.
+            (lambda* (#:key inputs #:allow-other-keys)
+              (let* ((libdir (string-append #$output "/lib")))
+                (invoke "./configure"
+                        "--enable-selftest"
+                        "--enable-fhs"
+                        (string-append "--prefix=" #$output)
+                        "--sysconfdir=/etc"
+                        "--localstatedir=/var"
+                        ;; Install public and private libraries into
+                        ;; a single directory to avoid RPATH issues.
+                        (string-append "--libdir=" libdir)
+                        (string-append "--with-privatelibdir=" libdir)
+                        "--with-system-mitkrb5" ;#$(this-package-input "mit-krb5")
+                        (string-append "--with-system-mitkdc="
+                                       (search-input-file inputs "sbin/krb5kdc"))
+                        "--with-experimental-mit-ad-dc"))))
+          (add-before 'install 'disable-etc,var-samba-directories-setup
+            (lambda _
+              (substitute* "dynconfig/wscript"
+                (("bld\\.INSTALL_DIR.*") "")))))
+      ;; FIXME: The test suite seemingly hangs after failing to provision the
+      ;; test environment.
+      #:tests? #f))
     (inputs
      (list acl
            cmocka
@@ -247,12 +243,12 @@ external dependencies.")
            dbus
            gpgme
            gnutls
-           heimdal
            jansson
            libarchive
            libtirpc
            linux-pam
            lmdb
+           mit-krb5
            openldap
            perl
            python
@@ -263,15 +259,19 @@ external dependencies.")
      ;; In Requires or Requires.private of pkg-config files.
      (list ldb talloc tevent))
     (native-inputs
-     `(("perl-parse-yapp" ,perl-parse-yapp)
-       ("pkg-config" ,pkg-config)
-       ("python-iso8601" ,python-iso8601)
-       ("rpcsvc-proto" ,rpcsvc-proto)   ; for 'rpcgen'
-       ;; For generating man pages.
-       ("docbook-xml" ,docbook-xml-4.2)
-       ("docbook-xsl" ,docbook-xsl)
-       ("xsltproc" ,libxslt)
-       ("libxml2" ,libxml2)))           ;for XML_CATALOG_FILES
+     (list perl-parse-yapp
+           pkg-config
+           python-cryptography          ;for krb5 tests
+           python-dnspython
+           python-iso8601
+           python-markdown
+           rpcsvc-proto                 ;for 'rpcgen'
+           python-pyasn1                ;for krb5 tests
+           ;; For generating man pages.
+           docbook-xml-4.2
+           docbook-xsl
+           libxslt
+           libxml2))                    ;for XML_CATALOG_FILES
     (home-page "https://www.samba.org/")
     (synopsis
      "The standard Windows interoperability suite of programs for GNU and Unix")
@@ -286,15 +286,16 @@ Desktops into Active Directory environments using the winbind daemon.")
 
 (define-public samba/fixed
   ;; Version that rarely changes, depended on by libsoup.
-  (package/inherit samba
-    (version "4.13.10")
-    (source
-     (origin
-       (inherit (package-source samba))
-       (uri (string-append "https://download.samba.org/pub/samba/stable/"
-                           "samba-" version ".tar.gz"))
-       (sha256
-        (base32 "00q5hf2r71dyma785dckcyksv3082mqfgyy9q6k6rc6kqjwkirzh"))))))
+  (hidden-package
+   (package/inherit samba
+     (version "4.15.3")
+     (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://download.samba.org/pub/samba/stable/"
+                            "samba-" version ".tar.gz"))
+        (sha256
+         (base32 "1nrp85aya0pbbqdqjaqcw82cnzzys16yls37hi2h6mci8d09k4si")))))))
 
 (define-public talloc
   (package

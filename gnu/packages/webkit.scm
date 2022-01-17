@@ -251,15 +251,7 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
                           "-DUSE_SYSTEMD=OFF"
                           (string-append ; uses lib64 by default
                            "-DLIB_INSTALL_DIR="
-                           (assoc-ref %outputs "out") "/lib")
-                          ;; XXX Adding GStreamer GL support would apparently
-                          ;; require adding gst-plugins-bad to the inputs,
-                          ;; which might entail a security risk as a result of
-                          ;; the plugins of dubious code quality that are
-                          ;; included.  More investigation is needed.  For
-                          ;; now, we explicitly disable it to prevent an error
-                          ;; at configuration time.
-                          "-DUSE_GSTREAMER_GL=OFF")
+                           (assoc-ref %outputs "out") "/lib"))
        #:make-flags
        ;; Never build with unsupported -j1: https://issues.guix.gnu.org/47964#5
        (list "-j" (number->string (max 2 (parallel-job-count))))
@@ -350,7 +342,10 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
     (description
      "WebKitGTK+ is a full-featured port of the WebKit rendering engine,
 suitable for projects requiring any kind of web integration, from hybrid
-HTML/CSS applications to full-fledged web browsers.")
+HTML/CSS applications to full-fledged web browsers.  WebKitGTK+ video playing
+capabilities can be extended through the use of GStreamer plugins (not
+propagated by default) such as @code{gst-plugins-good} and
+@code{gst-plugins-bad}.")
     ;; WebKit's JavaScriptCore and WebCore components are available under
     ;; the GNU LGPL, while the rest is available under a BSD-style license.
     (license (list license:lgpl2.0

@@ -910,6 +910,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/binutils-loongson-workaround.patch	\
   %D%/packages/patches/binutils-mingw-w64-timestamp.patch	\
   %D%/packages/patches/binutils-mingw-w64-deterministic.patch	\
+  %D%/packages/patches/binutils-CVE-2021-45078.patch		\
   %D%/packages/patches/bpftrace-disable-bfd-disasm.patch	\
   %D%/packages/patches/byobu-writable-status.patch		\
   %D%/packages/patches/bubblewrap-fix-locale-in-tests.patch	\
@@ -1240,8 +1241,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/gtk2-theme-paths.patch			\
   %D%/packages/patches/gtk3-respect-GUIX_GTK3_PATH.patch	\
   %D%/packages/patches/gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch \
-  %D%/packages/patches/gtk-doc-respect-xml-catalog.patch	 \
-  %D%/packages/patches/gtk4-respect-GUIX_GTK4_PATH.patch    \
+  %D%/packages/patches/gtk-doc-respect-xml-catalog.patch	\
+  %D%/packages/patches/gtk-introspection-test.patch		\
+  %D%/packages/patches/gtk4-respect-GUIX_GTK4_PATH.patch    	\
   %D%/packages/patches/gtkglext-disable-disable-deprecated.patch \
   %D%/packages/patches/gtksourceview-2-add-default-directory.patch \
   %D%/packages/patches/gzdoom-search-in-installed-share.patch	\
@@ -1804,7 +1806,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/serf-python3.patch			\
   %D%/packages/patches/shakespeare-spl-fix-grammar.patch		\
   %D%/packages/patches/sharutils-CVE-2018-1000097.patch		\
-  %D%/packages/patches/shadow-hurd-pctrl.patch			\
   %D%/packages/patches/shishi-fix-libgcrypt-detection.patch	\
   %D%/packages/patches/slim-session.patch			\
   %D%/packages/patches/slim-config.patch			\

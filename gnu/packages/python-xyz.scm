@@ -2400,7 +2400,7 @@ of @code{xmlfile}.")
 (define-public python-openpyxl
   (package
     (name "python-openpyxl")
-    (version "3.0.5")
+    (version "3.0.9")
     (source
      (origin
        ;; We use the upstream repository, as the tests are not included in the
@@ -2411,7 +2411,7 @@ of @code{xmlfile}.")
              (changeset version)))
        (file-name (string-append name "-" version "-checkout"))
        (sha256
-        (base32 "0s6fgwwkcfz1bnrp5gjd4g2lcbl4a76147ylkrmkbabi2nf4xlli"))))
+        (base32 "1p8xvc2gjw6zyzbd7qdvc3x178sm00ymrbyh9539l4fpzgxh0j9c"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -6333,17 +6333,19 @@ comparison.
 (define-public python-matplotlib
   (package
     (name "python-matplotlib")
-    (version "3.4.3")
+    (version "3.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "matplotlib" version))
        (sha256
-        (base32 "06032j0ccjxldx4z9kf97qps2g36mfgvy1nap3b9n75kzmnm4kzw"))))
+        (base32 "076f8qi265x8jy89c03r3vv5h4is4ir5mawwrrrpp96314783sdj"))))
     (build-system python-build-system)
-    (propagated-inputs ; the following packages are all needed at run time
+    (propagated-inputs     ; the following packages are all needed at run time
      `(("python-cycler" ,python-cycler)
+       ("python-fonttools" ,python-fonttools)
        ("python-kiwisolver" ,python-kiwisolver)
+       ("python-packaging" ,python-packaging)
        ("python-pyparsing" ,python-pyparsing)
        ("python-pygobject" ,python-pygobject)
        ("python-certifi" ,python-certifi)
@@ -6354,6 +6356,7 @@ comparison.
        ("python-pillow" ,python-pillow)
        ("python-pytz" ,python-pytz)
        ("python-six" ,python-six)
+       ("python-wxpython" ,python-wxpython)
        ;; From version 1.4.0 'matplotlib' makes use of 'cairocffi' instead of
        ;; 'pycairo'. However, 'pygobject' makes use of a 'pycairo' 'context'
        ;; object. For this reason we need to import both libraries.
@@ -6366,101 +6369,87 @@ comparison.
            qhull
            cairo
            glib
-           ;; FIXME: Add backends when available.
-           ;("python-wxpython" ,python-wxpython)
            tcl
            tk))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python-pytest" ,python-pytest)
-       ("python-mock" ,python-mock)
-       ("python-wheel" ,python-wheel)
-       ("unzip" ,unzip)
-       ("jquery-ui"
-        ,(origin
-           (method url-fetch)
-           (uri "https://jqueryui.com/resources/download/jquery-ui-1.12.1.zip")
-           (sha256
-            (base32
-             "0kb21xf38diqgxcdi1z3s9ssq36pldvyqxy56hn6pcva6rs3c8zq"))))))
+       ("python-pytest-timeout" ,python-pytest-timeout)
+       ("python-pytest-xdist" ,python-pytest-xdist)
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-setuptools-scm-git-archive" ,python-setuptools-scm-git-archive)))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; XXX We disable all image comparison tests because we're using a
-         ;; newer version of FreeType than matplotlib expects.  This leads to
-         ;; minor differences throughout the tests.
-         (add-after 'unpack 'fix-and-disable-failing-tests
-           (lambda _
-             (substitute* (append (find-files "lib/matplotlib/tests/"
-                                              "test_.*\\.py$")
-                                  (find-files "lib/mpl_toolkits/tests"
-                                              "test_.*\\.py$"))
-               (("^from matplotlib" match)
-                (string-append "import pytest\n" match))
-               (("( *)@([^_]+_)*(image_comparison|check_figures_equal)" match
-                 indent)
-                (string-append indent
-                               "@pytest.mark.skip(reason=\"unknown minor image differences\")\n"
-                               match)))
-             (substitute* "lib/matplotlib/tests/test_animation.py"
-               (("/bin/sh") (which "sh")))
-             (for-each delete-file
-                       ;; test_normal_axes, test_get_tightbbox_polar
-                       '("lib/matplotlib/tests/test_axes.py"
-                         "lib/matplotlib/tests/test_polar.py"
-                         ;; We don't use the webagg backend and this test
-                         ;; forces it.
-                         "lib/matplotlib/tests/test_backend_webagg.py"
-                         ;; test_outward_ticks
-                         "lib/matplotlib/tests/test_tightlayout.py"
-                         ;; test_hidden_axes fails with minor extent
-                         ;; differences, possibly due to the use of a
-                         ;; different version of FreeType.
-                         "lib/matplotlib/tests/test_constrainedlayout.py"
-                         ;; Fontconfig returns no fonts.
-                         "lib/matplotlib/tests/test_font_manager.py"))
-             #t))
-         (add-before 'install 'install-jquery-ui
-           (lambda* (#:key outputs inputs #:allow-other-keys)
-             (let* ((python-version (python-version
-                                      (assoc-ref inputs "python")))
-                    (dir
-                     (string-append (assoc-ref outputs "out")
-                                    "/lib/python" python-version
-                                    "/site-packages"
-                                    "/matplotlib/backends/web_backend/")))
-               (mkdir-p dir)
-               (invoke "unzip"
-                       (assoc-ref inputs "jquery-ui")
-                       "-d" dir))
-             #t))
-         (replace 'check
-           (lambda* (#:key outputs inputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (invoke "python" "tests.py" "-v"
-                     "-m" "not network and not webagg")))
-         (add-before 'build 'configure-environment
-           (lambda* (#:key outputs inputs #:allow-other-keys)
-             (let ((cairo (assoc-ref inputs "cairo")))
-               ;; Setting this directory in the 'basedirlist' of 'setup.cfg'
-               ;; has not effect.
-               (setenv "LD_LIBRARY_PATH" (string-append cairo "/lib"))
-               (setenv "HOME" (getcwd))
-               ;; Fix rounding errors when using the x87 FPU.
-               (when (string-prefix? "i686" ,(%current-system))
-                 (setenv "CFLAGS" "-ffloat-store"))
-               (call-with-output-file "setup.cfg"
-                 (lambda (port)
-                   (format port "[libs]~%
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'build 'pretend-version
+            ;; The version string is usually derived via setuptools-scm, but
+            ;; without the git metadata available, the version string is set to
+            ;; '0.0.0'.
+            (lambda _
+              (setenv "SETUPTOOLS_SCM_PRETEND_VERSION" #$version)))
+          (add-after 'unpack 'fix-and-disable-failing-tests
+            ;; XXX: Disable all image comparison tests because we're using a
+            ;; newer version of FreeType than matplotlib expects.  This leads
+            ;; to minor differences throughout the tests.
+            (lambda _
+              (substitute* (append (find-files "lib/matplotlib/tests/"
+                                               "test_.*\\.py$")
+                               (find-files "lib/mpl_toolkits/tests"
+                                           "test_.*\\.py$"))
+                (("^from matplotlib" match)
+                 (string-append "import pytest\n" match))
+                (("( *)@([^_]+_)*(image_comparison|check_figures_equal)" match
+                  indent)
+                 (string-append indent "@pytest.mark.skip(\
+reason=\"unknown minor image differences\")\n" match)))
+              (substitute* "lib/matplotlib/tests/test_animation.py"
+                (("/bin/sh") (which "sh")))
+              (for-each delete-file
+                        ;; test_normal_axes, test_get_tightbbox_polar
+                        '("lib/matplotlib/tests/test_axes.py"
+                          "lib/matplotlib/tests/test_polar.py"
+                          ;; We don't use the webagg backend and this test
+                          ;; forces it.
+                          "lib/matplotlib/tests/test_backend_webagg.py"
+                          ;; test_outward_ticks
+                          "lib/matplotlib/tests/test_tightlayout.py"
+                          ;; test_hidden_axes fails with minor extent
+                          ;; differences, possibly due to the use of a
+                          ;; different version of FreeType.
+                          "lib/matplotlib/tests/test_constrainedlayout.py"
+                          ;; Fontconfig returns no fonts.
+                          "lib/matplotlib/tests/test_font_manager.py"))))
+          (add-before 'build 'configure-environment
+            (lambda* (#:key inputs #:allow-other-keys)
+              ;; Fix rounding errors when using the x87 FPU.
+              (when (string-prefix? "i686" #$(%current-system))
+                (setenv "CFLAGS" "-ffloat-store"))
+              (call-with-output-file "mplsetup.cfg"
+                (lambda (port)
+                  (format port "\
+[libs]
 system_freetype = true
 system_qhull = true
-[directories]~%
-basedirlist = ~a,~a~%
-[packages]~%
-tests = True~%"
-                        (assoc-ref inputs "tcl")
-                        (assoc-ref inputs "tk")))))
-             #t)))))
+
+[rc_options]
+backend=Agg
+
+[directories]
+basedirlist = ~a,~a
+
+[packages]
+tests = True~%" (assoc-ref inputs "tcl") (assoc-ref inputs "tk"))))))
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                ;; Step out of the source directory to avoid interference.
+                (with-directory-excursion "/tmp"
+                  ;; Run the installed tests, which is what we want since not
+                  ;; everything gets built in the source directory.
+                  (invoke "pytest"
+                          "-n" (number->string (parallel-job-count))
+                          "-m" "not network" "--pyargs" "matplotlib"))))))))
     (home-page "https://matplotlib.org/")
     (synopsis "2D plotting library for Python")
     (description
@@ -6475,53 +6464,47 @@ toolkits.")
 (define-public python2-matplotlib
   (let ((matplotlib (package-with-python2
                      (strip-python2-variant python-matplotlib))))
-    (package (inherit matplotlib)
-      (version "2.2.4")
+    (package/inherit matplotlib
+      (version "2.2.5")
       (source
        (origin
          (method url-fetch)
          (uri (pypi-uri "matplotlib" version))
          (sha256
           (base32
-           "09i1gnrra1590brc1f8d5rh2zvnknmfgzp613ab0462qkrwj15h2"))))
+           "1sk05fdai9rw35l983rw2ymvz0nafs7szs7yz4nxrpyr1j27l0x3"))))
       (arguments
        (substitute-keyword-arguments (package-arguments matplotlib)
          ((#:phases phases)
-          `(modify-phases ,phases
-             (replace 'install-jquery-ui
-               (lambda* (#:key outputs inputs #:allow-other-keys)
-                 (let ((dir (string-append (assoc-ref outputs "out")
-                                           "/lib/python2.7/site-packages/"
-                                           "matplotlib/backends/web_backend/")))
-                   (mkdir-p dir)
-                   (invoke "unzip"
-                           (assoc-ref inputs "jquery-ui")
-                           "-d" dir))))
-             ;; Without this file mpl_toolkits cannot be imported.
-             (add-after 'install 'create-init-file
-               (lambda* (#:key outputs #:allow-other-keys)
-                 (with-output-to-file
-                     (string-append
-                      (assoc-ref outputs "out")
-                      "/lib/python2.7/site-packages/mpl_toolkits/__init__.py")
-                   (lambda _ (display "")))))
-             (delete 'fix-and-disable-failing-tests)
-             (delete 'check))))) ; These tests weren't run the the past.
-      ;; Make sure to use special packages for Python 2 instead
-      ;; of those automatically rewritten by package-with-python2.
+          #~(modify-phases #$phases
+              (add-after 'install 'create-init-file
+                (lambda _
+                  (with-output-to-file
+                      (string-append
+                       #$output
+                       "/lib/python2.7/site-packages/mpl_toolkits/__init__.py")
+                    (lambda _ (display "")))))
+              (delete 'fix-and-disable-failing-tests)
+              (delete 'check)))))      ; These tests weren't run the the past.
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
       (propagated-inputs
-       `(("python2-pycairo" ,python2-pycairo)
-         ("python2-backports-functools-lru-cache"
-          ,python2-backports-functools-lru-cache)
+       `(("gobject-introspection" ,gobject-introspection)
+         ("python2-backports-functools-lru-cache" ,python2-backports-functools-lru-cache)
+         ("python2-certifi" ,python2-certifi)
+         ("python2-cycler" ,python2-cycler)
+         ("python2-dateutil" ,python2-dateutil)
          ("python2-functools32" ,python2-functools32)
+         ("python2-kiwisolver" ,python2-kiwisolver)
+         ("python2-numpy" ,python2-numpy)
+         ("python2-pillow" ,python2-pillow)
+         ("python2-pycairo" ,python2-pycairo)
          ("python2-pygobject-2" ,python2-pygobject-2)
+         ("python2-pyparsing" ,python2-pyparsing)
+         ("python2-pytz" ,python2-pytz)
+         ("python2-six" ,python2-six)
          ("python2-subprocess32" ,python2-subprocess32)
-         ("python2-tkinter" ,python-2 "tk")
-         ,@(fold alist-delete (package-propagated-inputs matplotlib)
-                 '("python-cairocffi"
-                   "python-pycairo"
-                   "python-pygobject"
-                   "python-tkinter")))))))
+         ("python2-tkinter" ,python-2 "tk"))))))
 
 (define-public python-matplotlib-documentation
   (package
@@ -9259,27 +9242,17 @@ the GObject Introspection bindings to libnotify for non-GTK applications.")
 (define-public python-beautifulsoup4
   (package
     (name "python-beautifulsoup4")
-    (version "4.9.3")
+    (version "4.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "beautifulsoup4" version))
        (sha256
         (base32
-         "09gbd49mwz86k572r1231x2rdp82p42zlnw0bz9b9mfi58r9wwl4"))))
+         "14c8z4gh9bi38agx9ls8ym5rscc02pc6f6hmliaqk08xa8yd4fn2"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; The Python 2 source is the definitive source of beautifulsoup4. We
-         ;; must use this conversion script when building with Python 3. The
-         ;; conversion script also runs the tests.
-         ;; For more information, see the file 'convert-py3k' in the source
-         ;; distribution.
-         (replace 'check
-           (lambda _ (invoke "./convert-py3k"))))))
     (propagated-inputs
-     (list python-soupsieve))
+     (list python-soupsieve python-html5lib python-lxml))
     (home-page
      "https://www.crummy.com/software/BeautifulSoup/bs4/")
     (synopsis
@@ -9296,8 +9269,16 @@ converts incoming documents to Unicode and outgoing documents to UTF-8.")
 (define-public python2-beautifulsoup4
   (let ((base (package-with-python2
                (strip-python2-variant python-beautifulsoup4))))
-   (package/inherit base
-     (arguments `(#:python ,python-2)))))
+    (package/inherit base
+      (version "4.9.3")                 ;last version to support Python 2
+      (source
+       (origin
+         (method url-fetch)
+         (uri (pypi-uri "beautifulsoup4" version))
+         (sha256
+          (base32
+           "09gbd49mwz86k572r1231x2rdp82p42zlnw0bz9b9mfi58r9wwl4"))))
+      (arguments `(#:python ,python-2)))))
 
 (define-public python-soupsieve
   (package
@@ -10834,28 +10815,170 @@ add functionality and customization to your projects with their own plugins.")
 (define-public python2-straight-plugin
   (package-with-python2 python-straight-plugin))
 
-(define-public python-fonttools
+(define-public python-pysendfile
   (package
-    (name "python-fonttools")
-    (version "4.6.0")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "fonttools" version ".zip"))
-              (sha256
-               (base32
-                "1mq9kdzhcsp96bhv7smnrpdg1s4z5wh70bsl99c0jmcrahqdisqq"))))
+    (name "python-pysendfile")
+    (version "2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pysendfile" version))
+       (sha256
+        (base32 "05qf0m32isflln1zjgxlpw0wf469lj86vdwwqyizp1h94x5l22ji"))))
     (build-system python-build-system)
+    (arguments
+     (list
+      #:phases #~(modify-phases %standard-phases
+                   (replace 'check
+                     (lambda* (#:key tests? #:allow-other-keys)
+                       (when tests?
+                         (setenv "HOME" "/tmp")
+                         (invoke "make" "test")))))))
+    (home-page "https://github.com/giampaolo/pysendfile")
+    (synopsis "Python interface to sendfile(2)")
+    (description "The @{pysendfile} Python library provides an interface to
+the @code{sendfile(2)} system call.")
+    (license license:expat)))
+
+(define-public python-pyftpdlib
+  (package
+    (name "python-pyftpdlib")
+    (version "1.5.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyftpdlib" version))
+       (sha256
+        (base32 "0pnv2byzmzg84q5nmmhn1xafvfil85qa5y52bj455br93zc5b9px"))))
+    (build-system python-build-system)
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (invoke
+                 "pytest"
+                 ;; Deselect failing tests.
+                 "-k" (string-append
+                       ;; Using Pytest instead of the Makefile causes the
+                       ;; command line tests to fail on unknown Pytest
+                       ;; arguments.
+                       "not TestCommandLineParser "
+                       ;; https://github.com/giampaolo/pyftpdlib/issues/478
+                       "and not test_use_gmt_times "
+                       ;; https://github.com/giampaolo/pyftpdlib/issues/550
+                       "and not test_masquerade_address "
+                       ;; https://github.com/giampaolo/pyftpdlib/issues/500
+                       "and not test_rest_on_stor "
+                       "and not test_stor_ascii"))))))))
+    (native-inputs (list python-psutil python-pytest))
+    (propagated-inputs (list python-pyopenssl python-pysendfile))
+    (home-page "https://github.com/giampaolo/pyftpdlib/")
+    (synopsis "Asynchronous and scalable Python FTP server library")
+    (description "The Python FTP server library provides a high-level
+interface to write efficient, scalable and asynchronous FTP servers with
+Python.  It is the most complete @url{http://www.faqs.org/rfcs/rfc959.html,
+RFC-959} FTP server implementation available for Python, and has the following
+traits:
+@itemize
+@item
+It is lightweight, fast and scalable.
+@item
+It uses the @code{sendfile(2)} system call for uploads.
+@item
+It uses @code{epoll}, @code{kqueue} and @code{select} to handle concurrency
+asynchronously.
+@item
+It supports FTPS (@url{http://tools.ietf.org/html/rfc4217, RFC-4217}),
+IPv6 (RFC-2428), Unicode file names (@url{http://tools.ietf.org/html/rfc2640,
+RFC-2640}) and MLSD/MLST commands (RFC-3659).
+@item
+It has a flexible system of @samp{authorizers} able to manage both
+@samp{virtual} and @samp{real} users.
+@end itemize")
+    (license license:expat)))
+
+(define-public python-fs
+  (package
+    (name "python-fs")
+    (version "2.4.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "fs" version))
+       (sha256
+        (base32 "0v5kqzi0vd8ar4j4qf5440nzwa9dcagpxb3q6k0cln4cqlmxqmcm"))))
+    (build-system python-build-system)
+    (arguments
+     (list
+      #:phases #~(modify-phases %standard-phases
+                   (replace 'check
+                     (lambda* (#:key tests? #:allow-other-keys)
+                       (when tests?
+                         (setenv "HOME" "/tmp")
+                         (invoke "pytest" "-m" "not slow")))))))
+    (propagated-inputs
+     (list python-appdirs python-pytz python-typing python-six))
     (native-inputs
-     (list unzip python-pytest python-pytest-runner))
-    (home-page "https://github.com/fonttools/fonttools")
-    (synopsis "Tools to manipulate font files")
-    (description
-     "FontTools/TTX is a library to manipulate font files from Python.  It
+     (list python-mock python-parameterized python-pyftpdlib python-pytest))
+    (home-page "https://github.com/PyFilesystem/pyfilesystem2/")
+    (synopsis "File system abstraction layer for Python")
+    (description "PyFilesystem's @code{FS} object is a file system abstraction
+sharing similarities with Python's own @code{file} object for single files.
+It allows opening all the files under a given directory recursively, as a
+single @code{FS} object.  This enables, for example, counting the combined
+number of lines in the contained files easily.")
+    (license license:expat)))
+
+;;; Tests are left out in the main package to avoid cycles.
+(define-public python-fonttools
+  (hidden-package
+   (package
+     (name "python-fonttools")
+     (version "4.28.5")
+     (source (origin
+               (method url-fetch)
+               (uri (pypi-uri "fonttools" version ".zip"))
+               (sha256
+                (base32
+                 "1jhl5n3rfqq7fznvsh6r80n7ylap1a7ppq1040y8cflhyz80ap2l"))))
+     (build-system python-build-system)
+     (native-inputs
+      (list unzip))
+     (arguments '(#:tests? #f))
+     (home-page "https://github.com/fonttools/fonttools")
+     (synopsis "Tools to manipulate font files")
+     (description
+      "FontTools/TTX is a library to manipulate font files from Python.  It
 supports reading and writing of TrueType/OpenType fonts, reading and writing
 of AFM files, reading (and partially writing) of PS Type 1 fonts.  The package
 also contains a tool called “TTX” which converts TrueType/OpenType fonts to and
 from an XML-based format.")
-    (license license:expat)))
+     (license license:expat)
+     (properties `((python2-variant . ,(delay python2-fonttools)))))))
+
+(define-public python-fonttools-with-tests
+  (package/inherit python-fonttools
+    (arguments
+     (substitute-keyword-arguments (package-arguments python-fonttools)
+       ((#:tests? _ #f)
+        #t)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (replace 'check
+             (lambda* (#:key tests? #:allow-other-keys)
+               (when tests?
+                 (invoke "pytest"))))))))
+    (native-inputs
+     (modify-inputs (package-inputs python-fonttools)
+       (append python-pytest            ;FIXME: indentation is broken
+           python-brotli
+         python-fs
+         python-scipy
+         python-zopfli)))
+    (properties (alist-delete 'hidden? (package-properties python-fonttools)))))
 
 ;; Fonttools 4.x dropped support for Python 2, so stick with 3.x here.
 (define-public python2-fonttools
@@ -10966,13 +11089,13 @@ third-party code.")
 (define-public python-msgpack
   (package
     (name "python-msgpack")
-    (version "1.0.0")
+    (version "1.0.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "msgpack" version))
               (sha256
                (base32
-                "1h5mxh84rcw04dvxy1qbfn2hisavfqgilh9k09rgyjhd936dad4m"))))
+                "07m84yisf8m6gr68ip9v6vzxax7kqbn8qxg7ir18clk1jgxwgzai"))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((guix build utils)
@@ -11244,23 +11367,20 @@ native modules.")
 (define-public python-xlrd
   (package
     (name "python-xlrd")
-    (version "1.2.0")
+    (version "2.0.1")
     (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "xlrd" version))
+              ;; The tests are not included in the PyPI archive.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/python-excel/xlrd")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ci93fda4n67qhdvfl16zasyxrpygzk53hs6m8z0rd4dxrnb6vjl"))))
+                "170asszffvf6rh5w169ic4h5kxgjkmdl3060vw737d4g1qfifvzz"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; Some tests depend on writing a temporary file to the user's home
-         ;; directory.
-         (add-after 'unpack 'fix-tests
-           (lambda _
-             (delete-file "tests/test_open_workbook.py")
-             #t)))))
+    (native-inputs
+     (list python-pytest))
     (home-page "http://www.python-excel.org/")
     (synopsis "Library for extracting data from Excel files")
     (description "This package provides a library to extract data from
@@ -11272,6 +11392,7 @@ Unicode-aware.  It is not intended as an end-user tool.")
 (define-public python2-xlrd
   (package-with-python2 python-xlrd))
 
+;;; Note: this package is unmaintained since 2018 (archived on GitHub).
 (define-public python-xlwt
   (package
     (name "python-xlwt")
@@ -11361,11 +11482,16 @@ printing of sub-tables by specifying a row range.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (invoke "pytest" "-vv" "-k"
-                     ;; Tries to open an outgoing connection.
-                     "not test_ssl_outgoing"))))))
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-vv" "-k"
+                       (string-append
+                        ;; Tries to open an outgoing connection.
+                        "not test_ssl_outgoing "
+                        ;; This test fails since Python 3.9.9 (see:
+                        ;; https://github.com/dabeaz/curio/issues/347).
+                        "and not test_timeout"))))))))
     (native-inputs
      (list python-pytest))
     (home-page "https://github.com/dabeaz/curio")
@@ -15011,13 +15137,7 @@ module, adding support for Unicode strings.")
              #t))
          (replace 'check
            (lambda _
-             (invoke "make" "test")))
-         (add-before 'reset-gzip-timestamps 'make-files-writable
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (for-each make-file-writable
-                         (find-files out "\\.gz$"))
-               #t))))))
+             (invoke "make" "test"))))))
     (propagated-inputs
      (list python-chardet python-cryptography python-sortedcontainers))
     (native-inputs
@@ -16172,29 +16292,25 @@ database, file, dict stores.  Cachy supports python versions 2.7+ and 3.2+.")
 (define-public poetry
   (package
     (name "poetry")
-    (version "1.1.11")
-    ;; Poetry can only be built from source with Poetry.
+    (version "1.1.12")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "poetry" version))
        (sha256
         (base32
-         "17pnf2j4adlm9fhyg5jkkvs8bzcigb6nj72vr0687fxybzsj4zbx"))))
+         "0rr54mvcfcv9cv6vw2122y28xvd2pwqpv2x8c8j5ayz3gwsy4rjw"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f ;; Pypi does not have tests.
+     `(#:tests? #f                      ;PyPI does not have tests
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'patch-setup-py
            (lambda _
              (substitute* "setup.py"
-               ;; Allow newer versions of python-keyring.
+               ;; Relax some of the requirements.
                (("(keyring>=21.2.0),<22.0.0" _ keyring) keyring)
-               ;; TODO: remove after the next release cycle,
-               ;; when packaging has been updated.
-               (("packaging>=20.4,<21.0") "packaging>=20.0,<21.0"))
-             #t)))))
+               (("(packaging>=20.4),<21.0" _ packaging) packaging)))))))
     (propagated-inputs
      (list python-cachecontrol
            python-cachy
@@ -16212,7 +16328,7 @@ database, file, dict stores.  Cachy supports python versions 2.7+ and 3.2+.")
            python-pkginfo
            python-poetry-core
            python-requests
-           python-requests-toolbelt-0.9.1
+           python-requests-toolbelt
            python-shellingham
            python-tomlkit
            python-virtualenv))
@@ -18478,7 +18594,7 @@ multitouch applications.")
 (define-public python-astroid
   (package
     (name "python-astroid")
-    (version "2.6.6")
+    (version "2.9.0")
     (source
      (origin
        (method git-fetch)
@@ -18487,12 +18603,12 @@ multitouch applications.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1amzf996inwmh4r3mlpzmch60xs6lrg86vppfnwl1y0l8r0y7zxh"))))
+        (base32 "19iiys4233cicpm48fd7lrkm31kk47qiv44wvk952rqbcn4rd2dh"))))
     (build-system python-build-system)
     (propagated-inputs
      (list python-lazy-object-proxy python-wrapt))
     (native-inputs
-     (list python-pytest python-pytest-runner))
+     (list python-pytest python-pytest-runner python-typing-extensions))
     (home-page "https://github.com/PyCQA/astroid")
     (synopsis "Common base representation of python source code for pylint and
      other projects")
@@ -18505,43 +18621,7 @@ multitouch applications.")
      additional methods and attributes for different usages.  They include some
      support for static inference and local name scopes.  Furthermore, astroid
      builds partial trees by inspecting living objects.")
-    (license license:lgpl2.1+)
-    (properties `((python2-variant . ,(delay python2-astroid))))))
-
-(define-public python2-astroid
-  (let ((base (package-with-python2
-               (strip-python2-variant python-astroid))))
-    (package (inherit base)
-    ;; Version 2.x removes python2 support.
-    (version "1.6.5")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "astroid" version))
-       (sha256
-        (base32
-         "0fir4b67sm7shcacah9n61pvq313m523jb4q80sycrh3p8nmi6zw"))))
-    (arguments
-     `(#:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'remove-spurious-test
-           (lambda _
-             ;; https://github.com/PyCQA/astroid/issues/276
-             (delete-file "astroid/tests/unittest_brain.py")))
-         (replace 'check
-           (lambda* (#:key tests? #:allow-other-keys)
-             (when tests?
-               (invoke "python" "-m" "unittest" "discover"
-                       "-p" "unittest*.py")))))))
-    (native-inputs `())
-    (propagated-inputs
-     (list python2-backports-functools-lru-cache
-           python2-enum34
-           python2-lazy-object-proxy
-           python2-singledispatch
-           python2-six
-           python2-wrapt)))))
+    (license license:lgpl2.1+)))
 
 (define-public python-isbnlib
   (package
@@ -21169,7 +21249,7 @@ source bytes using the UTF-8 encoding and then rewrites Python 3.6 style
 (define-public python-typed-ast
   (package
     (name "python-typed-ast")
-    (version "1.4.2")
+    (version "1.5.1")
     (source
      (origin
        (method git-fetch)
@@ -21177,7 +21257,7 @@ source bytes using the UTF-8 encoding and then rewrites Python 3.6 style
              (url "https://github.com/python/typed_ast")
              (commit version)))
        (sha256
-        (base32 "1wr6pkvvrq6rzjjw88pd5xy8fy06msam4hlxbkglvdmwh4c083l0"))
+        (base32 "1xfcs5246c8v5600aaa8zs7ii4sxb62q6r3sb2fgazyjx97wrxd9"))
        (file-name (git-file-name name version))))
     (build-system python-build-system)
     (arguments
@@ -21257,13 +21337,13 @@ Python 3.6+ type hints.")
 (define-public python-typing
   (package
     (name "python-typing")
-    (version "3.7.4.3")
+    (version "3.10.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "typing" version))
        (sha256
-        (base32 "1j8wnz8c9s049w9xbf7ssr1dmgg4rz7vdfq7m880srzxhafgp1qi"))))
+        (base32 "0c5il4d68fd4qrm5k3dps70j0xz0n5krj6lhwn9vzpal3whsvd0k"))))
     (build-system python-build-system)
     (home-page "https://docs.python.org/3/library/typing.html")
     (synopsis "Type hints for Python")
@@ -21281,17 +21361,41 @@ and other tools.")
 (define-public python-typing-extensions
   (package
     (name "python-typing-extensions")
-    (version "3.10.0.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "typing_extensions" version))
-       (sha256
-        (base32
-         "0zk7kbcms828by6avmqp09bsag1az37qr60viqjwvw8izwb5vxs9"))))
+    (version "4.0.1")
+    (source (origin
+              ;; The test script is missing from the PyPI archive.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/python/typing")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0a35fh5wk9s538x0w3dz95y0avnhd2srzyv9s1a372711n8hdl4p"))))
     (build-system python-build-system)
-    (home-page
-     "https://github.com/python/typing/blob/master/typing_extensions/README.rst")
+    (arguments
+     (list
+      #:tests? #f       ;requires Python's test module, not available in Guix
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'enter-source-directory
+            (lambda _
+              (chdir "typing_extensions")))
+          ;; XXX: PEP 517 manual build copied from python-isort.
+          (replace 'build
+            (lambda _
+              (invoke "python" "-m" "build" "--wheel" "--no-isolation" ".")))
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (invoke "python" "src/test_typing_extensions.py"))))
+          (replace 'install
+            (lambda _
+              (let ((whl (car (find-files "dist" "\\.whl$"))))
+                (invoke "pip" "--no-cache-dir" "--no-input"
+                        "install" "--no-deps" "--prefix" #$output whl)))))))
+    (native-inputs (list python-pypa-build python-flit-core))
+    (home-page "https://github.com/python/typing/typing_extensions")
     (synopsis "Experimental type hints for Python")
     (description
      "The typing_extensions module contains additional @code{typing} hints not
@@ -24341,92 +24445,52 @@ the syntactic logic to configure and launch jobs in an execution environment.")
 (define-public python-flit
   (package
     (name "python-flit")
-    (version "3.3.0")
-    ;; We fetch the sources via git because on pypi the package is split into
-    ;; two parts: flit and flit_core; flit_core cannot be built without flit.
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/takluyver/flit")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0mvyymw3zqsnip4x4ca6anr5rbx30hcmpqwrnhjwcm7s8mycd01x"))))
+    (version "3.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "flit" version))
+       (sha256
+        (base32 "04152qj46sqbnlrj7ch9p7svjrrlpzbk0qr39g2yr0s4f5vp6frf"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'build 'bootstrap
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((home (string-append (getcwd) "/home")))
-               (mkdir-p home)
-               (setenv "HOME" home))
-             (for-each make-file-writable (find-files "."))
-             (copy-recursively (assoc-ref inputs "python-testpath")
-                               (string-append (getcwd) "/testpath"))
-             (substitute* "pyproject.toml"
-               (("\"testpath\",") ""))
-             (invoke "python" "bootstrap_dev.py")))
-         (replace 'build
-           (lambda _
-             ;; A ZIP archive should be generated, but it fails with "ZIP does
-             ;; not support timestamps before 1980".  Luckily,
-             ;; SOURCE_DATE_EPOCH is respected, which we set to some time in
-             ;; 1980.
-             (setenv "SOURCE_DATE_EPOCH" "315532800")
-             (for-each (lambda (toml)
-                         (invoke "python3" "-m" "flit"
-                                 "--debug" "--ini-file" toml
-                                 "build"))
-                       '("testpath/pyproject.toml"
-                         "pyproject.toml"))
-             (with-directory-excursion "flit_core"
-               (invoke "python" "build_dists.py"))))
-         (replace 'install
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (let ((out (assoc-ref outputs "out")))
-               (delete-file-recursively "./home")
-               (for-each (lambda (wheel)
-                           (format #true wheel)
-                           (invoke "python" "-m" "pip" "install"
-                                   wheel (string-append "--prefix=" out)))
-                         (append
-                          (find-files "flit_core/dist" "\\.whl$")
-                          (find-files "dist" "\\.whl$")))))))
-       #:tests? #f)) ; XXX: Check requires network access.
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          ;; XXX: PEP 517 manual build copied from python-isort.
+          (replace 'build
+            (lambda _
+              (invoke "python" "-m" "build" "--wheel" "--no-isolation" ".")))
+          (replace 'check
+            (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+              (when tests?
+                (setenv "HOME" "/tmp")
+                (setenv "FLIT_NO_NETWORK" "1"))))
+          (replace 'install
+            (lambda _
+              (let ((whl (car (find-files "dist" "\\.whl$"))))
+                (invoke "pip" "--no-cache-dir" "--no-input"
+                        "install" "--no-deps" "--prefix" #$output whl)))))))
     (propagated-inputs
-     (list python-pytoml python-toml))
+     (list python-pypa-build
+           python-tomli-w
+           python-flit-core
+           python-docutils
+           python-requests))
     (native-inputs
-     `(("python-docutils" ,python-docutils)
-       ("python-responses" ,python-responses)
-       ("python-pygments-github-lexers" ,python-pygments-github-lexers)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-sphinx" ,python-sphinx)
-       ("python-sphinxcontrib-github-alt" ,python-sphinxcontrib-github-alt)
-       ;; This package needs testpath, but testpath also needs flit...
-       ("python-testpath"
-        ,(let ((name "python-testpath")
-               (version "0.4.4"))
-           (origin
-             (method git-fetch)
-             (uri (git-reference
-                   (url "https://github.com/jupyter/testpath")
-                   (commit version)))
-             (file-name (git-file-name name version))
-             (sha256
-              (base32
-               "1fwv4d3p54xx1x942s104irr35lszvv6jnr4nn1scsfvc0m1qmbk")))))))
+     (list python-responses
+           python-pygments-github-lexers
+           python-pytest
+           python-pytest-cov
+           python-sphinx
+           python-sphinxcontrib-github-alt
+           python-testpath))
     (home-page "https://flit.readthedocs.io/")
-    (synopsis
-     "Simple packaging tool for simple packages")
-    (description
-     "Flit is a simple way to put Python packages and modules on PyPI.  Flit
-packages a single importable module or package at a time, using the import
-name as the name on PyPI.  All subpackages and data files within a package
-are included automatically.")
+    (synopsis "Simple packaging tool for simple packages")
+    (description "Flit is a simple way to put Python packages and modules on
+PyPI.  Flit packages a single importable module or package at a time, using
+the import name as the name on PyPI.  All subpackages and data files within a
+package are included automatically.")
     (license license:bsd-3)))
 
 (define-public python-pathtools
@@ -27960,13 +28024,21 @@ compatible with a wide range of versions of the Stripe API.")
         (base32 "1njz0h4iky8iglrb85cd07hpa3lp1a2dfr934dj65hxwzvfk61j4"))))
     (build-system python-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (replace 'check
-                    (lambda* (#:key tests? #:allow-other-keys)
-                      (when tests? (invoke "pytest" "-vv")))))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'pretend-version
+           ;; The version string is usually derived via setuptools-scm, but
+           ;; without the git metadata available, the version string is set to
+           ;; '0.0.0'.
+           (lambda _
+             (setenv "SETUPTOOLS_SCM_PRETEND_VERSION" ,version)))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest")))))))
     (native-inputs
-     (list python-appdirs python-pytest python-pytest-mock
-           python-setuptools-scm))
+     (list python-appdirs python-pytest python-pytest-cov
+           python-pytest-mock python-setuptools-scm))
     (home-page "https://github.com/platformdirs/platformdirs")
     (synopsis "Determine the appropriate platform-specific directories")
     (description "When writing applications, finding the right location to

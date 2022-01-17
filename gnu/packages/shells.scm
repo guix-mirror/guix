@@ -952,7 +952,6 @@ files and text.")
     (build-system cargo-build-system)
     (arguments
      `(#:tests? #false                  ;missing files
-       #:rust ,rust-1.56
        #:features '("extra")
        #:cargo-inputs
        (("rust-ctrlc" ,rust-ctrlc-3)

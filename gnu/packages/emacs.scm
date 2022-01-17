@@ -245,16 +245,7 @@
                             ;; environment variables from emacs.
                             ;; Likewise, we don't need to patch helper binaries
                             ;; like etags, ctags or ebrowse.
-                            "^emacs(-[0-9]+(\\.[0-9]+)*)?$"))
-               #t)))
-         (add-before 'reset-gzip-timestamps 'make-compressed-files-writable
-           ;; The 'reset-gzip-timestamps phase will throw a permission error
-           ;; if gzip files aren't writable then.  This phase is needed when
-           ;; building from a git checkout.
-           (lambda _
-             (for-each make-file-writable
-                       (find-files %output ".*\\.t?gz$"))
-             #t)))))
+                            "^emacs(-[0-9]+(\\.[0-9]+)*)?$"))))))))
     (inputs
      `(("gnutls" ,gnutls)
        ("ncurses" ,ncurses)

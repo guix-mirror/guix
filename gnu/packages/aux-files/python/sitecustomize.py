@@ -18,6 +18,7 @@
 # along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import site
 import sys
 
 # Commentary:
@@ -47,9 +48,18 @@ all_sites_norm = [os.path.normpath(p) for p in all_sites_raw]
 matching_sites = [p for p in all_sites_norm
                   if p.endswith(site_packages_prefix)]
 
-# Insert sites matching the current version into sys.path, right before
-# Python's own site.  This way, the user can override the libraries provided
-# by Python itself.
-sys_path_absolute = [os.path.realpath(p) for p in sys.path]
-index = sys_path_absolute.index(python_site)
-sys.path[index:index] = matching_sites
+if matching_sites:
+    # Deduplicate the entries, append them to sys.path, and handle any
+    # .pth files they contain.
+    for s in matching_sites:
+        site.addsitedir(s)
+
+    # Move the entries that were appended to sys.path in front of
+    # Python's own site-packages directory.  This enables Guix
+    # packages to override Python's bundled packages, such as 'pip'.
+    python_site_index = sys.path.index(python_site)
+    new_site_start_index = sys.path.index(matching_sites[0])
+    if python_site_index < new_site_start_index:
+        sys.path = (sys.path[:python_site_index]
+                    + sys.path[new_site_start_index:]
+                    + sys.path[python_site_index:new_site_start_index])

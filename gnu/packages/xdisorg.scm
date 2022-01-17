@@ -431,7 +431,7 @@ avoiding password prompts when X11 forwarding has already been setup.")
            wayland-protocols
            xkeyboard-config))
     (native-inputs
-     (list bison doxygen pkg-config))
+     (list bison doxygen pkg-config python))
     (arguments
      `(#:configure-flags
        (list (string-append "-Dxkb-config-root="

@@ -2161,15 +2161,7 @@ Editor.  It is compatible with Power Tab Editor 1.7 and Guitar Pro.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "jalv.select.cpp"
                (("echo \\$PATH.*tr ':'.*xargs ls")
-                (string-append "ls -1 " (assoc-ref inputs "jalv") "/bin")))
-             #t))
-         (add-before 'reset-gzip-timestamps 'make-manpages-writable
-           (lambda* (#:key outputs #:allow-other-keys)
-             (for-each make-file-writable
-                       (find-files (string-append (assoc-ref outputs "out")
-                                                  "/share/man")
-                                   ".*\\.gz$"))
-             #t)))))
+                (string-append "ls -1 " (assoc-ref inputs "jalv") "/bin"))))))))
     (inputs
      (list lilv lv2 jalv gtkmm-2))
     (native-inputs
@@ -4747,16 +4739,7 @@ are a C compiler and glib.  Full API documentation and examples are included.")
                       (assoc-ref outputs "out") "/lib/lmms"
                       ":"
                       (assoc-ref outputs "out") "/lib/lmms/ladspa"
-                      "\""))
-             #t))
-         (add-before 'reset-gzip-timestamps 'make-manpages-writable
-           (lambda* (#:key outputs #:allow-other-keys)
-             (map (lambda (file)
-                    (make-file-writable file))
-                  (find-files (string-append (assoc-ref outputs "out")
-                                             "/share/man")
-                              ".*\\.gz$"))
-             #t)))))
+                      "\"")))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("qttools" ,qttools)
@@ -6279,12 +6262,6 @@ MIDI drums and comes as two separate drumkits: Black Pearl and Red Zeppelin.")
                 "JUCE_INCLUDE_PNGLIB_CODE=1"))
              (substitute* "Makefile"
                (("/usr") ""))
-             #t))
-         (add-before 'reset-gzip-timestamps 'make-gz-files-writable
-           (lambda* (#:key outputs #:allow-other-keys)
-             (for-each make-file-writable
-                       (find-files (string-append (assoc-ref outputs "out"))
-                                   ".*\\.gz$"))
              #t))
          (delete 'configure))))
     (inputs

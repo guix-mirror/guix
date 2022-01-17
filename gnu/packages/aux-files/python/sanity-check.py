@@ -44,7 +44,7 @@ for dist in ws:
         pkg_resources.require(req)
         print('OK')
     except Exception as e:
-        print('ERROR:', req, e)
+        print('ERROR:', req, repr(e))
         ret = 1
         continue
 

@@ -279,15 +279,19 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.2.30")
+    ;; Note: The 2.2.X releases are Long Term Support (LTS), so stick to it
+    ;; for our stable 'gnupg'.
+    ;; Note2: 2.2.33 currently suffers from regressions, so do not update to it
+    ;; (see: https://dev.gnupg.org/T5742).
+    (version "2.2.32")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
+              (uri (string-append "ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (patches (search-patches "gnupg-default-pinentry.patch"))
               (sha256
                (base32
-                "1111ry31gaxv76miqsy6l0kwxwlx8sz0jk41jhyrjwx649p6sqyc"))))
+                "0506gv54z10c96z5821z9p0ksibk1pfilsmag39ffqrcz0sinmxj"))))
     (build-system gnu-build-system)
     (native-inputs
      (list pkg-config))
@@ -347,21 +351,6 @@ libskba (working with X.509 certificates and CMS data).")
     (properties '((ftp-server . "ftp.gnupg.org")
                   (ftp-directory . "/gcrypt/gnupg")))))
 
-;; This package fixes <https://issues.guix.gnu.org/52483>, "GnuPG 2.2.30 cannot
-;; do symmetric encryption"
-(define-public gnupg-2.2.32
-  (package
-    (inherit gnupg)
-    (version "2.2.32")
-    (source (origin
-              (inherit (package-source gnupg))
-              (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
-                                  ".tar.bz2"))
-              (patches (search-patches "gnupg-default-pinentry.patch"))
-              (sha256
-               (base32
-                "0506gv54z10c96z5821z9p0ksibk1pfilsmag39ffqrcz0sinmxj"))))))
-
 (define-public gnupg-1
   (package (inherit gnupg)
     (version "1.4.23")
@@ -382,8 +371,7 @@ libskba (working with X.509 certificates and CMS data).")
          (add-after 'unpack 'patch-check-sh
            (lambda _
              (substitute* "checks/Makefile.in"
-               (("/bin/sh") (which "sh")))
-             #t)))))))
+               (("/bin/sh") (which "sh"))))))))))
 
 (define-public gpgme
   (package
@@ -433,14 +421,9 @@ and every application benefits from this.")
                         "lang/cpp/src/libgpgmepp.la")
                (symlink (string-append gpgme "/lib/libgpgme.la")
                         "src/libgpgme.la"))
-             (chdir "lang/qt")
-             #t)))))
+             (chdir "lang/qt"))))))
     (native-inputs
-     ;; Use GnuPG 2.2.32.  With 2.2.30, 'testSymmetricEncryptDecrypt' in
-     ;; t-encrypt.cpp fails because 'gpg' wrongfully ask for a passphrase do
-     ;; decrypt the cypher text.
      (modify-inputs (package-native-inputs gpgme)
-       (replace "gnupg" gnupg-2.2.32)
        (prepend pkg-config)))
     (inputs
      (modify-inputs (package-inputs gpgme)
@@ -593,14 +576,14 @@ decrypt messages using the OpenPGP format by making use of GPGME.")
 (define-public python-gnupg
   (package
     (name "python-gnupg")
-    (version "0.4.7")
+    (version "0.4.8")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-gnupg" version))
        (sha256
         (base32
-         "1isazrg2h126xg3vvk4wrhx8k8yfsg5sxybvfa99phj235mzaq90"))))
+         "1mq7hljy3bjkxdvh3qx2bv4y0b66l9pmc6i06ys75y7dbjpf2kdn"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -615,8 +598,7 @@ decrypt messages using the OpenPGP format by making use of GPGME.")
                (setenv "USERNAME" "guixbuilder")
                ;; The doctests are extremely slow and sometimes time out,
                ;; so we disable them.
-               (invoke "python"
-                       "test_gnupg.py" "--no-doctests")))))))
+               (invoke "python" "test_gnupg.py" "--no-doctests")))))))
     (native-inputs
      (list gnupg))
     (home-page "https://pythonhosted.org/python-gnupg/index.html")
@@ -625,9 +607,6 @@ decrypt messages using the OpenPGP format by making use of GPGME.")
       "This module allows easy access to GnuPG’s key management, encryption
 and signature functionality from Python programs.")
     (license license:bsd-3)))
-
-(define-public python2-gnupg
-  (package-with-python2 python-gnupg))
 
 (define-public perl-gnupg-interface
   (package

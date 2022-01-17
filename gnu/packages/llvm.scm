@@ -578,11 +578,8 @@ output), and Binutils.")
     (propagated-inputs
      (list zlib))                 ;to use output from llvm-config
     (arguments
-     ;; TODO(core-updates): Unconditionally use quasiquote
      `(#:configure-flags
-       ,#~(#$(if (%current-target-system)
-                 #~quasiquote
-                 #~quote)
+       ,#~(quasiquote
            ;; These options are required for cross-compiling LLVM according to
            ;; https://llvm.org/docs/HowToCrossCompileLLVM.html.
            (#$@(if (%current-target-system)

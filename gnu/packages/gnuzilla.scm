@@ -369,10 +369,7 @@ in C/C++.")
      `(#:tests? #f ; FIXME: all tests pass, but then the check phase fails anyway.
        #:test-target "check-jstests"
        #:configure-flags
-       ;; TODO(core-updates): unconditionally use 'quasiquote
-       ,#~(#$(if (%current-target-system)
-                 #~quasiquote
-                 #~quote)
+       ,#~(quasiquote
            ("--enable-ctypes"
             "--enable-optimize"
             "--enable-pie"
@@ -466,7 +463,10 @@ in C/C++.")
          "--enable-hardening"
          "--enable-optimize"
          "--enable-release"
-         "--enable-rust-simd"
+         ;; FIXME: rust-simd is disabled otherwise the build fails with
+         ;; "error: `[u32; 64]` is forbidden as the type of a const generic
+         ;; parameter".
+         "--disable-rust-simd"
          "--enable-readline"
          "--enable-shared-js"
          "--with-system-icu"

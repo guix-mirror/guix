@@ -893,15 +893,6 @@ message streaming.")
          #:tests? #f
          #:phases
          (modify-phases %standard-phases
-           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
-             (lambda* (#:key outputs #:allow-other-keys)
-               (map (lambda (file)
-                      (make-file-writable file))
-                    (find-files
-                      (string-append (assoc-ref outputs "out")
-                                     "/src/github.com/prometheus/common/expfmt/testdata/")
-                      ".*\\.gz$"))
-               #t))
            ;; Source-only package
            (delete 'build))))
       (propagated-inputs

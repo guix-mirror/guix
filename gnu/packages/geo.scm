@@ -229,8 +229,7 @@ topology functions.")
                 "037xmkmcmcw87vb1c1s3y225m8757k331cvk1m8cshf6mx61p0l1"))))
     (build-system meson-build-system)
     (arguments
-     `(#:meson ,meson-0.59         ;positional arguments error with meson 0.60
-       #:glib-or-gtk? #t
+     `(#:glib-or-gtk? #t
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'skip-gtk-update-icon-cache

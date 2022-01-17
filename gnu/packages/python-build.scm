@@ -26,6 +26,7 @@
   #:use-module (gnu packages)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system python)
+  #:use-module (guix gexp)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix packages))
@@ -41,14 +42,14 @@
 (define-public python-wheel
   (package
     (name "python-wheel")
-    (version "0.33.6")
+    (version "0.37.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "wheel" version))
         (sha256
          (base32
-          "0ii6f34rvpjg3nmw4bc2h7fhdsy38y1h93hghncfs5akfrldmj8h"))))
+          "1bbga5i49rj1cwi4sjpkvfhl1f8vl9lfky2lblsy768nk4wp5vz2"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: The test suite runs "python setup.py bdist_wheel", which in turn
@@ -90,6 +91,38 @@ installed with a newer @code{pip} or with wheel's own command line utility.")
     (description
      "@code{toml} is a library for parsing and creating Tom's Obvious, Minimal
 Language (TOML) configuration files.")
+    (license license:expat)))
+
+(define-public python-tomli-w
+  (package
+    (name "python-tomli-w")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "tomli_w" version))
+       (sha256
+        (base32 "1fg13bfq5qy1ym4x77815nhxh1xpfs0drhn9r9464cz00m1l6qzl"))))
+    (build-system python-build-system)
+    (arguments
+     (list
+      #:tests? #f                       ;to avoid extra dependencies
+      #:phases
+      #~(modify-phases %standard-phases
+          ;; XXX: PEP 517 manual build copied from python-isort.
+          (replace 'build
+            (lambda _
+              (invoke "python" "-m" "build" "--wheel" "--no-isolation" ".")))
+          (replace 'install
+            (lambda _
+              (let ((whl (car (find-files "dist" "\\.whl$"))))
+                (invoke "pip" "--no-cache-dir" "--no-input"
+                        "install" "--no-deps" "--prefix" #$output whl)))))))
+    (native-inputs (list python-pypa-build python-flit-core))
+    (home-page "https://github.com/hukkin/tomli-w")
+    (synopsis "Minimal TOML writer")
+    (description "Tomli-W is a Python library for writing TOML.  It is a
+write-only counterpart to Tomli, which is a read-only TOML parser.")
     (license license:expat)))
 
 (define-public python-pytoml
@@ -138,13 +171,13 @@ Python file, so it can be easily copied into your project.")
 (define-public python-tomli
   (package
     (name "python-tomli")
-    (version "1.2.2")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "tomli" version))
        (sha256
-        (base32 "1vjg44narb7hdiazdmbv8bfv7pi6phnq7nxm6aphx0iqxcah1kn6"))))
+        (base32 "1q8lrh9ypa6zpgbc5f7z23p7phzblp4vpxdrpfr1wajhb17w74n2"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f                      ;disabled to avoid extra dependencies
@@ -163,7 +196,7 @@ Python file, so it can be easily copied into your project.")
                (invoke "pip" "--no-cache-dir" "--no-input"
                        "install" "--no-deps" "--prefix" out whl)))))))
     (native-inputs
-     `(("python-flit-core" ,python-flit-core)
+     `(("python-flit-core-bootstrap" ,python-flit-core-bootstrap)
        ("python-pypa-build" ,python-pypa-build)
        ("python-six", python-six-bootstrap)))
     (home-page "https://github.com/hukkin/tomli")
@@ -199,13 +232,13 @@ Python file, so it can be easily copied into your project.")
 (define-public python-pyparsing
   (package
     (name "python-pyparsing")
-    (version "2.4.7")
+    (version "3.0.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyparsing" version))
        (sha256
-        (base32 "1hgc8qrbq1ymxbwfbjghv01fm3fbpjwpjwi0bcailxxzhf3yq0y2"))))
+        (base32 "109b9r802wb472hgmxclljprh5cid0w3p6mk9alba7pg2c0frgfr"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -234,8 +267,10 @@ Python file, so it can be easily copied into your project.")
 executing simple grammars, vs. the traditional lex/yacc approach, or the use
 of regular expressions.  The pyparsing module provides a library of classes
 that client code uses to construct the grammar directly in Python code.")
-    (license license:expat)))
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-pyparsing))))))
 
+;;; This is the last release compatible with Python 2.
 (define-public python-pyparsing-2.4.7
   (package
     (inherit python-pyparsing)
@@ -248,22 +283,19 @@ that client code uses to construct the grammar directly in Python code.")
         (base32 "1hgc8qrbq1ymxbwfbjghv01fm3fbpjwpjwi0bcailxxzhf3yq0y2"))))))
 
 (define-public python2-pyparsing
-  (package-with-python2 python-pyparsing))
+  (package-with-python2 (strip-python2-variant python-pyparsing-2.4.7)))
 
 (define-public python-packaging-bootstrap
   (package
     (name "python-packaging-bootstrap")
-    (version "20.0")
+    (version "21.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "packaging" version))
-       ;; XXX: The URL in the patch file is wrong, it should be
-       ;; <https://github.com/pypa/packaging/pull/256>.
-       (patches (search-patches "python-packaging-test-arch.patch"))
        (sha256
         (base32
-         "1y2ip3a4ykkpgnwgn85j6hkspcl0cg3mzms97f40mk57vwqq67gy"))))
+         "1sygirdrqgv4f1ckh9nhpcw1yfidrh3qjl86wq8vk6nq4wlw8iyx"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f))         ;disabled to avoid extra dependencies
     (propagated-inputs
@@ -280,7 +312,19 @@ information.")
     (license (list license:asl2.0 license:bsd-2))))
 
 (define-public python2-packaging-bootstrap
-  (package-with-python2 python-packaging-bootstrap))
+  (let ((base (package-with-python2 python-packaging-bootstrap)))
+    (package/inherit base
+      (version "20.0")                  ;last version with Python 2 support
+      (source
+       (origin
+         (method url-fetch)
+         (uri (pypi-uri "packaging" version))
+         ;; XXX: The URL in the patch file is wrong, it should be
+         ;; <https://github.com/pypa/packaging/pull/256>.
+         (patches (search-patches "python-packaging-test-arch.patch"))
+         (sha256
+          (base32
+           "1y2ip3a4ykkpgnwgn85j6hkspcl0cg3mzms97f40mk57vwqq67gy")))))))
 
 ;;; The name 'python-pypa-build' is chosen rather than 'python-build' to avoid
 ;;; a name clash with python-build from (guix build-system python).
@@ -336,16 +380,17 @@ a light weight, fully compliant, self-contained package allowing PEP 517
 compatible build front-ends to build Poetry managed projects.")
     (license license:expat)))
 
-(define-public python-flit-core
+;;; This package exists to bootstrap python-tomli.
+(define-public python-flit-core-bootstrap
   (package
-    (name "python-flit-core")
-    (version "3.4.0")
+    (name "python-flit-core-bootstrap")
+    (version "3.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "flit" version))
        (sha256
-        (base32 "10vjqnybvjdqdbmyc0asbhhvq51yjnnj00645yiq9849gnr8h0ir"))))
+        (base32 "04152qj46sqbnlrj7ch9p7svjrrlpzbk0qr39g2yr0s4f5vp6frf"))))
     (build-system python-build-system)
     (propagated-inputs
      (list python-toml))
@@ -376,3 +421,10 @@ compatible build front-ends to build Poetry managed projects.")
 backend for packages using Flit.  The only public interface is the API
 specified by PEP 517, @code{flit_core.buildapi}.")
     (license license:bsd-3)))
+
+(define-public python-flit-core
+  (package/inherit python-flit-core-bootstrap
+    (name "python-flit-core")
+    (propagated-inputs
+     (modify-inputs (package-propagated-inputs python-flit-core-bootstrap)
+       (replace "python-toml" python-tomli)))))

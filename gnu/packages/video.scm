@@ -49,7 +49,7 @@
 ;;; Copyright © 2021 Alexey Abramov <levenson@mmer.org>
 ;;; Copyright © 2021 Andrew Tropin <andrew@trop.in>
 ;;; Copyright © 2021 David Wilson <david@daviwil.com>
-;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021,2022 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
 ;;; Copyright © 2021 Thiago Jung Bauermann <bauermann@kolabnow.com>
@@ -4387,9 +4387,6 @@ tools for styling them, including a built-in real-time video preview.")
        ("pkg-config" ,pkg-config)))
      (arguments
       `(#:glib-or-gtk? #t
-        ;; Pitivi is not yet compatible with Meson 0.60:
-        ;; https://gitlab.gnome.org/GNOME/pitivi/-/issues/2593
-        #:meson ,meson-0.59
         #:phases
         (modify-phases %standard-phases
           (add-after 'glib-or-gtk-wrap 'wrap-other-dependencies
@@ -5206,7 +5203,7 @@ result in several formats:
 (define-public rav1e
   (package
     (name "rav1e")
-    (version "0.4.1")
+    (version "0.5.1")
     (source
      (origin
        (method url-fetch)
@@ -5215,15 +5212,18 @@ result in several formats:
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "00rjil6qbrwfxhhlq9yvidxm0gp9qdbywhf5zvkj85lykbhyff09"))))
+         "006bfcmjwg0phg8gc25b1sl2ngjrb2bh1b3fd0s5gbf9nlkr8qsn"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
-       (("rust-aom-sys" ,rust-aom-sys-0.2)
+     `(;; Strip the '--release' flag to work around the doctest failures with
+       ;; Rust 1.57 (see: https://github.com/xiph/rav1e/issues/2851).
+       #:cargo-test-flags '()
+       #:cargo-inputs
+       (("rust-aom-sys" ,rust-aom-sys-0.3)
         ("rust-arbitrary" ,rust-arbitrary-0.4)
         ("rust-arg-enum-proc-macro" ,rust-arg-enum-proc-macro-0.3)
-        ("rust-arrayvec" ,rust-arrayvec-0.5)
-        ("rust-av-metrics" ,rust-av-metrics-0.6)
+        ("rust-arrayvec" ,rust-arrayvec-0.7)
+        ("rust-av-metrics" ,rust-av-metrics-0.7)
         ("rust-backtrace" ,rust-backtrace-0.3)
         ("rust-bitstream-io" ,rust-bitstream-io-1)
         ("rust-byteorder" ,rust-byteorder-1)
@@ -5231,7 +5231,7 @@ result in several formats:
         ("rust-clap" ,rust-clap-2)
         ("rust-console" ,rust-console-0.14)
         ("rust-crossbeam" ,rust-crossbeam-0.8)
-        ("rust-dav1d-sys" ,rust-dav1d-sys-0.3.2)
+        ("rust-dav1d-sys" ,rust-dav1d-sys-0.3)
         ("rust-fern" ,rust-fern-0.6)
         ("rust-image" ,rust-image-0.23)
         ("rust-interpolate-name" ,rust-interpolate-name-0.2)
@@ -5250,7 +5250,7 @@ result in several formats:
         ("rust-rayon" ,rust-rayon-1)
         ("rust-regex" ,rust-regex-1)
         ("rust-rust-hawktracer" ,rust-rust-hawktracer-0.7)
-        ("rust-rustc-version" ,rust-rustc-version-0.3)
+        ("rust-rustc-version" ,rust-rustc-version-0.4)
         ("rust-scan-fmt" ,rust-scan-fmt-0.2)
         ("rust-serde" ,rust-serde-1)
         ("rust-signal-hook" ,rust-signal-hook-0.3)
@@ -5262,16 +5262,21 @@ result in several formats:
         ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2)
         ("rust-y4m" ,rust-y4m-0.7))
        #:cargo-development-inputs
-       (("rust-assert-cmd" ,rust-assert-cmd-1)
+       (("rust-assert-cmd" ,rust-assert-cmd-2)
         ("rust-cc" ,rust-cc-1)
         ("rust-criterion" ,rust-criterion-0.3)
         ("rust-interpolate-name" ,rust-interpolate-name-0.2)
-        ("rust-pretty-assertions" ,rust-pretty-assertions-0.6)
+        ("rust-pretty-assertions" ,rust-pretty-assertions-0.7)
         ("rust-rand" ,rust-rand-0.8)
         ("rust-rand-chacha" ,rust-rand-chacha-0.3)
-        ("rust-semver" ,rust-semver-0.11))
+        ("rust-semver" ,rust-semver-1))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'relax-versions
+           (lambda _
+             (substitute* "Cargo.toml"
+               ;; Allow using more recent versions of
+               (("~3.1.2") "~3"))))
          (replace 'build
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))

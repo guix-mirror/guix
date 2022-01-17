@@ -4463,29 +4463,31 @@ iteratively in Rust.")
 in Rust.")
     (license (list license:asl2.0 license:expat))))
 
-(define-public rust-av-metrics-0.6
+(define-public rust-av-metrics-0.7
   (package
     (name "rust-av-metrics")
-    (version "0.6.2")
+    (version "0.7.2")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "av-metrics" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1g4k2q3226246jad3jl8pny7aphq8i03x4qyilzj4zgp27350hsz"))))
+        (base32 "1y1q61lhahljxh1l2brp8v795qf6g7gr4h4vdmq43g5z5pq2dw50"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-crossbeam" ,rust-crossbeam-0.8)
         ("rust-itertools" ,rust-itertools-0.10)
-        ("rust-lab" ,rust-lab-0.8)
+        ("rust-lab" ,rust-lab-0.11)
         ("rust-num-traits" ,rust-num-traits-0.2)
         ("rust-rayon" ,rust-rayon-1)
         ("rust-serde" ,rust-serde-1)
         ("rust-thiserror" ,rust-thiserror-1)
-        ("rust-v-frame" ,rust-v-frame-0.2))))
+        ("rust-v-frame" ,rust-v-frame-0.2))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-y4m" ,rust-y4m-0.7))))
     (home-page "https://github.com/rust-av/av-metrics")
     (synopsis "Collection of algorithms for measuring audio/video metrics")
     (description
@@ -6129,40 +6131,17 @@ types.")
 (define-public rust-bitflags-1
   (package
     (name "rust-bitflags")
-    (version "1.2.1")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "bitflags" version))
-        (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "14qnd5nq8p2almk79m4m8ydqhd413yaxsyjp5xd19g3mikzf47fg"))))
-    (build-system cargo-build-system)
-    (home-page "https://github.com/bitflags/bitflags")
-    (synopsis "Macro to generate structures which behave like bitflags")
-    (description "This package provides a macro to generate structures which
-behave like a set of bitflags.")
-    (license (list license:asl2.0
-                   license:expat))))
-
-;; TODO: Absorb this package into rust-bitflags-1 in core-updates with the
-;; newer version of rust so we don't have to track down all dependants of this
-;; package to ensure a compatible version of rust.
-(define-public rust-bitflags-1.3
-  (package
-    (inherit rust-bitflags-1)
-    (name "rust-bitflags")
     (version "1.3.2")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "bitflags" version))
-        (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32 "12ki6w8gn1ldq7yz9y680llwk5gmrhrzszaa17g1sbrw2r2qvwxy"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bitflags" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "12ki6w8gn1ldq7yz9y680llwk5gmrhrzszaa17g1sbrw2r2qvwxy"))))
+    (build-system cargo-build-system)
     (arguments
-     `(#:tests? #f      ; Tests require rust-1.46 or newer.
+     `(#:tests? #f                      ; Tests require rust-1.46 or newer.
        #:cargo-inputs
        (("rust-compiler-builtins" ,rust-compiler-builtins-0.1)
         ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1))
@@ -6172,7 +6151,13 @@ behave like a set of bitflags.")
         ("rust-serde-derive" ,rust-serde-derive-1)
         ("rust-serde-json" ,rust-serde-json-1)
         ("rust-trybuild" ,rust-trybuild-1)
-        ("rust-walkdir" ,rust-walkdir-2))))))
+        ("rust-walkdir" ,rust-walkdir-2))))
+    (home-page "https://github.com/bitflags/bitflags")
+    (synopsis "Macro to generate structures which behave like bitflags")
+    (description "This package provides a macro to generate structures which
+behave like a set of bitflags.")
+    (license (list license:asl2.0
+                   license:expat))))
 
 (define-public rust-bitflags-0.9
   (package
@@ -10335,6 +10320,54 @@ diagnostics easy and relatively painless for everyone!")
     (home-page "https://github.com/athre0z/color-backtrace")
     (synopsis "Colorful panic backtraces")
     (description "This package provides colorful panic backtraces.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-concolor-query
+  (package
+    (name "rust-concolor-query")
+    (version "0.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "concolor-query" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1isbqpyiwblp0rglnaqzai5hav23095s82mwgi09v3xcck4rq5dd"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/rust-cli/concolor")
+    (synopsis "Rust library to query low level terminal capabilities")
+    (description "@code{concolor-query} can be used to query a terminal
+capabilities, for example to find out about its colored console abilities.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-concolor-control
+  (package
+    (name "rust-concolor-control")
+    (version "0.0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "concolor-control" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1nplakbdb9sbd3h62d9zkan0xm1w0c7cbl3rk0iqgn405yf1213i"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f          ;see https://github.com/rust-cli/concolor/issues/4
+       #:cargo-inputs
+       (("rust-atty" ,rust-atty-0.2)
+        ("rust-bitflags" ,rust-bitflags-1)
+        ("rust-concolor-query" ,rust-concolor-query))))
+    (home-page "https://github.com/rust-cli/concolor")
+    (synopsis "Rust library for managing terminal styling")
+    (description "@code{concolor-control} is a terminal styling library that
+can be used to:
+@itemize
+@item Detect interactive @samp{stdout} or @samp{stderr}
+@item Detect terminal capabilities via @samp{TERM}
+@item Support @url{https://bixense.com/clicolors/, CLICOLOR} and
+@url{https://no-color.org/, NO_COLOR}.
+@end itemize")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-color-quant-1
@@ -27165,10 +27198,10 @@ currently supports parsing (fully conformant parser), formatting and comparing
 language tags.")
     (license license:expat)))
 
-(define-public rust-lab-0.8
+(define-public rust-lab-0.11
   (package
     (name "rust-lab")
-    (version "0.8.1")
+    (version "0.11.0")
     (source
       (origin
         (method url-fetch)
@@ -27177,15 +27210,15 @@ language tags.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1ysnbviwi35mq6xyz9c59mpgigyfp4s4y2mispxzrms4vk83bx15"))))
+          "13ymsn5cwl5i9pmp5mfmbap7q688dcp9a17q82crkvb784yifdmz"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-development-inputs
-       (("rust-approx" ,rust-approx-0.3)
+       (("rust-approx" ,rust-approx-0.5)
         ("rust-criterion" ,rust-criterion-0.3)
         ("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-pretty-assertions" ,rust-pretty-assertions-0.6)
-        ("rust-rand" ,rust-rand-0.5))))
+        ("rust-pretty-assertions" ,rust-pretty-assertions-0.7)
+        ("rust-rand" ,rust-rand-0.8))))
     (home-page "https://github.com/TooManyBees/lab")
     (synopsis "Convert RGB to CIE-LAB for Rust")
     (description
@@ -27195,7 +27228,7 @@ space, and comparing differences in color.")
 
 (define-public rust-lab-0.7
   (package
-    (inherit rust-lab-0.8)
+    (inherit rust-lab-0.11)
     (name "rust-lab")
     (version "0.7.2")
     (source
@@ -27217,18 +27250,18 @@ space, and comparing differences in color.")
 
 (define-public rust-lab-0.4
   (package
-    (inherit rust-lab-0.8)
+    (inherit rust-lab-0.7)
     (name "rust-lab")
     (version "0.4.4")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "lab" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "0h4ig5bvzmwlzd74zj7b4sh7kzi3c6mjjnw7yjz8ijxvr4mrcr1s"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "lab" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0h4ig5bvzmwlzd74zj7b4sh7kzi3c6mjjnw7yjz8ijxvr4mrcr1s"))))
     (arguments
      `(#:cargo-development-inputs
        (("rust-rand" ,rust-rand-0.3))))))
@@ -46210,8 +46243,33 @@ require unstable language features.")
      "small helper to generate version information for git packages")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-rustc-version-0.3
+(define-public rust-rustc-version-0.4
   (package
+    (name "rust-rustc-version")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustc_version" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0rpk9rcdk405xhbmgclsh4pai0svn49x35aggl4nhbkd4a2zb85z"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-semver" ,rust-semver-1))
+       #:cargo-development-inputs
+       (("rust-doc-comment" ,rust-doc-comment-0.3))))
+    (home-page "https://github.com/djc/rustc-version-rs")
+    (synopsis "Library for querying the version of an installed rustc compiler")
+    (description
+     "This package provides a library for querying the version of an installed
+rustc compiler.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-rustc-version-0.3
+  (package/inherit rust-rustc-version-0.4
     (name "rust-rustc-version")
     (version "0.3.3")
     (source
@@ -46221,17 +46279,10 @@ require unstable language features.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1vjmw7xcdri0spsf24mkpwpph853wrbqppihhw061i2igh4f5pzh"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-semver" ,rust-semver-0.11))))
-    (home-page "https://github.com/djc/rustc-version-rs")
-    (synopsis "Library for querying the version of an installed rustc compiler")
-    (description
-     "This package provides a library for querying the version of an installed
-rustc compiler.")
-    (license (list license:expat license:asl2.0))))
+       (("rust-semver" ,rust-semver-0.11))))))
 
 (define-public rust-rustc-version-0.2
   (package
@@ -54715,6 +54766,30 @@ processors, disks, components and networks.")
     (description "Send log messages to syslog.")
     (license license:expat)))
 
+(define-public rust-cfg-expr-0.8
+  (package
+    (name "rust-cfg-expr")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cfg-expr" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "03lgv8psc2qrr93hxgdfmfwbj1crpzghxd7qh6w2nz0l4qryh4ml"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-smallvec" ,rust-smallvec-1)
+        ("rust-target-lexicon" ,rust-target-lexicon-0.12))
+       #:cargo-development-inputs
+       (("rust-difference" ,rust-difference-2))))
+    (home-page "https://github.com/EmbarkStudios/cfg-expr")
+    (synopsis "Parser and evaluator for Rust @samp{cfg} expressions")
+    (description "This package provides a parser and evaluator for Rust
+@samp{cfg} expressions.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-system-deps-3
   (package
     (name "rust-system-deps")
@@ -62273,22 +62348,23 @@ first byte.")
 (define-public rust-v-frame-0.2
   (package
     (name "rust-v-frame")
-    (version "0.2.1")
+    (version "0.2.5")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "v_frame" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0ia1j0j1v5zp9bp91imbnbxnv937x3xfpc06nyj96yjfk8zbmxhp"))))
+        (base32 "1ay6p0arqg8cnyzv6iiad77plvjkxnmlmyvgz2qcpadv7y5942n7"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-hawktracer" ,rust-rust-hawktracer-0.7)
         ("rust-noop-proc-macro" ,rust-noop-proc-macro-0.3)
         ("rust-num-derive" ,rust-num-derive-0.3)
         ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-rayon" ,rust-rayon-1)
         ("rust-serde" ,rust-serde-1)
         ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2))))
     (home-page "https://github.com/xiph/rav1e")

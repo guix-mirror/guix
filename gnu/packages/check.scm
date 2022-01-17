@@ -79,6 +79,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
@@ -845,6 +846,7 @@ available via the @code{unittest.mock} module.")
          ("python2-funcsigs" ,python2-funcsigs)
          ,@(package-propagated-inputs base))))))
 
+;;; This package is unmaintained (see the note at the top of doc/index.rst).
 (define-public python-nose
   (package
     (name "python-nose")
@@ -858,15 +860,26 @@ available via the @code{unittest.mock} module.")
             "164a43k7k2wsqqk1s6vavcdamvss4mz0vd6pwzv2h9n8rgwzxgzi"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f)) ; FIXME: test suite fails
+     '(#:tests? #f
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'invoke-2to3
+                    (lambda _
+                      (invoke "2to3" "-w" "."))))))
     (home-page "http://readthedocs.org/docs/nose/")
     (synopsis "Python testing library")
     (description
      "Nose extends the unittest library to make testing easier.")
-    (license license:lgpl2.0+)))
+    (license license:lgpl2.0+)
+    (properties `((python2-variant . ,(delay python2-nose))))))
 
 (define-public python2-nose
-  (package-with-python2 python-nose))
+  (let ((base (package-with-python2
+               (strip-python2-variant python-nose))))
+    (package/inherit base
+      (arguments (substitute-keyword-arguments (package-arguments base)
+                   ((#:phases phases)
+                    `(modify-phases ,phases
+                       (delete 'invoke-2to3))))))))
 
 (define-public python-nose2
   (package
@@ -1410,14 +1423,14 @@ result back.")
 (define-public python-pytest-timeout
   (package
     (name "python-pytest-timeout")
-    (version "1.4.2")
+    (version "2.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest-timeout" version))
        (sha256
         (base32
-         "0xnsigs0kmpq1za0d4i522sp3f71x5bgpdh3ski0rs74yqy13cr0"))))
+         "04l1cd2qyp3fbccw95a8nqg682r647v7yil8807dgs7xv9a8pyg6"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -1853,7 +1866,7 @@ C/C++, R, and more, and uploads it to the @code{codecov.io} service.")
 (define-public python-testpath
   (package
     (name "python-testpath")
-    (version "0.4.4")
+    (version "0.5.0")
     (source
      (origin
        (method git-fetch)
@@ -1863,35 +1876,33 @@ C/C++, R, and more, and uploads it to the @code{codecov.io} service.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1fwv4d3p54xx1x942s104irr35lszvv6jnr4nn1scsfvc0m1qmbk"))))
+         "08r1c6bhvj8pcdvzkqv1950k36a6q3v81fd2p1yqdq3c07mcwgif"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f ; this package does not even have a setup.py
-       #:modules ((guix build python-build-system)
-                  (guix build utils)
-                  (srfi srfi-1))
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'build
-           (lambda _
-             ;; A ZIP archive should be generated, but it fails with "ZIP does
-             ;; not support timestamps before 1980".  Luckily,
-             ;; SOURCE_DATE_EPOCH is respected, which we set to some time in
-             ;; 1980.
-             (setenv "SOURCE_DATE_EPOCH" "315532800")
-             (invoke "flit" "build")))
-         (replace 'install
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (let ((out (assoc-ref outputs "out")))
-               (for-each (lambda (wheel)
-                           (format #true wheel)
-                           (invoke "python" "-m" "pip" "install"
-                                   wheel (string-append "--prefix=" out)))
-                         (find-files "dist" "\\.whl$"))))))))
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'relax-requirements
+            (lambda _
+              (substitute* "pyproject.toml"
+                (("flit_core >=3.2.0,<3.3")
+                 "flit_core >=3.2.0"))))
+          ;; XXX: PEP 517 manual build copied from python-isort.
+          (replace 'build
+            (lambda _
+              (invoke "python" "-m" "build" "--wheel" "--no-isolation" ".")))
+          (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest"))))
+          (replace 'install
+            (lambda _
+              (let ((whl (car (find-files "dist" "\\.whl$"))))
+                (invoke "pip" "--no-cache-dir" "--no-input"
+                        "install" "--no-deps" "--prefix" #$output whl)))))))
     (native-inputs
-     (list python-flit))
-    (home-page "https://github.com/takluyver/testpath")
+     (list python-pypa-build python-flit-core python-pytest))
+    (home-page "https://github.com/jupyter/testpath")
     (synopsis "Test utilities for code working with files and commands")
     (description
      "Testpath is a collection of utilities for Python code working with files
@@ -2244,7 +2255,7 @@ statements in the module it tests.")
 (define-public python-pylint
   (package
     (name "python-pylint")
-    (version "2.9.6")
+    (version "2.12.2")
     (source
      (origin
        (method git-fetch)
@@ -2253,15 +2264,31 @@ statements in the module it tests.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "15yw69v1cj6zkndk60c2g0dgl0khh8bfm1lrwhjffpdjfc7nkc9a"))))
+        (base32 "0spmy7j1vvh55shzgma80q61y0d1cj45dcgslb4g5w3y602miq5i"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; The unused but collected 'primer'-related test files require
+               ;; the extraneous 'git' Python module; remove them.
+               (delete-file "tests/primer/test_primer_external.py")
+               (delete-file "tests/testutils/test_package_to_lint.py")
+               (setenv "HOME" "/tmp")
+               (invoke "pytest" "-k" "test_functional")))))))
     (native-inputs
-     (list python-pytest python-pytest-benchmark python-pytest-runner))
+     (list python-pytest))
     (propagated-inputs
-     (list python-astroid python-isort python-mccabe python-toml))
+     (list python-astroid
+           python-isort
+           python-mccabe
+           python-platformdirs
+           python-toml
+           python-typing-extensions))
     (home-page "https://github.com/PyCQA/pylint")
-    (synopsis "Python source code analyzer which looks for coding standard
-errors")
+    (synopsis "Advanced Python code static checker")
     (description "Pylint is a Python source code analyzer which looks
 for programming errors, helps enforcing a coding standard and sniffs
 for some code smells (as defined in Martin Fowler's Refactoring book).

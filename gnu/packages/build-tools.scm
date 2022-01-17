@@ -264,7 +264,7 @@ files and generates build instructions for the Ninja build system.")
 (define-public meson
   (package
     (name "meson")
-    (version "0.60.0")
+    (version "0.60.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mesonbuild/meson/"
@@ -272,42 +272,10 @@ files and generates build instructions for the Ninja build system.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0irdn7hx5a182jbvq2kmdwd1v7mljzh5fm27pg4xk879hnv6h388"))
+                "13mrrizg4vl6n5k7fz6amyafnn3i097dcarr552qc0ca6nlmzjl7"))
               (patches (search-patches
                         "meson-allow-dirs-outside-of-prefix.patch"))))
     (build-system python-build-system)
-    (arguments
-     `(;; FIXME: Tests require many additional inputs and patching many
-       ;; hard-coded file system locations in "run_unittests.py".
-       #:tests? #f
-       #:phases (modify-phases %standard-phases
-                  ;; Meson calls the various executables in out/bin through the
-                  ;; Python interpreter, so we cannot use the shell wrapper.
-                  (delete 'wrap))))
-    (inputs (list ninja))
-
-    ;; XXX: Python is propagated just to 'GUIX_PYTHONPATH' is set (!).
-    ;; MESON-WRAPPED below fixes that by wrapping the 'meson' executable.
-    ;; TODO: Make MESON-WRAPPED the new MESON on the next core update cycle.
-    (propagated-inputs (list python))
-
-    (home-page "https://mesonbuild.com/")
-    (properties '((hidden? . #t)))
-    (synopsis "Build system designed to be fast and user-friendly")
-    (description
-     "The Meson build system is focused on user-friendliness and speed.
-It can compile code written in C, C++, Fortran, Java, Rust, and other
-languages.  Meson provides features comparable to those of the
-Autoconf/Automake/make combo.  Build specifications, also known as @dfn{Meson
-files}, are written in a custom domain-specific language (@dfn{DSL}) that
-resembles Python.")
-    (license license:asl2.0)))
-
-(define-public meson-wrapped
-  (package/inherit meson
-    (propagated-inputs '())                       ;don't propagate Python
-    (inputs (modify-inputs (package-inputs meson)
-              (prepend python-wrapper)))
     (arguments
      `(;; FIXME: Tests require many additional inputs and patching many
        ;; hard-coded file system locations in "run_unittests.py".
@@ -327,7 +295,17 @@ import sys
 sys.path.insert(0, '~a/lib/python~a/site-packages')
 # EASY-INSTALL-ENTRY-SCRIPT"
                                    output python-version)))))))))
-    (properties '())))
+    (inputs (list python-wrapper ninja))
+    (home-page "https://mesonbuild.com/")
+    (synopsis "Build system designed to be fast and user-friendly")
+    (description
+     "The Meson build system is focused on user-friendliness and speed.
+It can compile code written in C, C++, Fortran, Java, Rust, and other
+languages.  Meson provides features comparable to those of the
+Autoconf/Automake/make combo.  Build specifications, also known as @dfn{Meson
+files}, are written in a custom domain-specific language (@dfn{DSL}) that
+resembles Python.")
+    (license license:asl2.0)))
 
 ;;; This older Meson variant is kept for now for gtkmm and others that may
 ;;; have problems with 0.60.

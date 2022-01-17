@@ -1108,14 +1108,7 @@ computing environments.")
 
                (invoke "pytest" "sklearn" "-m" "not network"
                        ;; This test tries to access the internet.
-                       "-k" "not test_load_boston_alternative"))))
-         (add-before 'reset-gzip-timestamps 'make-files-writable
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; Make sure .gz files are writable so that the
-             ;; 'reset-gzip-timestamps' phase can do its work.
-             (let ((out (assoc-ref outputs "out")))
-               (for-each make-file-writable
-                         (find-files out "\\.gz$"))))))))
+                       "-k" "not test_load_boston_alternative")))))))
     (inputs
      (list openblas))
     (native-inputs

@@ -632,8 +632,7 @@ by using the poppler rendering engine.")
             (files '("lib/zathura")))))
     (build-system meson-build-system)
     (arguments
-     `(#:meson ,meson-0.59
-       #:phases (modify-phases %standard-phases
+     `(#:phases (modify-phases %standard-phases
                   (add-before 'check 'start-xserver
                     ;; Tests require a running X server.
                     (lambda* (#:key inputs #:allow-other-keys)

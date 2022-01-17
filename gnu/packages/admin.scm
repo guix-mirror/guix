@@ -805,16 +805,15 @@ hostname.")
 (define-public shadow
   (package
     (name "shadow")
-    (version "4.8.1")
+    (version "4.9")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/shadow-maint/shadow/releases/"
-                    "download/" version "/shadow-" version ".tar.xz"))
-              (patches (search-patches "shadow-hurd-pctrl.patch"))
+                    "download/v" version "/shadow-" version ".tar.xz"))
               (sha256
                (base32
-                "0qmfq50sdhz6xilgxvinblll8j2iqfl7hwk45bq744y4plq4dbd3"))))
+                "0i4iijbshnwnsrskxzrh18xgmzff0hdpsnnkmyc2gdn1x4n1zv7y"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Assume System V `setpgrp (void)', which is the default on GNU
@@ -825,9 +824,16 @@ hostname.")
              '("--with-libpam"))
           "shadow_cv_logdir=/var/log"
           "ac_cv_func_setpgrp_void=yes")
-
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-linking-to-pam
+           (lambda _
+             ;; There's a build system problem in 4.9 that causes link
+             ;; failures with the pam libraries (see:
+             ;; https://github.com/shadow-maint/shadow/issues/407).
+             (substitute* "libsubid/Makefile.in"
+               (("\\$\\(LIBTCB\\)" all)
+                (string-append all " $(LIBPAM)")))))
          ,@(if (%current-target-system)
                '((add-before 'configure 'set-runtime-shell
                    (lambda* (#:key inputs #:allow-other-keys)
@@ -848,8 +854,7 @@ hostname.")
                                          "libc"))))
                (substitute* "lib/nscd.c"
                  (("/usr/sbin/nscd")
-                  (string-append libc "/sbin/nscd")))
-               #t)))
+                  (string-append libc "/sbin/nscd"))))))
          (add-after 'install 'remove-groups
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Remove `groups', which is already provided by Coreutils.
@@ -857,9 +862,7 @@ hostname.")
                     (bin (string-append out "/bin"))
                     (man (string-append out "/share/man")))
                (delete-file (string-append bin "/groups"))
-               (for-each delete-file (find-files man "^groups\\."))
-               #t))))))
-
+               (for-each delete-file (find-files man "^groups\\."))))))))
     (inputs
      `(,@(if (hurd-target?)
            '()
@@ -1206,8 +1209,7 @@ connection alive.")
                  (("^RELEASETYPE=.*")
                   (format #f "RELEASETYPE=~a\n" ,bind-release-type))
                  (("^RELEASEVER=.*")
-                  (format #f "RELEASEVER=~a\n" ,bind-release-version)))
-               #t))
+                  (format #f "RELEASEVER=~a\n" ,bind-release-version)))))
            ,@(if (%current-target-system)
                  '((add-before 'configure 'fix-bind-cross-compilation
                      (lambda _
@@ -1216,8 +1218,7 @@ connection alive.")
                           "--host=$host_alias"))
                        ;; BIND needs a native compiler because the DHCP
                        ;; build system uses the built 'gen' executable.
-                       (setenv "BUILD_CC" "gcc")
-                       #t)))
+                       (setenv "BUILD_CC" "gcc"))))
                  '())
            (add-after 'configure 'post-configure
              (lambda* (#:key outputs #:allow-other-keys)
@@ -1255,11 +1256,7 @@ connection alive.")
                            "--owner=root:0"
                            "--group=root:0")))))
            (add-after 'install 'post-install
-             ;; TODO(core-updates): native-inputs isn't required anymore.
-             (lambda* (#:key ,@(if (%current-target-system)
-                                   '(native-inputs)
-                                   '())
-                       inputs outputs #:allow-other-keys)
+             (lambda* (#:key inputs outputs #:allow-other-keys)
                ;; Install the dhclient script for GNU/Linux and make sure
                ;; if finds all the programs it needs.
                (let* ((out       (assoc-ref outputs "out"))
@@ -1282,31 +1279,13 @@ connection alive.")
                      ,(map (lambda (dir)
                              (string-append dir "/bin:"
                                             dir "/sbin"))
-                           (list inetutils net-tools coreutils sed))))
-                 ;; TODO(core-updates): should not be required anymore,
-                 ;; once <https://issues.guix.gnu.org/49290> has been merged.
-                 ,@(if (%current-target-system)
-                       '((for-each
-                          (lambda (file)
-                            (substitute* file
-                              (((assoc-ref native-inputs "bash"))
-                               (assoc-ref inputs "bash"))))
-                          (list (string-append libexec
-                                               "/dhclient-script")
-                                (string-append libexec
-                                               "/.dhclient-script-real"))))
-                       '())
-                 #t))))))
+                           (list inetutils net-tools coreutils sed))))))))))
 
       (native-inputs
        (list perl file))
 
       (inputs `(("inetutils" ,inetutils)
-                ;; TODO(core-updates): simply make this unconditional
-                ,@(if (%current-target-system)
-                      ;; for wrap-program
-                      `(("bash" ,(canonical-package bash-minimal)))
-                      '())
+                ("bash" ,(canonical-package bash-minimal)) ;for wrap-program
                 ,@(if (hurd-target?) '()
                       `(("net-tools" ,net-tools)
                         ("iproute" ,iproute)))

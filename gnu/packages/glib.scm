@@ -179,7 +179,7 @@ shared NFS home directories.")
 (define glib
   (package
     (name "glib")
-    (version "2.70.0")
+    (version "2.70.2")
     (source
      (origin
        (method url-fetch)
@@ -188,7 +188,7 @@ shared NFS home directories.")
                        name "/" (string-take version 4) "/"
                        name "-" version ".tar.xz"))
        (sha256
-        (base32 "0hh7hk02fkm1bn48k4z8f3kgv9qbni5z22gizd567fn527w7s390"))
+        (base32 "0vw08p4jllavp9qmlqg1yl1zanmy53yid46wipas6gfdhnf4al85"))
        (patches
         (search-patches "glib-appinfo-watch.patch"
                         "glib-skip-failing-test.patch"))
@@ -212,12 +212,11 @@ shared NFS home directories.")
                    `(,(this-package-native-input "python")
                      ,(this-package-native-input "python-wrapper")))
               '()))
-       #:configure-flags (list "--default-library=both"
-                               "-Dman=false"
-                               "-Dselinux=disabled"
-                               (string-append "--bindir="
-                                              (assoc-ref %outputs "bin")
-                                              "/bin"))
+       #:configure-flags ,#~(list "--default-library=both"
+                                  "-Dman=false"
+                                  "-Dselinux=disabled"
+                                  (string-append "--bindir="
+                                                 #$output:bin "/bin"))
        #:phases
        (modify-phases %standard-phases
          ;; Needed to pass the test phase on slower ARM and i686 machines.
@@ -365,8 +364,8 @@ functions for strings and common data structures.")
     (arguments
      (substitute-keyword-arguments (package-arguments glib)
        ((#:configure-flags flags ''())
-        `(cons "-Dgtk_doc=true"
-               (delete "-Dman=false" ,flags)))
+        #~(cons "-Dgtk_doc=true"
+                (delete "-Dman=false" #$flags)))
        ((#:phases phases)
         `(modify-phases ,phases
            (add-after 'unpack 'patch-docbook-xml
@@ -467,8 +466,7 @@ be used when cross-compiling."
            (lambda _
              (substitute* "tools/g-ir-tool-template.in"
                (("#!@PYTHON_CMD@")
-                (string-append "#!" (which "python3"))))
-             #t))
+                (string-append "#!" (which "python3"))))))
          #$@(if (%current-target-system)
                ;; Meson gives python extensions an incorrect name, see
                ;; <https://github.com/mesonbuild/meson/issues/7049>.
@@ -482,12 +480,8 @@ be used when cross-compiling."
     (native-inputs
      `(("glib" ,glib "bin")
        ("pkg-config" ,pkg-config)
-       ;; TODO(core-updates): Unconditionally place "flex" and "bison"
-       ;; in 'native-inputs'.
-       ,@(if (%current-target-system)
-             `(("bison" ,bison)
-               ("flex" ,flex))
-             '())))
+       ("bison" ,bison)
+       ("flex" ,flex)))
     (inputs
      `(,@(if (%current-target-system)
              `(("python" ,python))
@@ -753,7 +747,7 @@ by GDBus included in Glib.")
 (define glibmm
   (package
     (name "glibmm")
-    (version "2.68.0")
+    (version "2.70.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/glibmm/"
@@ -761,13 +755,12 @@ by GDBus included in Glib.")
                                   "/glibmm-" version ".tar.xz"))
               (sha256
                (base32
-                "0xgkyhb2876mcyyib5rk3ya9aingyj68h02nl22yvkhx35rqbwy1"))))
+                "085mzpphz71sh5wh71ppikwnxsgn4pk3s4bzz6ingj6wxn5gs240"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
      `(#:configure-flags
-       (list
-        "-Dbuild-documentation=true")
+       (list "-Dbuild-documentation=true")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'disable-failing-tests
@@ -778,8 +771,7 @@ by GDBus included in Glib.")
                (("[ \t]*.*giomm_simple.*$") "")
                ;; This test does a DNS lookup, and then expects to be able
                ;; to open a TLS session; just skip it.
-               (("[ \t]*.*giomm_tls_client.*$") ""))
-             #t))
+               (("[ \t]*.*giomm_tls_client.*$") ""))))
          (add-after 'install 'move-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -787,17 +779,16 @@ by GDBus included in Glib.")
                (mkdir-p (string-append doc "/share"))
                (rename-file
                 (string-append out "/share/doc")
-                (string-append doc "/share/doc"))
-               #t))))))
+                (string-append doc "/share/doc"))))))))
     (native-inputs
-     `(("dot" ,graphviz)
-       ("doxygen" ,doxygen)
-       ("glib:bin" ,glib "bin")
-       ("m4" ,m4)
-       ("mm-common" ,mm-common)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)
-       ("xsltproc" ,libxslt)))
+     (list graphviz
+           doxygen
+           `(,glib "bin")
+           m4
+           mm-common
+           perl
+           pkg-config
+           libxslt))
     (propagated-inputs
      (list libsigc++ glib))
     (home-page "https://gtkmm.org/")
@@ -823,7 +814,7 @@ useful for C++.")
         (base32 "11m37sbx0i18cl17d0fkq0bik4bbzlb5n8kcl651jhci5ipci3sh"))))
      (propagated-inputs
       (modify-inputs (package-propagated-inputs glibmm)
-        (prepend libsigc++-2)))))
+        (replace "libsigc++" libsigc++-2)))))
 
 (define-public python2-pygobject-2
   (package

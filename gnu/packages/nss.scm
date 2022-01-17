@@ -112,7 +112,7 @@ in the Mozilla clients.")
     (name "nss")
     ;; Also update and test the nss-certs package, which duplicates version and
     ;; source to avoid a top-level variable reference & module cycle.
-    (version "3.71")
+    (version "3.72")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
@@ -123,7 +123,7 @@ in the Mozilla clients.")
                       "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "0ly2l3dv6z5hlxs72h5x6796ni3x1bq60saavaf42ddgv4ax7b4r"))
+                "0bnh683nij6s0gvjcgwhyw5d3yx9fpm42pxj5bm97r0ky6ghm9kf"))
               ;; Create nss.pc and nss-config.
               (patches (search-patches "nss-3.56-pkgconfig.patch"
                                        "nss-getcwd-nonnull.patch"

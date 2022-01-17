@@ -2248,13 +2248,9 @@ sockets in Perl.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           ;; TODO(core-updates): Make this unconditional.
-           ,(if (%current-target-system)
-                '(lambda* (#:key tests? #:allow-other-keys)
-                   (when tests?
-                     (invoke "ctest" "-E" "url-test")))
-                '(lambda _
-                   (invoke "ctest" "-E" "url-test")))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "ctest" "-E" "url-test")))))))
     (synopsis "Library providing automatic proxy configuration management")
     (description "Libproxy handles the details of HTTP/HTTPS proxy
 configuration for applications across all scenarios.  Applications using
@@ -3529,7 +3525,7 @@ powerful route filtering syntax and an easy-to-use configuration interface.")
 (define-public iwd
   (package
     (name "iwd")
-    (version "1.15")
+    (version "1.20")
     (source (origin
               ;; FIXME: We're using the bootstrapped sources because
               ;; otherwise using an external ell library is impossible.
@@ -3539,7 +3535,7 @@ powerful route filtering syntax and an easy-to-use configuration interface.")
                                   "/wireless/iwd-" version ".tar.xz"))
               (sha256
                (base32
-                "0ngng9a9ra5w0mp2813yy2ihfibyx10ns6v5icdcp99db608xax7"))))
+                "03q5scahyg86h4bdxqxm32shyssgpmfp5b3183j01ig7mg6f4lbx"))))
     (build-system gnu-build-system)
     (inputs
      (list dbus ell readline))

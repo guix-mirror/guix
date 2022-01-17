@@ -1394,6 +1394,32 @@ handles the 7z format which features very high compression ratios.")
 functionality in a C++ iostream.")
     (license license:lgpl2.1+)))
 
+(define-public zopfli
+  (package
+    (name "zopfli")
+    (version "1.0.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/google/zopfli")
+                    (commit (string-append name "-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0dr8n4j5nj2h9n208jns56wglw59gg4qm3s7c6y3hs75d0nnkhm4"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test suite
+       #:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
+    (home-page "https://github.com/google/zopfli")
+    (synopsis "Very good, but slow, deflate or zlib compression")
+    (description "Zopfli Compression Algorithm is a compression library
+programmed in C to perform very good, but slow, deflate or zlib compression.
+ZopfliCompress supports the deflate, gzip and zlib output formats.  This
+library can only compress, not decompress; existing zlib or deflate libraries
+can decompress the data.")
+    (license license:asl2.0)))
+
 (define-public zpaq
   (package
     (name "zpaq")

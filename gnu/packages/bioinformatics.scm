@@ -373,7 +373,7 @@ single executable called @code{bam}.")
 (define-public bcftools
   (package
     (name "bcftools")
-    (version "1.12")
+    (version "1.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/samtools/bcftools/"
@@ -381,12 +381,11 @@ single executable called @code{bam}.")
                                   version "/bcftools-" version ".tar.bz2"))
               (sha256
                (base32
-                "1x94l1hy2pi3lbz0sxlbw0g6q5z5apcrhrlcwda94ns9n4r6a3ks"))
+                "1jqrma16fx8kpvb3c0462dg0asvmiv5yi8myqmc5ddgwi6p8ivxp"))
               (modules '((guix build utils)))
               (snippet '(begin
                           ;; Delete bundled htslib.
-                          (delete-file-recursively "htslib-1.12")
-                          #t))))
+                          (delete-file-recursively "htslib-1.14")))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -397,8 +396,7 @@ single executable called @code{bam}.")
          (add-before 'check 'patch-tests
            (lambda _
              (substitute* "test/test.pl"
-               (("/bin/bash") (which "bash")))
-             #t)))))
+               (("/bin/bash") (which "bash"))))))))
     (native-inputs
      (list htslib perl))
     (inputs
@@ -412,9 +410,25 @@ transparently with both VCFs and BCFs, both uncompressed and BGZF-compressed.")
     ;; The sources are dual MIT/GPL, but becomes GPL-only when USE_GPL=1.
     (license (list license:gpl3+ license:expat))))
 
+(define-public bcftools-1.12
+  (package/inherit bcftools
+    (version "1.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/samtools/bcftools/"
+                                  "releases/download/"
+                                  version "/bcftools-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1x94l1hy2pi3lbz0sxlbw0g6q5z5apcrhrlcwda94ns9n4r6a3ks"))
+              (modules '((guix build utils)))
+              (snippet '(begin
+                          ;; Delete bundled htslib.
+                          (delete-file-recursively "htslib-1.12")))))
+    (native-inputs (list htslib-1.12 perl))))
+
 (define-public bcftools-1.10
-  (package (inherit bcftools)
-    (name "bcftools")
+  (package/inherit bcftools
     (version "1.10")
     (source (origin
               (method url-fetch)
@@ -427,11 +441,8 @@ transparently with both VCFs and BCFs, both uncompressed and BGZF-compressed.")
               (modules '((guix build utils)))
               (snippet '(begin
                           ;; Delete bundled htslib.
-                          (delete-file-recursively "htslib-1.10")
-                          #t))))
-    (build-system gnu-build-system)
-    (native-inputs
-     (list htslib-1.10 perl))))
+                          (delete-file-recursively "htslib-1.10")))))
+    (native-inputs (list htslib-1.10 perl))))
 
 (define-public bedops
   (package
@@ -1064,13 +1075,7 @@ Python.")
                (("^(.+)def test_from_hdf5_issue_731" m indent)
                 (string-append indent
                                "@npt.dec.skipif(True, msg='Guix')\n"
-                               m)))))
-
-         (add-before 'reset-gzip-timestamps 'make-files-writable
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (for-each (lambda (file) (chmod file #o644))
-                         (find-files out "\\.gz"))))))))
+                               m))))))))
     (propagated-inputs
      (list python-anndata
            python-numpy
@@ -2316,7 +2321,7 @@ has several key features:
 (define-public python-pysam
   (package
     (name "python-pysam")
-    (version "0.16.0.1")
+    (version "0.18.0")
     (source (origin
               (method git-fetch)
               ;; Test data is missing on PyPi.
@@ -2326,11 +2331,10 @@ has several key features:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "168bwwm8c2k22m7paip8q0yajyl7xdxgnik0bgjl7rhqg0majz0f"))
+                "042ca27r6634xg2ixgvq1079cp714wmm6ml7bwc1snn0wxxzywfg"))
               (modules '((guix build utils)))
               (snippet '(begin
-                          ;; Drop bundled htslib. TODO: Also remove samtools
-                          ;; and bcftools.
+                          ;; FIXME: Unbundle samtools and bcftools.
                           (delete-file-recursively "htslib")))))
     (build-system python-build-system)
     (arguments
@@ -2347,35 +2351,24 @@ has several key features:
              (setenv "CFLAGS" "-D_CURSES_LIB=1")))
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
-             ;; FIXME: These tests fail with "AttributeError: 'array.array'
-             ;; object has no attribute 'tostring'".
-             (delete-file "tests/AlignmentFile_test.py")
              (when tests?
                ;; Step out of source dir so python does not import from CWD.
                (with-directory-excursion "tests"
                  (setenv "HOME" "/tmp")
                  (invoke "make" "-C" "pysam_data")
                  (invoke "make" "-C" "cbcf_data")
-                 (invoke "pytest" "-k"
-                         (string-append
-                           ;; requires network access.
-                           "not FileHTTP"
-                           ;; bug in test suite with samtools update
-                           ;; https://github.com/pysam-developers/pysam/issues/961
-                           " and not TestHeaderBAM"
-                           " and not TestHeaderCRAM"
-                           " and not test_text_processing")))))))))
+                 ;; The FileHTTP test requires network access.
+                 (invoke "pytest" "-k" "not FileHTTP"))))))))
     (propagated-inputs
-     (list htslib-1.10))    ; Included from installed header files.
+     (list htslib))                    ; Included from installed header files.
     (inputs
      (list ncurses curl zlib))
     (native-inputs
      (list python-cython
            python-pytest
            ;; Dependencies below are are for tests only.
-           samtools-1.10
-           bcftools-1.10
-           python-nose))
+           samtools
+           bcftools))
     (home-page "https://github.com/pysam-developers/pysam")
     (synopsis "Python bindings to the SAMtools C API")
     (description
@@ -2584,13 +2577,6 @@ databases.")
      `(#:tests? #false
        #:phases
        (modify-phases %standard-phases
-         (add-before 'reset-gzip-timestamps 'make-files-writable
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; Make sure .gz files are writable so that the
-             ;; 'reset-gzip-timestamps' phase can do its work.
-             (let ((out (assoc-ref outputs "out")))
-               (for-each make-file-writable
-                         (find-files out "\\.gz$")))))
          (add-after 'unpack 'use-python3-for-cython
            (lambda _
              (substitute* "setup.py"
@@ -4786,7 +4772,7 @@ performance.")
 (define-public htslib
   (package
     (name "htslib")
-    (version "1.12")
+    (version "1.14")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4794,7 +4780,7 @@ performance.")
                     version "/htslib-" version ".tar.bz2"))
               (sha256
                (base32
-                "1jplnvizgr0fyyvvmkfmnsywrrpqhid3760vw15bllz98qdi9012"))))
+                "0pwk8yhhvb85mi1d2qhwsb4samc3rmbcrq7b1s0jz0glaa7in8pd"))))
     (build-system gnu-build-system)
     ;; Let htslib translate "gs://" and "s3://" to regular https links with
     ;; "--enable-gcs" and "--enable-s3". For these options to work, we also
@@ -4820,9 +4806,20 @@ data.  It also provides the @command{bgzip}, @command{htsfile}, and
     ;; the rest is released under the Expat license
     (license (list license:expat license:bsd-3))))
 
+(define-public htslib-1.12
+  (package/inherit htslib
+    (version "1.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/samtools/htslib/releases/download/"
+                    version "/htslib-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1jplnvizgr0fyyvvmkfmnsywrrpqhid3760vw15bllz98qdi9012"))))))
+
 (define-public htslib-1.10
-  (package (inherit htslib)
-    (name "htslib")
+  (package/inherit htslib
     (version "1.10")
     (source (origin
               (method url-fetch)
@@ -4834,8 +4831,7 @@ data.  It also provides the @command{bgzip}, @command{htsfile}, and
                 "0wm9ay7qgypj3mwx9zl1mrpnr36298b1aj5vx69l4k7bzbclvr3s"))))))
 
 (define-public htslib-1.9
-  (package (inherit htslib)
-    (name "htslib")
+  (package/inherit htslib
     (version "1.9")
     (source (origin
               (method url-fetch)
@@ -4848,8 +4844,7 @@ data.  It also provides the @command{bgzip}, @command{htsfile}, and
 
 ;; This package should be removed once no packages rely upon it.
 (define htslib-1.3
-  (package
-    (inherit htslib)
+  (package/inherit htslib
     (version "1.3.1")
     (source (origin
               (method url-fetch)
@@ -4861,8 +4856,7 @@ data.  It also provides the @command{bgzip}, @command{htsfile}, and
                 "1rja282fwdc25ql6izkhdyh8ppw8x2fs0w0js78zgkmqjlikmma9"))))))
 
 (define htslib-for-samtools-1.2
-  (package
-    (inherit htslib)
+  (package/inherit htslib
     (version "1.2.1")
     (source (origin
               (method url-fetch)
@@ -6148,6 +6142,44 @@ to the user's query of interest.")
 (define-public samtools
   (package
     (name "samtools")
+    (version "1.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://sourceforge/samtools/samtools/"
+                       version "/samtools-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0x3xdda78ac5vx66b3jdsv9sfhyz4npl4znl1zbaf3lbm6xdlhck"))
+       (modules '((guix build utils)))
+       (snippet '(begin
+                   ;; Delete bundled htslib.
+                   (delete-file-recursively "htslib-1.14")))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list "--with-ncurses")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-tests
+           (lambda _
+             (substitute* "test/test.pl"
+               ;; The test script calls out to /bin/bash
+               (("/bin/bash") (which "bash"))))))))
+    (native-inputs (list pkg-config))
+    (inputs
+     (list htslib ncurses perl python zlib))
+    (home-page "http://samtools.sourceforge.net")
+    (synopsis "Utilities to efficiently manipulate nucleotide sequence alignments")
+    (description
+     "Samtools implements various utilities for post-processing nucleotide
+sequence alignments in the SAM, BAM, and CRAM formats, including indexing,
+variant calling (in conjunction with bcftools), and a simple alignment
+viewer.")
+    (license license:expat)))
+
+(define-public samtools-1.12
+  (package/inherit samtools
     (version "1.12")
     (source
      (origin
@@ -6161,47 +6193,31 @@ to the user's query of interest.")
        (modules '((guix build utils)))
        (snippet '(begin
                    ;; Delete bundled htslib.
-                   (delete-file-recursively "htslib-1.12")
-                   #t))))
-    (build-system gnu-build-system)
+                   (delete-file-recursively "htslib-1.12")))))
     (arguments
-     `(#:modules ((ice-9 ftw)
-                  (ice-9 regex)
-                  (guix build gnu-build-system)
-                  (guix build utils))
-       #:configure-flags (list "--with-ncurses")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-tests
-           (lambda _
-             (substitute* "test/test.pl"
-               ;; The test script calls out to /bin/bash
-               (("/bin/bash") (which "bash")))
-             #t))
-         (add-after 'install 'install-library
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
-               (install-file "libbam.a" lib)
-               #t)))
-         (add-after 'install 'install-headers
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((include (string-append (assoc-ref outputs "out")
-                                           "/include/samtools/")))
-               (for-each (lambda (file)
-                           (install-file file include))
-                         (scandir "." (lambda (name) (string-match "\\.h$" name))))
-               #t))))))
+     (substitute-keyword-arguments (package-arguments samtools)
+       ((#:modules _ #f)
+        '((ice-9 ftw)
+          (ice-9 regex)
+          (guix build gnu-build-system)
+          (guix build utils)))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'install 'install-library
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
+                 (install-file "libbam.a" lib))))
+           (add-after 'install 'install-headers
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((include (string-append (assoc-ref outputs "out")
+                                             "/include/samtools/")))
+                 (for-each (lambda (file)
+                             (install-file file include))
+                           (scandir "." (lambda (name)
+                                          (string-match "\\.h$" name)))))))))))
     (native-inputs (list pkg-config))
     (inputs
-     (list htslib ncurses perl python zlib))
-    (home-page "http://samtools.sourceforge.net")
-    (synopsis "Utilities to efficiently manipulate nucleotide sequence alignments")
-    (description
-     "Samtools implements various utilities for post-processing nucleotide
-sequence alignments in the SAM, BAM, and CRAM formats, including indexing,
-variant calling (in conjunction with bcftools), and a simple alignment
-viewer.")
-    (license license:expat)))
+     (list htslib-1.12 ncurses perl python zlib))))
 
 (define-public samtools-1.10
   (package (inherit samtools)

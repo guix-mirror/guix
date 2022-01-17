@@ -8,6 +8,7 @@
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlos@gmx.com>
 ;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 Alexandre Hannud Abdo <abdo@member.fsf.org>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,7 @@
 
 (define-module (gnu packages graph)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -60,31 +62,81 @@
   #:use-module (gnu packages time)
   #:use-module (gnu packages xml))
 
+(define-public plfit
+  (package
+    (name "plfit")
+    (version "0.9.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ntamas/plfit")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "03x5jbvg8vwr92682swy58ljxrhqwmga1xzd0cpfbfmda41gm2fb"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags (list "-DBUILD_SHARED_LIBS=ON")))
+    (home-page "https://github.com/ntamas/plfit")
+    (synopsis "Tool for fitting power-law distributions to empirical data")
+    (description "The @command{plfit} command fits power-law distributions to
+empirical (discrete or continuous) data, according to the method of Clauset,
+Shalizi and Newman (@cite{Clauset A, Shalizi CR and Newman MEJ: Power-law
+distributions in empirical data.  SIAM Review 51, 661-703 (2009)}).")
+    (license license:gpl2+)))
+
 (define-public igraph
   (package
     (name "igraph")
-    (version "0.8.4")
+    (version "0.9.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/igraph/igraph/releases/"
                            "download/" version "/igraph-" version ".tar.gz"))
+       (modules '((guix build utils)))
+       (snippet '(begin
+                   ;; Fully unbundle igraph (see:
+                   ;; https://github.com/igraph/igraph/issues/1897).
+                   (delete-file-recursively "vendor")
+                   (substitute* "CMakeLists.txt"
+                     (("add_subdirectory\\(vendor\\).*")
+                      ""))
+                   (substitute* "src/CMakeLists.txt"
+                     ;; Remove bundling related variables.
+                     ((".*_IS_VENDORED.*") "")
+                     ;; Remove link/install directives to bundled plfit.
+                     (("plfit") "")
+                     ;; Patch in support to find plfit from the system.
+                     (("# Link igraph statically to some.*" all)
+                      (string-append "\
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(PLFIT REQUIRED libplfit IMPORTED_TARGET)
+target_link_libraries(igraph PUBLIC PkgConfig::PLFIT)\n"
+                                     all)))
+                   (substitute* (find-files "." "(\\.h|\\.c)$")
+                     ;; Adjust includes for the newer plfit used.
+                     (("plfit/error.h")
+                      "plfit/plfit_error.h")
+                     ;; And the newer SuiteSparse.
+                     (("cs/cs.h")
+                      "cs.h"))))
        (sha256
-        (base32 "127q6q40kbmvd62yhbz6dlfk370qiq98s1iscyagpgbpjwb4xvyf"))))
-    (build-system gnu-build-system)
+        (base32 "0ym1jnj6rqrrjad0dk7jsrm9351zdd0654brbn38gqp1j9wgdqy4"))))
+    (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags
-       (list "--disable-static"
-             "--with-external-glpk"
-             "--with-external-blas"
-             "--with-external-lapack")))
+     '(#:configure-flags (list "-DBUILD_SHARED_LIBS=ON")))
+    (native-inputs (list pkg-config))
     (inputs
-     (list gmp
+     (list arpack-ng
+           gmp
            glpk
            libxml2
            lapack
            openblas
-           zlib))
+           plfit
+           suitesparse))
     (home-page "https://igraph.org")
     (synopsis "Network analysis and visualization")
     (description
@@ -95,36 +147,46 @@ more.")
     (license license:gpl2+)))
 
 (define-public python-igraph
-  (package (inherit igraph)
+  (package/inherit igraph
     (name "python-igraph")
-    (version "0.8.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "python-igraph" version))
-       (sha256
-        (base32 "0wkxrs28qdvnrz7d4jzcf2bh6v2yqzx3wyfziihfgsi2gn6n60a6"))))
+    (version "0.9.8")
+    (source (origin
+              (method git-fetch)
+              ;; The PyPI archive lacks tests.
+              (uri (git-reference
+                    (url "https://github.com/igraph/python-igraph")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0nwwfqvj4gp91b9j67zq4l58srr4r8qfqh90ygx17zyrybkx7ns6"))))
     (build-system python-build-system)
     (arguments
-     '(#:configure-flags
-       (list "--use-pkg-config")
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'build
-           (lambda _
-             (invoke "python" "./setup.py" "build" "--use-pkg-config")))
-         (delete 'check)
-         (add-after 'install 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (invoke "pytest" "-v"))))))
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'specify-libigraph-location
+            (lambda _
+              (let ((igraph #$(this-package-input "igraph")))
+                (substitute* "setup.py"
+                  (("(LIBIGRAPH_FALLBACK_INCLUDE_DIRS = ).*" _ var)
+                   (string-append
+                    var (format #f "[~s]~%" (string-append igraph
+                                                           "/include/igraph"))))
+                  (("(LIBIGRAPH_FALLBACK_LIBRARY_DIRS = ).*" _ var)
+                   (string-append
+                    var (format #f "[~s]~%" (string-append igraph "/lib"))))))))
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (invoke "pytest" "-v")))))))
     (inputs
      (list igraph))
     (propagated-inputs
      (list python-texttable))
     (native-inputs
-     (list pkg-config python-pytest))
-    (home-page "https://pypi.org/project/python-igraph/")
+     (list python-pytest))
+    (home-page "https://igraph.org/python/")
     (synopsis "Python bindings for the igraph network analysis library")))
 
 (define-public r-rbiofabric
@@ -181,14 +243,7 @@ lines.")
                (invoke "pytest" "-x" "plotly/tests/test_io")
                ;; FIXME: Add optional dependencies and enable their tests.
                ;; (invoke "pytest" "-x" "plotly/tests/test_optional")
-               (invoke "pytest" "_plotly_utils/tests"))
-             #t))
-         (add-before 'reset-gzip-timestamps 'make-files-writable
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (for-each (lambda (file) (chmod file #o644))
-                 (find-files out "\\.gz"))
-               #t))))))
+               (invoke "pytest" "_plotly_utils/tests")))))))
     (native-inputs
      (list python-ipywidgets python-pytest python-xarray))
     (propagated-inputs

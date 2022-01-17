@@ -1836,8 +1836,7 @@ cp -r /tmp/locale/*/en_US.*")))
       ("python-pyparsing" ,python-pyparsing)
       ("socat" ,socat)
       ("which" ,which)))
-   (propagated-inputs (list glib-networking gnupg-2.2.32
-                            gsettings-desktop-schemas))
+   (propagated-inputs (list glib-networking gnupg gsettings-desktop-schemas))
    (inputs
     `(("appstream-glib" ,appstream-glib)
       ("bubblewrap" ,bubblewrap)

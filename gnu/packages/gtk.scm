@@ -188,10 +188,7 @@ tools have full access to view and control running applications.")
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)))
     (inputs
-     ;; TODO(core-updates): make this unconditional
-     `(,@(if (%current-target-system)
-             `(("bash-minimal" ,bash-minimal)) ; for glib-or-gtk-wrap
-             '())
+     `(("bash-minimal" ,bash-minimal)
        ("drm" ,libdrm)
        ("ghostscript" ,ghostscript)
        ("libspectre" ,libspectre)
@@ -1062,7 +1059,7 @@ application suites.")
 (define-public gtk
   (package
     (name "gtk")
-    (version "4.2.1")
+    (version "4.4.1")
     (source
      (origin
        (method url-fetch)
@@ -1070,9 +1067,10 @@ application suites.")
                            (version-major+minor version)  "/"
                            name "-" version ".tar.xz"))
        (sha256
-        (base32 "1rh9fd5axf79pmd93hb2fmmflic5swcvqvq6vqghlgz4bmvnjc82"))
+        (base32 "1x6xlc063nqp7cg6py4kq1kpw9pkq49ifk5kki0brc667ncdmahg"))
        (patches
-        (search-patches "gtk4-respect-GUIX_GTK4_PATH.patch"))))
+        (search-patches "gtk4-respect-GUIX_GTK4_PATH.patch"
+                        "gtk-introspection-test.patch"))))
     (build-system meson-build-system)
     (outputs '("out" "bin" "doc"))
     (arguments
@@ -1125,7 +1123,7 @@ application suites.")
            (lambda _
              (setenv "XDG_CACHE_HOME" (getcwd))))
          (add-before 'check 'pre-check
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
              ;; Tests require a running X server.
              (system "Xvfb :1 +extension GLX &")
              (setenv "DISPLAY" ":1")
@@ -1134,7 +1132,10 @@ application suites.")
              ;; Tests look for those variables.
              (setenv "XDG_RUNTIME_DIR" (getcwd))
              ;; For missing '/etc/machine-id'.
-             (setenv "DBUS_FATAL_WARNINGS" "0")))
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             ;; Required for the calendar test.
+             (setenv "TZDIR" (search-input-directory inputs
+                                                     "share/zoneinfo"))))
          (add-after 'install 'move-files
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1169,10 +1170,12 @@ application suites.")
        ("gettext-minimal" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection) ;for building introspection data
+       ("graphene" ,graphene)
        ("gtk-doc" ,gtk-doc)             ;for building documentation
        ("intltool" ,intltool)
        ("libxslt" ,libxslt)             ;for building man-pages
        ("pkg-config" ,pkg-config)
+       ("python-pygobject" ,python-pygobject)
        ;; These python modules are required for building documentation.
        ("python-jinja2" ,python-jinja2)
        ("python-markdown" ,python-markdown)
@@ -1181,6 +1184,7 @@ application suites.")
        ("python-toml" ,python-toml)
        ("python-typogrify" ,python-typogrify)
        ("sassc" ,sassc)                 ;for building themes
+       ("tzdata" ,tzdata-for-tests)
        ("vala" ,vala)
        ("xorg-server-for-tests" ,xorg-server-for-tests)))
     (inputs
@@ -1633,6 +1637,7 @@ library.")
        ("mm-common" ,mm-common)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
+       ("python" ,python)
        ("xsltproc" ,libxslt)))
     (propagated-inputs
      (list cairo cairomm glibmm pango))
@@ -1688,8 +1693,7 @@ library.")
                (mkdir-p (string-append doc "/share"))
                (rename-file
                 (string-append out "/share/doc")
-                (string-append doc "/share/doc"))
-               #t))))))
+                (string-append doc "/share/doc"))))))))
     (native-inputs
      `(("dot" ,graphviz)
        ("doxygen" ,doxygen)
@@ -1697,6 +1701,7 @@ library.")
        ("mm-common" ,mm-common)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
+       ("python" ,python)
        ("xsltproc" ,libxslt)))
     (propagated-inputs
      (list glibmm atk))
@@ -1726,7 +1731,7 @@ library.")
         (base32 "1b8vycqzr3lfvk2l73f4kk74hj48081zbh9r1r2ilr3h8xh7cs0i"))))
     (propagated-inputs
      (modify-inputs (package-propagated-inputs atkmm)
-       (prepend glibmm-2.64)))))
+       (replace "glibmm" glibmm-2.64)))))
 
 (define-public gtkmm
   (package
@@ -1776,6 +1781,7 @@ library.")
        ("mm-common" ,mm-common)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
+       ("python" ,python)
        ("xsltproc" ,libxslt)
        ("xorg-server" ,xorg-server-for-tests)))
     (propagated-inputs
@@ -1809,12 +1815,6 @@ tutorial.")
                        name "-" version ".tar.xz"))
        (sha256
         (base32 "1ri2msp3cmzi6r65ghwb8gfavfaxv0axpwi3q60nm7v8hvg36qw5"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments gtkmm)
-       ;; Use meson 0.59 to workaround a new issue with meson 0.60 (see:
-       ;; https://github.com/mesonbuild/meson/issues/9350#issuecomment-953799600).
-       ((#:meson _ #f)
-        meson-0.59)))
     (propagated-inputs
      `(("atkmm-2.28" ,atkmm-2.28)
        ("cairomm-1.14" ,cairomm-1.14)

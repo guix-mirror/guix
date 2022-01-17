@@ -354,8 +354,7 @@ tests.")
         (base32 "0vnf0pk516fwwh41v96c29l2i7h1pnwhivlkbf53kkx1q35g7lb3"))))
     (build-system meson-build-system)
     (arguments
-     `(#:meson ,meson-0.59
-       #:glib-or-gtk? #t
+     `(#:glib-or-gtk? #t
        #:phases
        (modify-phases %standard-phases
          ;; AppInfo not available inside build environment.
@@ -622,10 +621,6 @@ the freedesktop.org XDG Base Directory specification.")
              ;; Skip the following test, which depends on users such as 'root'
              ;; existing in the build environment.
              (invoke "sed" "/src\\/test\\/test-user-util.c/,+2s/^/#/g"
-                     "-i" "src/test/meson.build")
-             ;; FIXME: This one times out for unknown reasons.
-             (invoke "sed"
-                     "/src\\/libelogind\\/sd-event\\/test-event.c/,+2s/^/#/g"
                      "-i" "src/test/meson.build")
              ;; This test tries to copy some bytes from /usr/lib/os-release,
              ;; which does not exist in the build container.  Choose something
@@ -1002,6 +997,7 @@ Python.")
        ("dot" ,graphviz)
        ("doxygen" ,doxygen)
        ("pkg-config" ,pkg-config)
+       ("python" ,python)
        ("xmlto" ,xmlto)
        ("xsltproc" ,libxslt)
        ,@(if (%current-target-system)
@@ -1038,7 +1034,7 @@ fullscreen) or other display servers.")
     (inputs
      (list wayland))
     (native-inputs
-     (list pkg-config))
+     (list pkg-config python))
     (synopsis "Wayland protocols")
     (description "Wayland-Protocols contains Wayland protocols that add
 functionality not available in the Wayland core protocol.  Such protocols either
@@ -1379,8 +1375,7 @@ message bus.")
         (base32 "16wwd633jak9ajyr1f1h047rmd09fhf3kzjz6g5xjsz0lwcj8azz"))))
     (build-system meson-build-system)
     (arguments
-     `(#:meson ,meson-0.59 ;see https://github.com/mesonbuild/meson/issues/6470
-       #:tests? #f ; XXX: tests require DocBook 4.1.2
+     `(#:tests? #f ; XXX: tests require DocBook 4.1.2
        #:configure-flags
        '("--localstatedir=/var"
          "-Dsystemdsystemunitdir=/tmp/empty"

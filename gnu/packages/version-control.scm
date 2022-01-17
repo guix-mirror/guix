@@ -1675,14 +1675,7 @@ visualize your public Git repositories on a web interface.")
                         "not test_install_existing_hooks_no_overwrite"
                         " and not test_uninstall_restores_legacy_hooks"
                         " and not test_installed_from_venv"
-                        " and not test_healthy_venv_creator")))))
-         (add-before 'reset-gzip-timestamps 'make-gz-writable
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; Make sure .gz files are writable so that the
-             ;; 'reset-gzip-timestamps' phase can do its work.
-             (let ((out (assoc-ref outputs "out")))
-               (for-each make-file-writable
-                         (find-files out "\\.gz$"))))))))
+                        " and not test_healthy_venv_creator"))))))))
     (native-inputs
      `(("git" ,git-minimal)
        ("python-covdefaults" ,python-covdefaults)

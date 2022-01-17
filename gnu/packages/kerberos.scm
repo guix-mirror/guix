@@ -216,40 +216,27 @@ After installation, the system administrator should generate keys using
                   #~()))
        #:phases (modify-phases %standard-phases
                   (add-before 'configure 'pre-configure
-                    ;; TODO(core-updates): Unconditionally use the
-                    ;; %current-target-system branch.
-                    (,(if (%current-target-system)
-                          'lambda*
-                          'lambda)
-                     ,(if (%current-target-system)
-                          '(#:key inputs #:allow-other-keys)
-                          '_)
-                     ,@(if (%current-target-system)
-                           `((substitute* "configure"
-                               ;; The e2fsprogs input is included for libcom_err,
-                               ;; let's use it even if cross-compiling.
-                               (("test \"\\$\\{krb_cv_com_err\\}\" = \"yes\"")
-                                ":")
-                               ;; Our 'compile_et' is not in --with-cross-tools,
-                               ;; which confuses heimdal.
-                               (("ac_cv_prog_COMPILE_ET=\\$\\{with_cross_tools\\}compile_et")
-                                "ac_cv_PROG_COMPILE_ET=compile_et")))
-                           '())
-                     ,@(if (%current-target-system)
-                           '((substitute* '("appl/afsutil/pagsh.c" "appl/su/su.c")
-                               (("/bin/sh")
-                                (search-input-file inputs "bin/sh"))
-                               ;; Use the cross-compiled bash instead of the
-                               ;; native bash (XXX shouldn't _PATH_BSHELL point
-                               ;; to a cross-compiled bash?).
-                               (("_PATH_BSHELL")
-                                (string-append
-                                 "\"" (search-input-file inputs "bin/sh") "\"")))
-                             (substitute* '("tools/Makefile.in")
-                               (("/bin/sh") (which "sh"))))
-                           '((substitute* '("appl/afsutil/pagsh.c"
-                                            "tools/Makefile.in")
-                               (("/bin/sh") (which "sh")))))))
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (substitute* "configure"
+                        ;; The e2fsprogs input is included for libcom_err,
+                        ;; let's use it even if cross-compiling.
+                        (("test \"\\$\\{krb_cv_com_err\\}\" = \"yes\"")
+                         ":")
+                        ;; Our 'compile_et' is not in --with-cross-tools,
+                        ;; which confuses heimdal.
+                        (("ac_cv_prog_COMPILE_ET=\\$\\{with_cross_tools\\}compile_et")
+                         "ac_cv_PROG_COMPILE_ET=compile_et"))
+                      (substitute* '("appl/afsutil/pagsh.c" "appl/su/su.c")
+                        (("/bin/sh")
+                         (search-input-file inputs "bin/sh"))
+                        ;; Use the cross-compiled bash instead of the
+                        ;; native bash (XXX shouldn't _PATH_BSHELL point
+                        ;; to a cross-compiled bash?).
+                        (("_PATH_BSHELL")
+                         (string-append
+                          "\"" (search-input-file inputs "bin/sh") "\"")))
+                      (substitute* '("tools/Makefile.in")
+                        (("/bin/sh") (which "sh")))))
                   (add-before 'check 'pre-check
                     (lambda _
                       ;; For 'getxxyyy-test'.

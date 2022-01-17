@@ -259,13 +259,6 @@ from Markdown files.")
                             `("PERL5LIB" ":" prefix (,path))))
                         (find-files bin "\\.*$"))
               #t)))
-         (add-before 'reset-gzip-timestamps 'make-compressed-files-writable
-           (lambda* (#:key outputs #:allow-other-keys)
-             (for-each make-file-writable
-                       (find-files (string-append (assoc-ref outputs "out")
-                                                  "/share/man")
-                                   ".*\\.gz$"))
-             #t))
          (add-after 'unpack 'patch-docbook-xml
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* (find-files "." ".*\\.xml(-good)?")

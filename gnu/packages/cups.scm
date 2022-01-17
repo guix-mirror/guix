@@ -309,15 +309,6 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
                (("INITDIR.*=.*@INITDIR@") "INITDIR = @prefix@/@INITDIR@")
                (("/bin/sh") (which "sh")))
              #t))
-         ;; Make the compressed manpages writable so that the
-         ;; reset-gzip-timestamps phase does not error out.
-         (add-before 'reset-gzip-timestamps 'make-manpages-writable
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (man (string-append out "/share/man")))
-               (for-each (lambda (file) (chmod file #o644))
-                         (find-files man "\\.gz"))
-               #t)))
          (add-before 'build 'patch-tests
            (lambda _
              (substitute* "tools/ippeveprinter.c"

@@ -21291,7 +21291,7 @@ maps the thread tree.")
            "1lf30q6r8nz5cjzclbb9bbymsk2y75nskvb55hnjdv93gr3j0sik"))))
       (build-system emacs-build-system)
       (propagated-inputs
-       (list gnupg-2.2.32))
+       (list gnupg))
       (home-page "https://elpa.gnu.org/packages/pinentry.html")
       (synopsis "GnuPG Pinentry server implementation")
       (description

@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016-2020, 2022 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
@@ -330,13 +330,13 @@ of the SGP4 satellite tracking algorithm.")
 (define-public python-pandas
   (package
     (name "python-pandas")
-    (version "1.3.4")
+    (version "1.3.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pandas" version))
        (sha256
-        (base32 "1z3gm521wpm3j13rwhlb4f2x0645zvxkgxij37i3imdpy39iiam2"))))
+        (base32 "1wd92ra8xcjgigbypid53gvby89myg68ica6r8hdw4hhvvsqahhy"))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((guix build utils)
@@ -373,23 +373,23 @@ of the SGP4 satellite tracking algorithm.")
                    (invoke "pytest" "-vv" "pandas" "--skip-slow"
                            "--skip-network"
                            "-k"
-                           ;; These tets access the internet:
-                           ;; pandas/tests/io/xml/test_xml.py::test_wrong_url[lxml]
-                           ;; pandas/tests/io/xml/test_xml.py::test_wrong_url[etree]
-                           ;; TODO: the excel tests fail for unknown reasons
-                           (string-append "not test_wrong_url"
-                                          " and not test_excelwriter_fspath"
-                                          " and not test_ExcelWriter_dispatch"
-                                          ;; TODO: Missing input
-                                          " and not TestS3"
-                                          " and not s3"))))))))))
+                           (string-append
+                            ;; These test access the internet (see:
+                            ;; https://github.com/pandas-dev/pandas/issues/45085).:
+                            ;; pandas/tests/io/xml/test_xml.py::test_wrong_url[lxml]
+                            ;; pandas/tests/io/xml/test_xml.py::test_wrong_url[etree]
+                            "not test_wrong_url"
+                            ;; TODO: Missing input
+                            " and not TestS3"
+                            " and not s3"))))))))))
     (propagated-inputs
      (list python-jinja2
            python-numpy
            python-openpyxl
            python-pytz
            python-dateutil
-           python-xlrd))
+           python-xlrd
+           python-xlsxwriter))
     (inputs
      (list which xclip xsel))
     (native-inputs
@@ -397,7 +397,6 @@ of the SGP4 satellite tracking algorithm.")
            python-beautifulsoup4
            python-lxml
            python-html5lib
-           python-nose
            python-pytest
            python-pytest-mock
            ;; Needed to test clipboard support.

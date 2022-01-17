@@ -1815,7 +1815,7 @@ providing the system administrator with some help in common tasks.")
 (define-public util-linux
   (package
     (name "util-linux")
-    (version "2.37.1")
+    (version "2.37.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/utils/"
@@ -1823,7 +1823,7 @@ providing the system administrator with some help in common tasks.")
                                   "util-linux-" version ".tar.xz"))
               (sha256
                (base32
-                "0xkb7vw2040zi4m0sbhs5qn5l8nrq4xsf4sdxf3cy9mpachd8jwf"))
+                "1ng9517c37mdp858425a4zyybma7dh7jrpd6z1z61yz7mb0n81va"))
               (patches (search-patches "util-linux-tests.patch"))
               (modules '((guix build utils)))
               (snippet
@@ -2903,42 +2903,33 @@ configuration (iptunnel, ipmaddr).")
 (define-public libcap
   (package
     (name "libcap")
-    (version "2.51")
+    (version "2.62")
     (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "mirror://kernel.org/linux/libs/security/linux-privs/"
-                   "libcap2/libcap-" version ".tar.xz"))
-             (sha256
-              (base32
-               "1ych13qc1mvzv8iscbims5b317vxcmy5ffpmfy98zk7bgamz62b6"))))
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kernel.org/linux/libs/security/linux-privs/"
+                    "libcap2/libcap-" version ".tar.xz"))
+              (sha256
+               (base32
+                "18l3pngsbaahdjzz01rmzrjgcqny4zld685fkq96mq5yr6m5n30r"))))
     (build-system gnu-build-system)
-    (arguments `(#:phases
-                 ,#~(modify-phases %standard-phases
-                      (replace 'configure
-                        ;; Add $libdir to the RUNPATH of executables.
-                        (lambda _
-                          (substitute* "Make.Rules"
-                            (("LDFLAGS \\?= #-g")
-                             (string-append "LDFLAGS ?= -Wl,-rpath="
-                                            ;; TODO(core-updates): Use #$output
-                                            ;; unconditionally.
-                                            #$(if (%current-target-system)
-                                                  #~#$output
-                                                  '%output)
-                                            "/lib"))))))
-                 #:test-target "test"
-                 #:make-flags
-                 (list "lib=lib"
-                       (string-append "prefix=" (assoc-ref %outputs "out"))
-                       "RAISE_SETFCAP=no"
-                       ;; Tell the makefile to use TARGET-gcc and friends
-                       ;; when cross-compiling.
-                       ,@(if (%current-target-system)
-                             `(,(string-append "CROSS_COMPILE="
-                                               (%current-target-system) "-")
-                               "BUILD_CC=gcc")
-                             '()))))
+    (arguments
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure))
+           #:test-target "test"
+           #:make-flags
+           #~(list "lib=lib"
+                   (string-append "prefix=" #$output)
+                   (string-append "LDFLAGS=-Wl,-rpath=" #$output "/lib")
+                   "RAISE_SETFCAP=no"
+                   ;; Tell the makefile to use TARGET-gcc and friends
+                   ;; when cross-compiling.
+                   #$@(if (%current-target-system)
+                          `((list (string-append "CROSS_COMPILE="
+                                                 ,(%current-target-system) "-")
+                                  "BUILD_CC=gcc"))
+                          '()))))
     (native-inputs (list perl))
     (supported-systems (delete "i586-gnu" %supported-systems))
     (home-page "https://sites.google.com/site/fullycapable/")
@@ -3776,7 +3767,7 @@ to the in-kernel OOM killer.")
   ;; The post-systemd fork, maintained by Gentoo.
   (package
     (name "eudev")
-    (version "3.2.9")
+    (version "3.2.11")
     (source (origin
               (method git-fetch)
               (uri (git-reference (url "https://github.com/gentoo/eudev")
@@ -3784,36 +3775,19 @@ to the in-kernel OOM killer.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1g9z3d33m0i3hmbhm0wxpvkzf6ac7xj1drwcfrhzlfhhi63sg9h7"))
+                "0dzaqwjnl55f69ird57wb6skahc6l7zs1slsrzqqfhww33icp6av"))
               (patches (search-patches "eudev-rules-directory.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'make-source-writable
-           (lambda _
-             ;; XXX: Git checkouts are read-only, but this package needs to
-             ;; modify some of its files.
-             (for-each make-file-writable (find-files "."))
-             #t))
          (add-before 'bootstrap 'patch-file-names
            (lambda* (#:key inputs native-inputs #:allow-other-keys)
             (substitute* "man/make.sh"
               (("/usr/bin/xsltproc")
                (string-append (assoc-ref
                                (or native-inputs inputs) "xsltproc")
-                               "/bin/xsltproc")))
-            #t))
-         (add-before 'configure 'patch-bindir-in-btrfs-rules
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; The "@bindir@" substitution incorrectly expands to a literal
-             ;; "${exec_prefix}" (see <https://bugs.gnu.org/39926>).  Work
-             ;; around it.
-             (let ((out (assoc-ref outputs "out")))
-               (substitute* "rules/64-btrfs.rules.in"
-                 (("@bindir@")
-                  (string-append out "/bin")))
-               #t)))
+                               "/bin/xsltproc")))))
          (add-after 'install 'move-static-library
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -3827,8 +3801,7 @@ to the in-kernel OOM killer.")
                ;; such that Libtool looks for it in the usual places.
                (substitute* (string-append out "/lib/libudev.la")
                  (("old_library=.*")
-                  "old_library=''\n"))
-               #t)))
+                  "old_library=''\n")))))
          (add-after 'install 'build-hwdb
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Build OUT/etc/udev/hwdb.bin.  This allows 'lsusb' and
@@ -7386,11 +7359,8 @@ available in the kernel Linux.")
                   (add-before 'install 'fix-makefile
                     (lambda* (#:key outputs #:allow-other-keys)
                       (substitute* "Makefile"
-                        (("\\$\\(BUILDROOT\\)/usr") (assoc-ref outputs "out")))
-                      ;; Make the compressed manpages writable so that the
-                      ;; reset-gzip-timestamps phase does not error out.
-                      (substitute* "Makefile"
-                        (("-m 444") "-m 644")))))))
+                        (("\\$\\(BUILDROOT\\)/usr")
+                         (assoc-ref outputs "out"))))))))
     (inputs (list perl))
     (supported-systems '("i686-linux" "x86_64-linux"))
     (home-page "http://www.etallen.com/cpuid.html")
@@ -8323,7 +8293,7 @@ tools for managing PipeWire.")
 (define-public ell
   (package
     (name "ell")
-    (version "0.41")
+    (version "0.46")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -8332,7 +8302,7 @@ tools for managing PipeWire.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "14scs8vqpcf2810gvabsplg9yzh9y4sz47407bjy6vd604z3w8ah"))))
+                "15hwqicmll23cbrj13h3wd4lgrby416ap7l6w0434jsza4s4yv82"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -8378,8 +8348,8 @@ platforms, it is not limited to resource-constrained systems.")
     ;; This variant of binutils is used for the 64 bit support needed to
     ;; assemble the `purgatory/arch/i386/compat_x86_64.S' program on i686-linux.
     (native-inputs (list (make-ld-wrapper "ld-wrapper"
-                                          #:binutils binutils-next)
-                         binutils-next))
+                                          #:binutils binutils)
+                         binutils))
     (home-page "https://projects.horms.net/projects/kexec/")
     (synopsis "Tools for booting directly into different kernels")
     (description "This package provides the @code{kexec} program and ancillary
