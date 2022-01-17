@@ -27272,6 +27272,24 @@ functions, and macros.")
 and functions.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-itoa-1
+  (package
+    (name "rust-itoa")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "itoa" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0d8wr2qf5b25a04xf10rz9r0pdbjdgb0zaw3xvf8k2sqcz1qzaqs"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/dtolnay/itoa")
+    (synopsis "Fast functions for printing integer primitives")
+    (description "This crate provides fast functions for printing integer
+primitives to an @code{io::Write}.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-itoa-0.4
   (package
     (name "rust-itoa")
