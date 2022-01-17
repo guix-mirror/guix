@@ -49673,6 +49673,7 @@ Pwrite traits from the scroll crate.")
 
 (define-public rust-sct-0.6
   (package
+    (inherit rust-sct-0.7)
     (name "rust-sct")
     (version "0.6.0")
     (source
@@ -49682,17 +49683,12 @@ Pwrite traits from the scroll crate.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "0g4dz7las43kcpi9vqv9c6l1afjkdv3g3w3s7d2w7a7w77wjl173"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-ring" ,rust-ring-0.16)
         ("rust-untrusted" ,rust-untrusted-0.7))
        #:cargo-development-inputs
-       (("rust-cc" ,rust-cc-1))))
-    (home-page "https://github.com/ctz/sct.rs")
-    (synopsis "Certificate transparency SCT verification library")
-    (description "Certificate transparency SCT verification library")
-    (license (list license:asl2.0 license:isc license:expat))))
+       (("rust-cc" ,rust-cc-1))))))
 
 (define-public rust-sct-0.5
   (package
