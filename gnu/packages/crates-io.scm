@@ -58606,15 +58606,14 @@ crate.")
   (package
     (inherit rust-time-macros-0.2)
     (name "rust-time-macros")
-    (version "0.1.0")
+    (version "0.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "time-macros" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0bdbxjgbxb81xgy08h5dh4qvwy95sy9x8g1y31g11g4my3lvdscs"))))
+        (base32 "1wg24yxpxcfmim6dgblrf8p321m7cyxpdivzvp8bcb7i4rp9qzlm"))))
     (arguments
      `(#:cargo-inputs
        (("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5)
