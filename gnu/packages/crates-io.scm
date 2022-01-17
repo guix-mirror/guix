@@ -840,6 +840,41 @@ asynchronous request/response operations.")
     (description "This package provides Actix testing utils.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-actix-test-server-0.2
+  (package
+    (name "rust-actix-test-server")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-test-server" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0lqx8adsl3nlhbnvvjrmy9mkfa0d8wmwyy4gdz5ik8xhbwibxnn2"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-actix-rt" ,rust-actix-rt-0.2)
+        ("rust-actix-server" ,rust-actix-server-0.5)
+        ("rust-actix-server-config" ,rust-actix-server-config-0.1)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-native-tls" ,rust-native-tls-0.2)
+        ("rust-net2" ,rust-net2-0.2)
+        ("rust-openssl" ,rust-openssl-0.10)
+        ("rust-rustls" ,rust-rustls-0.15)
+        ("rust-tokio-reactor" ,rust-tokio-reactor-0.1)
+        ("rust-tokio-rustls" ,rust-tokio-rustls-0.9)
+        ("rust-tokio-tcp" ,rust-tokio-tcp-0.1)
+        ("rust-webpki" ,rust-webpki-0.19)
+        ("rust-webpki-roots" ,rust-webpki-roots-0.16))
+       #:cargo-development-inputs
+       (("rust-actix-service" ,rust-actix-service-0.4))))
+    (home-page "https://actix.rs")
+    (synopsis "Actix test server")
+    (description "Actix test server.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-actix-threadpool-0.3
   (package
     (name "rust-actix-threadpool")
