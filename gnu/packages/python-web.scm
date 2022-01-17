@@ -223,22 +223,18 @@ for adding, removing and dropping callbacks.")
 (define-public python-aiohttp
   (package
     (name "python-aiohttp")
-    (version "3.7.4")
+    (version "3.8.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "aiohttp" version))
        (sha256
-        (base32 "1pn79h8fng4xi5gl1f6saw31nxgmgyxl41yf3vba1l21673yr12x"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           (for-each delete-file
-                     '("aiohttp/_frozenlist.c"
-                       "aiohttp/_helpers.c"
-                       "aiohttp/_http_parser.c"
-                       "aiohttp/_http_writer.c"
-                       "aiohttp/_websocket.c"))))))
+        (base32 "0y3m1dzl4h6frg8vys0fc3m83ijd1plfpihv3kvmxqadlphp2m7w"))
+       ;; TODO: Unbundle the llhttp sources.
+       ;; (modules '((guix build utils)))
+       ;; (snippet
+       ;;  '((delete-file-recursively "vendor")))
+       ))
     (build-system python-build-system)
     (arguments
      '(;; The test suite fails to handle a deprecation warning:
@@ -269,24 +265,39 @@ for adding, removing and dropping callbacks.")
              ;; Adapted from the Makefile.
              (with-directory-excursion "aiohttp"
                (for-each
-                 (lambda (file)
-                   (invoke "cython" "-3"
-                           file "-I" "."))
-                 (find-files "." "_.*\\.pyx$")))))
+                (lambda (file)
+                  (invoke "cython" "-3"
+                          file "-I" "."))
+                (find-files "." "_.*\\.pyx$")))))
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
-             (if tests?
-                 (invoke "pytest" "-vv"
-                         ;; Disable loading the aiohttp coverage plugin
-                         ;; to avoid a circular dependency (code coverage
-                         ;; is not very interesting to us anyway).
-                         "-o" "addopts=''" "--ignore=aiohttp")
-                 (format #t "test suite not run~%")))))))
+             (when tests?
+               ;; This tests requires the 'proxy.py' module, not yet
+               ;; packaged.
+               (delete-file "tests/test_proxy_functional.py")
+               (invoke "pytest" "-vv"
+                       ;; Disable loading the aiohttp coverage plugin
+                       ;; to avoid a circular dependency (code coverage
+                       ;; is not very interesting to us anyway).
+                       "-o" "addopts=''" "--ignore=aiohttp"
+                       "-n" (number->string (parallel-job-count))
+                       "-k" (string-append
+                             ;; This test probably requires to be run with the
+                             ;; library loaded from the the build directory.
+                             "not test_c_parser_loaded and "
+                             ;; Disable the following tests as they require
+                             ;; networking.
+                             "not TestDeflateBuffer and "
+                             "not test_client_session_timeout_zero and "
+                             "not test_empty_body and "
+                             "not test_mark_formdata_as_processed[pyloop] and "
+                             "not test_receive_runtime_err[pyloop]"))))))))
     (propagated-inputs
      (list python-aiodns
+           python-aiosignal
            python-async-timeout
-           python-attrs ;note: remove for > 3.7
-           python-chardet
+           python-charset-normalizer
+           python-frozenlist
            python-idna-ssl
            python-multidict
            python-typing-extensions
@@ -296,8 +307,9 @@ for adding, removing and dropping callbacks.")
            python-async-generator
            python-cython
            python-freezegun
-           python-pytest-6.1
+           python-pytest
            python-pytest-mock
+           python-pytest-xdist
            python-re-assert))
     (home-page "https://github.com/aio-libs/aiohttp/")
     (synopsis "Async HTTP client/server framework (asyncio)")

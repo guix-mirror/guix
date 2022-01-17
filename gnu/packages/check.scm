@@ -1004,17 +1004,6 @@ and many external plugins.")
     (license license:expat)
     (properties `((python2-variant . ,(delay python2-pytest))))))
 
-(define-public python-pytest-6.1
-  (package
-    (inherit python-pytest)
-    (version "6.1.2")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "pytest" version))
-        (sha256
-         (base32 "0gl2sdm322vzmsh5k4f8kj9raiq2y7kdinnca4m45ifvii5fk9y0"))))))
-
 (define-public python-pytest-6 python-pytest)
 
 ;; Pytest 4.x are the last versions that support Python 2.
