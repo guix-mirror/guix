@@ -1381,6 +1381,7 @@ acceleration.")
 
 (define-public rust-aes-gcm-0.6
   (package
+    (inherit rust-aes-gcm-0.8)
     (name "rust-aes-gcm")
     (version "0.6.0")
     (source
@@ -1391,7 +1392,6 @@ acceleration.")
        (sha256
         (base32
          "1lga8my3zlc0b1nhcpc1hrbykfm014fqs6d64bwrjqii05w01xc6"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-aead" ,rust-aead-0.3)
@@ -1404,14 +1404,7 @@ acceleration.")
        (("rust-criterion" ,rust-criterion-0.3)
         ("rust-criterion-cycles-per-byte"
          ,rust-criterion-cycles-per-byte-0.1)
-        ("rust-hex-literal" ,rust-hex-literal-0.2))))
-    (home-page "https://github.com/RustCrypto/AEADs")
-    (synopsis "AES-GCM (Galois/Counter Mode) Authenticated Encryption")
-    (description "This package provides a pure Rust implementation of the
-AES-GCM (Galois/Counter Mode) Authenticated Encryption with Associated
-Data (AEAD) Cipher with optional architecture-specific hardware
-acceleration.")
-    (license (list license:asl2.0 license:expat))))
+        ("rust-hex-literal" ,rust-hex-literal-0.2))))))
 
 (define-public rust-aes-gcm-0.5
   (package
@@ -24583,6 +24576,30 @@ compile time.")
     (description "This package provides a HMAC-based Extract-and-Expand Key
 Derivation Function (HKDF).")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-hkdf-0.10
+  (package
+    (inherit rust-hkdf-0.11)
+    (name "rust-hkdf")
+    (version "0.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hkdf" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0kwn3scjvv2x8zc6nz3wrnzxp9shpsdxnjqiyv2r65r3kiijzasi"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-digest" ,rust-digest-0.9)
+        ("rust-hmac" ,rust-hmac-0.10))
+       #:cargo-development-inputs
+       (("rust-bencher" ,rust-bencher-0.1)
+        ("rust-crypto-tests" ,rust-crypto-tests-0.5)
+        ("rust-hex" ,rust-hex-0.4)
+        ("rust-sha-1" ,rust-sha-1-0.9)
+        ("rust-sha2" ,rust-sha2-0.9))))))
 
 (define-public rust-hkdf-0.9
   (package
