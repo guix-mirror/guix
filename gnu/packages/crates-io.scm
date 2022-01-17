@@ -54946,6 +54946,27 @@ Rust.")
 Rust.")
     (license license:expat)))
 
+(define-public rust-stats-alloc-0.1
+  (package
+    (name "rust-stats-alloc")
+    (version "0.1.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "stats-alloc" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1l3rs4m0q8y78dr9r4wxwhncqakkqzic4bqc6sgrcwv2y9mwjq52"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t))
+    (home-page "https://github.com/neoeinstein/stats_alloc")
+    (synopsis "Allocator wrapper")
+    (description
+     "This package provides an allocator wrapper that allows for
+instrumenting global allocators.")
+    (license license:expat)))
+
 (define-public rust-stb-truetype-0.3
   (package
     (name "rust-stb-truetype")
