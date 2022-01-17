@@ -16134,6 +16134,27 @@ boilerplate code.  It does this by allowing you to derive lots of commonly used
 traits for both structs and enums.")
     (license license:expat)))
 
+(define-public rust-derive-more-0.15
+  (package
+    (inherit rust-derive-more-0.99)
+    (name "rust-derive-more")
+    (version "0.15.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "derive-more" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1zks5bn7hmqfz927spmridk9bvy7ly4f38vls331x4hc4hq1653s"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-quote" ,rust-quote-0.6)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-rustc-version" ,rust-rustc-version-0.2)
+        ("rust-syn" ,rust-syn-0.15))))))
+
 (define-public rust-derive-new-0.5
   (package
     (name "rust-derive-new")
