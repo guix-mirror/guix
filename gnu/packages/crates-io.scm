@@ -32211,6 +32211,36 @@ provides high level functionalities to easily write a pager for any terminal
 application.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-mio-0.8
+  (package
+    (name "rust-mio")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "mio" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1cmgipv6k536xf0a6qd359wnpxg0pfrpkr9bhy8zqh8bza2jy9xs"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-miow" ,rust-miow-0.3)
+        ("rust-ntapi" ,rust-ntapi-0.3)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-env-logger" ,rust-env-logger-0.8)
+        ("rust-rand" ,rust-rand-0.8))))
+    (home-page "https://github.com/tokio-rs/mio")
+    (synopsis "Lightweight non-blocking IO")
+    (description
+     "Mio is a fast, low-level I/O library for Rust focusing on non-blocking
+APIs and event notification for building I/O apps with as little overhead as
+possible over the OS abstractions.")
+    (license license:expat)))
+
 (define-public rust-mio-0.7
   (package
     (name "rust-mio")
