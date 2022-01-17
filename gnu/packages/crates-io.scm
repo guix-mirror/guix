@@ -16097,7 +16097,7 @@ methods for @samp{enum Pet @{ Dog, Cat @}}.")
 (define-public rust-derive-more-0.99
   (package
     (name "rust-derive-more")
-    (version "0.99.11")
+    (version "0.99.17")
     (source
      (origin
        (method url-fetch)
@@ -16106,17 +16106,17 @@ methods for @samp{enum Pet @{ Dog, Cat @}}.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "131xrz5nmnh8zq3vcvv0wfpcaflypbxp3fin984fsqddc5hhxjs1"))))
+         "0883jr0gdf9mi8rn7qbz1p0z7hqzfd275pil2gwm66bw1b9i1f2g"))))
     (build-system cargo-build-system)
     (arguments
      `(#:tests? #f  ; Some test files missing.
        #:cargo-inputs
-       (("rust-proc-macro2" ,rust-proc-macro2-1)
+       (("rust-convert-case" ,rust-convert-case-0.4)
+        ("rust-peg" ,rust-peg-0.5)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
         ("rust-quote" ,rust-quote-1)
-        ("rust-syn" ,rust-syn-1))
-       #:cargo-development-inputs
-       (("rust-peg" ,rust-peg-0.5)
-        ("rust-rustc-version" ,rust-rustc-version-0.2))))
+        ("rust-rustc-version" ,rust-rustc-version-0.4)
+        ("rust-syn" ,rust-syn-1))))
     (home-page "https://github.com/JelteF/derive_more")
     (synopsis "Adds derive macros for more traits")
     (description
