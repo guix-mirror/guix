@@ -689,6 +689,24 @@ ecosystem.")
 asynchronous request/response operations.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-actix-service-0.4
+  (package
+    (inherit rust-actix-service-1)
+    (name "rust-actix-service")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-service" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0gvpw11hcr1zmi5qzq3np6qzd0j51mdxn7yfgmzgyhc8ja7b99dw"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-futures" ,rust-futures-0.1))
+       #:cargo-development-inputs
+       (("rust-actix-rt" ,rust-actix-rt-0.2))))))
+
 (define-public rust-actix-testing-1
   (package
     (name "rust-actix-testing")
