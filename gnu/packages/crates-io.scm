@@ -5345,21 +5345,18 @@ tracebacks.")
 (define-public rust-bincode-1
   (package
     (name "rust-bincode")
-    (version "1.3.1")
+    (version "1.3.3")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "bincode" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "0vc9pjh6hfp9vfq752sa88rxwg93ydhm0dvvy58rcvx2p8wkl3gk"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bincode" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1bfw3mnwzx5g1465kiqllp5n4r10qrqy88kdlp3jfwnq2ya5xx5i"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-serde" ,rust-serde-1)
-        ("rust-byteorder" ,rust-byteorder-1))
+       (("rust-serde" ,rust-serde-1))
        #:cargo-development-inputs
        (("rust-serde-bytes" ,rust-serde-bytes-0.11)
         ("rust-serde-derive" ,rust-serde-derive-1))))
