@@ -877,6 +877,31 @@ asynchronous request/response operations.")
     (description "This package provides Actix testing utils.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-actix-testing-0.1
+  (package
+    (inherit rust-actix-testing-1)
+    (name "rust-actix-testing")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-testing" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1w9p7wv2n2wda8ph3ahp8fqslmbh12vs206l4i49jl37mjbiw05g"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-actix-rt" ,rust-actix-rt-0.2)
+        ("rust-actix-server" ,rust-actix-server-0.6)
+        ("rust-actix-server-config" ,rust-actix-server-config-0.1)
+        ("rust-actix-service" ,rust-actix-service-0.4)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-net2" ,rust-net2-0.2)
+        ("rust-tokio-reactor" ,rust-tokio-reactor-0.1)
+        ("rust-tokio-tcp" ,rust-tokio-tcp-0.1))))))
+
 (define-public rust-actix-test-server-0.2
   (package
     (name "rust-actix-test-server")
