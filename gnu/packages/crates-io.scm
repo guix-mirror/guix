@@ -66005,6 +66005,7 @@ with webpki.")
 
 (define-public rust-webpki-roots-0.21
   (package
+    (inherit rust-webpki-roots-0.22)
     (name "rust-webpki-roots")
     (version "0.21.1")
     (source
@@ -66014,16 +66015,10 @@ with webpki.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "0h49lkr7hrxpyr0xg1nph4m3v1l6rhg8ax9n8msvfwz48hsibgma"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-webpki" ,rust-webpki-0.21))))
-    (home-page "https://github.com/ctz/webpki-roots")
-    (synopsis "Mozilla's CA root certificates for use with webpki")
-    (description "This package provides Mozilla's CA root certificates for use
-with webpki.")
-    (license license:mpl2.0)))
+       (("rust-webpki" ,rust-webpki-0.21))))))
 
 (define-public rust-webpki-roots-0.20
   (package
