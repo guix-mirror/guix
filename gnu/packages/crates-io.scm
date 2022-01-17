@@ -21313,28 +21313,21 @@ stabilized, and eventually removed.  This library reïnstates these traits.")
 
 (define-public rust-funty-1
   (package
+    (inherit rust-funty-1.2)
     (name "rust-funty")
     (version "1.1.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "funty" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "19wx3p3jmv863y0mjb56sr4qf1kvqhl3fsyslkd92zli0p8lrlzy"))))
-    (build-system cargo-build-system)
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "funty" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "19wx3p3jmv863y0mjb56sr4qf1kvqhl3fsyslkd92zli0p8lrlzy"))))
     (arguments
      `(#:cargo-development-inputs
-       (("rust-static-assertions" ,rust-static-assertions-1))))
-    (home-page "https://github.com/myrrlyn/funty")
-    (synopsis "Trait generalization over the primitive types")
-    (description
-     "Prior to 1.0, Rust had traits for the numeric primitive types to permit
-code to generalize over which specific type it accepted. This was never
-stabilized, and eventually removed.  This library reïnstates these traits.")
-    (license license:expat)))
+       (("rust-static-assertions" ,rust-static-assertions-1))))))
 
 (define-public rust-futf-0.1
   (package
