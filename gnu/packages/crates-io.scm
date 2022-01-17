@@ -19586,6 +19586,24 @@ Atom, RSS 2.0, RSS 1.0, RSS 0.x and JSON Feed")
     ;; No copyright headers in the source code.  LICENSE indicates gpl3.
     (license license:gpl3)))
 
+(define-public rust-fiat-crypto-0.1
+  (package
+    (name "rust-fiat-crypto")
+    (version "0.1.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "fiat-crypto" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "12gyr01z3bkahbxcrj2nsdq42qbqgq12w32dvpr6a7930i0qfxi1"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/mit-plv/fiat-crypto")
+    (synopsis "Fiat-crypto generated Rust")
+    (description "This crate provides the extracted Rust code from the Coq
+@code{fiat-crypto} libraries.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-filesize-0.2
   (package
     (name "rust-filesize")
