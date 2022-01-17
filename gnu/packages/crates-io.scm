@@ -23033,6 +23033,39 @@ reading and writing git repositories.")
         ("rust-thread-id" ,rust-thread-id-3)
         ("rust-time" ,rust-time-0.1))))))
 
+(define-public rust-git2-0.6
+  (package
+    (inherit rust-git2-0.11)
+    (name "rust-git2-6")
+    (version "0.6.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "git2" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "115ys6vlfjy5pcwkip0wfzi4q3d1kimbl9isxvjyci1arnvlnnzf"))))
+    (arguments
+     `(#:tests? #f
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-0.9)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-libgit2-sys" ,rust-libgit2-sys-0.6)
+        ("rust-openssl-probe" ,rust-openssl-probe-0.1)
+        ("rust-openssl-sys" ,rust-openssl-sys-0.9)
+        ("rust-url" ,rust-url-1))
+       #:cargo-development-inputs
+       (("rust-docopt" ,rust-docopt-0.8)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-tempdir" ,rust-tempdir-0.3)
+        ("rust-time" ,rust-time-0.1))))
+    (inputs
+     (modify-inputs (package-inputs rust-git2-0.11)
+       (prepend curl)))))
+
 (define-public rust-git2-curl-0.14
   (package
     (name "rust-git2-curl")
