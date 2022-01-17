@@ -2029,6 +2029,30 @@ using AES-NI for high performance.")
         ("rust-rand" ,rust-rand-0.6)
         ("rust-seahash" ,rust-seahash-3))))))
 
+(define-public rust-ahash-0.2
+  (package
+    (inherit rust-ahash-0.4)
+    (name "rust-ahash")
+    (version "0.2.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ahash" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1yzdrxaq99zfy0niq5i3cz5jv569s3s6z5q2cxcg08y6prh1nri9"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-const-random" ,rust-const-random-0.1))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.2)
+        ("rust-fnv" ,rust-fnv-1)
+        ("rust-fxhash" ,rust-fxhash-0.2)
+        ("rust-hex" ,rust-hex-0.3)
+        ("rust-no-panic" ,rust-no-panic-0.1)
+        ("rust-rand" ,rust-rand-0.6)
+        ("rust-seahash" ,rust-seahash-3))))))
+
 (define-public rust-aho-corasick-0.7
   (package
     (name "rust-aho-corasick")
