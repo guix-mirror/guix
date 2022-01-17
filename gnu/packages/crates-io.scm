@@ -18940,6 +18940,24 @@ deserialized from environment variables.")
      `(#:cargo-inputs
        (("rust-backtrace" ,rust-backtrace-0.3))))))
 
+(define-public rust-error-chain-0.8
+  (package
+    (inherit rust-error-chain-0.11)
+    (name "rust-error-chain")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "error-chain" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ijxazr966gjvckl3yrkcziazk3ryrfc466m84p9m2iq314y0c39"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-backtrace" ,rust-backtrace-0.3))))))
+
 (define-public rust-error-code-2
   (package
     (name "rust-error-code")
