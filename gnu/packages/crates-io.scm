@@ -17369,6 +17369,39 @@ block cipher.  It uses counter mode (CTR) for encryption and CBC mode for
 generating a OMAC/CMAC/CBCMAC (all names for the same thing).")
     (license (list license:asl2.0 license:expat))))  ; at your choice
 
+(define-public rust-ecies-ed25519-0.5
+  (package
+    (name "rust-ecies-ed25519")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ecies-ed25519" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1nrmam79mn2y6b235rpq6lhlsfl63275j2yxps86424gh99j720a"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-aes-gcm" ,rust-aes-gcm-0.8)
+        ("rust-curve25519-dalek" ,rust-curve25519-dalek-3)
+        ("rust-digest" ,rust-digest-0.9)
+        ("rust-hex" ,rust-hex-0.4)
+        ("rust-hkdf" ,rust-hkdf-0.10)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-ring" ,rust-ring-0.16)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-sha2" ,rust-sha2-0.9)
+        ("rust-thiserror" ,rust-thiserror-1)
+        ("rust-zeroize" ,rust-zeroize-1))))
+    (home-page "https://github.com/phayes/ecies-ed25519")
+    (synopsis
+     "Integrated encryption scheme on Twisted Edwards Curve25519")
+    (description
+     "ECIES on Twisted Edwards Curve25519 using AES-GCM and HKDF-SHA256.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-ed25519-1
   (package
     (name "rust-ed25519")
