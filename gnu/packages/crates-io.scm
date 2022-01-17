@@ -36784,6 +36784,31 @@ Things in odds may move to more appropriate crates if we find them.")
         ("rust-memchr" ,rust-memchr-2)
         ("rust-quickcheck" ,rust-quickcheck-0.4))))))
 
+(define-public rust-oid-registry-0.2
+  (package
+    (name "rust-oid-registry")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "oid-registry" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "058qip5j5y0i95ckmw67mp73372rq16ci0lcczyq9irv76r4qmgy"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-der-parser" ,rust-der-parser-6))))
+    (home-page "https://github.com/rusticata/oid-registry")
+    (synopsis "Object Identifier (OID) database")
+    (description "This crate is a helper crate, containing a database of
+OID objects.  These objects are intended for use when manipulating ASN.1
+grammars and BER/DER encodings, for example.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-onig-6
   (package
     (name "rust-onig")
