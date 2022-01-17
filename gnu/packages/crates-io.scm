@@ -57152,16 +57152,14 @@ without a mutable reference.")
 (define-public rust-tap-1
   (package
     (name "rust-tap")
-    (version "1.0.0")
+    (version "1.0.1")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "tap" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "13h7rw3zg3qyb4wrri8l6xbd1wrxd2rq29sqxnkd7zqs5mrlwirn"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tap" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0sc3gl4nldqpvyhqi3bbd0l9k7fngrcl4zs47n314nqqk4bpx4sm"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/myrrlyn/tap")
     (synopsis "Generic extensions for tapping values in Rust")
