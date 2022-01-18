@@ -52,7 +52,7 @@
 ;;; Copyright © 2018, 2019, 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018, 2019, 2021 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2018, 2019, 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2018, 2019, 2020, 2021, 2022 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Luther Thompson <lutheroto@gmail.com>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2015, 2018 Pjotr Prins <pjotr.guix@thebird.nl>
@@ -24101,17 +24101,23 @@ for YAML and JSON.")
 (define-public python-dbusmock
   (package
     (name "python-dbusmock")
-    (version "0.24.1")
+    (version "0.25.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-dbusmock" version))
        (sha256
         (base32
-         "0kvjwn5sdp3rqcbclvxljkmk988l12dvppzfn3ldy3jxbyyn1mjn"))))
+         "1nwl0gzzds2g1w1gfxfzlgrkb5hr1rrdyn619ml25c6b1rjyfk3g"))))
     (build-system python-build-system)
     (arguments
-     '(#:phases
+     `(#:imported-modules (,@%python-build-system-modules
+                           (guix build syscalls))
+       #:modules ((guix build python-build-system)
+                  (guix build syscalls)
+                  (guix build utils)
+                  (ice-9 match))
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-paths
            (lambda* (#:key inputs #:allow-other-keys)
@@ -24120,11 +24126,26 @@ for YAML and JSON.")
              (substitute* "dbusmock/testcase.py"
                (("'dbus-daemon'")
                 (string-append "'" (assoc-ref inputs "dbus")
-                               "/bin/dbus-daemon'"))))))))
+                               "/bin/dbus-daemon'")))))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (match (primitive-fork)
+                 (0                     ;child process
+                  (set-child-subreaper!)
+                  ;; Use tini so that signals are properly handled and
+                  ;; doubly-forked processes get reaped; otherwise,
+                  ;; python-dbusmock would waste time polling for the dbus
+                  ;; processes it spawns to be reaped, in vain.
+                  (execlp "tini" "--" "pytest" "-vv"))
+                 (pid
+                  (match (waitpid pid)
+                    ((_ . status)
+                     (unless (zero? status)
+                       (error "`pytest' exited with status"
+                              status))))))))))))
     (native-inputs
-     (list ;; For tests.
-           dbus ; for dbus-daemon
-           python-nose which))
+     (list dbus python-pytest tini which))
     (inputs
      (list dbus))
     (propagated-inputs
