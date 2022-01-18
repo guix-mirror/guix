@@ -1652,10 +1652,9 @@ bindings for Python, Java, OCaml and more.")
         (base32
          "0d69rd9h8wrzjvfrc66vmz4qd5hly2fpdcwj2bdrlb7dbwikv5c7"))))
     (build-system python-build-system)
-    (arguments
-     `(#:tests? #f))                    ;XXX: require python-reedsolo
     (propagated-inputs
-     (list python-ecdsa python-pyaes python-pyserial))
+     (list python-ecdsa python-pyaes python-pyserial python-reedsolo
+           python-cryptography python-bitstring))
     (home-page "https://github.com/espressif/esptool")
     (synopsis "Bootloader utility for Espressif ESP8266 & ESP32 chips")
     (description
