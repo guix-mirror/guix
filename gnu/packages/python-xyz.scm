@@ -27541,9 +27541,9 @@ and BMI2).")
                     (replace 'check
                       (lambda* (#:key tests? #:allow-other-keys)
                         (when tests?
-                          (invoke "python" "setup.py" "nosetests")))))))
+                          (invoke "nosetests")))))))
       (native-inputs
-       (list python-nose python-rednose))
+       (list python-nose python-rednose python-setuptools))
       (propagated-inputs
        (list python-six python-opcodes))
       (synopsis "Efficient assembly code generation in Python")
