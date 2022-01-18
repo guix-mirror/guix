@@ -9,6 +9,7 @@
 ;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 Alexandre Hannud Abdo <abdo@member.fsf.org>
 ;;; Copyright © 2021, 2022 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2022 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -474,9 +475,18 @@ Faiss library.")))
         (base32
          "15fwld9hdw357rd026mzcwpah5liy4f33vc9x9kwy37g71b2rjf1"))))
     (build-system python-build-system)
-    (arguments '(#:tests? #f)) ; tests are not included
+    (arguments
+     '(#:tests? #f                      ;tests are not included
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'fix-requirements
+                    (lambda _
+                      (substitute* "setup.py"
+                        (("python-igraph >=")
+                         "igraph >=")))))))
     (native-inputs
-     (list pkg-config))
+     ;; XXX: setuptools >= 58 as shipped with Python 3.9+ removes support
+     ;; for lib2to3, so use this older variant.
+     (list pkg-config python-setuptools))
     (inputs
      (list igraph))
     (propagated-inputs
