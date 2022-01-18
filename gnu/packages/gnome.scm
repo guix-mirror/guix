@@ -39,7 +39,7 @@
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2019 Jonathan Frederickson <jonathan@terracrypt.net>
-;;; Copyright © 2019, 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019, 2020, 2021, 2022 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019, 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
 ;;; Copyright © 2019, 2020 Raghav Gururajan <raghavgururajan@disroot.org>
@@ -8528,7 +8528,7 @@ devices using the GNOME desktop.")
 (define-public gnome-control-center
   (package
     (name "gnome-control-center")
-    (version "40.1")
+    (version "41.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -8536,7 +8536,9 @@ devices using the GNOME desktop.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0rr4d5m2a72vrb31jgyx49dp0s2pwgyxsrk4hyw5ym66wq63c3v1"))))
+                "0j72ixhli621psbrma86qxy0spv6gpjx6k9hg2jih97c6dmzqwc2"))
+              (patches (search-patches
+                        "gnome-control-center-libexecdir.patch"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -8581,53 +8583,59 @@ devices using the GNOME desktop.")
            ;; Don't create 'icon-theme.cache'.
            (lambda _
              (substitute* "build-aux/meson/meson_post_install.py"
-               (("gtk-update-icon-cache") (which "true"))))))))
+               (("gtk-update-icon-cache") (which "true")))))
+         (add-before 'install 'no-polkit-magic
+           ;; Meson ‘magically’ invokes pkexec, which fails (not setuid).
+           (lambda _
+             (setenv "PKEXEC_UID" "something"))))))
     (native-inputs
-     `(("glib:bin" ,glib "bin") ; for glib-mkenums, etc.
-       ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)
-       ("xsltproc" ,libxslt)
-       ;; For tests
-       ("hicolor-icon-theme" ,hicolor-icon-theme)
-       ("python-dbusmock" ,python-dbusmock)
-       ("xorg-server" ,xorg-server-for-tests)))
+     (list `(,glib "bin")               ;for glib-mkenums, etc.
+           intltool
+           pkg-config
+           python
+           libxslt
+           ;; For tests
+           hicolor-icon-theme
+           python-dbusmock
+           xorg-server-for-tests))
     (inputs
-     `(("accountsservice" ,accountsservice)
-       ("clutter-gtk" ,clutter-gtk)
-       ("colord-gtk" ,colord-gtk)
-       ("cups" ,cups)
-       ("dconf" ,dconf)
-       ("docbook-xsl" ,docbook-xsl)
-       ("gdk-pixbuf" ,gdk-pixbuf) ; for loading SVG files
-       ("gnome-bluetooth" ,gnome-bluetooth)
-       ("gnome-desktop" ,gnome-desktop)
-       ("gnome-online-accounts" ,gnome-online-accounts)
-       ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
-       ("gnome-session" ,gnome-session)
-       ("gnome-settings-daemon" ,gnome-settings-daemon)
-       ("grilo" ,grilo)
-       ("gsound" ,gsound)
-       ("ibus" ,ibus)
-       ("libcanberra" ,libcanberra)
-       ("libgnomekbd" ,libgnomekbd)
-       ("libgudev" ,libgudev)
-       ("libgtop" ,libgtop)
-       ("libnma" ,libnma)
-       ("libpwquality" ,libpwquality)
-       ("libsecret" ,libsecret)
-       ("libsoup" ,libsoup-minimal-2)
-       ("libxml2" ,libxml2)
-       ("libwacom" ,libwacom)
-       ("mesa" ,mesa)
-       ("mit-krb5" ,mit-krb5)
-       ("modem-manager" ,modem-manager)
-       ("network-manager-applet" ,network-manager-applet)
-       ("polkit" ,polkit)
-       ("pulseaudio" ,pulseaudio)
-       ("smbclient" ,samba)
-       ("tzdata" ,tzdata)
-       ("udisks" ,udisks)
-       ("upower" ,upower)))
+     (list accountsservice
+           clutter-gtk
+           colord-gtk
+           cups
+           dconf
+           docbook-xsl
+           gcr
+           gnome-bluetooth
+           gnome-desktop
+           gnome-online-accounts
+           `(,gnome-online-accounts "lib")
+           gnome-session
+           gnome-settings-daemon
+           grilo
+           gsound
+           ibus
+           libcanberra
+           libgnomekbd
+           libgudev
+           libgtop
+           libnma
+           libpwquality
+           librsvg                      ;for loading SVG files
+           libsecret
+           libsoup-minimal-2
+           libxml2
+           libwacom
+           mesa
+           mit-krb5
+           modem-manager
+           network-manager-applet
+           polkit
+           pulseaudio
+           samba
+           tzdata
+           udisks
+           upower))
     (synopsis "Utilities to configure the GNOME desktop")
     (home-page "https://www.gnome.org/")
     (description

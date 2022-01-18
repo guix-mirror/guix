@@ -1,0 +1,58 @@
+This reverts commit 2007a5b2, which broke installation of the package.
+See: https://gitlab.gnome.org/GNOME/gnome-control-center/-/issues/1579.
+
+diff --git a/meson.build b/meson.build
+index 734810d01..b4a45c60d 100644
+--- a/meson.build
++++ b/meson.build
+@@ -259,6 +259,13 @@ config_h.set('HAVE_WACOM', host_is_linux_not_s390,
+ config_h.set('BUILD_THUNDERBOLT', host_is_linux_not_s390,
+              description: 'Define to 1 to build the Thunderbolt panel')
+ 
++# Check for info panel
++gnome_session_libexecdir = get_option('gnome_session_libexecdir')
++if gnome_session_libexecdir == ''
++  gnome_session_libexecdir = control_center_libexecdir
++endif
++
++
+ gnome = import('gnome')
+ i18n = import('i18n')
+ pkg = import('pkgconfig')
+diff --git a/meson_options.txt b/meson_options.txt
+index 1b7b54810..910226c56 100644
+--- a/meson_options.txt
++++ b/meson_options.txt
+@@ -1,5 +1,6 @@
+ option('cheese', type: 'boolean', value: true, description: 'build with cheese webcam support')
+ option('documentation', type: 'boolean', value: false, description: 'build documentation')
++option('gnome_session_libexecdir', type: 'string', value: '', description: 'Directory for gnome-session\'s libexecdir')
+ option('ibus', type: 'boolean', value: true, description: 'build with IBus support')
+ option('privileged_group', type: 'string', value: 'wheel', description: 'name of group that has elevated permissions')
+ option('snap', type: 'boolean', value: false, description: 'build with Snap support')
+diff --git a/panels/info-overview/cc-info-overview-panel.c b/panels/info-overview/cc-info-overview-panel.c
+index 6e832eb35..b34030c8c 100644
+--- a/panels/info-overview/cc-info-overview-panel.c
++++ b/panels/info-overview/cc-info-overview-panel.c
+@@ -236,7 +236,7 @@ static char *
+ get_renderer_from_helper (const char **env)
+ {
+   int status;
+-  char *argv[] = { LIBEXECDIR "/gnome-control-center-print-renderer", NULL };
++  char *argv[] = { GNOME_SESSION_DIR "/gnome-session-check-accelerated", NULL };
+   g_auto(GStrv) envp = NULL;
+   g_autofree char *renderer = NULL;
+   g_autoptr(GError) error = NULL;
+diff --git a/panels/info-overview/meson.build b/panels/info-overview/meson.build
+index 2fe10b32c..506b7274e 100644
+--- a/panels/info-overview/meson.build
++++ b/panels/info-overview/meson.build
+@@ -19,7 +19,7 @@ i18n.merge_file(
+ 
+ cflags += [
+   '-DDATADIR="@0@"'.format(control_center_datadir),
+-  '-DLIBEXECDIR="@0@"'.format(control_center_libexecdir),
++  '-DGNOME_SESSION_DIR="@0@"'.format(gnome_session_libexecdir)
+ ]
+ 
+ sources = files(

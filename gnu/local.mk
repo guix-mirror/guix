@@ -1185,6 +1185,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gmp-faulty-test.patch			\
   %D%/packages/patches/gnash-fix-giflib-version.patch	        \
   %D%/packages/patches/gnome-boxes-add-guix-logo.patch		\
+  %D%/packages/patches/gnome-control-center-libexecdir.patch	\
   %D%/packages/patches/gnome-online-miners-tracker-3.patch	\
   %D%/packages/patches/gnome-screenshot-meson-0.60.patch	\
   %D%/packages/patches/gnome-settings-daemon-gc.patch		\
