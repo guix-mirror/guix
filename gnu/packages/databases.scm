@@ -662,6 +662,29 @@ replacement for the code@{python-memcached} library.")
      "This is a memcache client library for the Go programming language.")
     (license license:asl2.0)))
 
+(define-public go-github-com-couchbase-gomemcached
+  (package
+    (name "go-github-com-couchbase-gomemcached")
+    (version "0.1.4")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/couchbase/gomemcached")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "10w74gc05x5naspls39sv2r92krrg31mk266w3lyqqwc0s3fxysl"))))
+    (build-system go-build-system)
+    (arguments '(#:import-path "github.com/couchbase/gomemcached"))
+    (native-inputs
+     (list go-github-com-stretchr-testify))
+    (home-page "https://github.com/couchbase/gomemcached")
+    (synopsis "Memcached binary protocol toolkit for go")
+    (description
+     "This package provides memcache client and server functionality.")
+    (license license:expat)))
+
 (define-public litecli
  (package
   (name "litecli")
