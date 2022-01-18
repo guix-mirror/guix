@@ -292,6 +292,7 @@ for adding, removing and dropping callbacks.")
     (propagated-inputs
      (list python-aiodns
            python-aiosignal
+           python-attrs
            python-async-timeout
            python-charset-normalizer
            python-frozenlist
