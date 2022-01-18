@@ -600,6 +600,154 @@ its <pre class=\"lisp\"> blocks (as produced by 'makeinfo --html')."
 
   (computed-file name build))
 
+(define* (stylized-html source input
+                        #:key
+                        (languages %languages)
+                        (manual %manual)
+                        (manual-css-url "/static/base/css/manual.css"))
+  "Process all the HTML files in INPUT; add them MANUAL-CSS-URL as a <style>
+link, and add a menu to choose among LANGUAGES.  Use the Guix PO files found
+in SOURCE."
+  (define build
+    (with-extensions (list guile-lib)
+      (with-imported-modules `((guix build utils)
+                               ((localization)
+                                => ,(localization-helper-module
+                                     source languages)))
+        #~(begin
+            (use-modules (htmlprag)
+                         (localization)
+                         (guix build utils)
+                         (srfi srfi-1)
+                         (ice-9 match)
+                         (ice-9 threads))
+
+            (define* (menu-dropdown #:key (label "Item") (url "#") (items '()))
+              ;; Return an SHTML <li> element representing a dropdown for the
+              ;; navbar.  LABEL is the text of the dropdown menu, and ITEMS is
+              ;; the list of items in this menu.
+              (define id "visible-dropdown")
+
+              `(li
+                (@ (class "navbar-menu-item dropdown dropdown-btn"))
+                (input (@ (class "navbar-menu-hidden-input")
+                          (type "radio")
+                          (name "dropdown")
+                          (id ,id)))
+                (label (@ (for ,id)) ,label)
+                (label (@ (for "all-dropdowns-hidden")) ,label)
+                (div
+                 (@ (class "navbar-submenu")
+                    (id "navbar-submenu"))
+                 (div (@ (class "navbar-submenu-triangle"))
+                      " ")
+                 (ul ,@items))))
+
+            (define (menu-item label url)
+              ;; Return an SHTML <li> element for a menu item with the given
+              ;; LABEL and URL.
+              `(li (a (@ (class "navbar-menu-item")
+	                 (href ,url))
+                      ,label)))
+
+            (define* (base-language-url code manual
+                                        #:key split-node?)
+              ;; Return the base URL of MANUAL for language CODE.
+              (if split-node?
+                  (string-append "../../" code "/html_node")
+                  (string-append "../" code "/" manual
+                                 (if (string=? code "en")
+                                     ""
+                                     (string-append "." code))
+                                 ".html")))
+
+            (define (language-menu-items file)
+              ;; Return the language menu items to be inserted in FILE.
+              (define split-node?
+                (string-contains file "/html_node/"))
+
+              (append
+                  (map (lambda (code)
+                         (menu-item (language-code->native-name code)
+                                    (base-language-url code #$manual
+                                                       #:split-node?
+                                                       split-node?)))
+                       '#$%languages)
+                  (list
+                   (menu-item "⊕"
+                              (if (string=? #$manual "guix-cookbook")
+                                  "https://translate.fedoraproject.org/projects/guix/documentation-cookbook/"
+                                  "https://translate.fedoraproject.org/projects/guix/documentation-manual/")))))
+
+            (define (stylized-html sxml file)
+              ;; Return SXML, which was read from FILE, with additional
+              ;; styling.
+              (let loop ((sxml sxml))
+                (match sxml
+                  (('*TOP* decl body ...)
+                   `(*TOP* ,decl ,@(map loop body)))
+                  (('head elements ...)
+                   ;; Add reference to our own manual CSS, which provides
+                   ;; support for the language menu.
+                   `(head ,@elements
+                          (link (@ (rel "stylesheet")
+                                   (type "text/css")
+                                   (href #$manual-css-url)))))
+                  (('body ('@ attributes ...) elements ...)
+                   `(body (@ ,@attributes)
+                          (nav (@ (class "navbar-menu"))
+                               (ul
+                                ;; TODO: Add "Contribute" menu, to report
+                                ;; errors, etc.
+                                ,(menu-dropdown #:label
+                                                `(img (@ (alt "Language")
+                                                         (src "/static/base/img/language-picker.svg")))
+                                                #:items
+                                                (language-menu-items file))))
+                          ,@elements))
+                  ((tag ('@ attributes ...) body ...)
+                   `(,tag (@ ,@attributes) ,@(map loop body)))
+                  ((tag body ...)
+                   `(,tag ,@(map loop body)))
+                  ((? string? str)
+                   str))))
+
+            (define (process-html file)
+              ;; Parse FILE and add links to translations.  Install the result
+              ;; to #$output.
+              (format (current-error-port) "processing ~a...~%" file)
+              (let* ((shtml        (parameterize ((%strict-tokenizer? #t))
+                                     (call-with-input-file file html->shtml)))
+                     (processed    (stylized-html shtml file))
+                     (base         (string-drop file (string-length #$input)))
+                     (target       (string-append #$output base)))
+                (mkdir-p (dirname target))
+                (call-with-output-file target
+                  (lambda (port)
+                    (write-shtml-as-html processed port)))))
+
+            ;; Install a UTF-8 locale so we can process UTF-8 files.
+            (setenv "GUIX_LOCPATH"
+                    #+(file-append glibc-utf8-locales "/lib/locale"))
+            (setlocale LC_ALL "en_US.utf8")
+            (setenv "LC_ALL" "en_US.utf8")
+            (setvbuf (current-error-port) 'line)
+
+            (n-par-for-each (parallel-job-count)
+                            (lambda (file)
+                              (if (string-suffix? ".html" file)
+                                  (process-html file)
+                                  ;; Copy FILE as is to #$output.
+                                  (let* ((base   (string-drop file (string-length #$input)))
+                                         (target (string-append #$output base)))
+                                    (mkdir-p (dirname target))
+                                    (if (eq? 'symlink (stat:type (lstat file)))
+                                        (symlink (readlink file) target)
+                                        (copy-file file target)))))
+                            (find-files #$input))))))
+
+  (computed-file "stylized-html-manual" build))
+
 (define* (html-manual source #:key (languages %languages)
                       (version "0.0")
                       (manual %manual)
@@ -690,9 +838,11 @@ makeinfo OPTIONS."
                     (filter (compose file-exists? language->texi-file-name)
                             '#$languages)))))
 
-  (let* ((name   (string-append manual "-html-manual"))
-         (manual (computed-file name build #:local-build? #f)))
-    (syntax-highlighted-html manual
+  (let* ((name    (string-append manual "-html-manual"))
+         (manual* (computed-file name build #:local-build? #f)))
+    (syntax-highlighted-html (stylized-html source manual*
+                                            #:languages languages
+                                            #:manual manual)
                              #:mono-node-indexes mono-node-indexes
                              #:split-node-indexes split-node-indexes
                              #:name (string-append name "-highlighted"))))
