@@ -5239,6 +5239,11 @@ matching of file paths.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'relax-version-requirements
+           (lambda _
+             (substitute* "setup.py"
+               (("tomli[^\"]*\",")
+                "tomli\","))))
          (add-after 'patch-source-shebangs 'use-absolute-file-names
            (lambda* (#:key native-inputs inputs #:allow-other-keys)
              (let* ((inpts (or native-inputs inputs))
