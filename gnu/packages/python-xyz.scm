@@ -26082,8 +26082,8 @@ and plain text.")
      '(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (invoke "python" "setup.py" "nosetests"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests? (invoke "nosetests")))))))
     (native-inputs
      (list python-nose))
     (propagated-inputs
