@@ -487,7 +487,8 @@ C++ library as well as various command-line tools to to work with HDT.")
     (arguments
      '(#:tests? #f)) ; The test suite simply queries external HTTP endpoints.
     (native-inputs
-     (list python-nose))
+     ;; Build with setuptools <58 to get lib2to3 support.
+     (list python-nose python-setuptools))
     (propagated-inputs
      (list python-rdflib))
     (home-page "https://rdflib.dev/sparqlwrapper/")
