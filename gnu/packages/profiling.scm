@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2022 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,6 +20,7 @@
 
 (define-module (gnu packages profiling)
   #:use-module (guix packages)
+  #:use-module (guix gexp)
   #:use-module ((guix licenses) #:prefix license:) ; avoid zlib, expat clashes
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -48,71 +50,75 @@
 (define-public papi
   (package
     (name "papi")
-    (version "5.5.1")
+    (version "6.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://icl.utk.edu/projects/papi/downloads/papi-"
                            version ".tar.gz"))
-       (sha256 (base32 "1m62s8fkjjgq04ayf18jcxc33rqfd7nrkdw1gr54q5pn4cijrp29"))))
+       (sha256 (base32
+                "0pq5nhy105fpnk78k6l9ygsfr5akn6l0ck1hbf2c419lmsfp0hil"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove bundled software.
+           (for-each delete-file-recursively
+                     '("src/libpfm-3.y" "src/libpfm4"
+                       "src/perfctr-2.6.x"
+                       "src/perfctr-2.7.x"))
+
+           ;; Adjust include directives.
+           (substitute* "src/components/lmsensors/linux-lmsensors.c"
+             (("<sensors.h>")
+              "<sensors/sensors.h>"))))))
     (build-system gnu-build-system)
     (inputs
      (list ncurses
-           `(,lm-sensors "lib") rdma-core
-           `(,infiniband-diags "lib") net-tools))
+           rdma-core
+           libpfm4
+           `(,lm-sensors "lib")
+           `(,infiniband-diags "lib")
+           net-tools))
     (native-inputs
-     (list autoconf gfortran))
+     (list gfortran))
     (arguments
-     `(#:tests? #f ; no check target
-       #:configure-flags
-       ;; These are roughly per Fedora, but elide mx (assumed to be dead, even
-       ;; Open-MX) and add and powercap -- I don't know the pros/cons of
-       ;; infiniband and infiniband_mad, but you can't use them together, and
-       ;; the umad version needs at least one patch.
-       ;; Implicit enabled components: perf_event perf_event_uncore
-       `("--with-perf-events" "--with-shared-lib=yes" "--with-shlib"
-         "--with-static-lib=no"
-         "--with-components=appio coretemp example lustre micpower net rapl \
+     (list #:tests? #f                            ;no check target
+           #:configure-flags
+           ;; These are roughly per Fedora, but elide mx (assumed to be dead, even
+           ;; Open-MX) and add and powercap -- I don't know the pros/cons of
+           ;; infiniband and infiniband_mad, but you can't use them together, and
+           ;; the umad version needs at least one patch.
+           ;; Implicit enabled components: perf_event perf_event_uncore
+           #~`("--with-perf-events" "--with-shared-lib=yes" "--with-shlib"
+               "--with-static-lib=no" "--with-shlib-tools"
+               "--with-components=appio coretemp example lustre micpower net rapl \
 stealtime lmsensors infiniband powercap"
-         ;; So utils get rpath set correctly:
-         ,(string-append "LDFLAGS=-Xlinker -rpath -Xlinker "
-                         (assoc-ref %outputs "out") "/lib"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'autoconf
-           (lambda _
-             (chdir "src")
-             (invoke "autoconf")
-             #t))
-         ;; Amalgamating with the following clause gives double substitution.
-         (add-before 'patch-source-shebangs 'patch-components
-           (lambda _
-             (with-directory-excursion "src/components"
-               (substitute* '("lmsensors/configure" "infiniband_umad/configure")
-                 (("/bin/sh") (which "sh"))))
-             #t))
-         (add-after 'configure 'components
-           (lambda*  (#:key inputs #:allow-other-keys)
-             (with-directory-excursion "components"
-               (with-directory-excursion "infiniband_umad"
-                 (invoke "./configure"))
-               (with-directory-excursion "lmsensors"
-                 (let ((base (assoc-ref inputs "lm-sensors")))
-                   (invoke "./configure"
-                           (string-append "--with-sensors_incdir="
-                                          base "/include/sensors")
-                           (string-append "--with-sensors_libdir="
-                                          base "/lib")))))
-             #t))
-         (add-after 'install 'extra-doc
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((doc (string-append (assoc-ref outputs "out")
-                                       "/share/doc/" ,name "-" ,version)))
-               (chdir "..")             ; we went into src above
-               (for-each (lambda (file)
-                           (install-file file doc))
-                         '("README" "RELEASENOTES.txt"))
-               #t))))))
+               ;; So utils get rpath set correctly:
+               ,(string-append "LDFLAGS=-Xlinker -rpath -Xlinker "
+                               #$output "/lib")
+               ,(string-append "--with-pfm-prefix="
+                               #$(this-package-input "libpfm4")))
+
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'change-directory
+                 (lambda _
+                   (chdir "src")
+
+                   ;; Work around a mistake whereby 'configure' would always error
+                   ;; out when passing '--with-static-lib=no'.
+                   (substitute* "configure"
+                     (("test \"\\$static_lib\" = \"no\"")
+                      "false"))))
+               (add-after 'install 'extra-doc
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let ((doc (string-append (assoc-ref outputs "out")
+                                             "/share/doc/"
+                                             #$name "-" #$version)))
+                     (chdir "..")                   ; we went into src above
+                     (for-each (lambda (file)
+                                 (install-file file doc))
+                               '("README.md" "RELEASENOTES.txt"))))))))
     (home-page "https://icl.utk.edu/papi/")
     (synopsis "Performance Application Programming Interface")
     (description
@@ -128,12 +134,9 @@ performance measurement opportunites across the hardware and software stack.")
         . "http://icl.cs.utk.edu/papi/software/")))
     ;; See Debian papi copyright file.
     (license (list license:bsd-3
-                   license:lgpl2.1+     ;src/components/infiniband/pscanf.h
+                   license:lgpl2.1+        ;src/components/infiniband/pscanf.h
                    ;; not used in output
                    license:gpl2+ ;src/components/appio/tests/iozone/gengnuplot.sh
-                                 ;src/libpfm-3.y/*/multiplex*
-                   ;; "BSD-like": src/libpfm-3.y/*, src/libpfm4/*
-                   ;; lgpl2.1+: src/perfctr-2.*/*
                    ))))
 
 ;; NB. there's a potential name clash with libotf.
