@@ -15693,13 +15693,13 @@ graphviz.")
 (define-public python-gevent
   (package
     (name "python-gevent")
-    (version "21.1.2")
+    (version "21.12.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "gevent" version))
               (sha256
                (base32
-                "10f9y899y9nmq51pv4r1zb51b4w5yxx00sz5whvg9vm956hc432j"))
+                "0kh9mmq811mzfgj60n64icybjp4ryjmfmy1vg7x92yrniibn92zl"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -15790,14 +15790,10 @@ graphviz.")
                       (invoke "python" "-m" "gevent.tests" "-unone" "--config"
                               "known_failures.py" "--ignore" "skipped_tests.txt"))))))
     (propagated-inputs
-     `(("python-greenlet" ,python-greenlet)
-       ("python-objgraph" ,python-objgraph)
-       ("python-zope.event" ,python-zope-event)
-       ("python-zope.interface" ,python-zope-interface)))
+     (list python-greenlet python-zope-event python-zope-interface))
     (native-inputs
-     (list python-six
-           ;; For tests.
-           python-dnspython python-psutil))
+     ;; For tests.
+     (list python-dnspython python-psutil python-objgraph))
     (inputs
      (list c-ares libev))
     (home-page "https://www.gevent.org/")
