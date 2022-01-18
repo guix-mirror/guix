@@ -7105,6 +7105,7 @@ metadata in photo and video files of various formats.")
        ("glib:bin" ,glib "bin")
        ("itstool" ,itstool)
        ("pkg-config" ,pkg-config)
+       ("python" ,python)
        ("vala" ,vala)))
     (inputs
      `(("gcr" ,gcr)
