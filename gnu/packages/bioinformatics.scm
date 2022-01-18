@@ -21,7 +21,7 @@
 ;;; Copyright © 2020 Bonface Munyoki Kilyungi <bonfacemunyoki@gmail.com>
 ;;; Copyright © 2021 Tim Howes <timhowes@lavabit.com>
 ;;; Copyright © 2021 Hong Li <hli@mdc-berlin.de>
-;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2021, 2022 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -7787,6 +7787,50 @@ single-cell data.")
       (description
        "This package is designed to streamline scATAC analyses in R.")
       (license license:gpl2+))))
+
+(define-public r-icellnet
+  ;; v1.0 tagged in 2020, last commit contains many fixes.
+  ;; DESCRIPTION says Version: 0.0.0.9000.
+  (let ((commit "b9c05488fb8b5ea69bd560018966eaf4e25f82a")
+        (revision "0"))
+    (package
+      (name "r-icellnet")
+      (version (git-version "1.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/soumelis-lab/ICELLNET")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0cld7d6xqnvd0zpcpg3sx73an6vdc9divzywgnn6zxnqcd987cnw"))))
+      (build-system r-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'enter-dir
+             (lambda _ (chdir "icellnet"))))))
+      (propagated-inputs
+       (list r-annotationdbi
+             r-data-table
+             r-dplyr
+             r-ggplot2
+             r-hgu133plus2-db
+             r-jetset
+             r-psych
+             r-reshape2
+             r-rlist))
+      (home-page "https://github.com/soumelis-lab/ICELLNET")
+      (synopsis "Transcriptomic-based framework to dissect cell communication")
+      (description "This packages provides a a transcriptomic-based framework
+to dissect cell communication in a global manner.  It integrates an original
+expert-curated database of ligand-receptor interactions taking into account
+multiple subunits expression.  Based on transcriptomic profiles (gene
+expression), this package allows to compute communication scores between cells
+and provides several visualization modes that can be helpful to dig into
+cell-cell interaction mechanism and extend biological knowledge.")
+      (license license:gpl3))))
 
 (define-public r-scde
   (package
