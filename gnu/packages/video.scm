@@ -4375,6 +4375,7 @@ tools for styling them, including a built-in real-time video preview.")
             libpeas
             libnotify
             pango
+            python
             python-gst
             python-numpy
             python-matplotlib
@@ -4384,8 +4385,7 @@ tools for styling them, including a built-in real-time video preview.")
      `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
        ("itstool" ,itstool)
-       ("pkg-config" ,pkg-config)
-       ("python" ,python)))
+       ("pkg-config" ,pkg-config)))
      (arguments
       `(#:glib-or-gtk? #t
         #:phases
