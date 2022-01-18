@@ -2377,6 +2377,29 @@ one-to-one, while still providing an idiomatic interface.")
     (home-page "https://github.com/redis/redis-rb")
     (license license:expat)))
 
+(define-public go-github-com-cupcake-rdb
+  (package
+    (name "go-github-com-cupcake-rdb")
+    (version "0.0.0-20161107195141-43ba34106c76")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/tent/rdb")
+               (commit (go-version->git-ref version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1l4bsn5yj8r875crz1rsk6dlvhv0bd8mgazsch5vl4c19v0fs2ib"))))
+    (build-system go-build-system)
+    (arguments '(#:import-path "github.com/cupcake/rdb"))
+    (native-inputs
+     (list go-gopkg-in-check-v1))
+    (home-page "https://github.com/tent/rdb")
+    (synopsis "Redis RDB parser for Go")
+    (description
+     "Package rdb implements parsing and encoding of the Redis RDB file format.")
+    (license license:expat)))
+
 (define-public kyotocabinet
   (package
     (name "kyotocabinet")
