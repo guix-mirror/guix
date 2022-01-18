@@ -1146,13 +1146,13 @@ both of which are installed automatically if you install this library.")
 (define-public python-flask-cors
   (package
     (name "python-flask-cors")
-    (version "3.0.9")
+    (version "3.0.10")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Flask-Cors" version))
               (sha256
                (base32
-                "1f36hkaxc92zn12f88fkzwifdvlvsnmlp1dv3p5inpcc500c3kvb"))))
+                "1pl16615fn1pc5n0vdrqlxm45mqsdjjxqv3gfkrs111v7wwkj25n"))))
     (build-system python-build-system)
     (native-inputs
      (list python-flask python-nose python-packaging))
