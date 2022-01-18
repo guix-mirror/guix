@@ -7910,6 +7910,56 @@ of transcriptional heterogeneity among single cells.")
 analyze genomic data resulting from various experiments.")
     (license license:gpl2)))
 
+(define-public r-scseqcomm
+  (let ((commit "01076e703999f1a5aa76419d821b50aebe2b777a")
+        (revision "0"))
+    (package
+      (name "r-scseqcomm")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.com/sysbiobig/scseqcomm")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1fw5si47d6agnz5fibmp2b1sv08pbpwv1j71w57xbav9044i032q"))
+         ;; Delete bundled dependency.
+         (modules '((guix build utils)))
+         (snippet
+          '(delete-file-recursively "other_deps"))))
+      (build-system r-build-system)
+      (inputs
+       (list r-add2ggplot
+             r-chorddiag
+             r-doparallel
+             r-dplyr
+             r-foreach
+             ;;r-grid ;; listed in DESCRIPTION
+             r-gridextra
+             r-ggplot2
+             r-gtable
+             r-htmlwidgets
+             r-igraph
+             r-matrix
+             ;;r-methods ;; listed in DESCRIPTION
+             r-org-hs-eg-db
+             r-psych
+             r-rcolorbrewer
+             r-rlang
+             r-scico
+             r-tidygraph
+             r-topgo))
+      (native-inputs
+       (list r-knitr))
+      (home-page "https://gitlab.com/sysbiobig/scseqcomm")
+      (synopsis "Inter- and intra- cellular signaling from single cell RNA-seq")
+      (description "This package is tools for analysing intercellular and
+intracellular signaling from single cell RNA-seq (scRNA-seq) data.")
+      (license license:gpl3))))
+
 (define-public r-shaman
   (let ((commit "d6944e8ac7bd1dbd5c6cec646eafc1d19d0ca96f")
         (release "2.0")
