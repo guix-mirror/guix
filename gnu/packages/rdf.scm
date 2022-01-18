@@ -406,14 +406,14 @@ powerful language for representing information.")
 (define-public python-rdflib-jsonld
   (package
     (name "python-rdflib-jsonld")
-    (version "0.5.0")
+    (version "0.6.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "rdflib-jsonld" version))
         (sha256
          (base32
-          "1v85f4hdlrrk0l1najmqmm79ijrvcj259kwsrrxiq1q5chr5azag"))))
+          "0qrshlqzv5g5bign7kjja3xf7hyk7xgayr3yd0qlqda1kl0x6z0h"))))
     (build-system python-build-system)
     (native-inputs
      (list python-nose))
