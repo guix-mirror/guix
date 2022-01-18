@@ -311,7 +311,7 @@ through a text-based interface.")
                   (replace 'check
                     (lambda* (#:key tests? #:allow-other-keys)
                       (if tests?
-                          (invoke "python" "setup.py" "nosetests")
+                          (invoke "nosetests")
                           (format #t "test suite not run~%")))))))
     (native-inputs
      ;; For tests.
