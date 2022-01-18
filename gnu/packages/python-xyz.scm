@@ -28593,3 +28593,23 @@ to:
 it supports reStructuredText, Markdown, IPython (Jupyter) Notebooks and HTML,
 and has plugins for many other formats.")
     (license license:expat)))
+
+(define-public python-reedsolo
+  (package
+    (name "python-reedsolo")
+    (version "1.5.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "reedsolo" version))
+        (sha256
+          (base32 "09q15ji9iac3nmmxrcdvz8ynldvvqanqy3hs6q3cp327hgf5rcmq"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/tomerfiliba/reedsolomon")
+    (synopsis "Pure-Python Reed Solomon encoder/decoder")
+    (description "A pure-python universal errors-and-erasures Reed-Solomon
+Codec, based on the tutorial at Wikiversity.  This is a burst-type
+implementation, so that it supports any Galois field higher than 2^3,
+but not binary streams.")
+    (license license:public-domain)))
+
