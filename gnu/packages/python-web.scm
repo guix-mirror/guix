@@ -3170,13 +3170,13 @@ for the basic TCP/IP protocols.")
 (define-public python-geventhttpclient
   (package
     (name "python-geventhttpclient")
-    (version "1.4.4")
+    (version "1.5.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "geventhttpclient" version))
               (sha256
                (base32
-                "1hy4qm9d3r69n5199i7qjji1v7718n7cxbj8ggi0njify99m37pm"))
+                "104p14p67xa5gch8dy2zqmzmjra31fflk1c1alrry8dp8bzwj3nq"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -3197,19 +3197,16 @@ for the basic TCP/IP protocols.")
                ((".*sock.last_seen_sni = None.*")
                 ""))))
          (replace 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (invoke "py.test"  "src/geventhttpclient/tests" "-v"
-                     ;; Append the test modules to sys.path to avoid
-                     ;; namespace conflict which breaks SSL tests.
-                     "--import-mode=append"
-                     ;; XXX: This test fails with Python 3.8:
-                     ;; https://github.com/gwik/geventhttpclient/issues/119
-                     "-k" "not test_cookielib_compatibility"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest"  "src/geventhttpclient/tests" "-v"
+                       ;; Append the test modules to sys.path to avoid
+                       ;; namespace conflict which breaks SSL tests.
+                       "--import-mode=append")))))))
     (native-inputs
      (list python-dpkt python-pytest))
     (propagated-inputs
-     (list python-certifi python-gevent python-six))
+     (list python-brotli python-certifi python-gevent python-six))
     (home-page "https://github.com/gwik/geventhttpclient")
     (synopsis "HTTP client library for gevent")
     (description "@code{python-geventhttpclient} is a high performance,
