@@ -1964,6 +1964,33 @@ closely reconstructs the mutational profile.")
     (license license:gpl2+)))
 
 ;; This is a CRAN package, but it depends on Bioconductor packages.
+(define-public r-jetset
+  (package
+    (name "r-jetset")
+    (version "3.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "jetset" version))
+       (sha256
+        (base32 "0c99h5npsv2gf5d59s4qhkaqmjhbwa3prcykk24wzhnpfq6y6xhp"))))
+    (properties `((upstream-name . "jetset")))
+    (build-system r-build-system)
+    (propagated-inputs (list r-annotationdbi r-org-hs-eg-db))
+    (home-page "http://www.cbs.dtu.dk/biotools/jetset/")
+    (synopsis "One-to-one gene-probeset mapping for Affymetrix human microarrays")
+    (description
+     "This package provides a one-to-one mapping from gene to \"best\" probe
+set for four Affymetrix human gene expression microarrays: hgu95av2, hgu133a,
+hgu133plus2, and u133x3p.  On Affymetrix gene expression microarrays, a single
+gene may be measured by multiple probe sets.  This can present a mild
+conundrum when attempting to evaluate a gene \"signature\" that is defined by
+gene names rather than by specific probe sets.  This package also includes the
+pre-calculated probe set quality scores that were used to define the
+mapping.")
+    (license license:artistic2.0)))
+
+;; This is a CRAN package, but it depends on Bioconductor packages.
 (define-public r-nmf
   (package
     (name "r-nmf")
