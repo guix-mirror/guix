@@ -26831,6 +26831,24 @@ backport of the @code{dataclasses} module for Python 3.6.")
 query Watchman to discover file changes.")
     (license license:bsd-3)))
 
+(define-public python-roundrobin
+  (package
+    (name "python-roundrobin")
+    (version "0.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "roundrobin" version))
+              (sha256
+               (base32 "1akwhvfyi0120zg2xkhfc6jwfkirz5x90yyvw06bndhaaxwcnc5c"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f))          ;no tests on PyPI and no tags in repo
+    (home-page "https://github.com/linnik/roundrobin")
+    (synopsis "Collection of roundrobin utilities")
+    (description
+     "This package provides a collection of utilities for round-robin
+distribution in Python.")
+    (license license:expat)))
+
 (define-public python-helpdev
   (package
     (name "python-helpdev")
