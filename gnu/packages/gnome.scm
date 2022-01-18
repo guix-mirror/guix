@@ -9992,8 +9992,7 @@ functionality and behavior.")
            ;; Don't create 'icon-theme.cache'.
            (lambda _
              (substitute* "meson_post_install.py"
-               (("gtk-update-icon-cache") "true"))
-             #t)))))
+               (("gtk-update-icon-cache") "true")))))))
     (inputs
      (list bdb
            dbus-glib
@@ -10003,12 +10002,13 @@ functionality and behavior.")
            readline
            telepathy-glib))
     (native-inputs
-     `(("glib:bin" ,glib "bin")
-       ("gobject-introspection" ,gobject-introspection)
-       ("python-dbusmock" ,python-dbusmock)
-       ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)
-       ("vala" ,vala)))
+     (list `(,glib "bin")
+           gobject-introspection
+           python-dbusmock
+           intltool
+           pkg-config
+           python
+           vala))
     (synopsis "Library to aggregate data about people")
     (description "Libfolks is a library that aggregates information about people
 from multiple sources (e.g., Telepathy connection managers for IM contacts,
