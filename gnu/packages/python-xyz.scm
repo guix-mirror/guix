@@ -28050,21 +28050,14 @@ compatible with a wide range of versions of the Stripe API.")
         (base32 "1njz0h4iky8iglrb85cd07hpa3lp1a2dfr934dj65hxwzvfk61j4"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'build 'pretend-version
-           ;; The version string is usually derived via setuptools-scm, but
-           ;; without the git metadata available, the version string is set to
-           ;; '0.0.0'.
-           (lambda _
-             (setenv "SETUPTOOLS_SCM_PRETEND_VERSION" ,version)))
-         (replace 'check
-           (lambda* (#:key tests? #:allow-other-keys)
-             (when tests?
-               (invoke "pytest")))))))
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests?
+                        (invoke "pytest" "-vv")))))))
     (native-inputs
-     (list python-appdirs python-pytest python-pytest-cov
-           python-pytest-mock python-setuptools-scm))
+     (list python-appdirs python-pytest python-pytest-mock
+           python-setuptools-scm))
     (home-page "https://github.com/platformdirs/platformdirs")
     (synopsis "Determine the appropriate platform-specific directories")
     (description "When writing applications, finding the right location to

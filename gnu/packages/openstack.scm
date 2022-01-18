@@ -269,9 +269,9 @@ to docs.openstack.org and developer.openstack.org.")
      ;; when building the package. Skip the tests for now.
      `(#:tests? #f))
     (propagated-inputs
-     (list python-babel python-stestr python-testrepository python-testtools))
+     (list python-stestr))
     (native-inputs
-     (list python-pbr))
+     (list python-babel python-pbr python-testrepository python-testtools))
     (home-page "https://www.openstack.org/")
     (synopsis "Testr wrapper to provide functionality for OpenStack projects")
     (description
