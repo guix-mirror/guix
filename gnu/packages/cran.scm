@@ -27178,6 +27178,28 @@ advanced usage, an index can be used as a secondary vector that defines how
 sliding windows are to be created.")
     (license license:expat)))
 
+(define-public r-rlist
+  (package
+    (name "r-rlist")
+    (version "0.4.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rlist" version))
+       (sha256
+        (base32 "15q99rhbbjq8zd976yjmfnny45dd5fg2p2dv1sljg2kwi66nbppb"))))
+    (properties `((upstream-name . "rlist")))
+    (build-system r-build-system)
+    (propagated-inputs (list r-data-table r-jsonlite r-xml r-yaml))
+    (home-page "https://renkun-ken.github.io/rlist/")
+    (synopsis "A Toolbox for Non-Tabular Data Manipulation")
+    (description
+     "This package provides a set of functions for data manipulation with
+list objects, including mapping, filtering, grouping, sorting, updating,
+searching, and other useful functions.  Most functions are designed to be
+pipeline friendly so that data processing with lists can be chained.")
+    (license license:expat)))
+
 (define-public r-rsample
   (package
     (name "r-rsample")
