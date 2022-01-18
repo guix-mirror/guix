@@ -139,7 +139,8 @@ more.")
     (license license:gpl2+)))
 
 (define-public python-igraph
-  (package/inherit igraph
+  (package
+    (inherit igraph)
     (name "python-igraph")
     (version "0.9.9")
     (source (origin
