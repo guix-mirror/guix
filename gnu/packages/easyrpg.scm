@@ -31,6 +31,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages xdisorg)
@@ -75,7 +76,7 @@ It can read and write LCF and XML files.")
 (define-public easyrpg-player
   (package
     (name "easyrpg-player")
-    (version "0.6.2.3")
+    (version "0.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -83,7 +84,7 @@ It can read and write LCF and XML files.")
                     "/easyrpg-player-" version ".tar.gz"))
               (sha256
                (base32
-                "1lahbhgyhky0hgd3xwhgg2nm8mfa9p2i1fzxi00561hnk2ya86pm"))))
+                "1hm4hdi4l8c9jw0x3kcm6iwgfv8parlfj13va3r3p90040gs7s8l"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -92,7 +93,9 @@ It can read and write LCF and XML files.")
     (native-inputs
      (list pkg-config))
     (inputs
-     (list freetype
+     (list fluidsynth
+           fmt
+           freetype
            harfbuzz
            liblcf
            libpng
