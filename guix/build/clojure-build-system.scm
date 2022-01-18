@@ -34,8 +34,24 @@
 ;;
 ;; Code:
 
+(define* (compile-java #:key
+                       java-source-dirs java-compile-dir
+                       #:allow-other-keys)
+  "Compile java sources for use in clojure-build-system."
+  (let ((java-files (append-map (lambda (dir)
+                                  (find-files dir "\\.java$"))
+                                java-source-dirs)))
+    (mkdir-p java-compile-dir)
+    (when (not (null? java-files))
+      (apply invoke
+             "javac"
+             "-verbose"
+             "-d" java-compile-dir
+             java-files))))
+
 (define* (build #:key
-                source-dirs compile-dir
+                source-dirs java-source-dirs
+                compile-dir java-compile-dir
                 jar-names main-class omit-source?
                 aot-include aot-exclude
                 #:allow-other-keys)
@@ -46,19 +62,24 @@
                                            #:all-list libs)))
     (mkdir-p compile-dir)
     (eval-with-clojure `(run! compile ',libs*)
-                       source-dirs)
+                       (cons*  compile-dir
+                               java-compile-dir
+                               source-dirs))
     (let ((source-dir-files-alist (map (lambda (dir)
                                          (cons dir (find-files* dir)))
-                                       source-dirs))
+                                       (append source-dirs
+                                           java-source-dirs)))
           ;; workaround transitive compilation in Clojure
           (classes (filter (lambda (class)
                              (any (cut compiled-from? class <>)
                                   libs*))
                            (find-files* compile-dir))))
-      (for-each (cut create-jar <> (cons (cons compile-dir classes)
-                                         (if omit-source?
-                                             '()
-                                             source-dir-files-alist))
+      (for-each (cut create-jar <> (cons* (cons compile-dir classes)
+                                          (cons java-compile-dir
+                                                (find-files* java-compile-dir))
+                                          (if omit-source?
+                                              '()
+                                              source-dir-files-alist))
                      #:main-class main-class)
                 jar-names)
       #t)))
@@ -94,6 +115,7 @@ priority over TEST-INCLUDE."
 (define-with-docs %standard-phases
   "Standard build phases for clojure-build-system."
   (modify-phases %standard-phases@ant
+    (add-before 'build 'compile-java compile-java)
     (replace 'build build)
     (replace 'check check)
     (replace 'install install)

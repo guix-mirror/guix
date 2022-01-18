@@ -32,8 +32,10 @@
             install-doc
 
             %source-dirs
+            %java-source-dirs
             %test-dirs
             %compile-dir
+            %java-compile-dir
             package-name->jar-names
             %main-class
             %omit-source?
@@ -101,6 +103,10 @@ DOC-REGEX can be compiled or uncompiled."
   "A default list of source directories."
   '("src/"))
 
+(define-with-docs %java-source-dirs
+  "A default list of java source directories."
+  '())
+
 (define-with-docs %test-dirs
   "A default list of test directories."
   '("test/"))
@@ -108,6 +114,10 @@ DOC-REGEX can be compiled or uncompiled."
 (define-with-docs %compile-dir
   "Default directory for holding class files."
   "classes/")
+
+(define-with-docs %java-compile-dir
+  "Default directory for holding java class files."
+  "java-classes/")
 
 (define (package-name->jar-names name)
   "Given NAME, a package name like \"foo-0.9.1b\",
