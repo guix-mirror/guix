@@ -140,7 +140,7 @@ more.")
 (define-public python-igraph
   (package/inherit igraph
     (name "python-igraph")
-    (version "0.9.8")
+    (version "0.9.9")
     (source (origin
               (method git-fetch)
               ;; The PyPI archive lacks tests.
@@ -150,7 +150,7 @@ more.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0nwwfqvj4gp91b9j67zq4l58srr4r8qfqh90ygx17zyrybkx7ns6"))))
+                "0ravcww2jcr8fgi97gdxv00s5nkx59ljxy928nnniyd0231bqwlc"))))
     (build-system python-build-system)
     (arguments
      (list
