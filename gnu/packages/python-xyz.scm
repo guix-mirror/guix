@@ -19565,7 +19565,7 @@ multitouch applications.")
           "1vi2fj31vygfcqrkimdmk52q2ldw08g9fn4v4zlgdfgcjlhqyhxn"))))
     (build-system python-build-system)
     (propagated-inputs
-     (list python-dateutil python-lxml python-networkx python-rdflib))
+     (list python-dateutil python-lxml python-networkx python-rdflib-5))
     (native-inputs
      (list graphviz python-pydot))
     (home-page "https://github.com/trungdong/prov")

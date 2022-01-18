@@ -7,6 +7,7 @@
 ;;; Copyright © 2020 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 pukkamustard <pukkamustard@posteo.net>
+;;; Copyright © 2022 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -345,27 +346,33 @@ ideal (e.g. in LV2 implementations or embedded applications).")
 (define-public python-rdflib
   (package
     (name "python-rdflib")
-    (version "4.2.2")
+    (version "6.1.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "rdflib" version))
         (sha256
          (base32
-          "0398c714znnhaa2x7v51b269hk20iz073knq2mvmqp2ma92z27fs"))))
+          "0m7pyq771vl4zf9xd3pxjbg7x6ac97b3djfbv9qq9fch56ps1gwd"))))
     (build-system python-build-system)
     (arguments
-     '(;; FIXME: Three test failures. Should be fixed next release.
-       #:tests? #f))
-       ;; #:phases
-       ;; (modify-phases %standard-phases
-       ;;   (replace 'check
-       ;;     (lambda _
-       ;;       ;; Run tests from the build directory so python3 only
-       ;;       ;; sees the installed 2to3 version.
-       ;;       (invoke "nosetests" "--where=./build/src"))))))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'adjust-tests
+           (lambda _
+             (for-each delete-file
+                       '(;; This test needs a font that is not shipped.
+                         "test/test_so_69984830.py"
+                         ;; These tests need internet access.
+                         "test/jsonld/test_onedotone.py"
+                         "test/test_sparql_service.py"
+                         "test/test_graph.py"))))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "-vv" "test/")))))))
     (native-inputs
-     (list python-nose))
+     (list python-pytest))
     (propagated-inputs
       (list python-html5lib python-isodate python-pyparsing))
     (home-page "https://github.com/RDFLib/rdflib")
@@ -376,9 +383,26 @@ powerful language for representing information.")
     (license (license:non-copyleft "file://LICENSE"
                                    "See LICENSE in the distribution."))))
 
-(define-public python2-rdflib
-  (package-with-python2 python-rdflib))
+(define-public python-rdflib-5
+  (package
+    (inherit python-rdflib)
+    (version "5.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "rdflib" version))
+        (sha256
+         (base32
+          "0mdi7xh4zcr3ngqwlgqdqf0i5bxghwfddyxdng1zwpiqkpa9s53q"))))
+    ;; XXX: Lazily disable tests because they require a lot of work
+    ;; and this package is only transitional.
+    (arguments '(#:tests? #f))))
 
+(define-public python2-rdflib
+  (package-with-python2 python-rdflib-5))
+
+;; Note: This package is only needed for rdflib < 6.0; supersede when
+;; the above are removed.
 (define-public python-rdflib-jsonld
   (package
     (name "python-rdflib-jsonld")
