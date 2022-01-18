@@ -44,6 +44,7 @@
   #:use-module (guix build-system go)
   #:use-module (guix build-system python)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -734,40 +735,39 @@ history, and page outlines.")
     (license license:bsd-2)))
 
 (define-public gmni
-  (let ((commit "d8f0870446c471a42612d6a8e853ad9b723a6d39")
-        (revision "0"))
-    (package
-      (name "gmni")
-      (version (git-version "0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://git.sr.ht/~sircmpwn/gmni")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "1h0iqm7l0i06glf5b2872w656s1mjdiqva14zh6sl4f5yp7zmvwr"))
-                (file-name (git-file-name name version))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:tests? #f ; no check target
-         #:make-flags (list (string-append "CC=" ,(cc-for-target)))))
-      (inputs
-       (list openssl))
-      (native-inputs
-       (list pkg-config scdoc))
-      (home-page "https://sr.ht/~sircmpwn/gmni")
-      (synopsis "Minimalist command line Gemini client")
-      (description "The gmni package includes:
+  (package
+    (name "gmni")
+    (version "1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.sr.ht/~sircmpwn/gmni")
+                    (commit version)))
+              (sha256
+               (base32
+                "0bky9fd8iyr13r6gj4aynb7j9nd36xdprbgq6nh5hz6jiw04vhfw"))
+              (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     (list
+      #:tests? #f                       ;no check target
+      #:make-flags #~(list #$(string-append "CC=" (cc-for-target)))))
+    (inputs
+     (list bearssl))
+    (native-inputs
+     (list pkg-config scdoc))
+    (home-page "https://sr.ht/~sircmpwn/gmni")
+    (synopsis "Minimalist command line Gemini client")
+    (description "The gmni package includes:
 
 @itemize
 @item A CLI utility (like curl): gmni
 @item A line-mode browser: gmnlm
 @end itemize")
-      (license (list license:gpl3+
-                     (license:non-copyleft
-                      "https://curl.se/docs/copyright.html"
-                      "Used only for files taken from curl."))))))
+    (license (list license:gpl3+
+                   (license:non-copyleft
+                    "https://curl.se/docs/copyright.html"
+                    "Used only for files taken from curl.")))))
 
 (define-public bombadillo
   (package
