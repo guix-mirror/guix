@@ -254,60 +254,57 @@ file metadata operations that can be performed per second.")
 (define-public python-locust
   (package
     (name "python-locust")
-    (version "1.4.3")
+    (version "2.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "locust" version))
        (sha256
         (base32
-         "0vmw151xcaznd2j85n96iyv9fniss0bkk91xn4maw2gwzym424xk"))))
+         "1516z6z5pikybg7pma2cgxgj3wxaaky7z6d30mxf81wd4krbq16s"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     '(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'extend-PATH
-           ;; Add the 'locust' script to PATH, which is used in the test
-           ;; suite.
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (setenv "PATH" (string-append out "/bin:"
-                                             (getenv "PATH"))))))
          (replace 'check
-           (lambda _
-             (invoke "python" "-m" "pytest"
-                     "-k" (string-join
-                           (list
-                            ;; These tests return "non-zero exit status 1".
-                            "not test_default_headless_spawn_options"
-                            "not test_default_headless_spawn_options_with_shape"
-                            "not test_headless_spawn_options_wo_run_time"
-                            ;; These tests depend on networking.
-                            "not test_html_report_option"
-                            "not test_web_options"
-                            ;; This test fails because of the warning "System open
-                            ;; file limit '1024' is below minimum setting '10000'".
-                            "not test_skip_logging"
-                            ;; On some (slow?) machines, the following tests
-                            ;; fail, with the processes returning exit code
-                            ;; -15 instead of the expected 42 and 0,
-                            ;; respectively (see:
-                            ;; https://github.com/locustio/locust/issues/1708).
-                            "not test_custom_exit_code"
-                            "not test_webserver") " and ")))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "python" "-m" "pytest" "locust"
+                       "-k" (string-join
+                             '(;; These tests return "non-zero exit status 1".
+                               "not test_default_headless_spawn_options"
+                               "not test_default_headless_spawn_options_with_shape"
+                               "not test_headless_spawn_options_wo_run_time"
+                               ;; These tests depend on networking.
+                               "not test_html_report_option"
+                               "not test_web_options"
+                               ;; This test fails because of the warning "System open
+                               ;; file limit '1024' is below minimum setting '10000'".
+                               "not test_skip_logging"
+                               ;; On some (slow?) machines, the following tests
+                               ;; fail, with the processes returning exit code
+                               ;; -15 instead of the expected 42 and 0,
+                               ;; respectively (see:
+                               ;; https://github.com/locustio/locust/issues/1708).
+                               "not test_custom_exit_code"
+                               "not test_webserver") " and "))))))))
     (propagated-inputs
      (list python-configargparse
            python-flask
            python-flask-basicauth
+           python-flask-cors
            python-gevent
            python-geventhttpclient
            python-msgpack
            python-psutil
            python-pyzmq
            python-requests
+           python-roundrobin
+           python-typing-extensions
            python-werkzeug))
     (native-inputs
-     (list python-mock python-pyquery python-pytest)) ;for more easily skipping tests
+     (list python-mock python-pyquery python-pytest
+           python-retry python-setuptools-scm))
     (home-page "https://locust.io/")
     (synopsis "Distributed load testing framework")
     (description "Locust is a performance testing tool that aims to be easy to
