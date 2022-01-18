@@ -4467,6 +4467,7 @@ targeting the GNOME stack simple.")
        ("gobject-introspection" ,gobject-introspection)
        ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
        ("gperf" ,gperf)
+       ("python" ,python)
        ("xmllint" ,libxml2)))
     (propagated-inputs
      (list gtk+ ; required by vte-2.91.pc
