@@ -8,7 +8,7 @@
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlos@gmx.com>
 ;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 Alexandre Hannud Abdo <abdo@member.fsf.org>
-;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021, 2022 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -89,7 +89,7 @@ distributions in empirical data.  SIAM Review 51, 661-703 (2009)}).")
 (define-public igraph
   (package
     (name "igraph")
-    (version "0.9.5")
+    (version "0.9.6")
     (source
      (origin
        (method url-fetch)
@@ -103,27 +103,18 @@ distributions in empirical data.  SIAM Review 51, 661-703 (2009)}).")
                    (substitute* "CMakeLists.txt"
                      (("add_subdirectory\\(vendor\\).*")
                       ""))
-                   (substitute* "src/CMakeLists.txt"
+                   ;; Help CMake to find our plfit headers.
+                   (substitute* "etc/cmake/FindPLFIT.cmake"
+                     (("^  NAMES plfit.h.*" all)
+                      (string-append all
+                                     "  PATH_SUFFIXES plfit")))
+                   (substitute* '("src/CMakeLists.txt"
+                                  "etc/cmake/benchmark_helpers.cmake")
                      ;; Remove bundling related variables.
-                     ((".*_IS_VENDORED.*") "")
-                     ;; Remove link/install directives to bundled plfit.
-                     (("plfit") "")
-                     ;; Patch in support to find plfit from the system.
-                     (("# Link igraph statically to some.*" all)
-                      (string-append "\
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(PLFIT REQUIRED libplfit IMPORTED_TARGET)
-target_link_libraries(igraph PUBLIC PkgConfig::PLFIT)\n"
-                                     all)))
-                   (substitute* (find-files "." "(\\.h|\\.c)$")
-                     ;; Adjust includes for the newer plfit used.
-                     (("plfit/error.h")
-                      "plfit/plfit_error.h")
-                     ;; And the newer SuiteSparse.
-                     (("cs/cs.h")
-                      "cs.h"))))
+                     ((".*_IS_VENDORED.*")
+                      ""))))
        (sha256
-        (base32 "0ym1jnj6rqrrjad0dk7jsrm9351zdd0654brbn38gqp1j9wgdqy4"))))
+        (base32 "11zkj9bpqcadb0rc4ahvjp9047dp9hna8cn3b0vl3zpc9v2rwabw"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags (list "-DBUILD_SHARED_LIBS=ON")))
