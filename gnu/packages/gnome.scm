@@ -11662,35 +11662,36 @@ integrate seamlessly with the GNOME desktop.")
                                               (assoc-ref %outputs "out")
                                               "/lib/gnome-boxes"))))
     (native-inputs
-     `(("glib:bin" ,glib "bin")                   ;for glib-compile-resources
-       ("gtk+:bin" ,gtk+ "bin")                   ;for gtk-update-icon-cache
-       ("desktop-file-utils" ,desktop-file-utils) ;for update-desktop-database
-       ("itstool" ,itstool)
-       ("intltool" ,intltool)
-       ("vala" ,vala)
-       ("pkg-config" ,pkg-config)))
+     (list `(,glib "bin")               ;for glib-compile-resources
+           `(,gtk+ "bin")               ;for gtk-update-icon-cache
+           desktop-file-utils           ;for update-desktop-database
+           itstool
+           intltool
+           vala
+           pkg-config
+           python))
     (inputs
-     `(("libarchive" ,libarchive)
-       ("glib-networking" ,glib-networking) ;for TLS support
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("gtk" ,gtk+)
-       ("gtk-vnc" ,gtk-vnc)
-       ("gtksourceview" ,gtksourceview)
-       ("json-glib" ,json-glib)
-       ("libhandy" ,libhandy)
-       ("libosinfo" ,libosinfo)
-       ("libsecret" ,libsecret)
-       ("libsoup" ,libsoup-minimal-2)
-       ("libusb" ,libusb)
-       ("libvirt" ,libvirt)
-       ("libvirt-glib" ,libvirt-glib)
-       ("libxml" ,libxml2)
-       ("spice-gtk" ,spice-gtk)
-       ("sparql-query" ,sparql-query)
-       ("vte" ,vte)
-       ("webkitgtk" ,webkitgtk-with-libsoup2) ;for webkit2gtk-4.0
-       ("tracker" ,tracker)
-       ("libgudev" ,libgudev)))
+     (list libarchive
+           glib-networking              ;for TLS support
+           gsettings-desktop-schemas
+           gtk+
+           gtk-vnc
+           gtksourceview
+           json-glib
+           libhandy
+           libosinfo
+           libsecret
+           libsoup-minimal-2
+           libusb
+           libvirt
+           libvirt-glib
+           libxml2
+           spice-gtk
+           sparql-query
+           vte
+           webkitgtk-with-libsoup2      ;for webkit2gtk-4.0
+           tracker
+           libgudev))
     (home-page "https://wiki.gnome.org/Apps/Boxes")
     (synopsis "View, access, and manage remote and virtual systems")
     (description "GNOME Boxes is a simple application to view, access, and
