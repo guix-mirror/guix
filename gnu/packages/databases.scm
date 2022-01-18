@@ -3022,6 +3022,30 @@ etc., and an SQL engine for performing simple SQL queries.")
     (license (list license:lgpl2.0
                    license:gpl2+))))
 
+(define-public go-gopkg-in-mgo-v2
+  (package
+    (name "go-gopkg-in-mgo-v2")
+    (version "2.0.0-20190816093944-a6b53ec6cb22")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://gopkg.in/mgo.v2")
+               (commit (go-version->git-ref version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1lgvwxsbmdrf4938qkxl56wbwgbphk2qqnmpf73qdmlv4qsg14na"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:tests? #f      ; Tests try to use a running mongodb server.
+       #:import-path "gopkg.in/mgo.v2"))
+    (native-inputs
+     (list go-gopkg-in-check-v1))
+    (home-page "https://gopkg.in/mgo.v2")
+    (synopsis "MongoDB driver for Go")
+    (description "This package provides a MongoDB driver for Go.")
+    (license license:bsd-2)))
+
 (define-public python-lmdb
   (package
     (name "python-lmdb")
