@@ -223,8 +223,7 @@ a task.")
        ("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
        ("gtk+:bin" ,gtk+ "bin")
-       ("pkg-config" ,pkg-config)
-       ("python" ,python)))
+       ("pkg-config" ,pkg-config)))
     (inputs
      (list appstream-glib
            gsettings-desktop-schemas
@@ -232,6 +231,7 @@ a task.")
            gst-plugins-good ;for ScaleTempo plugin
            gtk+
            libhandy
+           python
            python-gst
            python-pygobject))
     (home-page "https://github.com/rafaelmardojai/blanket")
