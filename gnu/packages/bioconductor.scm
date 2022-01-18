@@ -956,6 +956,26 @@ annotations.")
 Disease Ontology.")
     (license license:artistic2.0)))
 
+(define-public r-hgu133plus2-db
+  (package
+    (name "r-hgu133plus2-db")
+    (version "3.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "hgu133plus2.db" version 'annotation))
+       (sha256
+        (base32 "0i6cfk7ahql4fcgrq0dai9gkjbsahyzd9iv4lqv1ad58fzkmipnx"))))
+    (properties `((upstream-name . "hgu133plus2.db")))
+    (build-system r-build-system)
+    (propagated-inputs (list r-annotationdbi r-org-hs-eg-db))
+    (home-page "https://bioconductor.org/packages/hgu133plus2.db")
+    (synopsis "Affymetrix Affymetrix HG-U133_Plus_2 Array annotation data")
+    (description
+     "This package provides Affymetrix HG-U133_Plus_2 array annotation
+data (chip hgu133plus2) assembled using data from public repositories.")
+    (license license:artistic2.0)))
+
 (define-public r-pfam-db
   (package
     (name "r-pfam-db")
