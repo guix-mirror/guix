@@ -17989,7 +17989,7 @@ multitouch applications.")
 (define-public python-dulwich
   (package
     (name "python-dulwich")
-    (version "0.19.16")
+    (version "0.20.30")
     (source
       (origin
         (method url-fetch)
@@ -17998,29 +17998,24 @@ multitouch applications.")
                    (pypi-uri "dulwich" version)))
         (sha256
           (base32
-           "0l589jl0lxx59yq0p6vmgw0q0hmfh48iqwyy0x6g1dmz93262igp"))))
+           "0hafaff30bmkj30b8pwpwsy3fz5h6c1pn98ihqcvl5zndflr1h22"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     '(#:phases
        (modify-phases %standard-phases
          (add-before 'check 'fix-tests
            (lambda* (#:key inputs #:allow-other-keys)
-             ;; The tests use Popen with a custom environment which doesn't
-             ;; include PATH.
-             (substitute* "dulwich/tests/compat/utils.py"
-               (("'git'") (string-append "'"
-                                         (which "git")
-                                         "'")))
              (substitute* '("dulwich/tests/test_repository.py"
+                            "dulwich/tests/test_porcelain.py"
                             "dulwich/tests/test_hooks.py")
-               (("#!/bin/sh") (string-append "#!" (which "sh"))))
+               (("/bin/sh") (search-input-file inputs "/bin/sh")))
              (setenv "TEST_RUNNER" "unittest")
-             (setenv "PYTHONHASHSEED" "random")
-             #t)))))
+             (setenv "PYTHONHASHSEED" "random"))))))
     (propagated-inputs
      (list python-fastimport python-urllib3))
     (native-inputs
-     (list python-mock python-geventhttpclient git))
+     (list python-mock python-geventhttpclient python-gpg
+           git gnupg))
     (home-page "https://www.dulwich.io/")
     (synopsis "Git implementation in Python")
     (description "Dulwich is an implementation of the Git file formats and
