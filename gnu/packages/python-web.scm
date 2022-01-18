@@ -237,10 +237,7 @@ for adding, removing and dropping callbacks.")
        ))
     (build-system python-build-system)
     (arguments
-     '(;; The test suite fails to handle a deprecation warning:
-       ;; "E           DeprecationWarning: The loop argument is deprecated since Python 3.8, and scheduled for removal in Python 3.10."
-       #:tests? #f
-       #:phases
+     '(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-tests
            (lambda _
