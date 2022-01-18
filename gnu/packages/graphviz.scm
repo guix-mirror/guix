@@ -370,15 +370,14 @@ can be used either as a standalone application, or as a Python library.")
 (define-public python-pydot
   (package
     (name "python-pydot")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pydot" version))
        (sha256
         (base32
-         "00az4cbf8bv447lkk9xi6pjm7gcc7ia33y4pm71fwfwis56rv76l"))
-       (patches (search-patches "python-pydot-regression-test.patch"))))
+         "0z80zwldf7ffkwrpm28hixsiqp3053j7g281xd6phmnbkfiq3014"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -389,8 +388,7 @@ can be used either as a standalone application, or as a Python library.")
              (when tests?
                (add-installed-pythonpath inputs outputs)
                (with-directory-excursion "test"
-                 (invoke "python" "pydot_unittest.py")))
-             #t)))))
+                 (invoke "python" "pydot_unittest.py"))))))))
     (native-inputs
      ;; For tests.
      (list graphviz python-chardet))
