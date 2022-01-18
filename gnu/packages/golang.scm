@@ -9625,3 +9625,26 @@ Features:
 @item TCP tunneling (e.g. benchmark with iperf3)
 @end itemize")
     (license license:asl2.0)))
+
+(define-public go-github-com-go-chi-chi-v5
+  (package
+    (name "go-github-com-go-chi-chi-v5")
+    (version "5.0.7")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/go-chi/chi")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0rzrsxz4xj0973c6nxklvq2vmg2m795snhk25836i0gnd1jnx79k"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/go-chi/chi/v5"))
+    (home-page "https://github.com/go-chi/chi")
+    (synopsis "Composable router for HTTP services written in Go")
+    (description
+     "@code{go-github-com-go-chi-chi-v5} is an HTTP router that lets the user
+decompose request handling into many smaller layers.")
+    (license license:expat)))
