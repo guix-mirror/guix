@@ -15948,14 +15948,14 @@ data in Python.")
 (define-public python-kazoo
   (package
     (name "python-kazoo")
-    (version "2.4.0")
+    (version "2.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "kazoo" version))
        (sha256
         (base32
-         "16y213k7r8shyn2zw1k6lkzjgcrvm441pqv8scvcjixhvpbx3hm7"))))
+         "1zpj5cc8624w6i0pxgcxqkjwbkm4pkrv19d7wh5df3jais32g3jq"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f)) ; XXX: needs zookeeper
     (propagated-inputs
