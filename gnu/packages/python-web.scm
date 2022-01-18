@@ -809,7 +809,7 @@ Swartz.")
 (define-public python-jose
   (package
     (name "python-jose")
-    (version "3.2.0")
+    (version "3.3.0")
     (home-page "https://github.com/mpdavis/python-jose")
     (source (origin
               (method git-fetch)
@@ -817,7 +817,7 @@ Swartz.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1xmnf8whzv2gnkkdv0fqcn9qwmcc7y647p4kw9fi3lvcp9kch8vi"))))
+                "18whsdpllg8574ma4r0qawkgw4nam6lsf63pi6761j38rvl84lg9"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
