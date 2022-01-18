@@ -27050,6 +27050,31 @@ integration, human-readable errors, and standard OS-specific locations.")
 implementations.")
     (license license:expat)))
 
+(define-public python-retry
+  (package
+    (name "python-retry")
+    (version "0.9.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "retry" version))
+              (sha256
+               (base32 "197v6qrh6858bhzzrjgk2zdqrybppymb1lsvdxnm1i39kfwsigzq"))))
+    (build-system python-build-system)
+    (arguments
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (replace 'check
+                 (lambda* (#:key tests? #:allow-other-keys)
+                   (when tests? (invoke "pytest" "-vv")))))))
+    (native-inputs (list python-pbr python-pytest))
+    (propagated-inputs (list python-decorator python-py))
+    (home-page "https://github.com/invl/retry")
+    (synopsis "Retry decorator")
+    (description
+     "@code{retry} is an easy to use retry decorator for Python.  It can be
+used to retry a function a given number of times.")
+    (license license:asl2.0)))
+
 (define-public python-pivy
   (package
     (name "python-pivy")
