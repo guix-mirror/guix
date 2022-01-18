@@ -2400,6 +2400,32 @@ one-to-one, while still providing an idiomatic interface.")
      "Package rdb implements parsing and encoding of the Redis RDB file format.")
     (license license:expat)))
 
+(define-public go-github-com-gomodule-redigo
+  (package
+    (name "go-github-com-gomodule-redigo")
+    (version "1.8.8")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/gomodule/redigo")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0wplaaxg7f6c6c08gdp33l48hygn8gq1rhlnjzr1c9qcggsm07k1"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:unpack-path "github.com/gomodule/redigo"
+       #:import-path "github.com/gomodule/redigo/redis"))
+    (native-inputs
+     (list go-github-com-stretchr-testify
+           redis))
+    (home-page "https://github.com/gomodule/redigo")
+    (synopsis "Go client for Redis")
+    (description
+     "Redigo is a Go client for the Redis database.")
+    (license license:asl2.0)))
+
 (define-public kyotocabinet
   (package
     (name "kyotocabinet")
