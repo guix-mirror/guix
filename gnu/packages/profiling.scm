@@ -123,6 +123,9 @@ real time, the relation between software performance and processor events.
 
 In addition, PAPI provides access to a collection of components that expose
 performance measurement opportunites across the hardware and software stack.")
+    (properties
+     '((release-monitoring-url
+        . "http://icl.cs.utk.edu/papi/software/")))
     ;; See Debian papi copyright file.
     (license (list license:bsd-3
                    license:lgpl2.1+     ;src/components/infiniband/pscanf.h
