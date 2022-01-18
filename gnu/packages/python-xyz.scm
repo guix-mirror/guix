@@ -26214,8 +26214,7 @@ and have a maximum lifetime built-in.")
          (base32
           "1nkm95mhcfhl4x5jgs6y97ikszaxsfh07nyawsih6cxxm6l62641"))))
     (build-system python-build-system)
-    (native-inputs
-     (list python-nose2))
+    (arguments '(#:tests? #f))          ;no tests
     (home-page "https://gitlab.com/warsaw/flufl.testing")
     (synopsis "Collection of test tool plugins")
     (description
