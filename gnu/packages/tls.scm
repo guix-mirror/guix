@@ -616,6 +616,57 @@ OpenSSL for TARGET."
                                                            #$version "/misc"))
                    #t))))))))))
 
+(define-public bearssl
+  (package
+    (name "bearssl")
+    (version "0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.bearssl.org/"
+                                  "bearssl-" version ".tar.gz"))
+              (sha256
+               (base32
+                "057zhgy9w4y8z2996r0pq5k2k39lpvmmvz4df8db8qa9f6hvn1b7"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list
+      #:make-flags
+      #~(list #$(string-append "CC=" (cc-for-target))
+              #$(string-append "LD=" (cc-for-target))
+              #$(string-append "LDDLL=" (cc-for-target)))
+      #:phases
+      #~(modify-phases %standard-phases
+          (delete 'configure)           ;no configure script
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (with-directory-excursion "build"
+                  (invoke "./testcrypto" "all")
+                  (invoke "./testx509")))))
+          (replace 'install             ;no install rule
+            (lambda _
+              (let* ((out #$output)
+                     (bin (string-append out "/bin"))
+                     (doc (string-append out "/share/doc/" #$name "-" #$version))
+                     (lib (string-append out "/lib"))
+                     (include (string-append out "/include")))
+                (install-file "build/brssl" bin)
+                (for-each (lambda (f) (install-file f include))
+                          (find-files "inc" "\\.h$"))
+                (install-file "LICENSE.txt" doc)
+                (install-file "build/libbearssl.so" lib)))))))
+    (home-page "https://bearssl.org/")
+    (synopsis "Small SSL/TLS library")
+    (description "BearSSL is an implementation of the SSL/TLS
+protocol (RFC 5246) written in C.  It aims at being correct and
+secure.  In particular, insecure protocol versions and choices of
+algorithms are not supported, by design; cryptographic algorithm
+implementations are constant-time by default.  It should also be
+small, both in RAM and code footprint.  For instance, a minimal server
+implementation may fit in about 20 kilobytes of compiled code and 25
+kilobytes of RAM.")
+    (license license:expat)))
+
 (define-public libressl
   (package
     (name "libressl")
