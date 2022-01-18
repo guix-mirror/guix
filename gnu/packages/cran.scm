@@ -31,7 +31,7 @@
 ;;; Copyright © 2020 Antoine Côté <antoine.cote@posteo.net>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Magali Lemes <magalilemes00@gmail.com>
-;;; Copyright © 2020, 2021 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2020, 2021, 2022 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2020 Aniket Patil <aniket112.patil@gmail.com>
 ;;; Copyright © 2021 Marcel Schilling <marcel.schilling@uni-luebeck.de>
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
@@ -27106,6 +27106,30 @@ groups are defined in such a way that they also represent the distance between
 dates in terms of the period.  This extracts valuable information that can be
 used in further calculations that rely on a specific temporal spacing between
 observations.")
+    (license license:expat)))
+
+(define-public r-scico
+  (package
+    (name "r-scico")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "scico" version))
+       (sha256
+        (base32 "08grfbjd5s0vdw76ni37yjl2242rr8i2jy72sgpwgra282hpnji3"))))
+    (properties `((upstream-name . "scico")))
+    (build-system r-build-system)
+    (propagated-inputs (list r-scales))
+    (home-page "https://github.com/thomasp85/scico")
+    (synopsis "Colour Palettes Based on the Scientific Colour-Maps")
+    (description
+     "This package provides colour choice in information visualisation.  It
+important in order to avoid being mislead by inherent bias in the used colour
+palette.  This package provides access to the perceptually uniform and
+colour-blindness friendly palettes developed by Fabio Crameri and released
+under the \"Scientific Colour-Maps\" moniker.  The package contains 24
+different palettes and includes both diverging and sequential types.")
     (license license:expat)))
 
 (define-public r-slider
