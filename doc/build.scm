@@ -842,6 +842,7 @@ must be the Guix top-level source directory, from which PO files are taken."
                       with-language
                       translate
                       language-code->name
+                      language-code->native-name
                       seconds->string))
 
           (define (normalize language)            ;XXX: deduplicate
@@ -876,19 +877,19 @@ must be the Guix top-level source directory, from which PO files are taken."
                  (bindtextdomain "iso_639-3"      ;language names
                                  #+(file-append iso-codes
                                                 "/share/locale"))
+                 (setenv "LANGUAGE" ,language)
                  (write (gettext ,str ,domain))))
 
-            (with-language language
-              ;; Since the 'gettext' function caches msgid translations,
-              ;; regardless of $LANGUAGE, we have to spawn a new process each
-              ;; time we want to translate to a different language.  Bah!
-              (let* ((pipe (open-pipe* OPEN_READ
-                                       #+(file-append guile-3.0
-                                                      "/bin/guile")
-                                       "-c" (object->string exp)))
-                     (str  (read pipe)))
-                (close-pipe pipe)
-                str)))
+            ;; Since the 'gettext' function caches msgid translations,
+            ;; regardless of $LANGUAGE, we have to spawn a new process each
+            ;; time we want to translate to a different language.  Bah!
+            (let* ((pipe (open-pipe* OPEN_READ
+                                     #+(file-append guile-3.0
+                                                    "/bin/guile")
+                                     "-c" (object->string exp)))
+                   (str  (read pipe)))
+              (close-pipe pipe)
+              str))
 
           (define %iso639-languages
             (vector->list
@@ -909,6 +910,11 @@ must be the Guix top-level source directory, from which PO files are taken."
                                     code)
                           (assoc-ref language "name")))
                    %iso639-languages)))
+
+          (define (language-code->native-name code)
+            "Return the name of language CODE in that language."
+            (translate (language-code->name code) code
+                       #:domain "iso_639-3"))
 
           (define (seconds->string seconds language)
             (let* ((time (make-time time-utc 0 seconds))
@@ -1026,10 +1032,7 @@ languages:\n"
                  (ul
                   ,@(map (lambda (language)
                            `(li (a (@ (href ,(normalize language)))
-                                   ,(translate
-                                     (language-code->name language)
-                                     language
-                                     #:domain "iso_639-3"))))
+                                   ,(language-code->native-name language))))
                          languages)))))))
 
           (define (write-html file sxml)
