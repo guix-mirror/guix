@@ -26910,6 +26910,27 @@ adaptive sparsity and the Wong algorithm for adaptively sparse Gaussian
 geometric models.")
     (license license:lgpl3+)))
 
+(define-public r-add2ggplot
+  (package
+    (name "r-add2ggplot")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "add2ggplot" version))
+       (sha256
+        (base32 "0c94i1cfp2pvplvxmfvvz2fyj026r1jnax05mrzrc7ppnqzy25y0"))))
+    (properties `((upstream-name . "add2ggplot")))
+    (build-system r-build-system)
+    (propagated-inputs
+     (list r-ggplot2 r-magick r-magrittr r-rcolorbrewer r-zeallot))
+    (native-inputs (list r-knitr))
+    (home-page "https://github.com/JiaxiangBU/add2ggplot")
+    (synopsis "Extension for ggplot2")
+    (description "This packages provides tools to create themes and color
+palettes for the package ggplot2.")
+    (license license:expat)))
+
 (define-public r-diffusionmap
   (package
     (name "r-diffusionmap")
