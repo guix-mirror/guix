@@ -10,7 +10,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 Christine Lemmer-Webber <cwebber@dustycloud.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016, 2017, 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
@@ -631,6 +631,36 @@ the API, and provides features such as:
 around TangentOrg’s libmemcached library, and can be used as a drop-in
 replacement for the code@{python-memcached} library.")
     (license license:bsd-3)))
+
+(define-public go-github-com-bradfitz-gomemcache
+  (package
+    (name "go-github-com-bradfitz-gomemcache")
+    (version "0.0.0-20190913173617-a41fca850d0b")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/bradfitz/gomemcache")
+               (commit (go-version->git-ref version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "18qpds6xr73jy80pj7l3pc1l1ndcy3va2dl8fzk17bgwg49sxwfz"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin
+            ;; Fixes the 'untyped-int -> string of one rune' issue.
+            ;; https://github.com/golang/go/issues/32479
+            (substitute* "memcache/memcache_test.go"
+              (("string\\(0x7f") "string(rune(0x7f)"))))))
+    (build-system go-build-system)
+    (arguments
+     '(#:unpack-path "github.com/bradfitz/gomemcache"
+       #:import-path "github.com/bradfitz/gomemcache/memcache"))
+    (home-page "https://github.com/bradfitz/gomemcache")
+    (synopsis "Memcache client library in Go")
+    (description
+     "This is a memcache client library for the Go programming language.")
+    (license license:asl2.0)))
 
 (define-public litecli
  (package
