@@ -51836,6 +51836,95 @@ algebra.")
 @samp{foo/bar}, @samp{C:/foo/bar}).")
     (license license:expat)))
 
+(define-public rust-paw-1
+  (package
+    (name "rust-paw")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "paw" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1sc481y42rb08hmww525m4539ppl8k0w14kwxp13vg2dasdzrh09"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-paw-attributes" ,rust-paw-attributes-1)
+        ("rust-paw-raw" ,rust-paw-raw-1))
+       #:cargo-development-inputs
+       (("rust-paw-structopt" ,rust-paw-structopt-1)
+        ("rust-runtime" ,rust-runtime-0.3)
+        ("rust-structopt" ,rust-structopt-0.2))))
+    (home-page "https://github.com/rust-cli/paw")
+    (synopsis "CLI argument parser")
+    (description "This package provides a CLI argument parser.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-paw-attributes-1
+  (package
+    (name "rust-paw-attributes")
+    (version "1.0.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "paw-attributes" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "0fda1v7y5pfmg8d2v7m0pyvif6c44qjz914jjn718pdyclrmhd8g"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:cargo-inputs
+        (("rust-proc-macro2" ,rust-proc-macro2-1)
+         ("rust-quote" ,rust-quote-1)
+         ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/rust-cli/paw")
+    (synopsis "Proc Macro attributes for the Paw crate")
+    (description "This package provides Proc Macro attributes for the Paw
+crate.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-paw-raw-1
+  (package
+    (name "rust-paw-raw")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "paw-raw" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1wk76ipp34gjh42vivmgdkb2rgr26gwhn34gk7z5l378ixk5j2vz"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/rust-cli/paw")
+    (synopsis "Traits to implement custom Paw implementations")
+    (description "This package provides traits to implement custom Paw
+implementations.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-paw-structopt-1
+  (package
+    (name "rust-paw-structopt")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "paw-structopt" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1iwg83xqjpfgpy8wrq173cy7zgkyxfryd230sh34f5qsjdx7zap4"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-quote" ,rust-quote-0.6)
+        ("rust-structopt" ,rust-structopt-0.2)
+        ("rust-syn" ,rust-syn-0.15))))
+    (home-page "https://github.com/rust-cli/paw")
+    (synopsis "Structopt support for the Paw crate")
+    (description "This package provides Structopt support for the Paw crate.")
+    (license (list license:expat license:asl2.0))))
+
 ;; TODO: Unbundle sleef.
 (define-public rust-sleef-sys-0.1
   (package
