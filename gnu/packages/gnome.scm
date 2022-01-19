@@ -12055,7 +12055,7 @@ It uses pandoc as back-end for parsing Markdown.")
                  python-wrap)
                #t))))))
     (native-inputs
-     (list check pkg-config swig valgrind))
+     (list check pkg-config python swig valgrind))
     (inputs
      `(("glib" ,glib)
        ("json-glib" ,json-glib)
