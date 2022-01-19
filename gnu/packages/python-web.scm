@@ -1297,9 +1297,6 @@ C, yielding parse times that can be a thirtieth of the html5lib parse times.")
     ;; indicate ASL2.0, including the LICENSE file for the whole project.
     (license (list license:asl2.0 license:gpl3))))
 
-(define-public python2-html5-parser
-  (package-with-python2 python-html5-parser))
-
 (define-public python-minio
   (package
     (name "python-minio")
