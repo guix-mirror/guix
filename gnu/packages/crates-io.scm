@@ -5787,24 +5787,26 @@ c6e7d37.  However, this package works only up to 128 bytes.")
 (define-public rust-base64ct-1
   (package
     (name "rust-base64ct")
-    (version "1.1.1")
+    (version "1.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "base64ct" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0p4was874qc90q2chm2i14m9mn8zmxjis8vaxihd6a2x4aqxkd76"))))
+        (base32 "1818i0gpg7q35s6yglmhgciwi3jwx65mqc2ipjl54jfbmm288kw7"))))
     (build-system cargo-build-system)
-    (arguments `(#:skip-build? #t))
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-base64" ,rust-base64-0.13)
+        ("rust-proptest" ,rust-proptest-1))))
     (home-page "https://github.com/RustCrypto/formats/tree/master/base64ct")
     (synopsis "Implementation of Base64 (RFC 4648)")
     (description
      "This package is a pure Rust implementation of Base64 (RFC 4648) which
 avoids any usages of data-dependent branches/LUTs and thereby provides
-portable \"best effort\" constant-time operation and embedded-friendly no_std
-support.")
+portable \"best effort\" constant-time operation and embedded-friendly
+@code{no_std} support.")
     (license (list license:asl2.0 license:expat))))
 
 (define-public rust-base-x-0.2
