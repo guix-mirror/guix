@@ -650,6 +650,23 @@ in SOURCE."
 	                 (href ,url))
                       ,label)))
 
+            (define* (navigation-bar menus #:key split-node?)
+              ;; Return the navigation bar showing all of MENUS.
+              `(header (@ (class "navbar"))
+                       (h1 (a (@ (class "branding")
+                                 (href ,(if split-node? ".." "#")))))
+                       (nav (@ (class "navbar-menu"))
+                            (input (@ (class "navbar-menu-hidden-input")
+                                      (type "radio")
+                                      (name "dropdown")
+                                      (id "all-dropdowns-hidden")))
+                            (ul ,@menus))
+
+                       ;; This is the button that shows up on small screen in
+                       ;; lieu of the drop-down button.
+                       (a (@ (class "navbar-menu-btn")
+                             (href ,(if split-node? "../.." ".."))))))
+
             (define* (base-language-url code manual
                                         #:key split-node?)
               ;; Return the base URL of MANUAL for language CODE.
@@ -682,6 +699,9 @@ in SOURCE."
             (define (stylized-html sxml file)
               ;; Return SXML, which was read from FILE, with additional
               ;; styling.
+              (define split-node?
+                (string-contains file "/html_node/"))
+
               (let loop ((sxml sxml))
                 (match sxml
                   (('*TOP* decl body ...)
@@ -695,15 +715,16 @@ in SOURCE."
                                    (href #$manual-css-url)))))
                   (('body ('@ attributes ...) elements ...)
                    `(body (@ ,@attributes)
-                          (nav (@ (class "navbar-menu"))
-                               (ul
-                                ;; TODO: Add "Contribute" menu, to report
-                                ;; errors, etc.
-                                ,(menu-dropdown #:label
-                                                `(img (@ (alt "Language")
-                                                         (src "/static/base/img/language-picker.svg")))
-                                                #:items
-                                                (language-menu-items file))))
+                          ,(navigation-bar
+                            ;; TODO: Add "Contribute" menu, to report
+                            ;; errors, etc.
+                            (list (menu-dropdown
+                                   #:label
+                                   `(img (@ (alt "Language")
+                                            (src "/static/base/img/language-picker.svg")))
+                                   #:items
+                                   (language-menu-items file)))
+                            #:split-node? split-node?)
                           ,@elements))
                   ((tag ('@ attributes ...) body ...)
                    `(,tag (@ ,@attributes) ,@(map loop body)))
