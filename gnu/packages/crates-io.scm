@@ -6963,6 +6963,33 @@ types.")
      `(#:cargo-development-inputs
        (("rust-rand" ,rust-rand-0.3))))))
 
+(define-public rust-bitcoin-hashes-0.10
+  (package
+    (name "rust-bitcoin-hashes")
+    (version "0.10.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "bitcoin-hashes" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "1c25nzrd2kn5znhjgxb9n48hc7swapiln8dqqndq368x38gcjv00"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:cargo-inputs
+        (("rust-core2" ,rust-core2-0.3)
+         ("rust-schemars" ,rust-schemars-0.8)
+         ("rust-serde" ,rust-serde-1))
+        #:cargo-development-inputs
+        (("rust-serde-json" ,rust-serde-json-1)
+         ("rust-serde-test" ,rust-serde-test-1)
+         ("rust-wasm-bindgen-test" ,rust-wasm-bindgen-test-0.3))))
+    (home-page "https://github.com/rust-bitcoin/bitcoin_hashes/")
+    (synopsis "Hash functions used by @code{rust-bitcoin}")
+    (description "This Rust library provides hash functions that are used by
+@code{rust-bitcoin}.")
+    (license license:cc0)))
+
 (define-public rust-bitfield-0.13
   (package
     (name "rust-bitfield")
