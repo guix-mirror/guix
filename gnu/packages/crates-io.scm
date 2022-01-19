@@ -8595,6 +8595,25 @@ reasonable.")
 memory usage.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-byte-slice-cast-1
+  (package
+    (name "rust-byte-slice-cast")
+    (version "1.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "byte-slice-cast" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "162618ai9pnsim49lkjpq2yi2b3wssclvqxwwycw8xrbb58wfc0x"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/sdroege/bytes-num-slice-cast")
+    (synopsis
+      "Safely cast bytes slices from/to slices of built-in fundamental numeric types")
+    (description "This Rust library enables safely cast bytes slices from/to slices
+of built-in fundamental numeric types.")
+    (license license:expat)))
+
 (define-public rust-byte-tools-0.3
   (package
     (name "rust-byte-tools")
