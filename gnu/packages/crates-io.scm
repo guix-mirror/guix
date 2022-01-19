@@ -39783,6 +39783,24 @@ the PHC string format (a well-defined subset of the Modular Crypt
 Format (MCF).")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-password-hash-0.1
+  (package
+    (inherit rust-password-hash-0.3)
+    (name "rust-password-hash")
+    (version "0.1.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "password-hash" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "1ymh3np2bamjy8rszimksxcp264dclil4620bxm8rff9pyj6m62l"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+        (("rust-base64ct" ,rust-base64ct-1)
+         ("rust-rand-core" ,rust-rand-core-0.6))))))
+
 (define-public rust-paste-1
   (package
     (name "rust-paste")
