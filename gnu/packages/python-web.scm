@@ -4138,9 +4138,6 @@ variety of features, from launching web applications to bootstrapping project
 layouts.")
     (license license:expat)))
 
-(define-public python2-pastescript
-  (package-with-python2 python-pastescript))
-
 (define-public python2-urlgrabber
   (package
     (name "python2-urlgrabber")
