@@ -3953,9 +3953,6 @@ List.")
 List.  Forked from and using the same API as the publicsuffix package.")
     (license (list license:expat license:mpl2.0))))
 
-(define-public python2-publicsuffix2
-  (package-with-python2 python-publicsuffix2))
-
 (define-public python-werkzeug
   (package
     (name "python-werkzeug")
