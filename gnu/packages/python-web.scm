@@ -3334,15 +3334,7 @@ Betamax that may possibly end up in the main package.")
     (description "S3transfer is a Python library for managing Amazon S3
 transfers.")
     (home-page "https://github.com/boto/s3transfer")
-    (license license:asl2.0)
-    (properties `((python2-variant . ,(delay python2-s3transfer))))))
-
-(define-public python2-s3transfer
-  (let ((base (package-with-python2 (strip-python2-variant python-s3transfer))))
-    (package/inherit base
-      (native-inputs
-       `(("python2-futures" ,python2-futures)
-         ,@(package-native-inputs base))))))
+    (license license:asl2.0)))
 
 (define-public python-slimit
   (package
