@@ -44274,6 +44274,29 @@ this crate is here to save you the hassle of maintaining and testing
 your own implementation.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-rlp-0.5
+  (package
+    (name "rust-rlp")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rlp" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1da7b1hc4czlmsyr7ifs9bz9fv8hi5dw8q14xnmjlydfn2mhi5cr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bytes" ,rust-bytes-1)
+        ("rust-rustc-hex" ,rust-rustc-hex-2))))
+    (home-page "https://github.com/paritytech/parity-common")
+    (synopsis "Recursive-length prefix encoding, decoding, and compression")
+    (description "This package provides Recursive-length prefix encoding,
+decoding, and compression.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rls-span-0.5
   (package
     (name "rust-rls-span")
