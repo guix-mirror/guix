@@ -15,7 +15,7 @@
 ;;; Copyright © 2020 Antoine Côté <antoine.cote@posteo.net>
 ;;; Copyright © 2021, 2022 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 aecepoglu <aecepoglu@fastmail.fm>
-;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
+;;; Copyright © 2021, 2022 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2021 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;; Copyright © 2021 Antero Mejr <antero@kodmin.com>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -23,7 +23,6 @@
 ;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
 ;;; Copyright © 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2021 Jacob Hrbek <kreyren@rixotstudio.cz>
-;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2021 Nicolas Graves <ngraves@ngraves.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -61836,8 +61835,30 @@ strings.")
     (description "Exposes Typeable, for getting TypeIds at runtime.")
     (license license:expat)))
 
+(define-public rust-typed-arena-2
+  (package
+    (name "rust-typed-arena")
+    (version "2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "typed-arena" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1bnhphrksp9krxhsfhfimrxvkbah2pa6rf9ygmpw5lalbm6wi186"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/SimonSapin/rust-typed-arena")
+    (synopsis "The arena allocator")
+    (description
+     "The arena, a fast but limited type of allocator.")
+    (license license:expat)))
+
 (define-public rust-typed-arena-1
   (package
+    (inherit rust-typed-arena-2)
     (name "rust-typed-arena")
     (version "1.4.1")
     (source
@@ -61850,12 +61871,7 @@ strings.")
         (base32
          "1i8yczhwcy0nnrxqck1lql3i7hvg95l0vw0dbgfb92zkms96mh66"))))
     (build-system cargo-build-system)
-    (arguments `(#:skip-build? #t))
-    (home-page "https://github.com/SimonSapin/rust-typed-arena")
-    (synopsis "The arena allocator")
-    (description
-     "The arena, a fast but limited type of allocator.")
-    (license license:expat)))
+    (arguments `(#:skip-build? #t))))
 
 (define-public rust-typed-builder-0.5
   (package
