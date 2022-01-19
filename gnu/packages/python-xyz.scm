@@ -14313,16 +14313,22 @@ in pure Python.")
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((libxdo (string-append
                             (assoc-ref inputs "xdotool")
-                            "/lib/libxdo.so")))
+                            "/lib/libxdo.so"))
+                   (libc (string-append
+                          (assoc-ref inputs "glibc")
+                          "/lib/libc.so.6")))
                (substitute* "xdo/_xdo.py"
                  (("find_library\\(\"xdo\"\\)")
-                  (simple-format #f "\"~a\"" libxdo)))
+                  (simple-format #f "\"~a\"" libxdo))
+                 (("ctypes\\.util\\.find_library\\('libc'\\)")
+                  (simple-format #f "\"~a\"" libc)))
                #t))))
        #:tests? #f))  ; no tests provided
     (propagated-inputs
      (list python-six))
     (inputs
      `(("xdotool" ,xdotool)
+       ("glibc" ,glibc)
        ("libX11" ,libx11)))
     (home-page "https://tracker.debian.org/pkg/python-xdo")
     (synopsis "Python library for simulating X11 keyboard/mouse input")
