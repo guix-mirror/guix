@@ -53658,17 +53658,19 @@ easier in Rust.")
 (define-public rust-subtle-2
   (package
     (name "rust-subtle")
-    (version "2.2.3")
+    (version "2.4.1")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "subtle" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "1h9jd7v0imksyl5mvnjk2rw54sa3xrril76z0md61mq2gh056bah"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "subtle" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "00b6jzh9gzb0h9n25g06nqr90z3xzqppfhhb260s1hjhh4pg7pkb"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs (("rust-rand" ,rust-rand-0.7))))
     (home-page "https://dalek.rs/")
     (synopsis
      "Pure-Rust traits and utilities for cryptographic implementations")
