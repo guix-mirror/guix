@@ -690,9 +690,6 @@ argparse commands and options")
 related extensions.")
     (license license:bsd-3)))
 
-(define-public python2-sphinx-cloud-sptheme
-  (package-with-python2 python-sphinx-cloud-sptheme))
-
 (define-public python-guzzle-sphinx-theme
   (package
     (name "python-guzzle-sphinx-theme")
