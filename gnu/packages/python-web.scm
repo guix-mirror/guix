@@ -4135,6 +4135,35 @@ variety of features, from launching web applications to bootstrapping project
 layouts.")
     (license license:expat)))
 
+(define-public python-urlgrabber
+  (package
+    (name "python-urlgrabber")
+    (version "4.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "urlgrabber" version))
+       (sha256
+        (base32 "0fg16zlw49cw7pjq9dhpc5vd35d5zz1mlki55m464qxfmfpzhnh7"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "test/runtests.py")))))))
+    (propagated-inputs
+     (list python-pycurl python-setuptools python-six))
+    (home-page "http://urlgrabber.baseurl.org/") ; no HTTPS
+    (synopsis "High-level cross protocol url-grabber")
+    (description
+     "@code{urlgrabber} is a library that unifies access to files available on
+the web, FTP or locally.  It supports HTTP, FTP and file:// protocols, it
+supports features like HTTP keep-alive, reget, throttling and more.")
+    (license license:lgpl2.1+)))
+
 (define-public python2-urlgrabber
   (package
     (name "python2-urlgrabber")
