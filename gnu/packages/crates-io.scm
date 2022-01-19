@@ -34761,38 +34761,69 @@ more.")
        #:cargo-development-inputs
        (("rust-rand" ,rust-rand-0.4))))))
 
-(define-public rust-num-bigint-dig-0.6
+(define-public rust-num-bigint-dig-0.7
   (package
     (name "rust-num-bigint-dig")
-    (version "0.6.0")
+    (version "0.7.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "num-bigint-dig" version))
-        (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-          (base32 "1aljx3bxfnzq35i9pkbqkj0d0hc1wjc2dd60wccjqylz1wrkrl5k"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "num-bigint-dig" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1004mmipvc7pvaf3kf13i1nqh3vxf789bj72d8wl51y185aywis5"))))
     (build-system cargo-build-system)
     (arguments
-      `(#:skip-build? #t
-        #:cargo-inputs
-        (("rust-autocfg" ,rust-autocfg-0.1)
-         ("rust-byteorder" ,rust-byteorder-1)
-         ("rust-lazy-static" ,rust-lazy-static-1)
-         ("rust-libm" ,rust-libm-0.2)
-         ("rust-num-integer" ,rust-num-integer-0.1)
-         ("rust-num-iter" ,rust-num-iter-0.1)
-         ("rust-num-traits" ,rust-num-traits-0.2)
-         ("rust-rand" ,rust-rand-0.7)
-         ("rust-serde" ,rust-serde-1)
-         ("rust-smallvec" ,rust-smallvec-1)
-         ("rust-zeroize" ,rust-zeroize-1))))
-    (home-page
-      "https://github.com/dignifiedquire/num-bigint")
+     `(#:cargo-inputs
+       (("rust-autocfg" ,rust-autocfg-0.1)
+        ("rust-byteorder" ,rust-byteorder-1)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libm" ,rust-libm-0.2)
+        ("rust-num-integer" ,rust-num-integer-0.1)
+        ("rust-num-iter" ,rust-num-iter-0.1)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-rand" ,rust-rand-0.8)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-smallvec" ,rust-smallvec-1)
+        ("rust-zeroize" ,rust-zeroize-1))
+       #:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.8)
+        ("rust-rand-chacha" ,rust-rand-chacha-0.3)
+        ("rust-rand-isaac" ,rust-rand-isaac-0.3)
+        ("rust-rand-xorshift" ,rust-rand-xorshift-0.3)
+        ("rust-serde-test" ,rust-serde-test-1))))
+    (home-page "https://github.com/dignifiedquire/num-bigint")
     (synopsis "Big integer implementation for Rust")
-    (description "This package provides a big integer implementation
-for Rust")
+    (description "This package provides a big integer implementation for
+Rust.")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-num-bigint-dig-0.6
+(package
+  (inherit rust-num-bigint-dig-0.7)
+  (name "rust-num-bigint-dig")
+  (version "0.6.0")
+  (source
+   (origin
+     (method url-fetch)
+     (uri (crate-uri "num-bigint-dig" version))
+     (file-name (string-append name "-" version ".tar.gz"))
+     (sha256
+      (base32 "1aljx3bxfnzq35i9pkbqkj0d0hc1wjc2dd60wccjqylz1wrkrl5k"))))
+  (arguments
+   `(#:skip-build? #t
+     #:cargo-inputs
+     (("rust-autocfg" ,rust-autocfg-0.1)
+      ("rust-byteorder" ,rust-byteorder-1)
+      ("rust-lazy-static" ,rust-lazy-static-1)
+      ("rust-libm" ,rust-libm-0.2)
+      ("rust-num-integer" ,rust-num-integer-0.1)
+      ("rust-num-iter" ,rust-num-iter-0.1)
+      ("rust-num-traits" ,rust-num-traits-0.2)
+      ("rust-rand" ,rust-rand-0.7)
+      ("rust-serde" ,rust-serde-1)
+      ("rust-smallvec" ,rust-smallvec-1)
+      ("rust-zeroize" ,rust-zeroize-1))))))
 
 (define-public rust-num-complex-0.4
   (package
