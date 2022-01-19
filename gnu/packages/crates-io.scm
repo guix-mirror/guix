@@ -6990,6 +6990,19 @@ types.")
 @code{rust-bitcoin}.")
     (license license:cc0)))
 
+(define-public rust-bitcoin-hashes-0.9
+  (package
+    (inherit rust-bitcoin-hashes-0.10)
+    (name "rust-bitcoin-hashes")
+    (version "0.9.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "bitcoin-hashes" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "1cblp0clvds0i33ms1b0lvq42kzdpr7q3ma5ac3ss913xijq5qbw"))))))
+
 (define-public rust-bitfield-0.13
   (package
     (name "rust-bitfield")
