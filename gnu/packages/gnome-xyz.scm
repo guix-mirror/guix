@@ -861,6 +861,46 @@ position when the mouse is moved rapidly.")
 animation of closing windowed applications.")
     (license license:gpl3)))
 
+(define-public gnome-shell-extension-blur-my-shell
+  (package
+    (name "gnome-shell-extension-blur-my-shell")
+    (version "27")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/aunetx/blur-my-shell")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0l318lgc2zrp8fskabiv28knwp3b5i2y8bd3164da4pkf1jsl468"))
+       (snippet
+        '(begin (delete-file "src/schemas/gschemas.compiled")))))
+    (build-system copy-build-system)
+    (arguments
+     `(#:install-plan
+       '(("." ,(string-append
+                "share/gnome-shell/extensions/"
+                "blur-my-shell@aunetx")
+          #:include-regexp ("\\.js(on)?$" "\\.css$" "\\.ui$" "\\.png$"
+                            "\\.xml$" "\\.compiled$")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'cd-src
+           (lambda _ (chdir "src")))
+         (add-before 'install 'compile-schemas
+           (lambda _
+             (with-directory-excursion "schemas"
+               (invoke "glib-compile-schemas" ".")))))))
+    (native-inputs
+     (list (list glib "bin"))) ; for glib-compile-schemas
+    (home-page "https://github.com/aunetx/blur-my-shell")
+    (synopsis "Blurs different parts of the GNOME Shell")
+    (description "Blur My Shell adds a blur look to different parts of the
+GNOME Shell, including the top panel, dash and overview.")
+    (license license:gpl3)))
+
 (define-public arc-theme
   (package
     (name "arc-theme")
