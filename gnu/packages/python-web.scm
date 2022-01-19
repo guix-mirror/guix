@@ -3924,9 +3924,6 @@ Templates.")
 List.")
     (license license:expat)))
 
-(define-public python2-publicsuffix
-  (package-with-python2 python-publicsuffix))
-
 (define-public python-publicsuffix2
   (package
     (name "python-publicsuffix2")
