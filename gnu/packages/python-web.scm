@@ -1484,9 +1484,6 @@ It's a fork of cssutils 1.0.2, updated and modified for parsing ebooks, due to
 cssutils not receiving updates as of 1.0.2.")
     (license license:lgpl3+)))
 
-(define-public python2-css-parser
-  (package-with-python2 python-css-parser))
-
 (define-public python-cssselect
   (package
     (name "python-cssselect")
