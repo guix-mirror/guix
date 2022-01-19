@@ -39396,6 +39396,57 @@ want in the terminal.")
 including a pretty-printer.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-parity-crypto-0.9
+  (package
+    (name "rust-parity-crypto")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "parity-crypto" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0dafz7pfi21plp6r6k2bh7ysjd3x75yix6a9gkdy3mn0vafym4jb"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-aes" ,rust-aes-0.6)
+        ("rust-block-modes" ,rust-block-modes-0.7)
+        ("rust-digest" ,rust-digest-0.9)
+        ("rust-ethereum-types" ,rust-ethereum-types-0.12)
+        ("rust-hex" ,rust-hex-0.2)
+        ("rust-hmac" ,rust-hmac-0.10)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-pbkdf2" ,rust-pbkdf2-0.7)
+        ("rust-ripemd" ,rust-ripemd-0.1)
+        ("rust-rustc-hex" ,rust-rustc-hex-2)
+        ("rust-scrypt" ,rust-scrypt-0.5)
+        ("rust-secp256k1" ,rust-secp256k1-0.20)
+        ("rust-sha2" ,rust-sha2-0.9)
+        ("rust-subtle" ,rust-subtle-2)
+        ("rust-tiny-keccak" ,rust-tiny-keccak-2)
+        ("rust-zeroize" ,rust-zeroize-1))
+       #:cargo-development-inputs
+        (("rust-criterion" ,rust-criterion-0.3)
+         ("rust-hex-literal" ,rust-hex-literal-0.3))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-version-requirements
+           (lambda _
+             ;; SUBSTITUTE* can't do multiline regex, so let's just do this:
+             (delete-file "Cargo.toml")
+             (rename-file "Cargo.toml.orig" "Cargo.toml")
+             (substitute* "Cargo.toml"
+               (("aes-ctr = \"0.6.0\"") "")
+               (("ethereum-types = \\{ version = \"0.12.0\".*")
+                "ethereum-types = { version = \"0.12.0\", optional = true }\n")
+               (("ripemd160 = \"0.9.1\"") "ripemd = \"0.1.0\"")))))))
+    (home-page "https://github.com/paritytech/parity-common")
+    (synopsis "General cryptographic utilities for Ethereum")
+    (description "This Rust library provides general cryptographic utilities
+for Ethereum.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-parity-tokio-ipc-0.4
   (package
     (name "rust-parity-tokio-ipc")
