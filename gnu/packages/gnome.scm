@@ -12435,6 +12435,7 @@ integrated profiler via Sysprof, debugging support, and more.")
            libhandy
            libnotify
            libsecret
+           python
            python-beautifulsoup4
            python-brotli
            python-cloudscraper
