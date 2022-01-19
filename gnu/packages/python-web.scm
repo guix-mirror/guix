@@ -3198,14 +3198,7 @@ provide an easy-to-use Python interface for building OAuth1 and OAuth2 clients."
     (home-page "https://github.com/seomoz/url-py")
     (synopsis "URL Parsing")
     (description "Library for parsing urls.")
-    (license license:expat)
-    (properties `((python2-variant . ,(delay python2-url))))))
-
-(define-public python2-url
-  (let ((base (package-with-python2 (strip-python2-variant python-url))))
-    (package/inherit base
-      (propagated-inputs
-       `(("python2-publicsuffix" ,python2-publicsuffix))))))
+    (license license:expat)))
 
 (define-public python-cachecontrol
   (package
