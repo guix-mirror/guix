@@ -1752,7 +1752,7 @@ and printing capabilities than traditional data frames.")
     (home-page "https://github.com/hadley/dplyr")
     (synopsis "Tools for working with data frames in R")
     (description
-     "dplyr is the next iteration of plyr.  It is focussed on tools for
+     "dplyr is the next iteration of plyr.  It is focused on tools for
 working with data frames.  It has three main goals: 1) identify the most
 important data manipulation tools needed for data analysis and make them easy
 to use in R; 2) provide fast performance for in-memory data by writing key
