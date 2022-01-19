@@ -50822,6 +50822,30 @@ in pure Rust.")
 computation (experimental)")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-salsa20-0.7
+  (package
+    (name "rust-salsa20")
+    (version "0.7.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "salsa20" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "09c16m566g45f41xx3673zyzwca3mykz630fmv2mbjbvmwcc4fw0"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:cargo-inputs
+        (("rust-cipher" ,rust-cipher-0.2)
+         ("rust-zeroize" ,rust-zeroize-1))
+        #:cargo-development-inputs
+        (("rust-cipher" ,rust-cipher-0.2))))
+    (home-page "https://github.com/RustCrypto/stream-ciphers")
+    (synopsis "Salsa20 stream cipher")
+    (description "This is a Rust library implementing the Salsa20 stream
+cipher.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-safe-arch-0.5
   (package
     (name "rust-safe-arch")
