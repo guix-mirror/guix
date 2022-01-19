@@ -1514,9 +1514,6 @@ them to XPath 1.0 expressions.  Such expressions can be used in lxml or
 another XPath engine to find the matching elements in an XML or HTML document.")
     (license license:bsd-3)))
 
-(define-public python2-cssselect
-  (package-with-python2 python-cssselect))
-
 (define-public python-databricks-cli
   (package
     (name "python-databricks-cli")
