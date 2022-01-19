@@ -671,8 +671,8 @@ in SOURCE."
                                         #:key split-node?)
               ;; Return the base URL of MANUAL for language CODE.
               (if split-node?
-                  (string-append "../../" code "/html_node")
-                  (string-append "../" code "/" manual
+                  (string-append "../../" (normalize code) "/html_node")
+                  (string-append "../" (normalize code) "/" manual
                                  (if (string=? code "en")
                                      ""
                                      (string-append "." code))
