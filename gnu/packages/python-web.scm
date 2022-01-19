@@ -3714,9 +3714,6 @@ CSS tidy.  Also supports URL rewriting in CSS files.")
     (description "Python port of the YUI CSS Compressor.")
     (license (list license:expat license:bsd-3))))
 
-(define-public python2-cssmin
-  (package-with-python2 python-cssmin))
-
 (define-public python-elasticsearch
   (package
     (name "python-elasticsearch")
