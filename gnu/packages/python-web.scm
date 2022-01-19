@@ -3738,9 +3738,6 @@ provide common ground for all Elasticsearch-related code in Python; because of
 this it tries to be opinion-free and very extendable.")
     (license license:expat)))
 
-(define-public python2-elasticsearch
-  (package-with-python2 python-elasticsearch))
-
 (define-public python-engineio
   (package
     (name "python-engineio")
