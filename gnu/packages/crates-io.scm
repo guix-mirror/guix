@@ -58023,7 +58023,7 @@ operations.")
 (define-public rust-tokio-macros-1
   (package
     (name "rust-tokio-macros")
-    (version "1.1.0")
+    (version "1.7.0")
     (source
      (origin
        (method url-fetch)
@@ -58031,7 +58031,7 @@ operations.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0mys5zm2gcdgc0iq8nqipzn703q26x1bpw59m04shikgacdb3xya"))))
+         "1ds34qsfvgf63cjgdx3gr4pl7i76fifyar15ksbillcc8hpzfmxm"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
