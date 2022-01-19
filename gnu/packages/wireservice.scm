@@ -2,6 +2,7 @@
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2022 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -174,7 +175,7 @@ for dbf files support to all @code{agate.Table} instances.")))
 (define-public python-agate-excel
   (wireservice-package
    (name "python-agate-excel")
-   (version "0.2.3")
+   (version "0.2.5")
    (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -183,15 +184,16 @@ for dbf files support to all @code{agate.Table} instances.")))
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "1k5lv21k19s7kgbj5srd1xgrkqvxqqs49qwj33zncs9l7851afy7"))))
+               "1y3cw57000inwczx50n16kxkr3xi2l241iml1qcqp29a0ba5c519"))))
    (native-inputs
-    `(("python-nose" ,python-nose)
-      ("python-sphinx" ,python-sphinx)
-      ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)))
+    (list python-nose
+          python-sphinx
+          python-sphinx-rtd-theme))
    (propagated-inputs
-    `(("python-agate" ,python-agate)
-      ("python-openpyxl" ,python-openpyxl)
-      ("python-xlrd" ,python-xlrd)))
+    (list python-agate
+          python-olefile
+          python-openpyxl
+          python-xlrd))
    (home-page "https://agate-excel.rtfd.org")
    (synopsis "Add read support for Excel files (xls and xlsx) to agate")
    (description "@code{agateexcel} uses a monkey patching pattern to add read
