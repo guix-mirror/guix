@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012-2022 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2016 Alex Kost <alezost@gmail.com>
@@ -139,6 +139,7 @@ denote ranges as interpreted by 'matching-generations'."
 
 (define* (build-and-use-profile store profile manifest
                                 #:key
+                                dry-run?
                                 (hooks %default-profile-hooks)
                                 allow-collisions?
                                 bootstrap?)
@@ -154,6 +155,7 @@ hooks\" run when building the profile."
          (prof     (derivation->output-path prof-drv)))
 
     (cond
+     (dry-run? #t)
      ((and (file-exists? profile)
            (and=> (readlink* profile) (cut string=? prof <>)))
       (format (current-error-port) (G_ "nothing to be done~%")))
@@ -1069,6 +1071,7 @@ processed, #f otherwise."
                                    trans
                                    #:dry-run? dry-run?)
         (build-and-use-profile store profile new
+                               #:dry-run? dry-run?
                                #:allow-collisions? allow-collisions?
                                #:bootstrap? bootstrap?)))))
 

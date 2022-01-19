@@ -196,6 +196,16 @@ EOF
 guix package --bootstrap -p "$profile" -i gcc-bootstrap
 installed="`guix package -p "$profile" -I | cut -f1`"
 
+# Dry-run upgrade.  Make sure no new generation is created when things are
+# already in store and '-n' is used: <https://issues.guix.gnu.org/53267>.
+V_MINOR=0
+export V_MINOR
+profile_before="$(readlink "$profile")"
+guix package -p "$profile" --bootstrap -L "$module_dir" -u # build the profile
+guix package -p "$profile" --roll-back
+guix package -p "$profile" --bootstrap -L "$module_dir" -u . -n # check '-n'
+test "$(readlink "$profile")" = "$profile_before"
+
 for i in 1 2
 do
     V_MINOR="$i"
