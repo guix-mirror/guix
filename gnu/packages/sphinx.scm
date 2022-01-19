@@ -731,9 +731,6 @@ and several other projects.")
     (description "A theme for Sphinx used by ReadTheDocs.org.")
     (license license:expat)))
 
-(define-public python2-sphinx-rtd-theme
-  (package-with-python2 python-sphinx-rtd-theme))
-
 (define-public python-breathe
   (package
     (name "python-breathe")
