@@ -21658,15 +21658,14 @@ crate.")
 (define-public rust-fnv-1
   (package
     (name "rust-fnv")
-    (version "1.0.6")
+    (version "1.0.7")
     (source
       (origin
         (method url-fetch)
         (uri (crate-uri "fnv" version))
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
-         (base32
-          "1ww56bi1r5b8id3ns9j3qxbi7w5h005rzhiryy0zi9h97raqbb9g"))))
+         (base32 "1hc2mcqha06aibcaza94vbi81j6pr9a1bbxrxjfhc91zin8yr7iz"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/servo/rust-fnv")
     (synopsis "Implementation of the Fowler-Noll-Vo hash function")
