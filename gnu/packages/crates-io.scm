@@ -2,7 +2,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
 ;;; Copyright © 2019, 2020, 2021, 2022 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2019–2022 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2019-2022 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019, 2020 John Soo <jsoo1@asu.edu>
@@ -65125,7 +65125,7 @@ crate.")
 (define-public rust-zeroize-1
   (package
     (name "rust-zeroize")
-    (version "1.1.0")
+    (version "1.4.3")
     (source
      (origin
        (method url-fetch)
@@ -65133,11 +65133,10 @@ crate.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1f5547q8l8bpi16yy6lix2gl9rf1qz45lj06bq7wjk525gnw5fiw"))))
+        (base32 "068nvl3n5hk6lfn5y24grf2c7anzzqfzjjccscq3md7rqp79v3fn"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:tests? #f                      ;2 doc tests fail
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-zeroize-derive" ,rust-zeroize-derive-1))))
     (home-page "https://github.com/iqlusioninc/crates/")
     (synopsis "Securely clear secrets from memory")
