@@ -615,7 +615,7 @@ firmware blobs.  You can
                  (lambda (port)
                    (format port "v~a~%" ,version))))))
          (add-after 'unpack 'patch-absolute-file-names
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
              (substitute* '("lib/utils/process.py"
                             "lib/utils/text.py"
                             "src/Ganeti/Constants.hs"
@@ -625,21 +625,22 @@ firmware blobs.  You can
                             "test/py/ganeti.utils.process_unittest.py"
                             "test/py/ganeti.utils.text_unittest.py"
                             "test/py/ganeti.utils.wrapper_unittest.py")
-               (("/bin/sh") (which "sh"))
-               (("/bin/bash") (which "bash"))
-               (("/usr/bin/env") (which "env"))
-               (("/bin/true") (which "true")))
+               (("/bin/sh") (search-input-file inputs "/bin/sh"))
+               (("/bin/bash") (search-input-file inputs "/bin/bash"))
+               (("/usr/bin/env") (search-input-file inputs "/bin/env"))
+               (("/bin/true") (search-input-file inputs "/bin/true")))
 
              ;; This script is called by the node daemon at startup to perform
              ;; sanity checks on the cluster IP addresses, and it is also used
              ;; in a master-failover scenario.  Add absolute references to
              ;; avoid propagating these executables.
              (substitute* "tools/master-ip-setup"
-               (("arping") (which "arping"))
-               (("ndisc6") (which "ndisc6"))
-               (("fping") (which "fping"))
-               (("grep") (which "grep"))
-               (("ip addr") (string-append (which "ip") " addr")))))
+               (("arping") (search-input-file inputs "/bin/arping"))
+               (("ndisc6") (search-input-file inputs "/bin/ndisc6"))
+               (("fping") (search-input-file inputs "/sbin/fping"))
+               (("grep") (search-input-file inputs "/bin/grep"))
+               (("ip addr") (string-append (search-input-file inputs "/sbin/ip")
+                                           " addr")))))
          (add-after 'unpack 'override-builtin-PATH
            (lambda _
              ;; Ganeti runs OS install scripts and similar with a built-in
@@ -829,42 +830,40 @@ firmware blobs.  You can
        ("shelltestrunner" ,shelltestrunner)
        ("tzdata" ,tzdata-for-tests)))
     (inputs
-     `(("arping" ,iputils)              ;must be the iputils version
-       ("curl" ,curl)
-       ("fping" ,fping)
-       ("iproute2" ,iproute)
-       ("ndisc6" ,ndisc6)
-       ("socat" ,socat)
-       ("qemu" ,qemu-minimal)           ;for qemu-img
-       ("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
-       ("ghc-cryptonite" ,ghc-cryptonite)
-       ("ghc-curl" ,ghc-curl)
-       ("ghc-hinotify" ,ghc-hinotify)
-       ("ghc-hslogger" ,ghc-hslogger)
-       ("ghc-json" ,ghc-json)
-       ("ghc-lens" ,ghc-lens)
-       ("ghc-lifted-base" ,ghc-lifted-base)
-       ("ghc-network" ,ghc-network)
-       ("ghc-old-time" ,ghc-old-time)
-       ("ghc-psqueue" ,ghc-psqueue)
-       ("ghc-regex-pcre" ,ghc-regex-pcre)
-       ("ghc-utf8-string" ,ghc-utf8-string)
-       ("ghc-zlib" ,ghc-zlib)
-
-       ;; For the optional metadata daemon.
-       ("ghc-snap-core" ,ghc-snap-core)
-       ("ghc-snap-server" ,ghc-snap-server)
-
-       ("python" ,python)
-       ("python-pyopenssl" ,python-pyopenssl)
-       ("python-simplejson" ,python-simplejson)
-       ("python-pyparsing" ,python-pyparsing)
-       ("python-pyinotify" ,python-pyinotify)
-       ("python-pycurl" ,python-pycurl)
-       ("python-bitarray" ,python-bitarray)
-       ("python-paramiko" ,python-paramiko)
-       ("python-psutil" ,python-psutil)))
+     (list iputils                      ;for 'arping'
+           curl
+           fping
+           iproute
+           ndisc6
+           socat
+           qemu-minimal                 ;for qemu-img
+           ghc-attoparsec
+           ghc-base64-bytestring
+           ghc-cryptonite
+           ghc-curl
+           ghc-hinotify
+           ghc-hslogger
+           ghc-json
+           ghc-lens
+           ghc-lifted-base
+           ghc-network
+           ghc-old-time
+           ghc-psqueue
+           ghc-regex-pcre
+           ghc-utf8-string
+           ghc-zlib
+           ;; For the optional metadata daemon.
+           ghc-snap-core
+           ghc-snap-server
+           python
+           python-pyopenssl
+           python-simplejson
+           python-pyparsing
+           python-pyinotify
+           python-pycurl
+           python-bitarray
+           python-paramiko
+           python-psutil))
     (home-page "https://www.ganeti.org/")
     (synopsis "Cluster-based virtual machine management system")
     (description
