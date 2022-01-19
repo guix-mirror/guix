@@ -12845,6 +12845,26 @@ numbers using the CORDIC method.")
 management.  It supports signed and private (encrypted, authenticated) jars.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-core2-0.3
+  (package
+    (name "rust-core2")
+    (version "0.3.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "core2" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "1wzzy5iazdk5caadxvjfwrd312rbg7a55a1zpmsdrhk3kfpa77r3"))))
+    (build-system cargo-build-system)
+    (arguments `(#:cargo-inputs (("rust-memchr" ,rust-memchr-2))))
+    (home-page "https://github.com/bbqsrc/core2")
+    (synopsis "Bare essentials of @code{std::io} for use in @code{no_std}")
+    (description
+      "This package provides the bare essentials of @code{std::io} for use
+in @code{no_std}.  Alloc support is optional.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-cookie-0.14
   (package
     (inherit rust-cookie-0.15)
