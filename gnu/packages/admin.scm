@@ -1841,7 +1841,7 @@ features of sudo with a fraction of the codebase.")
 (define-public wpa-supplicant-minimal
   (package
     (name "wpa-supplicant-minimal")
-    (version "2.9")
+    (version "2.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1849,7 +1849,7 @@ features of sudo with a fraction of the codebase.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "05qzak1mssnxcgdrafifxh9w86a4ha69qabkg4bsigk499xyxggw"))
+                "0bvvw7bx149a57llzrwzlpggyym84f8jdd4abwsk0f2b2pjpmpr0"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1857,10 +1857,7 @@ features of sudo with a fraction of the codebase.")
                     ;; Disable D-Bus to save ~14MiB on the closure size.
                     (("^CONFIG_CTRL_IFACE_DBUS" line _)
                      (string-append "#" line)))
-                  #t))
-              (patches
-               (search-patches "wpa-supplicant-CVE-2021-27803.patch"
-                               "wpa-supplicant-CVE-2021-30004.patch"))))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

@@ -1950,8 +1950,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/wordnet-CVE-2008-2149.patch			\
   %D%/packages/patches/wordnet-CVE-2008-3908-pt1.patch			\
   %D%/packages/patches/wordnet-CVE-2008-3908-pt2.patch			\
-  %D%/packages/patches/wpa-supplicant-CVE-2021-27803.patch	\
-  %D%/packages/patches/wpa-supplicant-CVE-2021-30004.patch	\
   %D%/packages/patches/x265-arm-flags.patch			\
   %D%/packages/patches/xdg-desktop-portal-wlr-harcoded-length.patch\
   %D%/packages/patches/xf86-video-ark-remove-mibstore.patch	\
