@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2020 by Amar M. Singh <nly@disroot.org>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016-2022 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -679,7 +679,7 @@ References: ~%"
                 (response-code (http-get nar)))))))))
 
 (test-equal "/log/NAME"
-  `(200 #t application/x-bzip2)
+  `(200 #t text/plain (gzip))
   (let ((drv (run-with-store %store
                (gexp->derivation "with-log"
                                  #~(call-with-output-file #$output
@@ -695,10 +695,11 @@ References: ~%"
            (base     (basename (derivation-file-name drv)))
            (log      (string-append (dirname %state-directory)
                                     "/log/guix/drvs/" (string-take base 2)
-                                    "/" (string-drop base 2) ".bz2")))
+                                    "/" (string-drop base 2) ".gz")))
       (list (response-code response)
             (= (response-content-length response) (stat:size (stat log)))
-            (first (response-content-type response))))))
+            (first (response-content-type response))
+            (response-content-encoding response)))))
 
 (test-equal "negative TTL"
   `(404 42)
