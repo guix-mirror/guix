@@ -20323,3 +20323,56 @@ Lisp.  A subsystem offers an experimental GUI Gemini client.")
 
 (define-public ecl-phos
   (sbcl-package->ecl-package sbcl-phos))
+
+(define-public sbcl-nhooks
+  (package
+    (name "sbcl-nhooks")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/atlas-engineer/nhooks")
+             (commit version)))
+       (file-name (git-file-name "nhooks" version))
+       (sha256
+        (base32
+         "1v3gh9jf4hbpl1hnyzhkrcj3jdh3q0mlp1n6ci2cbn2rsc65baff"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     (list sbcl-serapeum))
+    (native-inputs
+     (list sbcl-fiveam))
+    (home-page "https://github.com/atlas-engineer/nhooks")
+    (synopsis "Hook facility for Common Lisp")
+    (description "This package holds an enhanced implementation of
+hooks (extension points).  It works similarly to Emacs hooks with crucial
+improvements:
+
+@itemize
+
+@item If the compiler allows it (such as SBCL), type-checking is performed at
+compile-time and at run-time when adding handlers to a hook.
+
+@item On failure, multiple restarts are offered, such as disabling the
+offending handler or simply continuing to the next function.
+
+@item The hook handler execution order and combination can be customized.
+
+@item Anonymous functions (lambdas) can be added to hooks as handler objects.
+When inspecting hooks, readable names are thus exposed instead of lambda
+blackboxes.  Handlers are compared through their names (through the mandatory
+name slot).  A hook can not contain multiple handlers with the same name.
+
+@item A special provision is taken for “setters”, handlers that are meant to
+set a given place to a given values.  Such handler objects can be compared and
+identified uniquely.
+
+@end itemize\n")
+    (license license:expat)))
+
+(define-public cl-nhooks
+  (sbcl-package->cl-source-package sbcl-nhooks))
+
+(define-public ecl-nhooks
+  (sbcl-package->ecl-package sbcl-nhooks))
