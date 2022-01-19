@@ -20289,3 +20289,37 @@ client.")
 
 (define-public ecl-cl-gopher
   (sbcl-package->ecl-package sbcl-cl-gopher))
+
+(define-public sbcl-phos
+  (let ((commit "6620b82b091cdfed655e1093ef045dbe518d5474"))
+    (package
+      (name "sbcl-phos")
+      (version (git-version "0.0.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/omar-polo/phos")
+               (commit commit)))
+         (file-name (git-file-name "phos" version))
+         (sha256
+          (base32
+           "1zwci86rkbaiix0w2gd5q6nr8v2vv945pkvwp0j240iyzd4hfxr3"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       (list sbcl-quri sbcl-cl-ppcre sbcl-trivia sbcl-usocket sbcl-cl+ssl
+             ;; For the experimental GUI:
+             sbcl-nodgui))
+      (native-inputs
+       (list sbcl-clunit2))
+      (home-page "https://github.com/omar-polo/phos")
+      (synopsis "Gemini client library and experimental GUI")
+      (description "This package contains a Gemini client library for Common
+Lisp.  A subsystem offers an experimental GUI Gemini client.")
+      (license license:isc))))
+
+(define-public cl-phos
+  (sbcl-package->cl-source-package sbcl-phos))
+
+(define-public ecl-phos
+  (sbcl-package->ecl-package sbcl-phos))
