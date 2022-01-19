@@ -10977,9 +10977,20 @@ from an XML-based format.")
            (replace 'check
              (lambda* (#:key tests? #:allow-other-keys)
                (when tests?
-                 (invoke "pytest"))))))))
+                 (invoke "pytest" "-vv"
+                         "-k"
+                         ;; XXX: These tests need .trm files that are
+                         ;; not shipped with the PyPI release.
+                         (format #f "not ~a"
+                                 (string-join
+                                  '("test_read_fontdimens_mathsy"
+                                    "test_read_fontdimens_mathex"
+                                    "test_read_fontdimens_vanilla"
+                                    "test_read_boundary_char"
+                                    "fontTools.tfmLib")
+                                  " and not "))))))))))
     (native-inputs
-     (modify-inputs (package-inputs python-fonttools)
+     (modify-inputs (package-native-inputs python-fonttools)
        (append python-pytest            ;FIXME: indentation is broken
            python-brotli
          python-fs
