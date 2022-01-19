@@ -39966,7 +39966,8 @@ directory path to the provided path.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-digest" ,rust-digest-0.10)
+       (("rust-base64ct" ,rust-base64ct-1.0.1)
+        ("rust-digest" ,rust-digest-0.10)
         ("rust-hmac" ,rust-hmac-0.12)
         ("rust-password-hash" ,rust-password-hash-0.3)
         ("rust-rayon" ,rust-rayon-1)
@@ -40000,12 +40001,72 @@ in pure Rust.")
         (base32
          "0fa7j0gdgghk64qlhzdv32yg52p0cfaz5ifhk7i4pfm1wsy98n7h"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-crypto-mac" ,rust-crypto-mac-0.11)
         ("rust-hmac" ,rust-hmac-0.11)
         ("rust-password-hash" ,rust-password-hash-0.3)
         ("rust-rayon" ,rust-rayon-1)
+        ("rust-sha-1" ,rust-sha-1-0.9)
+        ("rust-sha2" ,rust-sha2-0.9))
+       #:cargo-development-inputs
+       (("rust-hex-literal" ,rust-hex-literal-0.3)
+        ("rust-hmac" ,rust-hmac-0.11)
+        ("rust-sha-1" ,rust-sha-1-0.9)
+        ("rust-sha2" ,rust-sha2-0.9)
+        ("rust-streebog" ,rust-streebog-0.9))))))
+
+(define-public rust-pbkdf2-0.7
+  (package
+    (inherit rust-pbkdf2-0.9)
+    (name "rust-pbkdf2")
+    (version "0.7.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pbkdf2" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "022m5yb6fagzrks5m5kkj2yzccqffk19vnchg289fqnj5p9nv4dz"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-base64ct" ,rust-base64ct-1)
+        ("rust-crypto-mac" ,rust-crypto-mac-0.10)
+        ("rust-hmac" ,rust-hmac-0.10)
+        ("rust-password-hash" ,rust-password-hash-0.1)
+        ("rust-rayon" ,rust-rayon-1)
+        ("rust-sha-1" ,rust-sha-1-0.9)
+        ("rust-sha2" ,rust-sha2-0.9))
+       #:cargo-development-inputs
+       (("rust-hex-literal" ,rust-hex-literal-0.3)
+        ("rust-hmac" ,rust-hmac-0.8)
+        ("rust-rand-core" ,rust-rand-core-0.6)
+        ("rust-sha-1" ,rust-sha-1-0.9)
+        ("rust-sha2" ,rust-sha2-0.9))))))
+
+(define-public rust-pbkdf2-0.6
+  (package
+    (inherit rust-pbkdf2-0.10)
+    (name "rust-pbkdf2")
+    (version "0.6.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "pbkdf2" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32 "0jjaapyawm5iqn97mmfj40dvipsy78cm80qcva28009l2zbw1f5k"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-base64" ,rust-base64-0.13)
+        ("rust-crypto-mac" ,rust-crypto-mac-0.10)
+        ("rust-hmac" ,rust-hmac-0.10)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-rand-core" ,rust-rand-core-0.5)
+        ("rust-rayon" ,rust-rayon-1)
+        ("rust-sha2" ,rust-sha2-0.9)
+        ("rust-subtle" ,rust-subtle-2))
+       #:cargo-development-inputs
+       (("rust-hmac" ,rust-hmac-0.10)
         ("rust-sha-1" ,rust-sha-1-0.9)
         ("rust-sha2" ,rust-sha2-0.9))))))
 
