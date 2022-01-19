@@ -37,7 +37,7 @@
 ;;; Copyright © 2020 Holger Peters <holger.peters@posteo.de>
 ;;; Copyright © 2020 Noisytoot <noisytoot@gmail.com>
 ;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
-;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020, 2021, 2022 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2021 Ekaitz Zarraga <ekaitz@elenq.tech>
@@ -793,19 +793,6 @@ HTTP servers, RESTful APIs, and web services.")
 which is also valid markdown.  html2text was originally written by Aaron
 Swartz.")
     (license license:gpl3+)))
-
-(define-public python2-html2text
-  (let ((base (package-with-python2 python-html2text)))
-    (package
-      (inherit base)
-      ;; This is the last version with support for Python 2.
-      (version "2019.8.11")
-      (source (origin
-                (method url-fetch)
-                (uri (pypi-uri "html2text" version))
-                (sha256
-                 (base32
-                  "0ppgjplg06kmv9sj0x8p7acczcq2mcfgk1jdjwm4w5w40b0vj5pm")))))))
 
 (define-public python-jose
   (package
