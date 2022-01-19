@@ -39051,6 +39051,25 @@ sequence alignment tools.")
 want in the terminal.")
     (license license:mpl2.0)))
 
+(define-public rust-parity-bytes-0.1
+  (package
+    (name "rust-parity-bytes")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "parity-bytes" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0rww406dih6yxr4iadz7l07sibklqywxz10gjzdqn4r04hx6xd8n"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/paritytech/parity-common")
+    (synopsis "General bytes-related utilities")
+    (description "This package provides general bytes-related utilities,
+including a pretty-printer.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-parity-tokio-ipc-0.4
   (package
     (name "rust-parity-tokio-ipc")
