@@ -1,14 +1,14 @@
 This test fails with "error.CompilationIncorrectlySucceeded".
 
 diff --git a/test/compile_errors.zig b/test/compile_errors.zig
-index fd1255c..20d5548 100644
+index b1eaa0302..621f9db0a 100644
 --- a/test/compile_errors.zig
 +++ b/test/compile_errors.zig
-@@ -2751,15 +2751,15 @@ pub fn addCases(cases: *tests.CompileErrorContext) void {
+@@ -2943,15 +2943,15 @@ pub fn addCases(ctx: *TestContext) !void {
              "tmp.zig:3:5: error: dependency on libc must be explicitly specified in the build command",
          });
-
--        cases.addTest("libc headers note",
+ 
+-        ctx.testErrStage1("libc headers note",
 -            \\const c = @cImport(@cInclude("stdio.h"));
 -            \\export fn entry() void {
 -            \\    _ = c.printf("hello, world!\n");
@@ -17,15 +17,15 @@ index fd1255c..20d5548 100644
 -            "tmp.zig:1:11: error: C import failed",
 -            "tmp.zig:1:11: note: libc headers not available; compilation does not link against libc",
 -        });
-+//        cases.addTest("libc headers note",
-+//            \\const c = @cImport(@cInclude("stdio.h"));
-+//            \\export fn entry() void {
-+//            \\    _ = c.printf("hello, world!\n");
-+//            \\}
-+//        , &[_][]const u8{
-+//            "tmp.zig:1:11: error: C import failed",
-+//            "tmp.zig:1:11: note: libc headers not available; compilation does not link against libc",
-+//        });
++        // ctx.testErrStage1("libc headers note",
++        //     \\const c = @cImport(@cInclude("stdio.h"));
++        //     \\export fn entry() void {
++        //     \\    _ = c.printf("hello, world!\n");
++        //     \\}
++        // , &[_][]const u8{
++        //     "tmp.zig:1:11: error: C import failed",
++        //     "tmp.zig:1:11: note: libc headers not available; compilation does not link against libc",
++        // });
      }
-
-     cases.addTest("comptime vector overflow shows the index",
+ 
+     ctx.testErrStage1("comptime vector overflow shows the index",

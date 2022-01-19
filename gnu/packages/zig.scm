@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2021 Liliana Marie Prikler <liliana.prikler@gmail.com>
 ;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
+;;; Copyright © 2021 Calum Irwin <calumirwin1@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,7 +29,7 @@
 (define-public zig
   (package
     (name "zig")
-    (version "0.8.1")
+    (version "0.9.0")
     (source
      (origin
        (method git-fetch)
@@ -37,18 +38,18 @@
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "147qx7xgj0r353wh5ragzn6kmm1vrf31i8038z3zqwjnqqgqxi6c"))
+        (base32 "1zdz5s434c48z3y0c8l9wm2z1gxa7yyzd53zmr68lwj6mcl7by8x"))
        (patches
         (search-patches
          "zig-disable-libc-note-test.patch"
          "zig-use-system-paths.patch"))))
     (build-system cmake-build-system)
     (inputs
-     (list clang-12 ; Clang propagates llvm.
-           lld-12))
+     (list clang-13 ; Clang propagates llvm.
+           lld))
     ;; Zig compiles fine with GCC, but also needs native LLVM libraries.
     (native-inputs
-     (list llvm-12))
+     (list llvm-13))
     (arguments
      `(#:configure-flags
        (list ,@(if (%current-target-system)
