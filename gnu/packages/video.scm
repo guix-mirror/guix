@@ -295,7 +295,7 @@
        ("zlib" ,zlib)))
     (synopsis "Audio/Video Transcoder")
     (description "Transcode is a fast, versatile and command-line based
-audio/video everything to everything converter primarily focussed on producing
+audio/video everything to everything converter primarily focused on producing
 AVI video files with MP3 audio, but also including a program to read all the
 video and audio streams from a DVD.")
     (home-page
