@@ -3540,9 +3540,6 @@ specs from your Flask-Restful projects.")
 It comes with safe defaults and easily configurable options.")
     (license license:bsd-3)))
 
-(define-public python2-htmlmin
-  (package-with-python2 python-htmlmin))
-
 (define-public python-flask-htmlmin
   (package
     (name "python-flask-htmlmin")
