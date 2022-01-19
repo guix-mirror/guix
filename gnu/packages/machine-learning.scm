@@ -15,7 +15,7 @@
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
-;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020, 2021, 2022 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -2490,7 +2490,7 @@ learning libraries.")
 (define-public xgboost
   (package
     (name "xgboost")
-    (version "1.4.2")
+    (version "1.5.2")
     (source
      (origin
        (method git-fetch)
@@ -2500,7 +2500,7 @@ learning libraries.")
        (file-name (git-file-name name version))
        (patches (search-patches "xgboost-use-system-dmlc-core.patch"))
        (sha256
-        (base32 "00liz816ahk9zj3jv3m2fqwlf6xxfbgvpmpl72iklx32vl192w5d"))))
+        (base32 "0qx04y7cz8z7qv6bk9q7d7ba9b7xzj53l83l2x9ykdwhzacc3dn0"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags (list "-DGOOGLE_TEST=ON")))
@@ -2573,8 +2573,6 @@ in a fast and accurate way.")
                         " and not test_cv_no_shuffle"
                         " and not test_cv"
                         " and not test_training"
-                        ;; FIXME: May pass in the next version.
-                        " and not test_pandas"
                         ;; "'['./runexp.sh']' returned non-zero exit status 1"
                         " and not test_cli_binary_classification"))))))))
     (native-inputs
