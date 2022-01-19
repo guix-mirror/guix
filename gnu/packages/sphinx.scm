@@ -595,9 +595,6 @@ introspection of @code{zope.interface} instances in code.")
     (home-page "https://github.com/repoze/repoze.sphinx.autointerface")
     (license license:repoze)))
 
-(define-public python2-sphinx-repoze-autointerface
-  (package-with-python2 python-sphinx-repoze-autointerface))
-
 (define-public python-sphinx-prompt
   (package
     (name "python-sphinx-prompt")
