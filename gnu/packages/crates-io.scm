@@ -1,4 +1,3 @@
-
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
 ;;; Copyright © 2019, 2020, 2021, 2022 Efraim Flashner <efraim@flashner.co.il>
@@ -49276,10 +49275,23 @@ It is automatically published using the compiler repository at
     (build-system cargo-build-system)
     (arguments `(#:skip-build? #t))
     (home-page "https://github.com/debris/rustc-hex")
-    (synopsis "Rustc-serialize compatible hex conversion traits")
-    (description "This package provides rustc-serialize compatible hex
-conversion traits.")
+    (synopsis "@code{rustc-serialize} compatible hex conversion traits")
+    (description "This Rust library provides @code{rustc-serialize} compatible
+hex conversion traits.")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-rustc-hex-1
+  (package
+    (inherit rust-rustc-hex-2)
+    (name "rust-rustc-hex")
+    (version "1.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rustc-hex" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "07pff94vqc1mhrqp9i06xzayiad4xfx7588zkqsdw875lpkqrsqc"))))))
 
 (define-public rust-rustc-rayon-0.3
   (package
