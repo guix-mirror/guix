@@ -50117,8 +50117,37 @@ This is a port of Marc Stevens' sha1collisiondetection algorithm to Rust.  The
 code is translated from C to Rust using c2rust.")
     (license license:expat)))
 
+(define-public rust-sha2-0.10
+  (package
+    (name "rust-sha2")
+    (version "0.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "sha2" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1v60pzdr3pp6y2sgg1v1nwv4169rb6psk44jmnnq51y5d60vvhwr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-cpufeatures" ,rust-cpufeatures-0.2)
+        ("rust-digest" ,rust-digest-0.10)
+        ("rust-sha2-asm" ,rust-sha2-asm-0.6))
+       #:cargo-development-inputs
+       (("rust-digest" ,rust-digest-0.10)
+        ("rust-hex-literal" ,rust-hex-literal-0.2))))
+    (home-page "https://github.com/RustCrypto/hashes")
+    (synopsis "SHA-2 hash functions")
+    (description
+     "This package provides a pure Rust implementation of the SHA-2 hash
+function family including SHA-224, SHA-256, SHA-384, and SHA-512.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-sha2-0.9
   (package
+    (inherit rust-sha2-0.10)
     (name "rust-sha2")
     (version "0.9.5")
     (source
@@ -50130,7 +50159,6 @@ code is translated from C to Rust using c2rust.")
         (sha256
          (base32
           "04lzf4swq6cijvxnc6facr3g72h5v7a5z8lz3xrkf8gxa9bswqmk"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-block-buffer" ,rust-block-buffer-0.9)
@@ -50141,13 +50169,7 @@ code is translated from C to Rust using c2rust.")
         ("rust-sha2-asm" ,rust-sha2-asm-0.6))
        #:cargo-development-inputs
        (("rust-digest" ,rust-digest-0.9)
-        ("rust-hex-literal" ,rust-hex-literal-0.2))))
-    (home-page "https://github.com/RustCrypto/hashes")
-    (synopsis "SHA-2 hash functions")
-    (description
-     "This package provides a pure Rust implementation of the SHA-2 hash
-function family including SHA-224, SHA-256, SHA-384, and SHA-512.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-hex-literal" ,rust-hex-literal-0.2))))))
 
 (define-public rust-sha2-0.8
   (package
