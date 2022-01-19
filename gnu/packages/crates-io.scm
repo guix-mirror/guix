@@ -37416,8 +37416,42 @@ directory path to the provided path.")
         (base32
          "0cfg3isnx6mf3wbi7rsg4nmvywby40sbcs589n20fgi09l4p1gx3"))))))
 
+(define-public rust-pbkdf2-0.10
+  (package
+    (name "rust-pbkdf2")
+    (version "0.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pbkdf2" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0d3l06x5mg96njxfsksjwl6440alf72qh4rwrpnq4fwmrz1qqqm4"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-digest" ,rust-digest-0.10)
+        ("rust-hmac" ,rust-hmac-0.12)
+        ("rust-password-hash" ,rust-password-hash-0.3)
+        ("rust-rayon" ,rust-rayon-1)
+        ("rust-sha-1" ,rust-sha-1-0.10)
+        ("rust-sha2" ,rust-sha2-0.10))
+       #:cargo-development-inputs
+       (("rust-hex-literal" ,rust-hex-literal-0.3)
+        ("rust-hmac" ,rust-hmac-0.12)
+        ("rust-sha-1" ,rust-sha-1-0.10)
+        ("rust-sha2" ,rust-sha2-0.10)
+        ("rust-streebog" ,rust-streebog-0.10))))
+    (home-page "https://github.com/RustCrypto/password-hashing")
+    (synopsis "Generic implementation of PBKDF2")
+    (description "This package contains a collection of password hashing
+algorithms, otherwise known as password-based key derivation functions, written
+in pure Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-pbkdf2-0.4
   (package
+    (inherit rust-pbkdf2-0.10)
     (name "rust-pbkdf2")
     (version "0.4.0")
     (source
@@ -37429,7 +37463,6 @@ directory path to the provided path.")
         (sha256
          (base32
           "1g8cm3nwrsydazjc1gjs549hzafgxq8qb49gixrhl3qrd9calvi1"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-base64" ,rust-base64-0.12)
@@ -37443,13 +37476,7 @@ directory path to the provided path.")
        #:cargo-development-inputs
        (("rust-hmac" ,rust-hmac-0.8)
         ("rust-sha-1" ,rust-sha-1-0.9)
-        ("rust-sha2" ,rust-sha2-0.9))))
-    (home-page "https://github.com/RustCrypto/password-hashing")
-    (synopsis "Generic implementation of PBKDF2")
-    (description "This package contains a collection of password hashing
-algorithms, otherwise known as password-based key derivation functions, written
-in pure Rust.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-sha2" ,rust-sha2-0.9))))))
 
 (define-public rust-pbkdf2-0.3
   (package
