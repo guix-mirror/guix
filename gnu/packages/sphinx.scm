@@ -15,7 +15,7 @@
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2021 Eric Bavier <bavier@posteo.net>
-;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2021, 2022 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 Hugo Lecomte <hugo.lecomte@inria.fr>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
@@ -405,9 +405,6 @@ Blog, News or Announcements section to a Sphinx website.")
 commands into documents, helping you to keep your command examples up to date.")
     (home-page "https://github.com/NextThought/sphinxcontrib-programoutput")
     (license license:bsd-2)))
-
-(define-public python2-sphinxcontrib-programoutput
-  (package-with-python2 python-sphinxcontrib-programoutput))
 
 (define-public python-sphinxcontrib-qthelp
   (package
