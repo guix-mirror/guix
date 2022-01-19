@@ -14315,7 +14315,7 @@ in pure Python.")
                             (assoc-ref inputs "xdotool")
                             "/lib/libxdo.so"))
                    (libc (string-append
-                          (assoc-ref inputs "glibc")
+                          (assoc-ref inputs "libc")
                           "/lib/libc.so.6")))
                (substitute* "xdo/_xdo.py"
                  (("find_library\\(\"xdo\"\\)")
@@ -14328,7 +14328,6 @@ in pure Python.")
      (list python-six))
     (inputs
      `(("xdotool" ,xdotool)
-       ("glibc" ,glibc)
        ("libX11" ,libx11)))
     (home-page "https://tracker.debian.org/pkg/python-xdo")
     (synopsis "Python library for simulating X11 keyboard/mouse input")
