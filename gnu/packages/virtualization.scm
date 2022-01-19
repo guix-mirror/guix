@@ -599,6 +599,12 @@ firmware blobs.  You can
                 (string-append match " < 1.2"))
                (("(.*QuickCheck.*) < 2\\.14" _ match)
                 (string-append match " < 2.15")))))
+         (add-after 'unpack 'pyparsing-compat
+           (lambda _
+             ;; Adjust for Pyparsing 3.0.  Remove for Ganeti 3.0.2+.
+             (substitute* "lib/qlang.py"
+               (("operatorPrecedence")
+                "infixNotation"))))
          (add-after 'unpack 'create-vcs-version
            (lambda _
              ;; If we are building from a git checkout, we need to create a
