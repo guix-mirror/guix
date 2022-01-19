@@ -884,16 +884,16 @@ through its msgpack-rpc API.")
 (define-public vim-guix-vim
   (package
     (name "vim-guix-vim")
-    (version "0.3.0")
+    (version "0.3.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://gitlab.com/Efraim/guix.vim.git/")
+                     (url "https://gitlab.com/Efraim/guix.vim")
                      (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0bk2mnvbv1rfr0zzx4m8jjdw98wbbmdffx1h9svrjpg25lcvqv1b"))))
+                "080ni4z23qdr8rkrswjqfqfrrcnpn7qdgrg14glwji46wzvwxqyx"))))
     (build-system copy-build-system)
     (arguments
      '(#:install-plan
