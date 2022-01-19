@@ -462,9 +462,10 @@ and will take advantage of multiple processor cores where possible.")
                          "--rerun-failed"
                          "--output-on-failure"))))))))
     (inputs (list boost openssl))
-    (native-inputs `(("libfaketime" ,libfaketime)
-                     ("python" ,python-wrapper)
-                     ("pkg-config" ,pkg-config)))
+    (native-inputs
+     (list libfaketime
+           python-wrapper
+           pkg-config))
     (home-page "https://www.libtorrent.org/")
     (synopsis "Feature-complete BitTorrent implementation")
     (description
