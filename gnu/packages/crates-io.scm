@@ -51193,6 +51193,70 @@ server functionality.")
     (description "This package provides a scheduled thread pool.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-schemars-0.8
+  (package
+    (name "rust-schemars")
+    (version "0.8.8")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "schemars" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "1qvhq1yixygd8ihc0qxmnhw4x08fa44q88v088gvc6pa1k4a7df6"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:cargo-inputs
+        (("rust-arrayvec" ,rust-arrayvec-0.5)
+         ("rust-bigdecimal" ,rust-bigdecimal-0.3)
+         ("rust-bytes" ,rust-bytes-1)
+         ("rust-chrono" ,rust-chrono-0.4)
+         ("rust-dyn-clone" ,rust-dyn-clone-1)
+         ("rust-either" ,rust-either-1)
+         ("rust-enumset" ,rust-enumset-1)
+         ("rust-indexmap" ,rust-indexmap-1)
+         ("rust-rust-decimal" ,rust-rust-decimal-1)
+         ("rust-schemars-derive" ,rust-schemars-derive-0.8)
+         ("rust-serde" ,rust-serde-1)
+         ("rust-serde-json" ,rust-serde-json-1)
+         ("rust-smallvec" ,rust-smallvec-1)
+         ("rust-url" ,rust-url-2)
+         ("rust-uuid" ,rust-uuid-0.8))
+        #:cargo-development-inputs
+        (("rust-pretty-assertions" ,rust-pretty-assertions-0.6)
+         ("rust-trybuild" ,rust-trybuild-1))))
+    (home-page "https://graham.cool/schemars/")
+    (synopsis "Generate JSON Schemas from Rust code")
+    (description "This Rust library can help generating JSON Schemas from
+Rust code.")
+    (license license:expat)))
+
+(define-public rust-schemars-derive-0.8
+  (package
+    (name "rust-schemars-derive")
+    (version "0.8.8")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "schemars-derive" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "16xfvm16d8nsxdx82fdcyqfi12v61lffyf1wmi34qqg82g74vbj1"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:cargo-inputs
+        (("rust-proc-macro2" ,rust-proc-macro2-1)
+         ("rust-quote" ,rust-quote-1)
+         ("rust-serde-derive-internals" ,rust-serde-derive-internals-0.25)
+         ("rust-syn" ,rust-syn-1))
+        #:cargo-development-inputs
+        (("rust-pretty-assertions" ,rust-pretty-assertions-0.6))))
+    (home-page "https://graham.cool/schemars/")
+    (synopsis "Macros for @code{#[derive(JsonSchema)]}, for use with schemars")
+    (description "This package provides macros for @code{#[derive(JsonSchema)]},
+for use with schemars.")
+    (license license:expat)))
+
 (define-public rust-scoped-threadpool-0.1
   (package
     (name "rust-scoped-threadpool")
