@@ -2929,9 +2929,6 @@ without starting an HTTP server.  It supports anything that supports the
 minimum of WSGI.")
     (license license:expat)))
 
-(define-public python2-webtest
-  (package-with-python2 python-webtest))
-
 (define-public python-flask
   (package
     (name "python-flask")
