@@ -37449,6 +37449,30 @@ algorithms, otherwise known as password-based key derivation functions, written
 in pure Rust.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-pbkdf2-0.9
+  (package
+    (inherit rust-pbkdf2-0.10)
+    (name "rust-pbkdf2")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pbkdf2" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0fa7j0gdgghk64qlhzdv32yg52p0cfaz5ifhk7i4pfm1wsy98n7h"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-crypto-mac" ,rust-crypto-mac-0.11)
+        ("rust-hmac" ,rust-hmac-0.11)
+        ("rust-password-hash" ,rust-password-hash-0.3)
+        ("rust-rayon" ,rust-rayon-1)
+        ("rust-sha-1" ,rust-sha-1-0.9)
+        ("rust-sha2" ,rust-sha2-0.9))))))
+
 (define-public rust-pbkdf2-0.4
   (package
     (inherit rust-pbkdf2-0.10)
