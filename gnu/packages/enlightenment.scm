@@ -250,7 +250,8 @@ removable devices or support for multimedia.")
     (native-inputs
      (list gettext-minimal
            perl
-           pkg-config))
+           pkg-config
+           python))
     (inputs
      (list efl))
     (home-page "https://www.enlightenment.org/about-terminology")
