@@ -574,9 +574,6 @@ meta data such as the project name, author and version from your project for
 use in your Sphinx docs.")
     (license license:bsd-2)))
 
-(define-public python2-sphinx-me
-  (package-with-python2 python-sphinx-me))
-
 (define-public python-sphinx-repoze-autointerface
   (package
     (name "python-sphinx-repoze-autointerface")
