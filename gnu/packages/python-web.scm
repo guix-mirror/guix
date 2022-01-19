@@ -3287,9 +3287,6 @@ replay them during future tests.  It is designed to work with python-requests.")
 Betamax.")
     (license license:asl2.0)))
 
-(define-public python2-betamax-matchers
-  (package-with-python2 python-betamax-matchers))
-
 (define-public python-betamax-serializers
   (package
     (name "python-betamax-serializers")
