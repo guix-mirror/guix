@@ -70833,6 +70833,32 @@ Rust that are very fast but not thread-safe.  A thread-safe (and slower)
 variant of this library is available separately as @code{im}.")
     (license license:mpl2.0)))
 
+(define-public rust-impl-trait-for-tuples-0.2
+  (package
+    (name "rust-impl-trait-for-tuples")
+    (version "0.2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "impl-trait-for-tuples" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "1vii634v1zvb680h28md42xpdrj1j1d50ix3dga95fxkql8cpnnm"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #false ; Some tests fail. Unstable compiler messages?
+       #:cargo-inputs
+        (("rust-proc-macro2" ,rust-proc-macro2-1)
+         ("rust-quote" ,rust-quote-1)
+         ("rust-syn" ,rust-syn-1))
+        #:cargo-development-inputs
+        (("rust-trybuild" ,rust-trybuild-1))))
+    (home-page "https://github.com/bkchr/impl-trait-for-tuples")
+    (synopsis "Attribute macro to implement a trait for tuples")
+    (description "This package provides attribute macro to implement
+a trait for tuples.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-inflections-1
   (package
     (name "rust-inflections")
