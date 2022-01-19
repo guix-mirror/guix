@@ -51885,6 +51885,62 @@ statistical guarantees.")
      "This package provides a library for section-style testing.")
     (license license:expat)))
 
+(define-public rust-secp256k1-0.21
+  (package
+    (name "rust-secp256k1")
+    (version "0.21.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "secp256k1" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "09gia5hjf1hb9jgac9nzq0s0ijbsdjfflh40xw8z08avgl0q6y5b"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:cargo-inputs
+        (("rust-bitcoin-hashes" ,rust-bitcoin-hashes-0.10)
+         ("rust-rand" ,rust-rand-0.6)
+         ("rust-secp256k1-sys" ,rust-secp256k1-sys-0.4)
+         ("rust-serde" ,rust-serde-1))
+        #:cargo-development-inputs
+        (("rust-bitcoin-hashes" ,rust-bitcoin-hashes-0.10)
+         ("rust-rand" ,rust-rand-0.6)
+         ("rust-rand-core" ,rust-rand-core-0.4)
+         ("rust-serde-test" ,rust-serde-test-1)
+         ("rust-wasm-bindgen-test" ,rust-wasm-bindgen-test-0.3))))
+    (home-page "https://github.com/rust-bitcoin/rust-secp256k1/")
+    (synopsis
+      "Rust wrapper library for Pieter Wuille's @code{libsecp256k1}")
+    (description
+      "This package is a Rust wrapper library for Pieter Wuille's
+@code{libsecp256k1}.  It implements ECDSA and BIP 340 signatures for the
+SECG elliptic curve group secp256k1 and related utilities.")
+    (license license:cc0)))
+
+(define-public rust-secp256k1-sys-0.4
+  (package
+    (name "rust-secp256k1-sys")
+    (version "0.4.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "secp256k1-sys" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "0dk0as7qdlvg5vkcsihndzg1jgqb9amhwmz3xiip94fy7ibs4zcm"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:cargo-inputs
+        (("rust-cc" ,rust-cc-1))
+        #:cargo-development-inputs
+        (("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://github.com/rust-bitcoin/rust-secp256k1/")
+    (synopsis "FFI for Pieter Wuille's @code{libsecp256k1} library")
+    (description "This package is a Rust FFI for Pieter Wuille's
+@code{libsecp256k1} library.")
+    (license license:cc0)))
+
 (define-public rust-security-framework-2
   (package
     (name "rust-security-framework")
