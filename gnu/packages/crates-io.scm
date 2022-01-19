@@ -38845,6 +38845,36 @@ Standards (PKCS) #5: Password-Based Cryptography Specification Version
 2.1 (RFC 8018).")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-pkcs8-0.7
+  (package
+    (name "rust-pkcs8")
+    (version "0.7.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pkcs8" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0iq46p6fa2b8xy6pj52zpmdy8ya3fg31dj4rc19x1fi69nvgjgpf"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-der" ,rust-der-0.4)
+        ("rust-pem-rfc7468" ,rust-pem-rfc7468-0.2)
+        ("rust-pkcs1" ,rust-pkcs1-0.2)
+        ("rust-pkcs5" ,rust-pkcs5-0.3)
+        ("rust-rand-core" ,rust-rand-core-0.6)
+        ("rust-spki" ,rust-spki-0.4)
+        ("rust-zeroize" ,rust-zeroize-1))))
+    (home-page "https://github.com/RustCrypto/formats/tree/master/pkcs8")
+    (synopsis "Implementation of Public-Key Cryptography Standards (PKCS) #8")
+    (description
+     "This package is a pure Rust implementation of Public-Key Cryptography
+Standards (PKCS) #8: Private-Key Information Syntax Specification (RFC 5208),
+with additional support for PKCS#8v2 asymmetric key packages (RFC 5958).")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-pkg-config-0.3
   (package
     (name "rust-pkg-config")
