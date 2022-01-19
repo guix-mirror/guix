@@ -19669,6 +19669,58 @@ convert enum to u8 slice ref.")
     (description "Enumflags2 implements the classic bitflags datastructure.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-enumset-1
+  (package
+    (name "rust-enumset")
+    (version "1.0.8")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "enumset" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "0b2vdggbsnvvw09czxaazbqcpa378fycf7fs3afz5dbgkb0x45k2"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:cargo-inputs
+        (("rust-enumset-derive" ,rust-enumset-derive-0.5)
+         ("rust-serde" ,rust-serde-1))
+        #:cargo-development-inputs
+        (("rust-bincode" ,rust-bincode-1)
+         ("rust-rustversion" ,rust-rustversion-1)
+         ("rust-serde-derive" ,rust-serde-derive-1)
+         ("rust-serde-json" ,rust-serde-json-1)
+         ("rust-trybuild" ,rust-trybuild-1))))
+    (home-page "https://github.com/Lymia/enumset")
+    (synopsis "Library for creating compact sets of enums")
+    (description "This package provides a Rust library for creating
+compact sets of enums.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-enumset-derive-0.5
+  (package
+    (name "rust-enumset-derive")
+    (version "0.5.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "enumset-derive" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "1m7ccz9fcxsx3s1drj77psk62xfgjia0hp9lal3qhpb5ls514lb4"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:cargo-inputs
+        (("rust-darling" ,rust-darling-0.13)
+         ("rust-proc-macro2" ,rust-proc-macro2-1)
+         ("rust-quote" ,rust-quote-1)
+         ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/Lymia/enumset")
+    (synopsis "Internal helper crate for enumset")
+    (description "This package is an internal helper crate for
+@code{rust-enumset}.  It is not public API.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-env-logger-0.9
   (package
     (name "rust-env-logger")
