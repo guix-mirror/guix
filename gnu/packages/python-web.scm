@@ -1462,9 +1462,6 @@ Cascading Style Sheets.  Currently it provides a DOM only and no rendering
 options.")
     (license license:lgpl3+)))
 
-(define-public python2-cssutils
-  (package-with-python2 python-cssutils))
-
 (define-public python-css-parser
   (package
     (inherit python-cssutils)
