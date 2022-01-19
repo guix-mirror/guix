@@ -1587,9 +1587,6 @@ contributor license agreement extension for python-openid.")
 teams extension for python-openid.")
     (license license:bsd-3)))
 
-(define-public python2-openid-teams
-  (package-with-python2 python-openid-teams))
-
 (define-public python-priority
   (package
     (name "python-priority")
