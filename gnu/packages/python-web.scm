@@ -1567,9 +1567,6 @@ Databricks REST APIs.")
 contributor license agreement extension for python-openid.")
     (license license:bsd-3)))
 
-(define-public python2-openid-cla
-  (package-with-python2 python-openid-cla))
-
 (define-public python-openid-teams
   (package
     (name "python-openid-teams")
