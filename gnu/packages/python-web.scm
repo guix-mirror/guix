@@ -4102,9 +4102,6 @@ can be nested together to build web applications.  Paste's design closely
 follows ideas flowing from WSGI (Web Standard Gateway Interface).")
     (license license:expat)))
 
-(define-public python2-paste
-  (package-with-python2 python-paste))
-
 (define-public python-pastescript
   (package
     (name "python-pastescript")
