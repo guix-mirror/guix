@@ -51918,6 +51918,31 @@ statistical guarantees.")
 SECG elliptic curve group secp256k1 and related utilities.")
     (license license:cc0)))
 
+(define-public rust-secp256k1-0.20
+  (package
+    (inherit rust-secp256k1-0.21)
+    (name "rust-secp256k1")
+    (version "0.20.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "secp256k1" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32 "02kxhfgy85zg7w2yyvnzrr7myk1mckvg99z6pbazxl1nwvm3rl4p"))))
+    (arguments
+      `(#:cargo-inputs
+        (("rust-bitcoin-hashes" ,rust-bitcoin-hashes-0.9)
+         ("rust-rand" ,rust-rand-0.6)
+         ("rust-secp256k1-sys" ,rust-secp256k1-sys-0.4)
+         ("rust-serde" ,rust-serde-1))
+        #:cargo-development-inputs
+        (("rust-bitcoin-hashes" ,rust-bitcoin-hashes-0.10)
+         ("rust-rand" ,rust-rand-0.6)
+         ("rust-rand-core" ,rust-rand-core-0.4)
+         ("rust-serde-test" ,rust-serde-test-1)
+         ("rust-wasm-bindgen-test" ,rust-wasm-bindgen-test-0.3))))))
+
 (define-public rust-secp256k1-sys-0.4
   (package
     (name "rust-secp256k1-sys")
