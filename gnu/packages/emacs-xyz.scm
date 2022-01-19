@@ -90,7 +90,7 @@
 ;;; Copyright © 2020 Jonathan Rostran <rostranjj@gmail.com>
 ;;; Copyright © 2020, 2021 Noah Evans <noah@nevans.me>
 ;;; Copyright © 2020 Brit Butler <brit@kingcons.io>
-;;; Copyright © 2021 Alexandr Vityazev <avityazev@posteo.org>
+;;; Copyright © 2021, 2022 Aleksandr Vityazev <avityazev@posteo.org>
 ;;; Copyright © 2021 Yurii Kholodkov <urist.mckorobochka@gmail.com>
 ;;; Copyright © 2021 Alexey Abramov <levenson@mmer.org>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
@@ -26808,11 +26808,11 @@ other @code{helm-type-file} sources such as @code{helm-locate}.")
     (license license:gpl3+)))
 
 (define-public emacs-telega-server
-  (let ((commit "b4a5e206bd259f3d7f7633a725b2990704d6a1e8")
-        (revision "1"))
+  (let ((commit "5739794d2d0c8a4e7b77c2e37a097e19f80ac9f0")
+        (revision "0"))
     (package
       (name "emacs-telega-server")
-      (version (git-version  "0.7.15" revision commit))
+      (version (git-version  "0.8.2" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -26820,7 +26820,7 @@ other @code{helm-type-file} sources such as @code{helm-locate}.")
                (url "https://github.com/zevlg/telega.el")
                (commit commit)))
          (sha256
-          (base32 "0gr4nmpk175hxmj357bpzaqywbjc6dmmvfxnyzkh884vyzbwdxlc"))
+          (base32 "1am0b2bjjkw7zd0yq39v015a08dcbk43j4d4h8y2q8hj53ryfk5a"))
          (file-name (git-file-name "emacs-telega" version))
          (patches
           (search-patches "emacs-telega-path-placeholder.patch"
@@ -26836,12 +26836,11 @@ other @code{helm-type-file} sources such as @code{helm-locate}.")
             (add-before 'configure 'enter-subdirectory
               (lambda _ (chdir "server")))
             (replace 'configure
-              (lambda* (#:key outputs #:allow-other-keys)
-                (let ((out (assoc-ref outputs "out")))
-                  (substitute* "run_tests.py"
-                    (("^(TELEGA_SERVER = ).*$" _all prefix)
-                     (string-append prefix
-                                    "\"" out "/bin/telega-server\"\n"))))))
+              (lambda _
+                (substitute* "run_tests.py"
+                  (("^(TELEGA_SERVER = ).*$" _all prefix)
+                   (string-append prefix
+                                  "\"" #$output "/bin/telega-server\"\n")))))
             (delete 'check)
             (add-after 'install 'check
               (assoc-ref %standard-phases 'check))
