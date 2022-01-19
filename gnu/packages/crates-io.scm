@@ -47658,6 +47658,30 @@ functionality as retain but gives mutable borrow to the predicate.")
     (description "This crate provides low level access to RISC-V processors.")
     (license license:isc)))
 
+(define-public rust-ripemd-0.1
+  (package
+    (name "rust-ripemd")
+    (version "0.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "ripemd" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "16ap7vvnqf4l6vy7kjpb5p8brqfppanssm61jn1w8444395bcm7a"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:cargo-inputs
+        (("rust-digest" ,rust-digest-0.10))
+        #:cargo-development-inputs
+        (("rust-digest" ,rust-digest-0.10)
+         ("rust-hex-literal" ,rust-hex-literal-0.2))))
+    (home-page "https://github.com/RustCrypto/hashes")
+    (synopsis "Pure Rust implementation of the RIPEMD hash functions")
+    (description "This library provides a pure Rust implementation of the
+RIPEMD hash functions.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-riscv-target-0.1
   (package
     (name "rust-riscv-target")
