@@ -711,9 +711,6 @@ Sphinx documentation system, used by @uref{http://docs.guzzlephp.org, Guzzle}
 and several other projects.")
     (license license:expat)))
 
-(define-public python2-guzzle-sphinx-theme
-  (package-with-python2 python-guzzle-sphinx-theme))
-
 (define-public python-sphinx-rtd-theme
   (package
     (name "python-sphinx-rtd-theme")
