@@ -1307,7 +1307,13 @@ runs a command whenever it detects modifications.")
            (lambda _
              (substitute*
                  "guix-vendor/rust-password-hash-0.3.2.tar.gz/Cargo.toml"
-               (("version = \">=1, <1.1.0\"") "version = \">=1\"")))))
+               (("version = \">=1, <1.1.0\"") "version = \">=1\""))
+             (substitute*
+                 "guix-vendor/rust-rsa-0.5.0.tar.gz/Cargo.toml"
+               (("version = \">=1, <1.5\"") "version = \"^1\""))
+             (substitute*
+                 "Cargo.toml"
+               (("version = \"1.4\"") "version = \"^1\"")))))
        #:cargo-inputs
        (("rust-aes" ,rust-aes-0.7)
         ("rust-anyhow" ,rust-anyhow-1)
@@ -1352,9 +1358,9 @@ runs a command whenever it detects modifications.")
     (home-page "https://git.tozt.net/rbw")
     (synopsis "Unofficial Bitwarden CLI")
     (description "This package is an unofficial command line client for
-Bitwarden. Although it does come with its own command line client, this client
-is limited by being stateless, which makes it very difficult to use.  This
-client avoids this problem by maintaining a background process which is able
+Bitwarden.  Although Bitwarden ships with a command line client, but
+it's limited by being stateless, which makes it very difficult to use.  This
+client avoids that problem by maintaining a background process which is able
 to hold the keys in memory, similar to the way that ssh-agent or gpg-agent
 work.  This allows the client to be used in a much simpler way, with the
 background agent taking care of maintaining the necessary state.")

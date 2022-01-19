@@ -48212,8 +48212,7 @@ wildcard segments")
         (base32 "039676a4mj0875phdi7vc0bd37hv84dh0dql6fmk8dl2w81jcp70"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-byteorder" ,rust-byteorder-1)
         ("rust-digest" ,rust-digest-0.9)
         ("rust-lazy-static" ,rust-lazy-static-1)
@@ -48226,7 +48225,23 @@ wildcard segments")
         ("rust-rand" ,rust-rand-0.8)
         ("rust-serde" ,rust-serde-1)
         ("rust-subtle" ,rust-subtle-2)
-        ("rust-zeroize" ,rust-zeroize-1))))
+        ("rust-zeroize" ,rust-zeroize-1))
+       #:cargo-development-inputs
+        (("rust-base64" ,rust-base64-0.13)
+         ("rust-hex" ,rust-hex-0.4)
+         ("rust-hex-literal" ,rust-hex-literal-0.3)
+         ("rust-rand-xorshift" ,rust-rand-xorshift-0.3)
+         ("rust-serde-test" ,rust-serde-test-1)
+         ("rust-sha-1" ,rust-sha-1-0.9)
+         ("rust-sha2" ,rust-sha2-0.9)
+         ("rust-sha3" ,rust-sha3-0.9))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'relax-requirements
+           (lambda _
+             (substitute*
+                 "Cargo.toml"
+               (("version = \">=1, <1.5\"") "version = \"^1\"")))))))
     (home-page "https://github.com/RustCrypto/RSA")
     (synopsis "Pure Rust RSA implementation")
     (description "This package provides a pure Rust RSA implementation.")
@@ -69824,7 +69839,7 @@ crate.")
 (define-public rust-zeroize-1
   (package
     (name "rust-zeroize")
-    (version "1.4.3")
+    (version "1.5.0")
     (source
      (origin
        (method url-fetch)
@@ -69832,7 +69847,7 @@ crate.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "068nvl3n5hk6lfn5y24grf2c7anzzqfzjjccscq3md7rqp79v3fn"))))
+        (base32 "1nq8zq5h7ad6kahdk0fxw4fdm0ibycj061jngxqkqchw67n2l8nc"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -69849,7 +69864,7 @@ implementation that works everywhere, even WASM!")
 (define-public rust-zeroize-derive-1
   (package
     (name "rust-zeroize-derive")
-    (version "1.0.0")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
@@ -69857,7 +69872,7 @@ implementation that works everywhere, even WASM!")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "18lc9xq9dwvmv81y3bqnw20974nbrs7d20rljb1inz7wd7n1w9fy"))))
+        (base32 "1nzdqyryjnqcrqz0vhddpkd8sybhn0bd8rbd6l33rdhhxwzz3s41"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
