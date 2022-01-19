@@ -2412,17 +2412,6 @@ verification of the SSL peer.")
     (home-page "https://github.com/cedadev/ndg_httpsclient/")
     (license license:bsd-3)))
 
-;; python2-openssl requires special care, so package-with-python2 is
-;; insufficient.
-(define-public python2-ndg-httpsclient
-  (package/inherit python-ndg-httpsclient
-    (name "python2-ndg-httpsclient")
-    (arguments
-     (substitute-keyword-arguments (package-arguments python-ndg-httpsclient)
-       ((#:python _) python-2)))
-    (propagated-inputs
-     `(("python2-pyopenssl" ,python2-pyopenssl)))))
-
 (define-public python-websocket-client
   (package
     (name "python-websocket-client")
