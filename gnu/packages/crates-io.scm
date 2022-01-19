@@ -20080,6 +20080,43 @@ decoding.")
        (("rust-serde" ,rust-serde-1)
         ("rust-serde-json" ,rust-serde-json-1))))))
 
+(define-public rust-ethereum-types-0.12
+  (package
+    (name "rust-ethereum-types")
+    (version "0.12.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "ethereum-types" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1bxxacsmb9majw7vd4sndv4dhw3g9srhf7flwq39yy7yaxq6y4q5"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t))
+    (home-page "https://github.com/paritytech/parity-common")
+    (synopsis "Rust crate exporting some Ethereum types")
+    (description "This crate exports Rust types for values in the Ethereum
+ecosystem.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-ethereum-types-0.9
+  (package
+    (inherit rust-ethereum-types-0.12)
+    (name "rust-ethereum-types")
+    (version "0.9.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "ethereum-types" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1c1l2sg6li301izl4nzkkfrpc8snafxwnr81vfwygn3bd3zyqfj7"))))))
+
 (define-public rust-event-listener-2
   (package
     (name "rust-event-listener")
