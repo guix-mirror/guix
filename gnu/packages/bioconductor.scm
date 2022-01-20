@@ -1302,9 +1302,7 @@ downloaded from Encode.")
     (version "1.14.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "http://bioconductor.org/packages/release/data/experiment"
-                    "/src/contrib/pasilla_" version ".tar.gz"))
+              (uri (bioconductor-uri "pasilla" version 'experiment))
               (sha256
                (base32
                 "0h124i2fb2lbj2k48zzf1n7ldqa471bs26fbd9vw50299aqx28x0"))))
