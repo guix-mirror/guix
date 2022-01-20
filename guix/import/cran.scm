@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
@@ -493,8 +493,8 @@ from the alist META, which was derived from the R package's DESCRIPTION file."
                           ((urls ...) urls)
                           ((? string? url) url)
                           (_ #f)))))
-         (git?       (assoc-ref meta 'git))
-         (hg?        (assoc-ref meta 'hg))
+         (git?       (if (assoc-ref meta 'git) #true #false))
+         (hg?        (if (assoc-ref meta 'hg) #true #false))
          (source     (download source-url #:method (cond
                                                     (git? 'git)
                                                     (hg? 'hg)
