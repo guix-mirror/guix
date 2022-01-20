@@ -1304,6 +1304,8 @@ Taco Hoekwater.")
                     "15q70nkjf8wqzbd5ivcdx3i2sdgqxjb38q0qn9a2qw9i0qcnx6zw"))))
     (package
       (inherit template)
+      ;; TODO: This package is missing files.
+      (replacement texlive-amsfonts/fixed)
       (arguments
        (substitute-keyword-arguments (package-arguments template)
          ((#:build-targets _ #t)
@@ -1404,6 +1406,170 @@ Taco Hoekwater.")
                                    (string-append
                                     (assoc-ref outputs "out")
                                     "/share/texmf-dist/fonts/tfm/public/amsfonts"))))))))
+      (native-inputs
+       (list (texlive-updmap.cfg (list texlive-fontinst))))
+      (home-page "https://www.ctan.org/pkg/amsfonts")
+      (synopsis "TeX fonts from the American Mathematical Society")
+      (description
+       "This package provides an extended set of fonts for use in mathematics,
+including: extra mathematical symbols; blackboard bold letters (uppercase
+only); fraktur letters; subscript sizes of bold math italic and bold Greek
+letters; subscript sizes of large symbols such as sum and product; added sizes
+of the Computer Modern small caps font; cyrillic fonts (from the University of
+Washington); Euler mathematical fonts.  All fonts are provided as Adobe Type 1
+files, and all except the Euler fonts are provided as Metafont source.  The
+distribution also includes the canonical Type 1 versions of the Computer
+Modern family of fonts.  The Euler fonts are supported by separate packages;
+details can be found in the documentation.")
+      (license license:silofl1.1))))
+
+(define-public texlive-amsfonts/fixed
+  (let ((template (simple-texlive-package
+                   "texlive-amsfonts-fixed"
+                   (list "/source/latex/amsfonts/"
+                         "/fonts/source/public/amsfonts/"
+                         "/fonts/type1/public/amsfonts/"
+                         "/fonts/afm/public/amsfonts/"
+                         "/fonts/map/dvips/amsfonts/"
+                         "/tex/plain/amsfonts/"
+                         "/doc/fonts/amsfonts/")
+                   (base32
+                    "15q70nkjf8wqzbd5ivcdx3i2sdgqxjb38q0qn9a2qw9i0qcnx6zw"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:build-targets _ #t)
+          '(list "amsfonts.ins"))
+         ((#:tex-directory _ #t)
+          "latex/amsfonts")
+         ((#:modules modules '())
+          `((guix build texlive-build-system)
+            (guix build utils)
+            (ice-9 match)
+            (srfi srfi-1)
+            (srfi srfi-26)))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-before 'build 'build-fonts
+               (lambda* (#:key inputs #:allow-other-keys)
+                 ;; Allow self fonts sources and other resources to be
+                 ;; discovered.
+                 (setenv "GUIX_TEXMF" (string-append (getenv "GUIX_TEXMF")
+                                                     ":" (getcwd)))
+
+                 (let ((build "/tmp/build-fonts"))
+                   (mkdir-p build)
+                   (with-directory-excursion "fonts/source/public/amsfonts"
+                     (for-each (lambda (font)
+                                 (format #t "building font ~a\n" (basename font ".mf"))
+                                 (with-directory-excursion (dirname font)
+                                   (let ((outdir (string-append build "/" (dirname font))))
+                                     (mkdir-p outdir)
+                                     (invoke "mf" "-progname=mf"
+                                             (string-append "-output-directory=" outdir)
+                                             (string-append "\\"
+                                                            "mode:=ljfour; "
+                                                            "mag:=1; "
+                                                            "nonstopmode; "
+                                                            "input "
+                                                            (getcwd) "/"
+                                                            (basename font ".mf"))))))
+                               (find-files "." "([0-9]+|dummy)\\.mf$"))))
+
+                 ;; There are no metafont sources for the Euler fonts, so we
+                 ;; convert the afm files instead.
+                 (let ((build "/tmp/build-fonts"))
+                   (mkdir-p build)
+                   (with-directory-excursion "fonts/afm/public/amsfonts/"
+                     ;; These files have bogus values for the Descender field,
+                     ;; so we can't process them.
+                     (substitute* (find-files "." "eus(b|m).*\\.afm$")
+                       (("^Descender -2147483648") ""))
+
+                     (for-each (lambda (font)
+                                 (let ((directory (string-append build "/" (dirname font))))
+                                   (mkdir-p directory)
+                                   (format #t "converting afm font ~a\n" (basename font ".afm"))
+                                   (invoke "afm2tfm" font
+                                           (string-append directory "/"
+                                                          (basename font ".afm")
+                                                          ".tfm"))))
+                               (find-files "." "\\.afm$")))
+
+                   ;; Frustratingly, not all fonts can be created this way.  To
+                   ;; generate eufm8.tfm, for example, we first scale down
+                   ;; eufm10.afm to eufm8.pl, and then generate the tfm file from
+                   ;; the pl file.
+                   (setenv "TEXINPUTS"
+                           (string-append ":" build "//:"
+                                          (getcwd) "/fonts/afm/public/amsfonts//:"
+                                          (getcwd) "/source/latex/amsfonts//:"))
+
+                   (with-directory-excursion (string-append build "/euler")
+                     (for-each (match-lambda
+                                 (((target-base target-size)
+                                   (source-base source-size))
+                                  (let ((factor (number->string
+                                                 (truncate/ (* 1000 target-size)
+                                                            source-size))))
+                                    (invoke "tex"
+                                            "-interaction=scrollmode"
+                                            (string-append "\\input fontinst.sty "
+                                                           "\\transformfont{" target-base "}"
+                                                           "{\\scalefont{" factor "}"
+                                                           "{\\fromafm{" source-base "}}} "
+                                                           "\\bye")))
+                                  (invoke "pltotf"
+                                          (string-append target-base ".pl")
+                                          (string-append target-base ".tfm"))
+                                  (delete-file (string-append target-base ".pl"))))
+
+                               '((("eufb6" 6) ("eufb7" 7))
+                                 (("eufb8" 8) ("eufb10" 10))
+                                 (("eufb9" 9) ("eufb10" 10))
+
+                                 (("eufm6" 6) ("eufm7" 7))
+                                 (("eufm8" 8) ("eufm10" 10))
+                                 (("eufm9" 9) ("eufm10" 10))
+
+                                 (("eurb6" 6) ("eurb7" 7))
+                                 (("eurb8" 8) ("eurb10" 10))
+                                 (("eurb9" 9) ("eurb10" 10))
+
+                                 (("eurm6" 6) ("eurm7" 7))
+                                 (("eurm8" 8) ("eurm10" 10))
+                                 (("eurm9" 9) ("eurm10" 10))
+
+                                 (("eusb6" 6) ("eusb7" 7))
+                                 (("eusb8" 8) ("eusb10" 10))
+                                 (("eusb9" 9) ("eusb10" 10))
+
+                                 (("eusm6" 6) ("eusm7" 7))
+                                 (("eusm8" 8) ("eusm10" 10))
+                                 (("eusm9" 9) ("eusm10" 10))))))))
+             (add-after 'install 'install-generated-fonts
+               (lambda* (#:key inputs outputs #:allow-other-keys)
+                 (copy-recursively "/tmp/build-fonts"
+                                   (string-append
+                                    (assoc-ref outputs "out")
+                                    "/share/texmf-dist/fonts/tfm/public/amsfonts"))))
+             (add-after 'copy-files 'remove-extra-files
+               (lambda* (#:key inputs outputs #:allow-other-keys)
+                 (let ((prefix (string-append
+                                (assoc-ref outputs "out")
+                                "/share/texmf-dist/fonts/")))
+                   (for-each delete-file
+                             (find-files (string-append prefix
+                                                        "tfm/public/amsfonts/")
+                                         "\\.(mtx|pl|log|600gf)"))
+                   (for-each delete-file-recursively
+                             (list (string-append (assoc-ref outputs "out")
+                                                  "/share/texmf-dist/build/")
+                                   (string-append prefix
+                                                  "tfm/public/amsfonts/cm/")
+                                   (string-append prefix
+                                                  "tfm/public/amsfonts/latxfont/"))))))))))
       (native-inputs
        (list (texlive-updmap.cfg (list texlive-fontinst))))
       (home-page "https://www.ctan.org/pkg/amsfonts")
