@@ -653,15 +653,15 @@ prompt.")
     (arguments
      `(#:tests? #f))                    ; no tests included
     (inputs
-     `(("cairo" ,cairo)
-       ("libev" ,libev)
-       ("libjpeg" ,libjpeg-turbo)
-       ("libxcb" ,libxcb)
-       ("libxkbcommon" ,libxkbcommon)
-       ("linux-pam" ,linux-pam)
-       ("xcb-util" ,xcb-util)
-       ("xcb-util-image" ,xcb-util-image)
-       ("xcb-util-xrm" ,xcb-util-xrm)))
+     (list cairo
+           libev
+           libjpeg-turbo
+           libxcb
+           libxkbcommon
+           linux-pam
+           xcb-util
+           xcb-util-image
+           xcb-util-xrm))
     (native-inputs
      (list autoconf automake pkg-config))
     (home-page "https://github.com/Raymo111/i3lock-color")
