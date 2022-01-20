@@ -30,6 +30,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix gexp)
   #:use-module (guix build-system python)
   #:use-module (guix deprecation)
   #:use-module (gnu packages)
@@ -41,6 +42,7 @@
   #:use-module (gnu packages geo)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
@@ -1181,28 +1183,42 @@ FileFields during tests.")
 (define-public python-django-auth-ldap
   (package
     (name "python-django-auth-ldap")
-    (version "2.4.0")
+    (version "4.0.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "django-auth-ldap" version))
               (sha256
                (base32
-                "0xk6cxiqz5j3q79bd54x64f26alrlc8p7k9wkp2c768w2k1vzz30"))))
+                "0fajn4bk7m1hk0mjz97q7vlfzh7ibzv8f4qn7zhkq26f4kk7jvr7"))))
     (build-system python-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (replace 'check
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      (let ((openldap (assoc-ref inputs "openldap")))
-                        ;; The tests need 'slapd' which is installed to the
-                        ;; libexec directory of OpenLDAP.
-                        (setenv "SLAPD" (string-append openldap "/libexec/slapd"))
-                        (setenv "SCHEMA"
-                                (string-append openldap "/etc/openldap/schema"))
-                        (invoke "python" "-m" "django" "test"
-                                "--settings" "tests.settings")))))))
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (replace 'build
+                 (lambda _
+                   ;; Set file modification times to the early 80's because
+                   ;; the Zip format does not support earlier timestamps.
+                   (setenv "SOURCE_DATE_EPOCH"
+                           (number->string (* 10 366 24 60 60)))
+                   (invoke "python" "-m" "build" "--wheel"
+                           "--no-isolation" ".")))
+               (replace 'check
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (setenv "SLAPD" (search-input-file inputs "/libexec/slapd"))
+                   (setenv "SCHEMA"
+                           (search-input-directory inputs "etc/openldap/schema"))
+                   (invoke "python" "-m" "django" "test"
+                           "--settings" "tests.settings")))
+               (replace 'install
+                 (lambda _
+                   (let ((whl (car (find-files "dist" "\\.whl$"))))
+                     (invoke "pip" "--no-cache-dir" "--no-input"
+                             "install" "--no-deps" "--prefix" #$output whl)))))))
     (native-inputs
-     (list openldap python-mock))
+     (list openldap-2.6 python-wheel python-setuptools-scm python-toml
+
+           ;; These can be removed after <https://bugs.gnu.org/46848>.
+           python-pypa-build python-pip))
     (propagated-inputs
      (list python-django python-ldap))
     (home-page "https://github.com/django-auth-ldap/django-auth-ldap")
