@@ -51,6 +51,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpp)
@@ -66,6 +67,7 @@
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
+  #:use-module (gnu packages m4)
   #:use-module (gnu packages mail)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages nettle)
@@ -25077,6 +25079,35 @@ open file descriptors.")
      "This package is a convenience crate for working with JavaScript
 timers.")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-gmp-mpfr-sys-1
+  (package
+    (name "rust-gmp-mpfr-sys")
+    (version "1.4.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "gmp-mpfr-sys" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "1ysvdf352vcnb5ygmbwf5pkndqb0p6clmz0nqkf3nmz9ghssfim1"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:phases
+        (modify-phases %standard-phases
+          (add-after 'unpack 'set-shell-for-configure-script
+            (lambda _
+              (setenv "CONFIG_SHELL" (which "sh")))))
+       #:cargo-inputs
+        (("rust-libc" ,rust-libc-0.2)
+         ("rust-winapi" ,rust-winapi-0.3))))
+    (native-inputs
+     (list bash-minimal m4))
+    (home-page "https://gitlab.com/tspiteri/gmp-mpfr-sys")
+    (synopsis "Rust FFI bindings for GMP, MPFR, and MPC")
+    (description "This package provides Rust FFI bindings for the numeric
+libraries GMP, MPFR, and MPC.")
+    (license license:lgpl3+)))
 
 (define-public rust-goblin-0.2
   (package
