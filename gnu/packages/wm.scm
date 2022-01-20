@@ -639,16 +639,16 @@ prompt.")
 (define-public i3lock-color
   (package
     (name "i3lock-color")
-    (version "2.12.c")
+    (version "2.13.c.4")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/PandorasFox/i3lock-color")
+             (url "https://github.com/Raymo111/i3lock-color")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "08fhnchf187b73h52xgzb86g6byzxz085zs9galsvl687g5zxk34"))))
+        (base32 "1lnyh8spbf1ar4xan5v7q8i2i51aq1i60kzbfkn9w3wa0jzf9f3d"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; no tests included
@@ -664,7 +664,7 @@ prompt.")
        ("xcb-util-xrm" ,xcb-util-xrm)))
     (native-inputs
      (list autoconf automake pkg-config))
-    (home-page "https://github.com/PandorasFox/i3lock-color")
+    (home-page "https://github.com/Raymo111/i3lock-color")
     (synopsis "Screen locker with color configuration support")
     (description
      "i3lock-color is a simpler X11 screen locker derived from i3lock.
