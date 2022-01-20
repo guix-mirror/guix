@@ -28529,6 +28529,28 @@ bytestring representations.")
         ("rust-futures-util" ,rust-futures-util-0.3)
         ("rust-tokio" ,rust-tokio-0.2))))))
 
+(define-public rust-integer-sqrt-0.1
+  (package
+    (name "rust-integer-sqrt")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "integer-sqrt" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0w6pzmgvs1mldkhafbwg9x7wzr0af3ngkimyb1gy97jarcdw6vi7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-num-traits" ,rust-num-traits-0.2))))
+    (home-page "https://github.com/derekdreery/integer-sqrt-rs")
+    (synopsis "Integer square root algorithm for primitive rust types")
+    (description
+     "This is a Rust implementation of integer square root algorithm for
+primitive Rust types.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-interpolate-name-0.2
   (package
     (name "rust-interpolate-name")
