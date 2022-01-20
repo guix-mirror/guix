@@ -39447,6 +39447,67 @@ including a pretty-printer.")
 for Ethereum.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-parity-scale-codec-2
+  (package
+    (name "rust-parity-scale-codec")
+    (version "2.3.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "parity-scale-codec" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "02g95fp56sfpxixpy3x2h2yvcnmbpl8klfx53wywvn9q2d61lfrp"))))
+    (build-system cargo-build-system)
+    (arguments
+     ;; The tests fail with: error[E0432]: unresolved import
+     ;; `parity_scale_codec_derive`. They also take a relatively long time.
+     `(#:tests? #f
+       #:cargo-inputs
+       (("rust-arbitrary" ,rust-arbitrary-1)
+        ("rust-arrayvec" ,rust-arrayvec-0.7)
+        ("rust-bitvec" ,rust-bitvec-0.20)
+        ("rust-byte-slice-cast" ,rust-byte-slice-cast-1)
+        ("rust-generic-array" ,rust-generic-array-0.14)
+        ("rust-impl-trait-for-tuples" ,rust-impl-trait-for-tuples-0.2)
+        ("rust-parity-scale-codec-derive" ,rust-parity-scale-codec-derive-2)
+        ("rust-serde" ,rust-serde-1))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-quickcheck" ,rust-quickcheck-1)
+        ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-trybuild" ,rust-trybuild-1))))
+    (home-page "https://github.com/paritytech/parity-scale-codec")
+    (synopsis "SCALE - Simple Concatenating Aggregated Little Endians")
+    (description "This package is a Rust library for SCALE - Simple
+Concatenating Aggregated Little Endians.")
+    (license license:asl2.0)))
+
+(define-public rust-parity-scale-codec-derive-2
+  (package
+    (name "rust-parity-scale-codec-derive")
+    (version "2.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "parity-scale-codec-derive" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "09zdgdqalc8d2zsjc9v1ayqxwg5rh7xxq5ldasdmqng0fq202mqm"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro-crate" ,rust-proc-macro-crate-1)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "")
+    (synopsis
+     "Serialization and deserialization derive macro for Parity SCALE Codec")
+    (description "This is a Rust library for serialization and deserialization
+derive macro for Parity SCALE Codec.")
+    (license license:asl2.0)))
+
 (define-public rust-parity-tokio-ipc-0.4
   (package
     (name "rust-parity-tokio-ipc")
