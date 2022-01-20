@@ -20395,6 +20395,29 @@ ecosystem.")
          (base32
           "1c1l2sg6li301izl4nzkkfrpc8snafxwnr81vfwygn3bd3zyqfj7"))))))
 
+(define-public rust-ethereum-types-0.4
+  (package
+    (inherit rust-ethereum-types-0.9)
+    (name "rust-ethereum-types")
+    (version "0.4.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "ethereum-types" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "15icipk0ap7r6yi0i6cl6zsl0z52zbw6jwv3l271r833vj222x3f"))))
+    (arguments
+      `(#:cargo-inputs
+        (("rust-crunchy" ,rust-crunchy-0.1)
+         ("rust-ethbloom" ,rust-ethbloom-0.5)
+         ("rust-ethereum-types-serialize" ,rust-ethereum-types-serialize-0.2)
+         ("rust-fixed-hash" ,rust-fixed-hash-0.2)
+         ("rust-serde" ,rust-serde-1)
+         ("rust-uint" ,rust-uint-0.4))
+        #:cargo-development-inputs
+        (("rust-serde-json" ,rust-serde-json-1))))))
+
 (define-public rust-ethereum-types-serialize-0.2
   (package
     (name "rust-ethereum-types-serialize")
