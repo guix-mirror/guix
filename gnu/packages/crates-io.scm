@@ -48050,6 +48050,27 @@ your own implementation.")
 decoding, and compression.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-rlp-0.3
+  (package
+    (inherit rust-rlp-0.5)
+    (name "rust-rlp")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rlp" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "082pfkdzsnzvqr5yx5qb2hildjg597p2115ywy84zma5k3zfzl8n"))))
+    (arguments
+     `(#:tests? #f                      ; The tests fail.
+       #:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1)
+        ("rust-ethereum-types" ,rust-ethereum-types-0.4)
+        ("rust-rustc-hex" ,rust-rustc-hex-2))
+       #:cargo-development-inputs
+       (("rust-hex-literal" ,rust-hex-literal-0.1))))))
+
 (define-public rust-rls-span-0.5
   (package
     (name "rust-rls-span")
