@@ -71330,6 +71330,29 @@ for uint and fixed hash.")
 and fixed hash.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-impl-num-traits-0.1
+  (package
+    (name "rust-impl-num-traits")
+    (version "0.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "impl-num-traits" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "0rjlic3z684l37qm7zywmxhhllnf982y3ilyslyxb6jiddyhbdiq"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:cargo-inputs
+        (("rust-integer-sqrt" ,rust-integer-sqrt-0.1)
+         ("rust-num-traits" ,rust-num-traits-0.2)
+         ("rust-uint" ,rust-uint-0.9))))
+    (home-page "https://github.com/paritytech/parity-common")
+    (synopsis "num-traits implementation for uint")
+    (description "This package provides @code{num-traits} implementation
+for @code{uint}.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-impl-serde-0.3
   (package
     (name "rust-impl-serde")
