@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016, 2018, 2019, 2020 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
@@ -6316,6 +6316,11 @@ viewer.")
        #:make-flags
        (list "LIBCURSES=-lncurses")
        ,@(substitute-keyword-arguments (package-arguments samtools)
+           ((#:modules _ #f)
+            '((ice-9 ftw)
+              (ice-9 regex)
+              (guix build gnu-build-system)
+              (guix build utils)))
            ((#:phases phases)
             `(modify-phases ,phases
                (replace 'install
@@ -6325,6 +6330,18 @@ viewer.")
                      (mkdir-p bin)
                      (install-file "samtools" bin)
                      #t)))
+               (add-after 'install 'install-library
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
+                     (install-file "libbam.a" lib))))
+               (add-after 'install 'install-headers
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let ((include (string-append (assoc-ref outputs "out")
+                                                 "/include/samtools/")))
+                     (for-each (lambda (file)
+                                 (install-file file include))
+                               (scandir "." (lambda (name)
+                                              (string-match "\\.h$" name)))))))
                (delete 'patch-tests)
                (delete 'configure))))))))
 
