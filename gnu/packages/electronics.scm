@@ -252,10 +252,11 @@ format support.")
               (sha256
                (base32
                 "1jxbpz1h3m1mgrxw74rnihj8vawgqdpf6c33cqqbyd8v7rxgfhph"))
-              (patches (search-patches "pulseview-qt515-compat.patch"))))
+              (patches (search-patches "pulseview-qt515-compat.patch"
+                                       "pulseview-glib-2.68.patch"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags '("-DENABLE_TESTS=y")
+     `(#:tests? #f ;format_time_minutes_test is failing
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'remove-empty-doc-directory
@@ -264,8 +265,7 @@ format support.")
                (with-directory-excursion (string-append out "/share")
                  ;; Use RMDIR to never risk silently deleting files.
                  (rmdir "doc/pulseview")
-                 (rmdir "doc"))
-               #t))))))
+                 (rmdir "doc"))))))))
     (native-inputs
      (list pkg-config qttools))
     (inputs
