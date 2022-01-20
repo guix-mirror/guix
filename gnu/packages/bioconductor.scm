@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018, 2020, 2021 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
@@ -9457,6 +9457,7 @@ Gaussian distributions.")
          "0ardmryx6ac7v6n900a1klrrldvbmh7bxvy8ldz8rwid19h29ikr"))))
     (properties `((upstream-name . "Rbowtie")))
     (build-system r-build-system)
+    (inputs (list zlib))
     (native-inputs
      (list r-knitr))
     (home-page "https://bioconductor.org/packages/Rbowtie/")
