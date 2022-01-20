@@ -20366,6 +20366,24 @@ ecosystem.")
          (base32
           "1c1l2sg6li301izl4nzkkfrpc8snafxwnr81vfwygn3bd3zyqfj7"))))))
 
+(define-public rust-ethereum-types-serialize-0.2
+  (package
+    (name "rust-ethereum-types-serialize")
+    (version "0.2.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "ethereum-types-serialize" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "0l53rvzvwpxwkl7i3f9q5fafw663rcm5z4mdknkr265w69xxfwqq"))))
+    (build-system cargo-build-system)
+    (arguments `(#:cargo-inputs (("rust-serde" ,rust-serde-1))))
+    (home-page "https://github.com/paritytech/primitives")
+    (synopsis "Rust library of Ethereum types")
+    (description "This package is a Rust library of Ethereum types.")
+    (license license:expat)))
+
 (define-public rust-event-listener-2
   (package
     (name "rust-event-listener")
