@@ -65981,6 +65981,34 @@ panic-free alternative to @code{core::fmt}.")
     (description "This package provides @code{μfmt}'s @code{uWrite} trait.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-uint-0.4
+  (package
+    (name "rust-uint")
+    (version "0.4.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "uint" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "0il6x59h605mmm10qxig066khxaygqcyb60pqja1n5mr68bs2jvm"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:tests? #f ; The tests fail. Due to rustc version?
+        #:cargo-inputs
+        (("rust-byteorder" ,rust-byteorder-1)
+         ("rust-crunchy" ,rust-crunchy-0.1)
+         ("rust-heapsize" ,rust-heapsize-0.4)
+         ("rust-quickcheck" ,rust-quickcheck-0.6)
+         ("rust-rustc-hex" ,rust-rustc-hex-2))
+        #:cargo-development-inputs
+        (("rust-quickcheck" ,rust-quickcheck-0.6)
+         ("rust-rustc-hex" ,rust-rustc-hex-2))))
+    (home-page "http://parity.io")
+    (synopsis "Large fixed-size integer arithmetic")
+    (description synopsis)
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-umask-1
   (package
     (name "rust-umask")
