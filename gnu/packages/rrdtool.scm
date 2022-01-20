@@ -62,7 +62,8 @@
            perl ; will also build Perl bindings
            tzdata-for-tests))
     (arguments
-     '(#:phases
+     `(#:disallowed-references (,tzdata-for-tests)
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'pre-configure
            (lambda _
