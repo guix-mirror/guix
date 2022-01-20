@@ -53,7 +53,7 @@
        ("gtk" ,gtk+-2)
        ("libxml2" ,libxml2)
        ("pango" ,pango)
-       ("python" ,python-2)))
+       ("python" ,python)))
     (native-inputs
      (list groff
            pkg-config
