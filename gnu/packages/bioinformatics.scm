@@ -11613,6 +11613,39 @@ known and yet unknown splice junctions.  Circular-to-linear ratios of circRNAs
 can be calculated, and a number of descriptive plots easily generated.")
     (license license:artistic2.0)))
 
+(define-public r-doubletfinder
+  (let ((commit "554097ba4e2c0ed7c28dc7f0b5b75277f3a50551")
+        (revision "1"))
+    (package
+      (name "r-doubletfinder")
+      (version (git-version "2.0.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/chris-mcginnis-ucsf/DoubletFinder")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1q1pnqw7ry4syp04wjmvz5bws6z4vg4c340ky07lk0vp577x2773"))))
+      (properties `((upstream-name . "DoubletFinder")))
+      (build-system r-build-system)
+      (propagated-inputs (list r-fields r-kernsmooth r-rocr))
+      (home-page "https://github.com/chris-mcginnis-ucsf/DoubletFinder")
+      (synopsis "Identify doublets in single-cell RNA sequencing data")
+      (description
+       "DoubletFinder identifies doublets by generating artificial doublets
+from existing scRNA-seq data and defining which real cells preferentially
+co-localize with artificial doublets in gene expression space.  Other
+DoubletFinder package functions are used for fitting DoubletFinder to
+different scRNA-seq datasets.  For example, ideal DoubletFinder performance in
+real-world contexts requires optimal pK selection and homotypic doublet
+proportion estimation.  pK selection is achieved using pN-pK parameter sweeps
+and maxima identification in mean-variance-normalized bimodality coefficient
+distributions.  Homotypic doublet proportion estimation is achieved by finding
+the sum of squared cell annotation frequencies.")
+      (license license:cc0))))
+
 (define-public gffread
   ;; We cannot use the tagged release because it is not in sync with gclib.
   ;; See https://github.com/gpertea/gffread/issues/26
