@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021, 2022 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
@@ -138,7 +138,7 @@ between two other data points.")
 (define-public gama
   (package
     (name "gama")
-    (version "2.15")
+    (version "2.17")
     (source
       (origin
         (method url-fetch)
@@ -146,13 +146,12 @@ between two other data points.")
                             version ".tar.gz"))
         (sha256
          (base32
-          "1lsa7k9anxla2r3wxzg2yhxgxlp8xibz56gaxhgf5rd3mzf51flx"))
+          "1x8qz43q254mz0fyna9pxxna2sj8pcrm8bwxw840d36lh1qj6983"))
         (modules '((guix build utils)))
         (snippet
          '(begin
             (delete-file-recursively "lib/expat")
-            (for-each delete-file (find-files "doc/fig" "\\.pdf$"))
-            #t))))
+            (for-each delete-file (find-files "doc/fig" "\\.pdf$"))))))
     (build-system gnu-build-system)
     (arguments '(#:parallel-tests? #f)) ; race condition
     (native-inputs
