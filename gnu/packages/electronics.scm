@@ -204,7 +204,7 @@ as simple logic analyzer and/or oscilloscope hardware.")
     ;; Requires.private and "glib" in Requires
     (propagated-inputs
      (list glib
-           glibmm
+           glibmm-2.64
            libserialport
            libusb
            libftdi
