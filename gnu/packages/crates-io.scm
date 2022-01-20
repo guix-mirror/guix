@@ -5462,7 +5462,7 @@ built on the Actix ecosystem.")
 (define-public rust-az-1
   (package
     (name "rust-az")
-    (version "1.0.0")
+    (version "1.2.0")
     (source
       (origin
         (method url-fetch)
@@ -5471,7 +5471,7 @@ built on the Actix ecosystem.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0sb51w9pjcqb315dg6zv9wwqj1q2fldcc3xmfv0bhkmajiyx9g79"))))
+          "1i2s9bqar8hfxjmfr2cbhi4s26s2sd1kc3x3g517ygshyp8sawgp"))))
     (build-system cargo-build-system)
     (home-page "https://gitlab.com/tspiteri/az")
     (synopsis "Casts and checked casts")
