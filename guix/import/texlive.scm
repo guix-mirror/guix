@@ -18,6 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix import texlive)
+  #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
   #:use-module (srfi srfi-1)
@@ -38,7 +39,8 @@
   #:use-module (guix upstream)
   #:use-module (guix packages)
   #:use-module (guix build-system texlive)
-  #:export (texlive->guix-package
+  #:export (files-differ?
+            texlive->guix-package
             texlive-recursive-import))
 
 ;;; Commentary:
@@ -195,6 +197,44 @@
                         (else
                          (loop all (record key value current field-type) key))))
                      (loop all current #false))))))))))))
+
+(define* (files-differ? directory package-name
+                        #:key
+                        (package-database tlpdb)
+                        (type #false)
+                        (direction 'missing))
+  "Return a list of files in DIRECTORY that differ from the expected installed
+files for PACKAGE-NAME according to the PACKAGE-DATABASE.  By default all
+files considered, but this can be restricted by setting TYPE to 'runfiles,
+'docfiles, or 'srcfiles.  The names of files that are missing from DIRECTORY
+are returned; by setting DIRECTION to anything other than 'missing, the names
+of those files are returned that are unexpectedly installed."
+  (define (strip-directory-prefix file-name)
+    (string-drop file-name (1+ (string-length directory))))
+  (let* ((data (or (assoc-ref (package-database) package-name)
+                   (error (format #false
+                                  "~a is not a valid package name in the TeX Live package database."
+                                  package-name))))
+         (files (if type
+                    (or (assoc-ref data type) (list))
+                    (append (or (assoc-ref data 'runfiles) (list))
+                            (or (assoc-ref data 'docfiles) (list))
+                            (or (assoc-ref data 'srcfiles) (list)))))
+         (existing (file-system-fold
+                    (const #true)                             ;enter?
+                    (lambda (path stat result) (cons path result)) ;leaf
+                    (lambda (path stat result) result)             ;down
+                    (lambda (path stat result) result)             ;up
+                    (lambda (path stat result) result)             ;skip
+                    (lambda (path stat errno result) result)       ;error
+                    (list)
+                    directory)))
+    (if (eq? direction 'missing)
+        (lset-difference string=?
+                         files (map strip-directory-prefix existing))
+        ;; List files that are installed but should not be.
+        (lset-difference string=?
+                         (map strip-directory-prefix existing) files))))
 
 (define (files->directories files)
   (define name->parts (cut string-split <> #\/))
