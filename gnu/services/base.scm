@@ -16,6 +16,7 @@
 ;;; Copyright © 2021 qblade <qblade@protonmail.com>
 ;;; Copyright © 2021 Hui Lu <luhuins@163.com>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2022 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -196,6 +197,7 @@
             guix-publish-configuration-nar-path
             guix-publish-configuration-cache
             guix-publish-configuration-ttl
+            guix-publish-configuration-negative-ttl
             guix-publish-service-type
 
             gpm-configuration
@@ -1828,7 +1830,9 @@ proxy of 'guix-daemon'...~%")
   (workers     guix-publish-configuration-workers ;#f | integer
                (default #f))
   (ttl         guix-publish-configuration-ttl     ;#f | integer
-               (default #f)))
+               (default #f))
+  (negative-ttl guix-publish-configuration-negative-ttl ;#f | integer
+                (default #f)))
 
 (define-deprecated (guix-publish-configuration-compression-level config)
   "Return a compression level, the old way."
@@ -1863,8 +1867,8 @@ raise a deprecation warning if the 'compression-level' field was used."
                    lst))))
 
   (match-record config <guix-publish-configuration>
-    (guix port host nar-path cache workers ttl cache-bypass-threshold
-          advertise?)
+    (guix port host nar-path cache workers ttl negative-ttl
+          cache-bypass-threshold advertise?)
     (list (shepherd-service
            (provision '(guix-publish))
            (requirement `(user-processes
@@ -1888,6 +1892,11 @@ raise a deprecation warning if the 'compression-level' field was used."
                            #$@(if ttl
                                   #~((string-append "--ttl="
                                                     #$(number->string ttl)
+                                                    "s"))
+                                  #~())
+                           #$@(if negative-ttl
+                                  #~((string-append "--negative-ttl="
+                                                    #$(number->string negative-ttl)
                                                     "s"))
                                   #~())
                            #$@(if cache

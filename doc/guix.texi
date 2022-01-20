@@ -69,7 +69,7 @@ Copyright @copyright{} 2019 Ivan Petkov@*
 Copyright @copyright{} 2019 Jakob L. Kreuze@*
 Copyright @copyright{} 2019 Kyle Andrews@*
 Copyright @copyright{} 2019 Alex Griffin@*
-Copyright @copyright{} 2019, 2020, 2021 Guillaume Le Vaillant@*
+Copyright @copyright{} 2019, 2020, 2021, 2022 Guillaume Le Vaillant@*
 Copyright @copyright{} 2020 Liliana Marie Prikler@*
 Copyright @copyright{} 2019, 2020, 2021, 2022 Simon Tournier@*
 Copyright @copyright{} 2020 Wiktor Żelazny@*
@@ -16888,6 +16888,11 @@ cache miss.  @xref{Invoking guix publish,
 When it is an integer, this denotes the @dfn{time-to-live} in seconds
 of the published archives.  @xref{Invoking guix publish, @option{--ttl}},
 for more information.
+
+@item @code{negative-ttl} (default: @code{#f})
+When it is an integer, this denotes the @dfn{time-to-live} in
+seconds for the negative lookups.  @xref{Invoking guix publish,
+@option{--negative-ttl}}, for more information.
 @end table
 @end deftp
 
