@@ -71090,6 +71090,32 @@ for uint and fixed hash.")
 and fixed hash.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-impl-serde-0.3
+  (package
+    (name "rust-impl-serde")
+    (version "0.3.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "impl-serde" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "0p2zy8ikdxd28s3vb22nwqgnwjn8gx920sr2svdn93j3yd1g0la5"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:cargo-inputs
+        (("rust-serde" ,rust-serde-1))
+        #:cargo-development-inputs
+        (("rust-criterion" ,rust-criterion-0.3)
+         ("rust-serde-derive" ,rust-serde-derive-1)
+         ("rust-serde-json" ,rust-serde-json-1)
+         ("rust-uint" ,rust-uint-0.9))))
+    (home-page "https://github.com/paritytech/parity-common")
+    (synopsis "Serde serialization support for uint and fixed hash")
+    (description "This package provides @code{serde} serialization support
+for @code{uint} and @code{fixed_hash}.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-impl-trait-for-tuples-0.2
   (package
     (name "rust-impl-trait-for-tuples")
