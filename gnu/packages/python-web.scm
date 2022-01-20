@@ -1426,7 +1426,6 @@ is Python’s.")
           (lambda _
             (invoke "coverage" "run" "-m"
                     "unittest" "openid.test.test_suite"))))))
-    (properties `((python2-variant . ,(delay python2-openid))))
     (propagated-inputs
      (list python-defusedxml))
     (native-inputs
