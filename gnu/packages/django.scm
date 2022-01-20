@@ -118,6 +118,13 @@
            ;; This input is not strictly required, but in practice many Django
            ;; libraries need it for test suites and similar.
            python-jinja2))
+    (native-search-paths
+     ;; Set TZDIR when 'tzdata' is available so that timezone functionality
+     ;; works (mostly) out of the box in containerized environments.
+     ;; Note: This search path actually belongs to 'glibc'.
+     (list (search-path-specification
+            (variable "TZDIR")
+            (files '("share/zoneinfo")))))
     (home-page "https://www.djangoproject.com/")
     (synopsis "High-level Python Web framework")
     (description
@@ -138,6 +145,7 @@ to the @dfn{don't repeat yourself} (DRY) principle.")
               (sha256
                (base32
                 "0xbyl9fh9lk5hiwpw46s6hz98gs0fixrpq3myj5hh6vbbnz4mjb9"))))
+    (native-search-paths '())           ;no need for TZDIR
     (propagated-inputs
      (modify-inputs (package-propagated-inputs python-django-4.0)
        ;; Django 4.0 deprecated pytz in favor of Pythons built-in zoneinfo.
@@ -1033,9 +1041,7 @@ Django projects, which allows association of a number of tags with any
          (replace 'check
            (lambda* (#:key tests? inputs #:allow-other-keys)
              (if tests?
-                 (begin
-                   (setenv "TZDIR" (search-input-directory inputs "share/zoneinfo"))
-                   (invoke "python" "runtests.py"))
+                 (invoke "python" "runtests.py")
                  (format #t "test suite not run~%")))))))
     (native-inputs
      (list python-pytest python-pytest-django tzdata-for-tests))
