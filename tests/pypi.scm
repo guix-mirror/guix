@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2022 Vivien Kraus <vivien@planete-kraus.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,68 +24,48 @@
   #:use-module (guix import pypi)
   #:use-module (guix base32)
   #:use-module (guix memoization)
+  #:use-module (guix utils)
   #:use-module (gcrypt hash)
   #:use-module (guix tests)
   #:use-module (guix build-system python)
   #:use-module ((guix build utils) #:select (delete-file-recursively which mkdir-p))
+  #:use-module ((guix diagnostics) #:select (guix-warning-port))
+  #:use-module (json)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-64)
-  #:use-module (ice-9 match))
+  #:use-module (ice-9 match)
+  #:use-module (ice-9 optargs))
+
+(define* (foo-json #:key (name "foo") (name-in-url #f))
+  "Create a JSON description of an example pypi package, named @var{name},
+optionally using a different @var{name in its URL}."
+  (scm->json-string
+   `((info
+      . ((version . "1.0.0")
+         (name . ,name)
+         (license . "GNU LGPL")
+         (summary . "summary")
+         (home_page . "http://example.com")
+         (classifiers . #())
+         (download_url . "")))
+     (urls . #())
+     (releases
+      . ((1.0.0
+          . #(((url . ,(format #f "https://example.com/~a-1.0.0.egg"
+                               (or name-in-url name)))
+               (packagetype . "bdist_egg"))
+              ((url . ,(format #f "https://example.com/~a-1.0.0.tar.gz"
+                               (or name-in-url name)))
+               (packagetype . "sdist"))
+              ((url . ,(format #f "https://example.com/~a-1.0.0-py2.py3-none-any.whl"
+                               (or name-in-url name)))
+               (packagetype . "bdist_wheel")))))))))
 
 (define test-json-1
-  "{
-  \"info\": {
-    \"version\": \"1.0.0\",
-    \"name\": \"foo\",
-    \"license\": \"GNU LGPL\",
-    \"summary\": \"summary\",
-    \"home_page\": \"http://example.com\",
-    \"classifiers\": [],
-    \"download_url\": \"\"
-  },
-  \"urls\": [],
-  \"releases\": {
-    \"1.0.0\": [
-      {
-        \"url\": \"https://example.com/foo-1.0.0.egg\",
-        \"packagetype\": \"bdist_egg\"
-      }, {
-        \"url\": \"https://example.com/foo-1.0.0.tar.gz\",
-        \"packagetype\": \"sdist\"
-      }, {
-        \"url\": \"https://example.com/foo-1.0.0-py2.py3-none-any.whl\",
-        \"packagetype\": \"bdist_wheel\"
-      }
-    ]
-  }
-}")
+  (foo-json))
 
 (define test-json-2
-  "{
-  \"info\": {
-    \"version\": \"1.0.0\",
-    \"name\": \"foo-99\",
-    \"license\": \"GNU LGPL\",
-    \"summary\": \"summary\",
-    \"home_page\": \"http://example.com\",
-    \"classifiers\": [],
-    \"download_url\": \"\"
-  },
-  \"urls\": [],
-  \"releases\": {
-    \"1.0.0\": [
-      {
-        \"url\": \"https://example.com/foo-99-1.0.0.egg\",
-        \"packagetype\": \"bdist_egg\"
-      }, {
-        \"url\": \"https://example.com/foo-99-1.0.0.tar.gz\",
-        \"packagetype\": \"sdist\"
-      }, {
-        \"url\": \"https://example.com/foo-99-1.0.0-py2.py3-none-any.whl\",
-        \"packagetype\": \"bdist_wheel\"
-      }
-    ]
-  }
-}")
+  (foo-json #:name "foo-99"))
 
 (define test-source-hash
   "")
@@ -210,6 +191,30 @@ Requires-Dist: pytest (>=3.1.0); extra == 'testing'
   (mock ((ice-9 ports) call-with-input-file
          call-with-input-string)
         (parse-wheel-metadata test-metadata-with-extras-jedi)))
+
+(test-equal "find-project-url, with numpy"
+  "numpy"
+  (find-project-url
+   "numpy"
+   "https://files.pythonhosted.org/packages/0a/c8/a62767a6b374a0dfb02d2a0456e5f56a372cdd1689dbc6ffb6bf1ddedbc0/numpy-1.22.1.zip"))
+
+(test-equal "find-project-url, uWSGI"
+  "uwsgi"
+  (find-project-url
+   "uWSGI"
+   "https://files.pythonhosted.org/packages/24/fd/93851e4a076719199868d4c918cc93a52742e68370188c1c570a6e42a54f/uwsgi-2.0.20.tar.gz"))
+
+(test-equal "find-project-url, flake8-array-spacing"
+  "flake8_array_spacing"
+  (find-project-url
+   "flake8-array-spacing"
+   "https://files.pythonhosted.org/packages/a4/21/ff29b901128b681b7de7a2787b3aeb3e1f3cba4a8c0cffa9712cbff016bc/flake8_array_spacing-0.2.0.tar.gz"))
+
+(test-equal "find-project-url, foo/goo"
+  "foo"
+  (find-project-url
+   "foo"
+   "https://files.pythonhosted.org/packages/f0/f00/goo-0.0.0.tar.gz"))
 
 (test-assert "pypi->guix-package, no wheel"
   ;; Replace network resources with sample data.

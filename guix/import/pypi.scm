@@ -11,6 +11,7 @@
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2021 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2022 Vivien Kraus <vivien@planete-kraus.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,6 +42,7 @@
   #:use-module (guix memoization)
   #:use-module (guix diagnostics)
   #:use-module (guix i18n)
+  #:use-module ((guix ui) #:select (display-hint))
   #:use-module ((guix build utils)
                 #:select ((package-name->name+version
                            . hyphen-package-name->name+version)
@@ -59,6 +61,7 @@
             specification->requirement-name
             guix-package->pypi-name
             pypi-recursive-import
+            find-project-url
             pypi->guix-package
             %pypi-updater))
 
@@ -418,6 +421,24 @@ return the unaltered list of upstream dependency names."
     (values (map process-requirements dependencies)
             (concatenate dependencies))))
 
+(define (find-project-url name pypi-url)
+  "Try different project name substitution until the result is found in
+pypi-uri.  Downcase is required for \"uWSGI\", and
+underscores are required for flake8-array-spacing."
+  (or (find (cut string-contains pypi-url <>)
+            (list name
+                  (string-downcase name)
+                  (string-replace-substring name "-" "_")))
+      (begin
+        (warning
+         (G_ "project name ~a does not appear verbatim in the PyPI URI~%")
+         name)
+        (display-hint
+         (format #f (G_ "The PyPI URI is: @url{~a}.  You should review the
+pypi-uri declaration in the generated package. You may need to replace ~s with
+a substring of the PyPI URI that identifies the package.")  pypi-url name))
+name)))
+
 (define (make-pypi-sexp name version source-url wheel-url home-page synopsis
                         description license)
   "Return the `package' s-expression for a python package with the given NAME,
@@ -446,15 +467,7 @@ VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
                     (origin
                       (method url-fetch)
                       (uri (pypi-uri
-                             ;; PyPI URL are case sensitive, but sometimes
-                             ;; a project named using mixed case has a URL
-                             ;; using lower case, so we must work around this
-                             ;; inconsistency.  For actual examples, compare
-                             ;; the URLs of the "Deprecated" and "uWSGI" PyPI
-                             ;; packages.
-                             ,(if (string-contains source-url name)
-                                  name
-                                  (string-downcase name))
+                             ,(find-project-url name source-url)
                              version
                              ;; Some packages have been released as `.zip`
                              ;; instead of the more common `.tar.gz`. For
