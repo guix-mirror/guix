@@ -51446,6 +51446,55 @@ motivation for writing this library.
 @end itemize")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-scale-info-1
+  (package
+    (name "rust-scale-info")
+    (version "1.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "scale-info" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "0bvq3a9im6c20xmx8lipr5px9y4x22dpilm0ccnm69cw752bfmaw"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:cargo-inputs
+        (("rust-bitvec" ,rust-bitvec-0.20)
+         ("rust-cfg-if" ,rust-cfg-if-1)
+         ("rust-derive-more" ,rust-derive-more-0.99)
+         ("rust-parity-scale-codec" ,rust-parity-scale-codec-2)
+         ("rust-scale-info-derive" ,rust-scale-info-derive-1)
+         ("rust-serde" ,rust-serde-1))))
+    (home-page "https://www.parity.io/")
+    (synopsis "Info about SCALE encodable Rust types")
+    (description "This package provides info about SCALE encodable Rust types.")
+    (license license:asl2.0)))
+
+(define-public rust-scale-info-derive-1
+  (package
+    (name "rust-scale-info-derive")
+    (version "1.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "scale-info-derive" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "1k8z7y6181yjdnggbhnqr8mfnpw197pa8ni0hqpmk003d602gsxs"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:cargo-inputs
+        (("rust-proc-macro-crate" ,rust-proc-macro-crate-1)
+         ("rust-proc-macro2" ,rust-proc-macro2-1)
+         ("rust-quote" ,rust-quote-1)
+         ("rust-syn" ,rust-syn-1))))
+    (home-page "https://www.parity.io/")
+    (synopsis "Derive type info for SCALE encodable types")
+    (description "This package provides derive type info for SCALE
+encodable types.")
+    (license license:asl2.0)))
+
 (define-public rust-scan-fmt-0.2
   (package
     (name "rust-scan-fmt")
