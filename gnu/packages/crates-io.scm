@@ -14499,6 +14499,19 @@ abstractions around common WinAPI calls.")
 number ``crunching``.")
     (license license:expat)))
 
+(define-public rust-crunchy-0.1
+  (package
+    (inherit rust-crunchy-0.2)
+    (name "rust-crunchy")
+    (version "0.1.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "crunchy" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "1nnbh2k3pv1diyd0i0p3a08kd4afqc17yz0b43hn5xn9qlqs9x52"))))))
+
 (define-public rust-roxmltree-0.14
   (package
     (name "rust-roxmltree")
