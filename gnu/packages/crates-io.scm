@@ -61739,6 +61739,22 @@ manipulation in Rust.")
 specified in FIPS-202, SP800-185 and KangarooTwelve.")
     (license license:cc0)))
 
+(define-public rust-tiny-keccak-1
+  (package
+    (inherit rust-tiny-keccak-2)
+    (name "rust-tiny-keccak")
+    (version "1.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tiny-keccak" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1chiisrsql4pfwh5r7nz055ciqj7ch24m0nvrr6a8x5vd4f052hx"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-crunchy" ,rust-crunchy-0.2))))))
+
 (define-public rust-tinyfiledialogs-3
   (package
     (name "rust-tinyfiledialogs")
