@@ -211,30 +211,27 @@ an LDAP server.")
 (define-public python-ldap
   (package
     (name "python-ldap")
-    (version "3.3.1")
+    (version "3.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-ldap" version))
        (sha256
         (base32
-         "198as30xy6p760niqps2zdvq2xcmr765h06pmda8fa9y077wl4a7"))))
+         "04hd7rdm59i7wrykx0nggzxx1p42wkm296j483yy0wayqa7lqik0"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     '(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'configure-openldap-locations
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((openldap (assoc-ref inputs "openldap")))
-               (setenv "SLAPD"
-                       (string-append openldap
-                                      "/libexec/slapd"))
-               (setenv "SCHEMA"
-                       (string-append openldap
-                                      "/etc/openldap/schema/")))
-             #t)))))
+             (let ((slapd (search-input-file inputs "libexec/slapd"))
+                   (schema (search-input-directory
+                            inputs "etc/openldap/schema")))
+               (setenv "SLAPD" slapd)
+               (setenv "SCHEMA" schema)))))))
     (inputs
-     (list openldap cyrus-sasl mit-krb5))
+     (list openldap-2.6 cyrus-sasl mit-krb5))
     (propagated-inputs
      (list python-pyasn1 python-pyasn1-modules))
     (home-page "https://www.python-ldap.org/")
