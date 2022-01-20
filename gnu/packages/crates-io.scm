@@ -70973,6 +70973,27 @@ Rust that are very fast but not thread-safe.  A thread-safe (and slower)
 variant of this library is available separately as @code{im}.")
     (license license:mpl2.0)))
 
+(define-public rust-impl-codec-0.5
+  (package
+    (name "rust-impl-codec")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "impl-codec" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0hy4svffnw9idy9ipp0hkmbzk97fl583akqwyqmvbqy8qgzbs7hn"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-parity-scale-codec" ,rust-parity-scale-codec-2))))
+    (home-page "https://github.com/paritytech/parity-common")
+    (synopsis "Parity Codec serialization support for uint and fixed hash")
+    (description "This package provides Parity Codec serialization support
+for uint and fixed hash.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-impl-trait-for-tuples-0.2
   (package
     (name "rust-impl-trait-for-tuples")
