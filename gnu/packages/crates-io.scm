@@ -48745,6 +48745,44 @@ table-based tests.")
 table-based tests.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-rug-1
+  (package
+    (name "rust-rug")
+    (version "1.14.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rug" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "1iw52gyw0hshymqa04g76m7qnrds5vkgc5s8svqx5nv1jz1wrdgm"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:phases
+        (modify-phases %standard-phases
+          (add-after 'unpack 'set-shell-for-configure-script
+            (lambda _
+              (setenv "CONFIG_SHELL" (which "sh")))))
+        #:cargo-inputs
+        (("rust-az" ,rust-az-1)
+         ("rust-gmp-mpfr-sys" ,rust-gmp-mpfr-sys-1)
+         ("rust-libc" ,rust-libc-0.2)
+         ("rust-serde" ,rust-serde-1))
+        #:cargo-development-inputs
+        (("rust-bincode" ,rust-bincode-1)
+         ("rust-byteorder" ,rust-byteorder-1)
+         ("rust-serde-json" ,rust-serde-json-1)
+         ("rust-serde-test" ,rust-serde-test-1))))
+    (native-inputs
+     (list bash-minimal m4))
+    (home-page "https://gitlab.com/tspiteri/rug")
+    (synopsis
+      "Arbitrary-precision integers, rational, floating-point and complex numbers based
+on GMP, MPFR and MPC")
+    (description "This is a Rust library of arbitrary-precision integers, rational,
+floating-point, and complex numbers based on GMP, MPFR and MPC.")
+    (license license:lgpl3+)))
+
 (define-public rust-rpassword-5
   (package
     (name "rust-rpassword")
