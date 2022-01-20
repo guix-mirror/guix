@@ -6,7 +6,7 @@
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Vijayalakshmi Vedantham <vijimay12@gmail.com>
 ;;; Copyright © 2019 Sam <smbaines8@gmail.com>
-;;; Copyright © 2020, 2021 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2020, 2021, 2022 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Luis Felipe López Acevedo <luis.felipe.la@protonmail.com>
 ;;;
@@ -1263,7 +1263,14 @@ to ElasticSearch.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0r4zhqhs8y6cnplwyvcb0zpijizw1ifnszs38n4w8138657f9026"))))
+                "0r4zhqhs8y6cnplwyvcb0zpijizw1ifnszs38n4w8138657f9026"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Patch for Django 4.0 compatibility, taken from upstream pull
+               ;; request: https://github.com/miki725/django-url-filter/pull/103
+               '(substitute* "url_filter/validators.py"
+                  ((" ungettext_lazy")
+                   " ngettext_lazy")))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f            ;FIXME: Django raises "Apps aren't loaded yet"!?
