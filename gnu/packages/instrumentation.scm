@@ -38,12 +38,14 @@
   #:use-module (gnu packages tbb)
   #:use-module (gnu packages xml)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
   #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages))
+  #:use-module (guix packages)
+  #:use-module (srfi srfi-26))
 
 (define-public babeltrace
   (package
@@ -152,6 +154,46 @@ analyzing and editing binaries.  It can attach to an existing program or
 create a new one out of an ELF file for analysis or modification.  It come
 with a handful of C++ libraries.")
     (license license:lgpl2.1+)))
+
+(define-public flamegraph
+  ;; No new version since 2019, but there's still some new important commits.
+  (let ((commit "810687f180f3c4929b5d965f54817a5218c9d89b")
+        (revision "1"))
+    (package
+      (name "flamegraph")
+      (version (git-version "1.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/brendangregg/FlameGraph")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1lg02mxzdsm9szn4vcmx76c1bw9gqmxqk8n6v63v03036sc83s22"))))
+      (build-system copy-build-system)
+      (arguments
+       `(#:install-plan
+         ',(map (cut list <> "bin/")
+                '("flamegraph.pl"
+                  "stackcollapse.pl"
+                  "stackcollapse-perf.pl"
+                  "stackcollapse-pmc.pl"
+                  "stackcollapse-stap.pl"
+                  "stackcollapse-instruments.pl"
+                  "stackcollapse-vtune.pl"
+                  "stackcollapse-jstack.pl"
+                  "stackcollapse-gdb.pl"
+                  "stackcollapse-go.pl"
+                  "stackcollapse-vsprof.pl"
+                  "stackcollapse-wcp.pl"))))
+      (inputs (list perl))
+      (home-page "http://www.brendangregg.com/flamegraphs.html")
+      (synopsis "Stack trace visualizer")
+      (description "Flamegraph is a collection of scripts that generate
+interactive SVGs out of traces genated from various tracing tools.  It comes
+with the script @command{flamegraph.pl} and many stackcollapse scripts.")
+      (license license:cddl1.0))))
 
 (define-public lttng-ust
   (package
