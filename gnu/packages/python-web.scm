@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2013, 2014, 2015, 2016, 2020 Andreas Enge <andreas@enge.fr>
@@ -1423,9 +1423,10 @@ is Python’s.")
      `(#:phases
        (modify-phases %standard-phases
         (replace 'check
-          (lambda _
-            (invoke "coverage" "run" "-m"
-                    "unittest" "openid.test.test_suite"))))))
+          (lambda* (#:key tests? #:allow-other-keys)
+            (when tests?
+              (invoke "coverage" "run" "-m"
+                      "unittest" "openid.test.test_suite")))))))
     (propagated-inputs
      (list python-defusedxml))
     (native-inputs
