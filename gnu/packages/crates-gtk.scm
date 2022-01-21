@@ -1389,6 +1389,39 @@
     (description "This package provides FFI bindings to libgtk-3.")
     (license license:expat)))
 
+(define-public rust-gtk-sys-0.10
+  (package
+    (inherit rust-gtk-sys-0.14)
+    (name "rust-gtk-sys")
+    (version "0.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "gtk-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0mq4i161kk6dwiz19ayxgm9fhx7n3r5lm9lbjiyk0qs811pxmb49"))))
+    (arguments
+     `(#:tests? #f                      ;tests FAILED.
+       #:cargo-inputs
+       (("rust-atk-sys" ,rust-atk-sys-0.10)
+        ("rust-cairo-sys-rs" ,rust-cairo-sys-rs-0.10)
+        ("rust-gdk-pixbuf-sys" ,rust-gdk-pixbuf-sys-0.10)
+        ("rust-gdk-sys" ,rust-gdk-sys-0.10)
+        ("rust-gio-sys" ,rust-gio-sys-0.10)
+        ("rust-glib-sys" ,rust-glib-sys-0.10)
+        ("rust-gobject-sys" ,rust-gobject-sys-0.10)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-pango-sys" ,rust-pango-sys-0.10)
+        ("rust-system-deps" ,rust-system-deps-1))
+       #:cargo-development-inputs
+       (("rust-shell-words" ,rust-shell-words-0.1)
+        ("rust-tempfile" ,rust-tempfile-3))))
+    (native-inputs
+     (list pkg-config))
+    (inputs
+     (list gtk+))))
+
 (define-public rust-gtk-sys-0.9
   (package
     (inherit rust-gtk-sys-0.14)
