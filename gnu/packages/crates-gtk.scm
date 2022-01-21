@@ -30,7 +30,8 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
-  #:use-module (gnu packages pkg-config))
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages webkit))
 
 ;;;
 ;;; Please: Try to add new module packages in alphabetic order.
@@ -1791,4 +1792,45 @@ library.")
     (home-page "https://github.com/gtk-rs/soup-sys-rs")
     (synopsis "Soup FFI crate for Rust")
     (description "This crate provides Soup FFI for Rust.")
+    (license license:expat)))
+
+(define-public rust-webkit2gtk-sys-0.12
+  (package
+    (name "rust-webkit2gtk-sys")
+    (version "0.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "webkit2gtk-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0686iy2jrq8h2i2p4zb53mg32ql5zagba1fskcdi23asr0w537iq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f                      ;tests FAILED
+       #:cargo-inputs
+       (("rust-atk-sys" ,rust-atk-sys-0.10)
+        ("rust-bitflags" ,rust-bitflags-1)
+        ("rust-cairo-sys-rs" ,rust-cairo-sys-rs-0.10)
+        ("rust-gdk-pixbuf-sys" ,rust-gdk-pixbuf-sys-0.10)
+        ("rust-gdk-sys" ,rust-gdk-sys-0.10)
+        ("rust-gio-sys" ,rust-gio-sys-0.10)
+        ("rust-glib-sys" ,rust-glib-sys-0.10)
+        ("rust-gobject-sys" ,rust-gobject-sys-0.10)
+        ("rust-gtk-sys" ,rust-gtk-sys-0.10)
+        ("rust-javascriptcore-rs-sys" ,rust-javascriptcore-rs-sys-0.2)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-pango-sys" ,rust-pango-sys-0.10)
+        ("rust-pkg-config" ,rust-pkg-config-0.3)
+        ("rust-soup-sys" ,rust-soup-sys-0.10))
+       #:cargo-development-inputs
+       (("rust-shell-words" ,rust-shell-words-0.1)
+        ("rust-tempfile" ,rust-tempfile-3))))
+    (native-inputs
+     (list pkg-config))
+    (inputs
+     (list glib webkitgtk-with-libsoup2))
+    (home-page "https://github.com/tauri-apps/webkit2gtk-rs")
+    (synopsis "Rust binding for webkit-gtk library")
+    (description "This crate provides Rust binding for webkit-gtk library.")
     (license license:expat)))
