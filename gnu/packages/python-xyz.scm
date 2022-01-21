@@ -21363,6 +21363,37 @@ Python 3.6+ type hints.")
     ;; MIT license
     (license license:expat)))
 
+(define-public python-typeguard
+  (package
+    (name "python-typeguard")
+    (version "2.13.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "typeguard" version))
+       (sha256
+        (base32 "1i5qzcyw2715h1g1hvj7fxykck2bkxyshpngjr3nfcx1lf6smv80"))))
+    (build-system python-build-system)
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (invoke "pytest" "-vv" "-k"
+                        ;; XXX: These fail when installed as a library:
+                        ;; https://github.com/agronholm/typeguard/issues/176
+                        "not usefixtures and not test_cached_module")))))))
+    (native-inputs
+     (list python-mypy python-pytest python-typing-extensions))
+    (home-page "https://github.com/agronholm/typeguard")
+    (synopsis "Run-time type checker for Python")
+    (description
+     "@code{typeguard} provides run-time type checking for functions defined
+with PEP 484 argument (and return) type annotations.")
+    (license license:expat)))
+
 (define-public python-typing
   (package
     (name "python-typing")
