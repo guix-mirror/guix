@@ -2246,6 +2246,28 @@ possibility to play Youtube videos, download subtitles, remember
 the last played position, etc.")
     (license license:gpl2+)))
 
+(define-public gallery-dl
+  (package
+    (name "gallery-dl")
+    (version "1.20.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mikf/gallery-dl"
+                                  "/releases/download/v" version "/gallery_dl-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0qkz8aznvybdqrjxsl6ir319ras05mi8l0sal4mgi18l70jndh51"))))
+    (build-system python-build-system)
+    (inputs (list python-requests ffmpeg))
+    (home-page "https://github.com/mikf/gallery-dl")
+    (synopsis "Command-line program to download images from several sites")
+    (description "Command-line program to download image galleries
+and collections from several image hosting sites
+While this package can use youtube-dl or yt-dlp packages to download videos,
+the focus is more on images and image hosting sites.")
+    (license license:gpl2)))
+
 (define-public gnome-mpv
   (deprecated-package "gnome-mpv" celluloid))
 
