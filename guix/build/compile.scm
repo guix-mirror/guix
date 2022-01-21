@@ -37,8 +37,8 @@
 ;;;
 ;;; Code:
 
-(define (strip-keyword-arguments keywords args) ;XXX: copied from (guix utils)
-  "Remove all of the keyword arguments listed in KEYWORDS from ARGS."
+(define (clear-keyword-arguments keywords args)
+  "Set to #f the value associated with each of the KEYWORDS in ARGS."
   (let loop ((args   args)
              (result '()))
     (match args
@@ -47,7 +47,7 @@
       (((? keyword? kw) arg . rest)
        (loop rest
              (if (memq kw keywords)
-                 result
+                 (cons* #f kw result)
                  (cons* arg kw result))))
       ((head . tail)
        (loop tail (cons head result))))))
@@ -82,7 +82,7 @@
           ;; non-reproducible and more expensive builds, so we turn it off
           ;; here:
           ;; <https://wingolog.org/archives/2021/05/13/cross-module-inlining-in-guile>.
-          (strip-keyword-arguments '(#:inlinable-exports? #:resolve-free-vars?
+          (clear-keyword-arguments '(#:inlinable-exports? #:resolve-free-vars?
                                      #:cross-module-inlining?)
                                    (if (<= level 1)
                                        %lightweight-optimizations
