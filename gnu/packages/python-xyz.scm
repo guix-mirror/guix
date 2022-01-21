@@ -5491,6 +5491,21 @@ writing C extensions for Python as easy as Python itself.")
                     ""))
                  #t)))))))))
 
+(define-public python-cython-3
+  (package
+    (inherit python-cython)
+    ;; Cython 3 is not officially released yet, so distinguish the name
+    ;; for now.
+    (name "python-cython-next")
+    (version "3.0.0a10")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "Cython" version))
+              (sha256
+               (base32
+                "17fqacrpis05w1rpi7d7sbimrk20xf8h6d3vrz5nf6ix3899abil"))))
+    (properties '())))
+
 (define-public python-numpy-next
   (package
     (name "python-numpy-next")
