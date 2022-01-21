@@ -1154,17 +1154,17 @@ and high-availability (HA).")
     (license license:gpl2)))                  ;'COPYING' says "version 2" only
 
 ;; Don't forget to update the other postgresql packages when upgrading this one.
-(define-public postgresql-13
+(define-public postgresql-14
   (package
     (name "postgresql")
-    (version "13.4")
+    (version "14.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "1kf0gcsrl5n25rjlvkh87aywmn28kbwvakm5c7j1qpr4j01y34za"))
+                "07x45iycqpps0qh3ingc09jgn9rpnmc3gixx0qprhf5flwg10g2d"))
               (patches (search-patches "postgresql-disable-resolve_symlinks.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -1210,6 +1210,18 @@ types, including INTEGER, NUMERIC, BOOLEAN, CHAR, VARCHAR, DATE, INTERVAL, and
 TIMESTAMP.  It also supports storage of binary large objects, including
 pictures, sounds, or video.")
     (license (license:x11-style "file://COPYRIGHT"))))
+
+(define-public postgresql-13
+  (package
+    (inherit postgresql-14)
+    (version "13.4")
+    (source (origin
+              (inherit (package-source postgresql-14))
+              (uri (string-append "https://ftp.postgresql.org/pub/source/v"
+                                  version "/postgresql-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1kf0gcsrl5n25rjlvkh87aywmn28kbwvakm5c7j1qpr4j01y34za"))))))
 
 (define-public postgresql-11
   (package
