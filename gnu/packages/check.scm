@@ -25,7 +25,7 @@
 ;;; Copyright © 2017, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2015, 2017, 2018, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2016-2022 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2017, 2018, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2019, 2021 Pierre Langlois <pierre.langlois@gmx.com>
@@ -1286,22 +1286,29 @@ reported in a previous test run.")
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest-mock" version))
-       (sha256 (base32
-                "0qhfmd05z3g88bnwq6644jl6p5wy01i4yy7h8883z9jjih2pl8a0"))))
+       (sha256
+        (base32 "0qhfmd05z3g88bnwq6644jl6p5wy01i4yy7h8883z9jjih2pl8a0"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Some tests do a string match on Pytest output, and fails when
+        ;; warnings are present.  Adjust to cope with warnings from
+        ;; third-party libraries (looking at you, pytest-asyncio).
+        '(substitute* "tests/test_pytest_mock.py"
+           (("1 passed in \\*")
+            "1 passed*")))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     '(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+           (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
-               (add-installed-pythonpath inputs outputs)
                ;; Skip the assertion rewriting tests, which don't work in the
                ;; presence of read-only Python modules (a limitation of
                ;; Pytest).  Also skip the "test_standalone_mock" test, which
                ;; can only work when 'python-mock' is not available
                ;; (currently propagated by Pytest 5).
-               (invoke "pytest" "--assert=plain"
+               (invoke "pytest" "--assert=plain" "-vv"
                        "-k" "not test_standalone_mock")))))))
     (native-inputs
      (list python-pytest-asyncio python-setuptools-scm))
