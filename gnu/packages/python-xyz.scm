@@ -710,25 +710,22 @@ threads.")
 (define-public python-tenacity
   (package
     (name "python-tenacity")
-    (version "6.1.0")
+    (version "8.0.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "tenacity" version))
               (sha256
                (base32
-                "1j36v9fcpmmd4985ix0cwnvcq71rkrn5cjiiv0id9vkl4kpxh0gv"))))
+                "0bwkvjpjfyi9dgszzad9aww2vc00w3bczjnbifi92cp7wch2l923"))))
     (build-system python-build-system)
     (native-inputs
-     (list python-setuptools-scm python-sphinx python-tornado
+     (list python-setuptools-scm python-tornado python-typeguard
            python-pytest))
-    (propagated-inputs
-     (list python-six))
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (replace 'check
-                    (lambda _
-                      (invoke "pytest")
-                      #t)))))
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (replace 'check
+                 (lambda _ (invoke "pytest" "-vv"))))))
     (home-page "https://github.com/jd/tenacity")
     (synopsis "Retrying library for python")
     (description "Tenacity is a general-purpose python library to simplify the
