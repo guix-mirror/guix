@@ -9278,6 +9278,38 @@ chain, the first matching branch is the item that gets emitted.")
        (("rust-compiler-builtins" ,rust-compiler-builtins-0.1)
         ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1))))))
 
+(define-public rust-chacha20-0.8
+  (package
+    (name "rust-chacha20")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "chacha20" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "14cgpnnpqsn5hmqkgrj4yaqdsvy56hkgcw5s2gqsxwhc7m1jmdq1"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-cipher" ,rust-cipher-0.3)
+        ("rust-cpufeatures" ,rust-cpufeatures-0.2)
+        ("rust-rand-core" ,rust-rand-core-0.6)
+        ("rust-zeroize" ,rust-zeroize-1))
+       #:cargo-development-inputs
+       (("rust-cipher" ,rust-cipher-0.3)
+        ("rust-hex-literal" ,rust-hex-literal-0.2))))
+    (home-page "https://github.com/RustCrypto/stream-ciphers")
+    (synopsis "ChaCha20 stream cipher implemented in pure Rust")
+    (description
+     "The ChaCha20 stream cipher (RFC 8439) implemented in pure Rust using traits
+from the RustCrypto @code{cipher} crate, with optional architecture-specific
+hardware acceleration (AVX2, SSE2).  Additionally provides the ChaCha8, ChaCha12,
+XChaCha20, XChaCha12 and XChaCha8 stream ciphers, and also optional
+@code{rand_core-compatible} RNGs based on those ciphers.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-chalk-derive-0.75
   (package
     (name "rust-chalk-derive")
