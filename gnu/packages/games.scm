@@ -30,7 +30,7 @@
 ;;; Copyright © 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2017–2022 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2017, 2022–2022 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 okapi <okapi@firemail.cc>
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2018 Madalin Ionel-Patrascu <madalinionel.patrascu@mdc-berlin.de>
@@ -7928,14 +7928,14 @@ ncurses for text display.")
 (define-public naev
   (package
     (name "naev")
-    (version "0.9.1")
+    (version "0.9.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/naev/naev/releases/download/v"
                            version "/naev-" version "-source.tar.xz"))
        (sha256
-        (base32 "1v7ibl0xdr8a93c73mbbg1lnsc1a67nsg1waqb8fsdw6yrs39508"))))
+        (base32 "1p6424n2rgrlb0h71gvww40vxs1h583d9im8bzgmv6dhgclbg0nl"))))
     (build-system meson-build-system)
     (arguments
      ;; XXX: Do not add debugging symbols, which cause the build to fail.
@@ -7955,6 +7955,7 @@ ncurses for text display.")
            openal
            openblas
            physfs
+           python
            python-pyyaml
            (sdl-union (list sdl2 sdl2-image sdl2-mixer))
            suitesparse))
