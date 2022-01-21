@@ -48551,6 +48551,42 @@ rustc compiler.")
         ("rust-serde-derive" ,rust-serde-derive-1)
         ("rust-webpki-roots" ,rust-webpki-roots-0.14))))))
 
+(define-public rust-rustls-native-certs-0.6
+  (package
+    (name "rust-rustls-native-certs")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustls-native-certs" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0hq9h3kri19kv00gvbq61h21rarqadxh6y98wj0c2gvxlbgypaaw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-openssl-probe" ,rust-openssl-probe-0.1)
+        ("rust-rustls-pemfile" ,rust-rustls-pemfile-0.2)
+        ("rust-schannel" ,rust-schannel-0.1)
+        ("rust-security-framework" ,rust-security-framework-2))
+       #:cargo-development-inputs
+       (("rust-ring" ,rust-ring-0.16)
+        ("rust-rustls" ,rust-rustls-0.20)
+        ("rust-serial-test" ,rust-serial-test-0.5)
+        ("rust-untrusted" ,rust-untrusted-0.7)
+        ("rust-webpki" ,rust-webpki-0.22)
+        ("rust-webpki-roots" ,rust-webpki-roots-0.22)
+        ("rust-x509-parser" ,rust-x509-parser-0.12))))
+    (home-page "https://github.com/ctz/rustls-native-certs")
+    (synopsis "Use the platform native certificate store with rustls")
+    (description "@code{rustls-native-certs} allows rustls to use the platform
+native certificate store.")
+    (license
+     (list license:asl2.0 license:isc license:expat))))
+
 (define-public rust-rustls-native-certs-0.5
   (package
     (name "rust-rustls-native-certs")
