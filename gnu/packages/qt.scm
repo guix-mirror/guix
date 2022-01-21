@@ -2427,8 +2427,7 @@ This package provides the Python bindings.")))
            (lambda _
              (substitute* "CMakeLists.txt"
               (("\\$\\{qt_translations_dir\\}")
-               "${CMAKE_INSTALL_PREFIX}/share/qt5/translations"))
-             #t)))))
+               "${CMAKE_INSTALL_PREFIX}/share/qt5/translations")))))))
     (home-page "https://github.com/frankosterfeld/qtkeychain")
     (synopsis "Qt API to store passwords")
     (description
