@@ -3406,21 +3406,21 @@ designed to be easy and intuitive to use.")
 (define-public python-psycopg2
   (package
     (name "python-psycopg2")
-    (version "2.9.2")
+    (version "2.9.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "psycopg2" version))
        (sha256
-        (base32 "1smvvs1ngqy0ymlp1d7f85j09j9v0z5dq14f1qky0j0qi7xajkd8"))))
+        (base32 "1099as8ind9kpz30rmqzc3nir668fmpkxwayrj2sjka3ycdiv14f"))))
     (build-system python-build-system)
     (arguments
      ;; Tests would require a postgresql database "psycopg2_test"
      ;; and a running postgresql database management service.
-     `(#:tests? #f)) ; TODO re-enable after providing a test-db.
+     '(#:tests? #f)) ; TODO re-enable after providing a test-db.
     (inputs
      (list postgresql)) ; libpq
-    (home-page "http://initd.org/psycopg/")
+    (home-page "https://www.psycopg.org/")
     (synopsis "Python PostgreSQL adapter")
     (description
      "psycopg2 is a thread-safe PostgreSQL adapter that implements DB-API
