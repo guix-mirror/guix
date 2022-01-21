@@ -67,6 +67,7 @@
 ;;; Copyright © 2021 Mathieu Othacehe <othacehe@gnu.org>
 ;;; Copyright © 2022 Daniel Meißner <daniel.meissner-i4k@ruhr-uni-bochum.de>
 ;;; Copyright © 2022 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2022 John Kehayias <john.kehayias@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -12101,21 +12102,21 @@ your operating-system definition:
        (file-name (git-file-name name version))))
     (build-system meson-build-system)
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("glib:bin" ,glib "bin")
-       ("gobject-introspection" ,gobject-introspection)
-       ("pkg-config" ,pkg-config)
-       ("python-flake8" ,python-flake8)))
+     (list gettext-minimal
+           `(,glib "bin")
+           gobject-introspection
+           pkg-config
+           python-flake8))
     (inputs
-     `(("adwaita-icon-theme" ,adwaita-icon-theme)
-       ("gtk" ,gtk+)
-       ("gtk:bin" ,gtk+ "bin")
-       ("libratbag" ,libratbag)
-       ("librsvg" ,librsvg)
-       ("python-evdev" ,python-evdev)
-       ("python-lxml" ,python-lxml)
-       ("python-pycairo" ,python-pycairo)
-       ("python-pygobject" ,python-pygobject)))
+     (list adwaita-icon-theme
+           gtk+
+           `(,gtk+ "bin")
+           libratbag
+           python
+           python-evdev
+           python-lxml
+           python-pycairo
+           python-pygobject))
     (arguments
      `(#:imported-modules ((guix build python-build-system)
                            ,@%meson-build-system-modules)
@@ -12128,8 +12129,7 @@ your operating-system definition:
          (add-after 'unpack 'dont-update-gtk-icon-cache
            (lambda _
              (substitute* "meson.build"
-               (("meson.add_install_script('meson_install.sh')") ""))
-             #t))
+               (("meson.add_install_script('meson_install.sh')") ""))))
          ;; TODO: Switch to wrap-script when it is fixed.
          (add-after 'install 'wrap-python
            (assoc-ref python:%standard-phases 'wrap))
@@ -12137,8 +12137,7 @@ your operating-system definition:
            (lambda* (#:key outputs #:allow-other-keys)
              (wrap-program
                  (string-append (assoc-ref outputs "out" )"/bin/piper")
-               `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
-             #t)))))
+               `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH")))))))))
     (home-page "https://github.com/libratbag/piper/")
     (synopsis "Configure bindings and LEDs on gaming mice")
     (description "Piper is a GTK+ application for configuring gaming mice with
