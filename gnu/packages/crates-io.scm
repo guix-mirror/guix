@@ -24,6 +24,7 @@
 ;;; Copyright © 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2021 Jacob Hrbek <kreyren@rixotstudio.cz>
 ;;; Copyright © 2021 Nicolas Graves <ngraves@ngraves.fr>
+;;; Copyright © 2022 Aleksandr Vityazev <avityazev@posteo.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37066,6 +37067,26 @@ sequence alignment library.")
     (description "This package provides SIMD accelerated pairwise genetic
 sequence alignment tools.")
     (license license:expat)))
+
+(define-public rust-paris-1
+  (package
+    (name "rust-paris")
+    (version "1.5.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "paris" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0i8dy41v7malj279snap1z1awpyd7hfr1nc1s7kr2dvn8xhqb786"))))
+    (build-system cargo-build-system)
+    (arguments `(#:cargo-inputs (("rust-chrono" ,rust-chrono-0.4))))
+    (home-page "https://github.com/0x20F/paris")
+    (synopsis "Simple logger for CLI apps or things you want in the terminal")
+    (description
+     "This package provides a simple logger for CLI apps or other things you
+want in the terminal.")
+    (license license:mpl2.0)))
 
 (define-public rust-parity-tokio-ipc-0.4
   (package
