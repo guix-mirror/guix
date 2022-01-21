@@ -23,7 +23,7 @@
 ;;; Copyright © 2018, 2019 Tonton <tonton@riseup.net>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Theodoros Foradis <theodoros@foradis.org>
-;;; Copyright © 2018, 2020, 2021 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2018, 2020-2022 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2018, 2020, 2021 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019, 2020, 2021, 2022 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -128,6 +128,7 @@
   #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
@@ -909,6 +910,42 @@ not work between wireless nodes because wireless does not know about MAC
 addresses used in the wired Ethernet networks.  This daemon can also be
 useful for making transparent firewalls.")
     (license license:gpl2)))
+
+(define-public pproxy
+  (package
+    (name "pproxy")
+    (version "2.7.8")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pproxy" version))
+              (sha256
+               (base32
+                "1j4nv72i77i2j5nl9ymzpk4m98qih3naihfrqjghrc9b7g0krdzs"))))
+    (build-system python-build-system)
+    (arguments
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (replace 'check
+                 (lambda* (#:key tests? #:allow-other-keys)
+                   (when tests?
+                     (with-directory-excursion "tests"
+                       (for-each (lambda (file)
+                                   (invoke "python" file))
+                                 ;; XXX: The api_ tests require network access
+                                 ;; so we only run the cipher tests for now.
+                                 (find-files "." "^cipher_.*\\.py$")))))))))
+    (inputs
+     (list python-asyncssh
+           python-daemon
+           python-pycryptodome
+           python-uvloop))
+    (home-page "https://github.com/qwj/python-proxy")
+    (synopsis "Multi-protocol network proxy")
+    (description
+     "@command{pproxy} is an asynchronuous proxy server implemented with
+Python 3 @code{asyncio}.  Among the supported protocols are HTTP, SOCKS
+and SSH, and it can use both TCP and UDP as transport mechanisms.")
+    (license license:expat)))
 
 (define-public socat
   (package
