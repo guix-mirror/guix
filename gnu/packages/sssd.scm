@@ -3,7 +3,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2021 Timotej Lazar <timotej.lazar@araneo.si>
-;;; Copyright © 2021 Remco van 't Veer <remco@remworks.net>
+;;; Copyright © 2021, 2022 Remco van 't Veer <remco@remworks.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -152,7 +152,8 @@ fundamental object types for C.")
                 "1h6hwibaf3xa2w6qpzjiiywmfj6zkgbz4r2isf3gd0xm6vq7n6if"))
               (patches (search-patches "sssd-fix-samba.patch"
                                        "sssd-system-directories.patch"
-                                       "sssd-collision-with-external-nss-symbol.patch"))))
+                                       "sssd-collision-with-external-nss-symbol.patch"
+                                       "sssd-fix-samba-4.15.3.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -196,7 +197,19 @@ fundamental object types for C.")
            (lambda _
              (substitute* "src/tests/responder_socket_access-tests.c"
                (("tcase_add_test\\(tc_utils, resp_str_to_array_test\\);") ""))
-             #t)))))
+             #t))
+         (add-after 'unpack 'add-config-in
+           (lambda _
+             (let ((config.h (open-file "config.h.in" "a")))
+               (display (string-append "
+/* Missing in commits on original repo, dunno why but won't work without. */
+#define SMB_HAS_NEW_NDR_PULL_STEAL_SWITCH 1
+")
+                        config.h)
+               (close config.h))))
+         (add-before 'configure 'autoconf
+           (lambda _
+             (invoke "autoconf"))))))
     (inputs
      (list augeas
            `(,isc-bind "utils")
@@ -225,7 +238,8 @@ fundamental object types for C.")
            tdb
            tevent))
     (native-inputs
-     (list check-0.14
+     (list autoconf-2.69
+           check-0.14
            docbook-xsl
            docbook-xml
            libxml2 ; for xmllint

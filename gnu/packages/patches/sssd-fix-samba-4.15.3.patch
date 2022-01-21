@@ -1,0 +1,523 @@
+From 3ba88c317fd64b69b000adbdf881c88383f325d1 Mon Sep 17 00:00:00 2001
+From: Noel Power <noel.power@suse.com>
+Date: Tue, 24 Mar 2020 13:37:07 +0000
+Subject: [PATCH] Use ndr_pull_steal_switch_value for modern samba versions
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+commit bc56b10aea999284458dcc293b54cf65288e325d attempted to
+fix the build error resulting from removal of 'ndr_pull_get_switch'
+
+This change uses the new replacement method
+'ndr_pull_steal_switch_value' however depending on the samba version
+the ndr_pull_steal_switch_value abi is different.
+
+Note: ndr_pull_steal_switch_value is used since samba 4.10 for
+      the affected methods
+
+Note: the following methods have been refreshed from samba-4.12 generated
+      code;
+
+    o ndr_pull_security_ace_object_type
+    o ndr_pull_security_ace_object_inherited_type
+    o ndr_pull_security_ace_object_ctr
+
+Signed-off-by: Noel Power <noel.power@suse.com>
+
+Reviewed-by: Pavel Březina <pbrezina@redhat.com>
+(cherry picked from commit 1fdd8fa2fded1985fbfc6aa67394eebcdbb6a2fc)
+
+Reviewed-by: Pavel Březina <pbrezina@redhat.com>
+---
+ src/external/samba.m4         |  9 ++++++-
+ src/providers/ad/ad_gpo_ndr.c | 45 ++++++++++++++++++++---------------
+ 2 files changed, 34 insertions(+), 20 deletions(-)
+
+diff --git a/src/external/samba.m4 b/src/external/samba.m4
+index 089f602a60..8e06174ead 100644
+--- a/src/external/samba.m4
++++ b/src/external/samba.m4
+@@ -132,8 +132,15 @@ int main(void)
+         AC_DEFINE_UNQUOTED(SMB_IDMAP_DOMAIN_HAS_DOM_SID, 1,
+                            [Samba's struct idmap_domain has dom_sid member])
+         AC_MSG_NOTICE([Samba's struct idmap_domain has dom_sid member])
++        if test $samba_minor_version -ge 12 ; then
++            AC_DEFINE_UNQUOTED(SMB_HAS_NEW_NDR_PULL_STEAL_SWITCH, 1,
++                               [Samba's new push/pull switch functions])
++            AC_MSG_NOTICE([Samba has support for new ndr_push_steal_switch_value and ndr_pull_steal_switch_value functions])
++        else
++            AC_MSG_NOTICE([Samba supports old ndr_pull_steal_switch_value and ndr_pull_steal_switch_value functions])
++        fi
+     else
+         AC_MSG_NOTICE([Samba's struct idmap_domain does not have dom_sid member])
++        AC_MSG_NOTICE([Samba supports old ndr_pull_steal_switch_value and ndr_pull_steal_switch_value functions])
+     fi
+-
+ fi
+
+ SAVE_CFLAGS=$CFLAGS
+diff --git a/src/providers/ad/ad_gpo_ndr.c b/src/providers/ad/ad_gpo_ndr.c
+index 49c49d71b2..3d389e513d 100644
+--- a/src/providers/ad/ad_gpo_ndr.c
++++ b/src/providers/ad/ad_gpo_ndr.c
+@@ -105,9 +105,14 @@ ndr_pull_security_ace_object_type(struct ndr_pull *ndr,
+                                   union security_ace_object_type *r)
+ {
+     uint32_t level;
+-    level = ndr_token_peek(&ndr->switch_list, r);
+     NDR_PULL_CHECK_FLAGS(ndr, ndr_flags);
+     if (ndr_flags & NDR_SCALARS) {
++        /* This token is not used again (except perhaps below in the NDR_BUFFERS case) */
++#ifdef SMB_HAS_NEW_NDR_PULL_STEAL_SWITCH
++        NDR_CHECK(ndr_pull_steal_switch_value(ndr, r, &level));
++#else
++        level = ndr_pull_steal_switch_value(ndr, r);
++#endif
+         NDR_CHECK(ndr_pull_union_align(ndr, 4));
+         switch (level) {
+         case SEC_ACE_OBJECT_TYPE_PRESENT: {
+@@ -117,14 +122,6 @@ ndr_pull_security_ace_object_type(struct ndr_pull *ndr,
+             break; }
+         }
+     }
+-    if (ndr_flags & NDR_BUFFERS) {
+-        switch (level) {
+-        case SEC_ACE_OBJECT_TYPE_PRESENT:
+-            break;
+-        default:
+-            break;
+-        }
+-    }
+     return NDR_ERR_SUCCESS;
+ }
+
+@@ -135,9 +132,14 @@ ndr_pull_security_ace_object_inherited_type(struct ndr_pull *ndr,
+                                             union security_ace_object_inherited_type *r)
+ {
+     uint32_t level;
+-    level = ndr_token_peek(&ndr->switch_list, r);
+     NDR_PULL_CHECK_FLAGS(ndr, ndr_flags);
+     if (ndr_flags & NDR_SCALARS) {
++        /* This token is not used again (except perhaps below in the NDR_BUFFERS case) */
++#ifdef SMB_HAS_NEW_NDR_PULL_STEAL_SWITCH
++        NDR_CHECK(ndr_pull_steal_switch_value(ndr, r, &level));
++#else
++        level = ndr_pull_steal_switch_value(ndr, r);
++#endif
+         NDR_CHECK(ndr_pull_union_align(ndr, 4));
+         switch (level) {
+         case SEC_ACE_INHERITED_OBJECT_TYPE_PRESENT: {
+@@ -149,14 +151,6 @@ ndr_pull_security_ace_object_inherited_type(struct ndr_pull *ndr,
+             break; }
+         }
+     }
+-    if (ndr_flags & NDR_BUFFERS) {
+-        switch (level) {
+-        case SEC_ACE_INHERITED_OBJECT_TYPE_PRESENT:
+-            break;
+-        default:
+-            break;
+-        }
+-    }
+     return NDR_ERR_SUCCESS;
+ }
+
+@@ -198,9 +192,14 @@ ndr_pull_security_ace_object_ctr(struct ndr_pull *ndr,
+                                  union security_ace_object_ctr *r)
+ {
+     uint32_t level;
+-    level = ndr_token_peek(&ndr->switch_list, r);
+     NDR_PULL_CHECK_FLAGS(ndr, ndr_flags);
+     if (ndr_flags & NDR_SCALARS) {
++        /* This token is not used again (except perhaps below in the NDR_BUFFERS case) */
++#ifdef SMB_HAS_NEW_NDR_PULL_STEAL_SWITCH
++        NDR_CHECK(ndr_pull_steal_switch_value(ndr, r, &level));
++#else
++        level = ndr_pull_steal_switch_value(ndr, r);
++#endif
+         NDR_CHECK(ndr_pull_union_align(ndr, 4));
+         switch (level) {
+         case SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT: {
+@@ -224,6 +223,14 @@ ndr_pull_security_ace_object_ctr(struct ndr_pull *ndr,
+         }
+     }
+     if (ndr_flags & NDR_BUFFERS) {
++        if (!(ndr_flags & NDR_SCALARS)) {
++            /* We didn't get it above, and the token is not needed after this. */
++#ifdef SMB_HAS_NEW_NDR_PULL_STEAL_SWITCH
++            NDR_CHECK(ndr_pull_steal_switch_value(ndr, r, &level));
++#else
++            level = ndr_pull_steal_switch_value(ndr, r);
++#endif
++        }
+         switch (level) {
+         case SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT:
+             NDR_CHECK(ndr_pull_security_ace_object
+From 5285a1896ee19bb8f1ff752380547bc6d7a43334 Mon Sep 17 00:00:00 2001
+From: Noel Power <noel.power@suse.com>
+Date: Tue, 24 Mar 2020 18:14:34 +0000
+Subject: [PATCH] ad_gpo_ndr.c: refresh ndr_ methods from samba-4.12
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Noel Power <noel.power@suse.com>
+
+Reviewed-by: Pavel Březina <pbrezina@redhat.com>
+(cherry picked from commit c031adde4f532f39845a0efd78693600f1f8b2f4)
+
+Reviewed-by: Pavel Březina <pbrezina@redhat.com>
+---
+ src/providers/ad/ad_gpo_ndr.c | 201 ++++++++++++++++++----------------
+ 1 file changed, 106 insertions(+), 95 deletions(-)
+
+diff --git a/src/providers/ad/ad_gpo_ndr.c b/src/providers/ad/ad_gpo_ndr.c
+index 3d389e513d..a64b1a0f84 100644
+--- a/src/providers/ad/ad_gpo_ndr.c
++++ b/src/providers/ad/ad_gpo_ndr.c
+@@ -177,8 +177,16 @@ ndr_pull_security_ace_object(struct ndr_pull *ndr,
+         NDR_CHECK(ndr_pull_trailer_align(ndr, 4));
+     }
+     if (ndr_flags & NDR_BUFFERS) {
++        NDR_CHECK(ndr_pull_set_switch_value
++                  (ndr,
++                   &r->type,
++                   r->flags & SEC_ACE_OBJECT_TYPE_PRESENT));
+         NDR_CHECK(ndr_pull_security_ace_object_type
+                   (ndr, NDR_BUFFERS, &r->type));
++        NDR_CHECK(ndr_pull_set_switch_value
++                  (ndr,
++                   &r->inherited_type,
++                   r->flags & SEC_ACE_INHERITED_OBJECT_TYPE_PRESENT));
+         NDR_CHECK(ndr_pull_security_ace_object_inherited_type
+                   (ndr, NDR_BUFFERS, &r->inherited_type));
+     }
+@@ -342,7 +350,7 @@ ndr_pull_security_acl(struct ndr_pull *ndr,
+                   (ndr, NDR_SCALARS, &r->revision));
+         NDR_CHECK(ndr_pull_uint16(ndr, NDR_SCALARS, &r->size));
+         NDR_CHECK(ndr_pull_uint32(ndr, NDR_SCALARS, &r->num_aces));
+-        if (r->num_aces > 1000) {
++        if (r->num_aces > 2000) {
+             return ndr_pull_error(ndr, NDR_ERR_RANGE, "value out of range");
+         }
+         size_aces_0 = r->num_aces;
+@@ -408,107 +416,110 @@ ad_gpo_ndr_pull_security_descriptor(struct ndr_pull *ndr,
+     TALLOC_CTX *_mem_save_sacl_0;
+     uint32_t _ptr_dacl;
+     TALLOC_CTX *_mem_save_dacl_0;
+-    uint32_t _flags_save_STRUCT = ndr->flags;
+-    uint32_t _relative_save_offset;
+-
+-    ndr_set_flags(&ndr->flags, LIBNDR_FLAG_LITTLE_ENDIAN);
+-    NDR_PULL_CHECK_FLAGS(ndr, ndr_flags);
+-    if (ndr_flags & NDR_SCALARS) {
+-        NDR_CHECK(ndr_pull_align(ndr, 5));
+-        NDR_CHECK(ndr_pull_security_descriptor_revision(ndr,
++    {
++        uint32_t _flags_save_STRUCT = ndr->flags;
++        ndr_set_flags(&ndr->flags, LIBNDR_FLAG_LITTLE_ENDIAN);
++        NDR_PULL_CHECK_FLAGS(ndr, ndr_flags);
++        if (ndr_flags & NDR_SCALARS) {
++            NDR_CHECK(ndr_pull_align(ndr, 5));
++            NDR_CHECK(ndr_pull_security_descriptor_revision(ndr,
++                                                            NDR_SCALARS,
++                                                            &r->revision));
++            NDR_CHECK(ndr_pull_security_descriptor_type(ndr,
+                                                         NDR_SCALARS,
+-                                                        &r->revision));
+-        NDR_CHECK(ndr_pull_security_descriptor_type(ndr,
+-                                                    NDR_SCALARS,
+-                                                    &r->type));
+-        NDR_CHECK(ndr_pull_generic_ptr(ndr, &_ptr_owner_sid));
+-        if (_ptr_owner_sid) {
+-            NDR_PULL_ALLOC(ndr, r->owner_sid);
+-            NDR_CHECK(ndr_pull_relative_ptr1(ndr,
+-                                             r->owner_sid,
+-                                             _ptr_owner_sid));
+-        } else {
+-            r->owner_sid = NULL;
+-        }
+-        NDR_CHECK(ndr_pull_generic_ptr(ndr, &_ptr_group_sid));
+-        if (_ptr_group_sid) {
+-            NDR_PULL_ALLOC(ndr, r->group_sid);
+-            NDR_CHECK(ndr_pull_relative_ptr1(ndr,
+-                                             r->group_sid,
+-                                             _ptr_group_sid));
+-        } else {
+-            r->group_sid = NULL;
+-        }
+-        NDR_CHECK(ndr_pull_generic_ptr(ndr, &_ptr_sacl));
+-        if (_ptr_sacl) {
+-            NDR_PULL_ALLOC(ndr, r->sacl);
+-            NDR_CHECK(ndr_pull_relative_ptr1(ndr, r->sacl, _ptr_sacl));
+-        } else {
+-            r->sacl = NULL;
+-        }
+-        NDR_CHECK(ndr_pull_generic_ptr(ndr, &_ptr_dacl));
+-        if (_ptr_dacl) {
+-            NDR_PULL_ALLOC(ndr, r->dacl);
+-            NDR_CHECK(ndr_pull_relative_ptr1(ndr, r->dacl, _ptr_dacl));
+-        } else {
+-            r->dacl = NULL;
+-        }
+-        NDR_CHECK(ndr_pull_trailer_align(ndr, 5));
+-    }
+-    if (ndr_flags & NDR_BUFFERS) {
+-        if (r->owner_sid) {
+-            _relative_save_offset = ndr->offset;
+-            NDR_CHECK(ndr_pull_relative_ptr2(ndr, r->owner_sid));
+-            _mem_save_owner_sid_0 = NDR_PULL_GET_MEM_CTX(ndr);
+-            NDR_PULL_SET_MEM_CTX(ndr, r->owner_sid, 0);
+-            NDR_CHECK(ndr_pull_dom_sid(ndr, NDR_SCALARS, r->owner_sid));
+-            NDR_PULL_SET_MEM_CTX(ndr, _mem_save_owner_sid_0, 0);
+-            if (ndr->offset > ndr->relative_highest_offset) {
+-                ndr->relative_highest_offset = ndr->offset;
++                                                        &r->type));
++            NDR_CHECK(ndr_pull_generic_ptr(ndr, &_ptr_owner_sid));
++            if (_ptr_owner_sid) {
++                NDR_PULL_ALLOC(ndr, r->owner_sid);
++                NDR_CHECK(ndr_pull_relative_ptr1(ndr,
++                                                 r->owner_sid,
++                                                 _ptr_owner_sid));
++            } else {
++                r->owner_sid = NULL;
+             }
+-            ndr->offset = _relative_save_offset;
+-        }
+-        if (r->group_sid) {
+-            _relative_save_offset = ndr->offset;
+-            NDR_CHECK(ndr_pull_relative_ptr2(ndr, r->group_sid));
+-            _mem_save_group_sid_0 = NDR_PULL_GET_MEM_CTX(ndr);
+-            NDR_PULL_SET_MEM_CTX(ndr, r->group_sid, 0);
+-            NDR_CHECK(ndr_pull_dom_sid(ndr, NDR_SCALARS, r->group_sid));
+-            NDR_PULL_SET_MEM_CTX(ndr, _mem_save_group_sid_0, 0);
+-            if (ndr->offset > ndr->relative_highest_offset) {
+-                ndr->relative_highest_offset = ndr->offset;
++            NDR_CHECK(ndr_pull_generic_ptr(ndr, &_ptr_group_sid));
++            if (_ptr_group_sid) {
++                NDR_PULL_ALLOC(ndr, r->group_sid);
++                NDR_CHECK(ndr_pull_relative_ptr1(ndr,
++                                                 r->group_sid,
++                                                 _ptr_group_sid));
++            } else {
++                r->group_sid = NULL;
+             }
+-            ndr->offset = _relative_save_offset;
+-        }
+-        if (r->sacl) {
+-            _relative_save_offset = ndr->offset;
+-            NDR_CHECK(ndr_pull_relative_ptr2(ndr, r->sacl));
+-            _mem_save_sacl_0 = NDR_PULL_GET_MEM_CTX(ndr);
+-            NDR_PULL_SET_MEM_CTX(ndr, r->sacl, 0);
+-            NDR_CHECK(ndr_pull_security_acl(ndr,
+-                                            NDR_SCALARS|NDR_BUFFERS,
+-                                            r->sacl));
+-            NDR_PULL_SET_MEM_CTX(ndr, _mem_save_sacl_0, 0);
+-            if (ndr->offset > ndr->relative_highest_offset) {
+-                ndr->relative_highest_offset = ndr->offset;
++            NDR_CHECK(ndr_pull_generic_ptr(ndr, &_ptr_sacl));
++            if (_ptr_sacl) {
++                NDR_PULL_ALLOC(ndr, r->sacl);
++                NDR_CHECK(ndr_pull_relative_ptr1(ndr, r->sacl, _ptr_sacl));
++            } else {
++                r->sacl = NULL;
+             }
+-            ndr->offset = _relative_save_offset;
++            NDR_CHECK(ndr_pull_generic_ptr(ndr, &_ptr_dacl));
++            if (_ptr_dacl) {
++                NDR_PULL_ALLOC(ndr, r->dacl);
++                NDR_CHECK(ndr_pull_relative_ptr1(ndr, r->dacl, _ptr_dacl));
++            } else {
++                r->dacl = NULL;
++            }
++            NDR_CHECK(ndr_pull_trailer_align(ndr, 5));
+         }
+-        if (r->dacl) {
+-            _relative_save_offset = ndr->offset;
+-            NDR_CHECK(ndr_pull_relative_ptr2(ndr, r->dacl));
+-            _mem_save_dacl_0 = NDR_PULL_GET_MEM_CTX(ndr);
+-            NDR_PULL_SET_MEM_CTX(ndr, r->dacl, 0);
+-            NDR_CHECK(ndr_pull_security_acl(ndr,
+-                                            NDR_SCALARS|NDR_BUFFERS,
+-                                            r->dacl));
+-            NDR_PULL_SET_MEM_CTX(ndr, _mem_save_dacl_0, 0);
+-            if (ndr->offset > ndr->relative_highest_offset) {
+-                ndr->relative_highest_offset = ndr->offset;
++        if (ndr_flags & NDR_BUFFERS) {
++            if (r->owner_sid) {
++                uint32_t _relative_save_offset;
++                _relative_save_offset = ndr->offset;
++                NDR_CHECK(ndr_pull_relative_ptr2(ndr, r->owner_sid));
++                _mem_save_owner_sid_0 = NDR_PULL_GET_MEM_CTX(ndr);
++                NDR_PULL_SET_MEM_CTX(ndr, r->owner_sid, 0);
++                NDR_CHECK(ndr_pull_dom_sid(ndr, NDR_SCALARS, r->owner_sid));
++                NDR_PULL_SET_MEM_CTX(ndr, _mem_save_owner_sid_0, 0);
++                if (ndr->offset > ndr->relative_highest_offset) {
++                    ndr->relative_highest_offset = ndr->offset;
++                }
++                ndr->offset = _relative_save_offset;
++            }
++            if (r->group_sid) {
++                uint32_t _relative_save_offset;
++                _relative_save_offset = ndr->offset;
++                NDR_CHECK(ndr_pull_relative_ptr2(ndr, r->group_sid));
++                _mem_save_group_sid_0 = NDR_PULL_GET_MEM_CTX(ndr);
++                NDR_PULL_SET_MEM_CTX(ndr, r->group_sid, 0);
++                NDR_CHECK(ndr_pull_dom_sid(ndr, NDR_SCALARS, r->group_sid));
++                NDR_PULL_SET_MEM_CTX(ndr, _mem_save_group_sid_0, 0);
++                if (ndr->offset > ndr->relative_highest_offset) {
++                    ndr->relative_highest_offset = ndr->offset;
++                }
++                ndr->offset = _relative_save_offset;
++            }
++            if (r->sacl) {
++                uint32_t _relative_save_offset;
++                _relative_save_offset = ndr->offset;
++                NDR_CHECK(ndr_pull_relative_ptr2(ndr, r->sacl));
++                _mem_save_sacl_0 = NDR_PULL_GET_MEM_CTX(ndr);
++                NDR_PULL_SET_MEM_CTX(ndr, r->sacl, 0);
++                NDR_CHECK(ndr_pull_security_acl(ndr,
++                                                NDR_SCALARS|NDR_BUFFERS,
++                                                r->sacl));
++                NDR_PULL_SET_MEM_CTX(ndr, _mem_save_sacl_0, 0);
++                if (ndr->offset > ndr->relative_highest_offset) {
++                    ndr->relative_highest_offset = ndr->offset;
++                }
++                ndr->offset = _relative_save_offset;
++            }
++            if (r->dacl) {
++                uint32_t _relative_save_offset;
++                _relative_save_offset = ndr->offset;
++                NDR_CHECK(ndr_pull_relative_ptr2(ndr, r->dacl));
++                _mem_save_dacl_0 = NDR_PULL_GET_MEM_CTX(ndr);
++                NDR_PULL_SET_MEM_CTX(ndr, r->dacl, 0);
++                NDR_CHECK(ndr_pull_security_acl(ndr,
++                                                NDR_SCALARS|NDR_BUFFERS,
++                                                r->dacl));
++                NDR_PULL_SET_MEM_CTX(ndr, _mem_save_dacl_0, 0);
++                if (ndr->offset > ndr->relative_highest_offset) {
++                    ndr->relative_highest_offset = ndr->offset;
++                }
++                ndr->offset = _relative_save_offset;
+             }
+-            ndr->offset = _relative_save_offset;
+         }
+-
+         ndr->flags = _flags_save_STRUCT;
+     }
+     return NDR_ERR_SUCCESS;
+From d5809f6f41ec0dc3fd38f9e4ae917a38bf7dfa43 Mon Sep 17 00:00:00 2001
+From: Sumit Bose <sbose@redhat.com>
+Date: Thu, 28 May 2020 15:02:43 +0200
+Subject: [PATCH] ad_gpo_ndr.c: more ndr updates
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This patch add another update to the ndr code which was previously
+updated by commit c031adde4f532f39845a0efd78693600f1f8b2f4 and
+1fdd8fa2fded1985fbfc6aa67394eebcdbb6a2fc.
+
+As missing update in ndr_pull_security_ace() cased
+a failure in ad_gpo_parse_sd(). A unit-test for ad_gpo_parse_sd() was
+added to prevent similar issues in future.
+
+Resolves: https://github.com/SSSD/sssd/issues/5183
+
+Reviewed-by: Pavel Březina <pbrezina@redhat.com>
+(cherry picked from commit a7c755672cd277497da3df4714f6d9457b6ac5ae)
+
+Reviewed-by: Pavel Březina <pbrezina@redhat.com>
+---
+ src/providers/ad/ad_gpo_ndr.c  |  1 +
+ src/tests/cmocka/test_ad_gpo.c | 57 ++++++++++++++++++++++++++++++++++
+ 2 files changed, 58 insertions(+)
+
+diff --git a/src/providers/ad/ad_gpo_ndr.c b/src/providers/ad/ad_gpo_ndr.c
+index a64b1a0f84..9f040dfb03 100644
+--- a/src/providers/ad/ad_gpo_ndr.c
++++ b/src/providers/ad/ad_gpo_ndr.c
+@@ -317,6 +317,7 @@ ndr_pull_security_ace(struct ndr_pull *ndr,
+         ndr->offset += pad;
+     }
+     if (ndr_flags & NDR_BUFFERS) {
++        NDR_CHECK(ndr_pull_set_switch_value(ndr, &r->object, r->type));
+         NDR_CHECK(ndr_pull_security_ace_object_ctr
+                   (ndr, NDR_BUFFERS, &r->object));
+     }
+diff --git a/src/tests/cmocka/test_ad_gpo.c b/src/tests/cmocka/test_ad_gpo.c
+index 0589adcc3d..97dbe01794 100644
+--- a/src/tests/cmocka/test_ad_gpo.c
++++ b/src/tests/cmocka/test_ad_gpo.c
+@@ -329,6 +329,60 @@ void test_ad_gpo_ace_includes_client_sid_false(void **state)
+                                         ace_dom_sid, false);
+ }
+
++uint8_t test_sid_data[] = {
++0x01, 0x00, 0x04, 0x9c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++0x14, 0x00, 0x00, 0x00, 0x04, 0x00, 0x34, 0x01, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00, 0x24, 0x00,
++0xbd, 0x00, 0x0e, 0x00, 0x01, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05, 0x15, 0x00, 0x00, 0x00,
++0xda, 0x0e, 0xba, 0x60, 0x0f, 0xa2, 0xf4, 0x55, 0xb5, 0x57, 0x47, 0xf8, 0x00, 0x02, 0x00, 0x00,
++0x00, 0x0a, 0x24, 0x00, 0xff, 0x00, 0x0f, 0x00, 0x01, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05,
++0x15, 0x00, 0x00, 0x00, 0xda, 0x0e, 0xba, 0x60, 0x0f, 0xa2, 0xf4, 0x55, 0xb5, 0x57, 0x47, 0xf8,
++0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x24, 0x00, 0xbd, 0x00, 0x0e, 0x00, 0x01, 0x05, 0x00, 0x00,
++0x00, 0x00, 0x00, 0x05, 0x15, 0x00, 0x00, 0x00, 0xda, 0x0e, 0xba, 0x60, 0x0f, 0xa2, 0xf4, 0x55,
++0xb5, 0x57, 0x47, 0xf8, 0x07, 0x02, 0x00, 0x00, 0x00, 0x0a, 0x24, 0x00, 0xff, 0x00, 0x0f, 0x00,
++0x01, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05, 0x15, 0x00, 0x00, 0x00, 0xda, 0x0e, 0xba, 0x60,
++0x0f, 0xa2, 0xf4, 0x55, 0xb5, 0x57, 0x47, 0xf8, 0x07, 0x02, 0x00, 0x00, 0x00, 0x00, 0x24, 0x00,
++0xbd, 0x00, 0x0e, 0x00, 0x01, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05, 0x15, 0x00, 0x00, 0x00,
++0xda, 0x0e, 0xba, 0x60, 0x0f, 0xa2, 0xf4, 0x55, 0xb5, 0x57, 0x47, 0xf8, 0x00, 0x02, 0x00, 0x00,
++0x00, 0x0a, 0x14, 0x00, 0xff, 0x00, 0x0f, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03,
++0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x14, 0x00, 0xff, 0x00, 0x0f, 0x00, 0x01, 0x01, 0x00, 0x00,
++0x00, 0x00, 0x00, 0x05, 0x12, 0x00, 0x00, 0x00, 0x00, 0x02, 0x14, 0x00, 0x94, 0x00, 0x02, 0x00,
++0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05, 0x0b, 0x00, 0x00, 0x00, 0x05, 0x02, 0x28, 0x00,
++0x00, 0x01, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x8f, 0xfd, 0xac, 0xed, 0xb3, 0xff, 0xd1, 0x11,
++0xb4, 0x1d, 0x00, 0xa0, 0xc9, 0x68, 0xf9, 0x39, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05,
++0x0b, 0x00, 0x00, 0x00, 0x00, 0x02, 0x14, 0x00, 0x94, 0x00, 0x02, 0x00, 0x01, 0x01, 0x00, 0x00,
++0x00, 0x00, 0x00, 0x05, 0x09, 0x00, 0x00, 0x00
++};
++
++void test_ad_gpo_parse_sd(void **state)
++{
++    int ret;
++    struct security_descriptor *sd = NULL;
++
++    ret = ad_gpo_parse_sd(test_ctx, NULL, 0, &sd);
++    assert_int_equal(ret, EINVAL);
++
++    ret = ad_gpo_parse_sd(test_ctx, test_sid_data, sizeof(test_sid_data), &sd);
++    assert_int_equal(ret, EOK);
++    assert_non_null(sd);
++    assert_int_equal(sd->revision, 1);
++    assert_int_equal(sd->type, 39940);
++    assert_null(sd->owner_sid);
++    assert_null(sd->group_sid);
++    assert_null(sd->sacl);
++    assert_non_null(sd->dacl);
++    assert_int_equal(sd->dacl->revision, 4);
++    assert_int_equal(sd->dacl->size, 308);
++    assert_int_equal(sd->dacl->num_aces, 10);
++    assert_int_equal(sd->dacl->aces[0].type, 0);
++    assert_int_equal(sd->dacl->aces[0].flags, 0);
++    assert_int_equal(sd->dacl->aces[0].size, 36);
++    assert_int_equal(sd->dacl->aces[0].access_mask, 917693);
++    /* There are more components and ACEs in the security_descriptor struct
++     * which are not checked here. */
++
++    talloc_free(sd);
++}
++
+ int main(int argc, const char *argv[])
+ {
+     poptContext pc;
+@@ -364,6 +418,9 @@ int main(int argc, const char *argv[])
+         cmocka_unit_test_setup_teardown(test_ad_gpo_ace_includes_client_sid_false,
+                                         ad_gpo_test_setup,
+                                         ad_gpo_test_teardown),
++        cmocka_unit_test_setup_teardown(test_ad_gpo_parse_sd,
++                                        ad_gpo_test_setup,
++                                        ad_gpo_test_teardown),
+     };
+
+     /* Set debug level to invalid value so we can decide if -d 0 was used. */
