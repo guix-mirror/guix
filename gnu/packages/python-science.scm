@@ -412,33 +412,10 @@ doing practical, real world data analysis in Python.")
     (properties `((python2-variant . ,(delay python2-pandas))))
     (license license:bsd-3)))
 
-(define-public python-pandas-0.25
-  (package
-    (inherit python-pandas)
-    (version "0.25.3")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "pandas" version))
-              (sha256
-               (base32
-                "191048m6kdc6yfvqs9w412lq60cfvigrsb57y0x116lwibgp9njj"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments python-pandas)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (replace 'patch-which
-             (lambda* (#:key inputs #:allow-other-keys)
-               (let ((which (assoc-ref inputs "which")))
-                 (substitute* "pandas/io/clipboard/__init__.py"
-                   (("^CHECK_CMD = .*")
-                     (string-append "CHECK_CMD = \"" which "\"\n"))))
-               #t))
-           (delete 'prepare-x)))))))
-
 ;; Pandas 0.24.x are the last versions that support Python 2.
 (define-public python2-pandas
   (let ((pandas (package-with-python2
-                 (strip-python2-variant python-pandas-0.25))))
+                 (strip-python2-variant python-pandas))))
     (package
       (inherit pandas)
       (version "0.24.2")
