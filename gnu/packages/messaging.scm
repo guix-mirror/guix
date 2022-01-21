@@ -2310,8 +2310,7 @@ QMatrixClient project.")
            (lambda _
              (substitute* "CMakeLists.txt"
                (("add_test\\((BasicConnectivity|ClientAPI|Devices|MediaAPI|Encryption|Pushrules)")
-                "# add_test"))
-             #t)))))
+                "# add_test")))))))
     (build-system cmake-build-system)
     (inputs
      (list boost
