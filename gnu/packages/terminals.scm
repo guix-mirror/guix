@@ -1430,6 +1430,10 @@ basic input/output.")
         ("rust-xdg" ,rust-xdg-2))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'use-new-nix
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "alacritty_terminal/Cargo.toml"
+               (("0.22.0") "^0.23.0"))))
          (add-after 'configure 'add-absolute-library-references
            (lambda* (#:key inputs cargo-inputs vendor-dir #:allow-other-keys)
              (let* ((glutin-name ,(package-name rust-glutin-0.26))
