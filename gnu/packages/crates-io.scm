@@ -13648,6 +13648,7 @@ common cryptographic algorithms.")
 
 (define-public rust-rusticata-macros-3
   (package
+    (inherit rust-rusticata-macros-4)
     (name "rust-rusticata-macros")
     (version "3.2.0")
     (source
@@ -13659,13 +13660,8 @@ common cryptographic algorithms.")
        (sha256
         (base32
          "1b91k644rqblbam6rfhhmgcxs0zddldi2h0w93aapv1kqq9fbgpv"))))
-    (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs (("rust-nom" ,rust-nom-6))))
-    (home-page "https://github.com/rusticata/rusticata-macros")
-    (synopsis "Helper macros for Rusticata")
-    (description "Helper macros for Rusticata")
-    (license (list license:expat license:asl2.0))))
+     `(#:cargo-inputs (("rust-nom" ,rust-nom-6))))))
 
 (define-public rust-crypto-bigint-0.2
   (package
