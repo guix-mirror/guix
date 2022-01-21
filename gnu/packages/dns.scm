@@ -9,7 +9,7 @@
 ;;; Copyright © 2016, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
-;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018, 2022 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
@@ -1077,7 +1077,8 @@ synthesis, and on-the-fly re-configuration.")
        ("luajit" ,luajit)
        ;; TODO: Add optional lua modules: basexx and psl.
        ("lua-bitop" ,lua5.1-bitop)
-       ("nghttp2" ,nghttp2 "lib")))
+       ("nghttp2" ,nghttp2 "lib")
+       ("python" ,python)))
     (home-page "https://www.knot-resolver.cz/")
     (synopsis "Caching validating DNS resolver")
     (description
