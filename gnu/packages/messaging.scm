@@ -2388,39 +2388,36 @@ for the Matrix protocol.  It is built on to of @code{Boost.Asio}.")
                  `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path)))))))))
     (build-system qt-build-system)
     (inputs
-     `(("boost" ,boost)
-       ("blurhash" ,blurhash)
-       ("cpp-httplib" ,cpp-httplib)
-       ("cmark" ,cmark)
-       ("coeurl" ,coeurl)
-       ("curl" ,curl)
-       ("gst-plugins-base" ,gst-plugins-base)
-       ("gst-plugins-bad" ,gst-plugins-bad)   ; sdp & webrtc for voip
-       ("gst-plugins-good" ,gst-plugins-good) ; rtpmanager for voip
-       ("json-modern-cxx" ,json-modern-cxx)
-       ("libevent" ,libevent)
-       ("libnice" ,libnice)                   ; for voip
-       ("libolm" ,libolm)
-       ("lmdb" ,lmdb)
-       ("lmdbxx" ,lmdbxx)
-       ("mtxclient" ,mtxclient)
-       ("openssl" ,openssl)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtkeychain" ,qtkeychain)
-       ("qtgraphicaleffects" ,qtgraphicaleffects)
-       ("qtmultimedia" ,qtmultimedia)
-       ("qtquickcontrols2" ,qtquickcontrols2)
-       ("qtsvg" ,qtsvg)
-       ("spdlog" ,spdlog)
-       ("single-application" ,single-application-qt5)
-       ("xcb-util-wm" ,xcb-util-wm)
-       ("zlib" ,zlib)))
+     (list boost
+           blurhash
+           cpp-httplib
+           cmark
+           coeurl
+           curl
+           gst-plugins-base
+           gst-plugins-bad ; sdp & webrtc for voip
+           gst-plugins-good ; rtpmanager for voip
+           json-modern-cxx
+           libevent
+           libnice ; for voip
+           libolm
+           lmdb
+           lmdbxx
+           mtxclient
+           openssl
+           qtbase-5
+           qtdeclarative
+           qtkeychain
+           qtgraphicaleffects
+           qtmultimedia
+           qtquickcontrols2
+           qtsvg
+           spdlog
+           single-application-qt5
+           xcb-util-wm
+           zlib))
     (native-inputs
-     `(("doxygen" ,doxygen)
-       ("graphviz" ,graphviz)
-       ("pkg-config" ,pkg-config)
-       ("qtlinguist" ,qttools)))
+     (list doxygen graphviz pkg-config qttools))
     (home-page "https://github.com/Nheko-Reborn/nheko")
     (synopsis "Desktop client for Matrix using Qt and C++14")
     (description "@code{Nheko} want to provide a native desktop app for the
