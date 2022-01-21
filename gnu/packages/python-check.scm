@@ -1585,7 +1585,7 @@ supported by the MyPy typechecker.")
 (define-public python-mypy
   (package
     (name "python-mypy")
-    (version "0.910")
+    (version "0.931")
     (source
      (origin
        ;; Because of https://github.com/python/mypy/issues/9584, the
@@ -1602,7 +1602,7 @@ supported by the MyPy typechecker.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "16ryn9d48ilcs3yrkrm9ynx36qnv0gkdkc4sbafpagcqgr2f0mrg"))))
+         "1v83flrdxh8grcp40qw04q4hzjflih9xwib64078vsxv2w36f817"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1613,20 +1613,14 @@ supported by the MyPy typechecker.")
                (invoke "pytest" "mypyc")))))))
     (native-inputs
      (list python-attrs
-           python-flake8
-           python-flake8-bugbear
-           python-flake8-pyi
-           python-importlib-metadata
            python-lxml
            python-psutil
            python-pytest
-           python-pytest-cov
            python-pytest-forked
            python-pytest-xdist
            python-virtualenv))
     (propagated-inputs
-     (list python-mypy-extensions python-toml python-typing-extensions
-           python-typed-ast))
+     (list python-mypy-extensions python-tomli python-typing-extensions))
     (home-page "http://www.mypy-lang.org/")
     (synopsis "Static type checker for Python")
     (description "Mypy is an optional static type checker for Python that aims
