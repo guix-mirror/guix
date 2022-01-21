@@ -3466,39 +3466,6 @@ applications.")
      "This package adds SQLAlchemy support to your Flask application.")
     (license license:bsd-3)))
 
-(define-public python-flask-restplus
-  (package
-    (name "python-flask-restplus")
-    (version "0.9.2")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "flask-restplus" version))
-        (sha256
-          (base32
-            "11his6ii5brpkhld0d5bwzjjw4q3vmplpd6fmgzjrvvklsbk0cf4"))))
-    (build-system python-build-system)
-    (arguments
-     '(#:tests? #f)) ; FIXME: 35/882 tests failing.
-       ;; #:phases
-       ;; (modify-phases %standard-phases
-       ;;   (replace 'check
-       ;;     (lambda _
-       ;;       (invoke "nosetests")
-       ;;       #t)))))
-    (propagated-inputs
-      (list python-aniso8601 python-flask python-jsonschema python-pytz
-            python-six))
-    (native-inputs
-     (list python-tzlocal python-blinker python-nose python-rednose))
-    (home-page "https://github.com/noirbizarre/flask-restplus")
-    (synopsis "Framework for documented API development with Flask")
-    (description "This package provides a framework for API development with
-the Flask web framework in Python.  It is similar to package
-@code{python-flask-restful} but supports the @code{python-swagger}
-documentation builder.")
-    (license license:expat)))
-
 (define-public python-flask-restful-swagger
   (package
     (name "python-flask-restful-swagger")
@@ -5637,6 +5604,9 @@ REST APIs.  Flask-RESTX encourages best practices with minimal setup.  If you ar
 decorators and tools to describe your API and expose its documentation properly using
 Swagger.")
     (license license:bsd-3)))
+
+(define-public python-flask-restplus
+  (deprecated-package "python-flask-restplus" python-flask-restx))
 
 (define-public python-flask-socketio
   (package
