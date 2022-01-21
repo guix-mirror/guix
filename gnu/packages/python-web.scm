@@ -3563,14 +3563,14 @@ It comes with safe defaults and easily configurable options.")
 (define-public python-jsmin
   (package
     (name "python-jsmin")
-    (version "2.2.2")
+    (version "3.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "jsmin" version))
        (sha256
         (base32
-         "0fsmqbjvpxvff0984x7c0y8xmf49ax9mncz48b9xjx8wrnr9kpxn"))))
+         "1z1brjsvni0260bypldkl8a05sgp0qk18x560zl44igr3q99m5f0"))))
     (build-system python-build-system)
     (home-page "https://github.com/tikitu/jsmin/")
     (synopsis "Python JavaScript minifier")
