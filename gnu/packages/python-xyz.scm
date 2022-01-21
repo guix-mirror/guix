@@ -49,7 +49,7 @@
 ;;; Copyright © 2018 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
 ;;; Copyright © 2016, 2018 Tomáš Čech <sleep_walker@gnu.org>
-;;; Copyright © 2018, 2019, 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2018-2022 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018, 2019, 2021 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018, 2019, 2020, 2021, 2022 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -25755,13 +25755,17 @@ dictionaries.")
 (define-public pyzo
   (package
     (name "pyzo")
-    (version "4.11.7")
+    (version "4.12.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "pyzo" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pyzo/pyzo.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1qa007nw464r7jw8y8fqf17jx473q55p5ay5bh8kq55v0zyi27yn"))))
+        (base32
+         "0ndiplnz2d5qc6ppjhfwl4zswn79q6732s4vlkaw8xwc3kjrql5b"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
