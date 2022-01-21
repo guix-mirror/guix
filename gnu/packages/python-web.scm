@@ -1203,19 +1203,19 @@ the Misaka Markdown parser.")
 (define-public python-flask-session
   (package
     (name "python-flask-session")
-    (version "0.3.2")
+    (version "0.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Flask-Session" version))
        (sha256
         (base32
-         "08s4msg8jzb8vgb9bd491zvrzhrdldxdw6vimb0kx5kgy2xy4s07"))))
+         "0ihzlhdhss8f93p3njzva9rdm7kmhaakdlzz680wmi583wr59vf9"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; Tests require the various storage backends to be present
     (propagated-inputs
-     (list python-flask))
+     (list python-cachelib python-flask))
     (home-page "https://github.com/fengsp/flask-session")
     (synopsis "Adds server-side session support to your Flask application")
     (description
