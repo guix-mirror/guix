@@ -2932,13 +2932,13 @@ minimum of WSGI.")
 (define-public python-flask
   (package
     (name "python-flask")
-    (version "2.0.1")
+    (version "2.0.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Flask" version))
               (sha256
                (base32
-                "0mcgwq7b4qd99mf5bsvs3wphchxarf8kgil4hwww3blj31xjak0w"))))
+                "1qilnrdakhbw5k951kczdy8ia0wczh0dpp1vi4qhgmfx6klvhbvv"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
