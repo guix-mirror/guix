@@ -39438,37 +39438,6 @@ serialization.")
 both WASM and native applications")
     (license license:expat)))
 
-(define-public rust-plotters-0.2
-  (package
-    (inherit rust-plotters-0.3)
-    (name "rust-plotters")
-    (version "0.2.12")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "plotters" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "1ssycy9an23vs9hq098c7kl1dvp5ych20d994lhsw9vx4kdbhfsf"))))
-    (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-gif" ,rust-gif-0.10)
-        ("rust-piston-window" ,rust-piston-window-0.105)
-        ("rust-num-traits" ,rust-num-traits-0.2)
-        ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2)
-        ("rust-image" ,rust-image-0.22)
-        ("rust-js-sys" ,rust-js-sys-0.3)
-        ("rust-web-sys" ,rust-web-sys-0.3)
-        ("rust-font-kit" ,rust-font-kit-0.4)
-        ("rust-chrono" ,rust-chrono-0.4)
-        ("rust-palette" ,rust-palette-0.5)
-        ("rust-cairo-rs" ,rust-cairo-rs-0.7)
-        ("rust-rusttype" ,rust-rusttype-0.8)
-        ("rust-lazy-static" ,rust-lazy-static-1))))))
-
 (define-public rust-plotters-backend-0.3
   (package
     (name "rust-plotters-backend")
