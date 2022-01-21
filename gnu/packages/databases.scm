@@ -3439,6 +3439,33 @@ designed to be easy and intuitive to use.")
 2.0.")
     (license license:lgpl3+)))
 
+(define-public python-psycopg-pool
+  (package
+    (name "python-psycopg-pool")
+    ;; The connection pooling code is on a different release cadence
+    ;; from the driver code, so fetch the latest PyPI release.
+    (version "3.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "psycopg-pool" version))
+              (sha256
+               (base32
+                "1nx139pwzsgrz253zjxw2sf8h713s79h4cp1falmpc39j08djb46"))))
+    (build-system python-build-system)
+    (arguments
+     (list #:tests? #f                  ;run for psycopg below
+           #:phases
+           #~(modify-phases %standard-phases
+               ;; This module requires 'psycopg', however psycopg needs this
+               ;; for its tests.  Disable sanity check to break the cycle.
+               (delete 'sanity-check))))
+    (home-page "https://www.psycopg.org/")
+    (synopsis "Connection pooler for psycopg")
+    (description
+     "This module provides connection pool implementations that can be used
+with the @code{psycopg} PostgreSQL driver.")
+    (license license:lgpl3+)))
+
 (define-public python-sadisplay
   (package
     (name "python-sadisplay")
