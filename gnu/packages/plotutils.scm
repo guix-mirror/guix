@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2016–2022 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016-2022 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
@@ -268,14 +268,14 @@ colors, styles, options and details.")
 (define-public asymptote
   (package
     (name "asymptote")
-    (version "2.75")
+    (version "2.76")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/asymptote/"
                            version "/asymptote-" version ".src.tgz"))
        (sha256
-        (base32 "0xvc8w81kd88rnq4wdh835lbm1zy65rgw8plkrwnwpplkpl3z2ww"))))
+        (base32 "00pnicffs464wams518fjylms1jd3nrdv7y1a13b4ak113fpajpj"))))
     (build-system gnu-build-system)
     ;; Note: The 'asy' binary retains a reference to docdir for use with its
     ;; "help" command in interactive mode, so adding a "doc" output is not
