@@ -15648,6 +15648,32 @@ targets")
 `Choice` and `Sequence` traits.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-der-oid-macro-0.5
+  (package
+    (name "rust-der-oid-macro")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "der-oid-macro" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0dply8g2p72hfhyymkrkr7fjqy844drj19xbrfkqrp55nq4z4fn7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-num-bigint" ,rust-num-bigint-0.4)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/rusticata/der-parser")
+    (synopsis "Macro to encode DER oids at compile time")
+    (description
+     "This crate provides a macro to encode DER oids at compile time.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-derivative-2
   (package
     (name "rust-derivative")
