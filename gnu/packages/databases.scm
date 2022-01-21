@@ -115,6 +115,7 @@
   #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages pantheon)
   #:use-module (gnu packages parallel)
@@ -3464,6 +3465,80 @@ designed to be easy and intuitive to use.")
     (description
      "This module provides connection pool implementations that can be used
 with the @code{psycopg} PostgreSQL driver.")
+    (license license:lgpl3+)))
+
+(define-public python-psycopg
+  (package
+    (name "python-psycopg")
+    (version "3.0.8")
+    (source (origin
+              ;; Fetch from git because PyPI contains only cythonized sources.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/psycopg/psycopg")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "16i19jqd9lg9r7bc63ssh527cccrpf49g1nlayikk5qlswpzp75y"))))
+    (build-system python-build-system)
+    (arguments
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (add-before 'build 'change-directory
+                 (lambda _
+                   (chdir "psycopg")))
+               (add-after 'build 'build-c-extensions
+                 (lambda _
+                   (with-directory-excursion "../psycopg_c"
+                     ((assoc-ref %standard-phases 'build)))))
+               (add-after 'install 'install-c-extensions
+                 (lambda* (#:key inputs outputs #:allow-other-keys)
+                   ;; For some reason setup.py refuses to install if the
+                   ;; installation directory is not on PYTHONPATH.
+                   (setenv "PYTHONPATH" (site-packages inputs outputs))
+                   (with-directory-excursion "../psycopg_c"
+                     ((assoc-ref %standard-phases 'install)
+                      #:inputs inputs
+                      #:outputs outputs))))
+               (add-before 'check 'start-postgresql
+                 (lambda _
+                   (let ((dbdir (string-append (getcwd) "/../pgdir")))
+                     (invoke "initdb" "-D" dbdir)
+                     (invoke "pg_ctl" "-D" dbdir
+                             "-o" (string-append "-k " dbdir)
+                             "-l" (string-append dbdir "/db.log")
+                             "start")
+
+	             (invoke "psql" "-h" dbdir "-d" "postgres"
+                             "-c" "CREATE DATABASE nixbld;"))))
+               (replace 'check
+                 (lambda* (#:key inputs tests? #:allow-other-keys)
+                   (when tests?
+                     (setenv "TZDIR" (search-input-directory inputs
+                                                             "share/zoneinfo"))
+                     (with-directory-excursion ".."
+                       (invoke "pytest" "-vv"
+                               "-o" "asyncio_mode=auto"
+                               ;; FIXME: Many of the typing tests are failing,
+                               ;; conveniently tagged as slow...
+                               "-k" "not slow"))))))))
+    (native-inputs
+     (list python-cython-3
+           python-mypy
+           python-psycopg-pool
+           python-pytest
+           python-pytest-asyncio
+           python-tenacity
+           pproxy
+           tzdata-for-tests))
+    (inputs
+     (list postgresql))
+    (home-page "https://www.psycopg.org/")
+    (synopsis "PostgreSQL driver for Python")
+    (description
+     "Psycopg 3 is a new implementation of the popular @code{psycopg2}
+database adapter for Python.")
     (license license:lgpl3+)))
 
 (define-public python-sadisplay
