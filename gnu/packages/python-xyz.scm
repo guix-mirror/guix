@@ -20227,7 +20227,9 @@ ignoring formatting changes.")
      '(#:phases (modify-phases %standard-phases
                   (replace 'check
                     (lambda _
-                      (invoke "pytest" "-vv" "-k" "not perf"))))))
+                      (invoke "pytest" "-vv"
+                              "-o" "asyncio_mode=auto"
+                              "-k" "not perf"))))))
     (native-inputs
      (list python-pytest python-pytest-asyncio python-pytest-timeout
            python-setuptools-scm python-toml))
@@ -24884,7 +24886,8 @@ but portable.")
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
-               (invoke "pytest" "-vv")))))))
+               (invoke "pytest"  "-vv"
+                       "-o" "asyncio_mode=auto")))))))
     (native-inputs
      (list python-coverage
            python-pygments
