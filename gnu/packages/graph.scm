@@ -287,6 +287,8 @@ subplots, multiple-axes, polar charts, and bubble charts.")
        (sha256
         (base32 "1sqp97fwh4asx0jr72x8hil8z8fcg2xq92jklmh2m599pvgnx19a"))))
     (build-system python-build-system)
+    (native-inputs
+     (list python-setuptools))          ;for use_2to3 support
     (propagated-inputs
      (list python-networkx python-numpy))
     (home-page "https://github.com/taynaud/python-louvain")
