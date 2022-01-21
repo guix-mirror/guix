@@ -67184,6 +67184,39 @@ Diffie-Hellman key exchange, with curve operations provided by
 @code{curve25519-dalek}.")
     (license license:bsd-3)))
 
+(define-public rust-x509-parser-0.12
+  (package
+    (name "rust-x509-parser")
+    (version "0.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "x509-parser" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vanwazknxwd1kmlp443bpph9qyas021ayqk6iljxdscm0v0ijgz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-base64" ,rust-base64-0.13)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-data-encoding" ,rust-data-encoding-2)
+        ("rust-der-parser" ,rust-der-parser-6)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-nom" ,rust-nom-7)
+        ("rust-oid-registry" ,rust-oid-registry-0.2)
+        ("rust-ring" ,rust-ring-0.16)
+        ("rust-rusticata-macros" ,rust-rusticata-macros-4)
+        ("rust-thiserror" ,rust-thiserror-1))))
+    (home-page "https://github.com/rusticata/x509-parser")
+    (synopsis "X.509 parser written in pure Rust")
+    (description "This crate provides a parser for the X.509 v3 format (RFC
+5280 certificates).")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-x86-0.33
   (package
     (name "rust-x86")
