@@ -10144,7 +10144,7 @@ handling the startup notification side.")
 (define-public gnome-calculator
   (package
     (name "gnome-calculator")
-    (version "40.1")
+    (version "41.0")
     (source
      (origin
        (method url-fetch)
@@ -10153,7 +10153,7 @@ handling the startup notification side.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1xkazxbkpn1z5pfphhps7fc5q4yc8lp7f6b222n8bx5iyxhwbrkz"))))
+         "16fwwfnw1w8p53ffny6zkff5cfsmg7xax9kmfgb7czjqv15w0vd6"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
@@ -10164,22 +10164,22 @@ handling the startup notification side.")
              ;; Tests require a writable HOME.
              (setenv "HOME" (getcwd)))))))
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("glib:bin" ,glib "bin") ; for glib-compile-schemas, gio-2.0.
-       ("gtk+:bin" ,gtk+ "bin") ; for gtk-update-icon-cache
-       ("itstool" ,itstool)
-       ("vala" ,vala)
-       ("pkg-config" ,pkg-config)
-       ("python" ,python)))
+     (list gettext-minimal
+           `(,glib "bin")               ;for glib-compile-schemas, gio-2.0.
+           `(,gtk+ "bin")               ;for gtk-update-icon-cache
+           itstool
+           vala
+           pkg-config
+           python))
     (inputs
-     `(("glib" ,glib)
-       ("gtksourceview" ,gtksourceview)
-       ("libgee" ,libgee)
-       ("libhandy" ,libhandy)
-       ("libsoup" ,libsoup-minimal-2)
-       ("libxml2" ,libxml2)
-       ("mpc" ,mpc)
-       ("mpfr" ,mpfr)))
+     (list `(,glib "bin")
+           gtksourceview
+           libgee
+           libhandy
+           libsoup-minimal-2
+           libxml2
+           mpc
+           mpfr))
     (home-page "https://wiki.gnome.org/Apps/Calculator")
     (synopsis "Desktop calculator")
     (description
