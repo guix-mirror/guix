@@ -2558,6 +2558,30 @@ code that is generic with regard to the algebraic entity types.")
 address that is aliasable when coerced to a raw pointer")
     (license license:expat)))
 
+(define-public rust-aliasable-0.1
+  (package
+    (name "rust-aliasable")
+    (version "0.1.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "aliasable" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "1z8548zdjlm4ps1k0d7x68lfdyji02crwcc9rw3q3bb106f643r5"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build? #t
+        #:cargo-inputs
+        (("rust-aliasable-deref-trait" ,rust-aliasable-deref-trait-0.2)
+         ("rust-stable-deref-trait" ,rust-stable-deref-trait-1))))
+    (home-page "https://github.com/avitex/rust-aliasable")
+    (synopsis "Basic aliasable (non unique pointer) types")
+    (description
+     "Rust library providing basic aliasable (non @code{core::ptr::Unique})
+types.")
+    (license license:expat)))
+
 (define-public rust-alloc-no-stdlib-2
   (package
     (name "rust-alloc-no-stdlib")
