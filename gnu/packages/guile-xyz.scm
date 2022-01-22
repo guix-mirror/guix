@@ -3444,6 +3444,16 @@ perform geometrical transforms on JPEG images.")
                   (srfi srfi-26))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-webkitgtk
+           (lambda _
+             ;; Adapt to the version we have in Guix.
+             (substitute* "configure.ac"
+               (("webkit2gtk-4\\.0") "webkit2gtk-4.1")
+               (("webkit2gtk-web-extension-4\\.0")
+                "webkit2gtk-web-extension-4.1"))
+
+             (substitute* "typelib/Makefile.am"
+               (("WebKit2-4\\.0") "WebKit2-4.1"))))
          (add-before 'check 'start-xorg-server
            (lambda* (#:key inputs #:allow-other-keys)
              ;; The test suite requires a running X server.
