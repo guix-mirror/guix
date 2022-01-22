@@ -2955,7 +2955,7 @@ and record oriented data modeling and the Semantic Web.")
 (define-public cwltool
   (package
     (name "cwltool")
-    (version "3.1.20211107152837")
+    (version "3.1.20220119140128")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2964,7 +2964,7 @@ and record oriented data modeling and the Semantic Web.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0i3x9wdgpzgyc1askxymlhn0ps2x9xhqaax496iwpx66ab6132c4"))))
+                "1jmrm0qrqgka79avc1kq63fgh20gx6g07fc8p3iih4k85vhdyl3f"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -3018,7 +3018,7 @@ and record oriented data modeling and the Semantic Web.")
            python-prov
            python-pydot
            python-psutil
-           python-rdflib-5
+           python-rdflib
            python-requests
            python-ruamel.yaml
            python-schema-salad
@@ -3033,8 +3033,7 @@ and record oriented data modeling and the Semantic Web.")
            python-pytest
            python-pytest-cov
            python-pytest-mock
-           python-pytest-runner
-           python-rdflib-jsonld))
+           python-pytest-runner))
     (home-page
      "https://github.com/common-workflow-language/common-workflow-language")
     (synopsis "Common Workflow Language reference implementation")
