@@ -5,7 +5,7 @@
 ;;; Copyright © 2019, 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019, 2021 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020, 2022 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
 ;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
@@ -44,6 +44,7 @@
   #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix download)
   #:use-module (guix build-system python))
@@ -523,6 +524,32 @@ sub-package.")
 namespace which can be used to register helper functions without requiring
 someone to import them in their actual tests to use them.")
     (license license:asl2.0)))
+
+(define-public python-pytest-metadata
+  (package
+    (name "python-pytest-metadata")
+    (version "1.11.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-metadata" version))
+       (sha256
+        (base32 "1wgcz0w053lnjln0081kjmfflaq7bwncxdzx7k63kr9lkpa0ddbi"))))
+    (build-system python-build-system)
+    (arguments
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (replace 'check
+                 (lambda* (#:key tests? #:allow-other-keys)
+                   (when tests?
+                     (invoke "pytest" "-vv")))))))
+    (native-inputs (list python-pytest python-setuptools-scm))
+    (home-page "https://github.com/pytest-dev/pytest-metadata")
+    (synopsis "Access test session metadata with Pytest")
+    (description
+     "@code{pytest-metadata} is a @command{pytest} plugin that provides
+access to test session metadata.")
+    (license license:mpl2.0)))
 
 (define-public python-pytest-openfiles
   (package
