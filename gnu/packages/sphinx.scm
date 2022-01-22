@@ -805,39 +805,24 @@ translate and to apply translation to Sphinx generated document.")
 (define-public python-sphinx-autobuild
   (package
     (name "python-sphinx-autobuild")
-    (version "0.7.1")
+    (version "2021.3.14")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "sphinx-autobuild" version))
        (sha256
         (base32
-         "0kn753dyh3b1s0h77lbk704niyqc7bamvq6v3s1f6rj6i20qyf36"))))
+         "019z8kvnaw11r41b6pfdy9iz4iwyr0s51hs0a5djn797dsva676y"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     '(#:phases
        (modify-phases %standard-phases
-         ;; See https://github.com/GaretJax/sphinx-autobuild/pull/72
-         (add-after 'unpack 'use-later-port-for
-           (lambda _
-             (substitute* "requirements.txt"
-               (("port_for==.*") "port_for\n"))
-             #t))
-         (delete 'check)
-         (add-after 'install 'check
-           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
-               (add-installed-pythonpath inputs outputs)
-               (invoke "pytest" "-v"))
-             #t)))))
+               (invoke "pytest" "-vv")))))))
     (propagated-inputs
-     (list python-argh
-           python-livereload
-           python-pathtools
-           python-port-for
-           python-pyyaml
-           python-tornado
-           python-watchdog))
+     (list python-colorama python-livereload python-sphinx))
     (native-inputs
      (list python-pytest))
     (home-page "https://github.com/GaretJax/sphinx-autobuild")
