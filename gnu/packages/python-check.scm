@@ -145,6 +145,35 @@ are useful when writing automated tests in Python.")
     (home-page "https://testfixtures.readthedocs.io/en/latest/")
     (license license:expat)))
 
+(define-public python-cucumber-tag-expressions
+  (package
+    (name "python-cucumber-tag-expressions")
+    (version "4.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cucumber-tag-expressions" version))
+       (sha256
+        (base32 "0q7rn4l4ppjd1zsglr37ccc5xccg4iigaw827282zfzfsvzda573"))))
+    (build-system python-build-system)
+    (arguments
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (replace 'check
+                 (lambda* (#:key tests? #:allow-other-keys)
+                   (when tests?
+                     ;; Ignore the configuration file since we don't
+                     ;; need HTML reports, etc.
+                     (invoke "pytest" "-c" "/dev/null" "-vv")))))))
+    (native-inputs
+     (list python-invoke python-pathpy python-pytest))
+    (home-page "https://github.com/cucumber/tag-expressions-python")
+    (synopsis "Tag-expression parser for cucumber/behave")
+    (description
+     "This package provides a tag-expression parser for Cucumber and
+@command{behave}.")
+    (license license:expat)))
+
 (define-public python-coveralls
   (package
     (name "python-coveralls")
