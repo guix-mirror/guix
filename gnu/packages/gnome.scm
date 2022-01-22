@@ -9803,7 +9803,7 @@ desktop.  It supports multiple calendars, month, week and year view.")
 (define-public gnome-todo
   (package
     (name "gnome-todo")
-    (version "40.1")
+    (version "41.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -9811,44 +9811,50 @@ desktop.  It supports multiple calendars, month, week and year view.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1r1fb3zgjvkhx93by24j8cg1w1g3zvwr49vqkscjn261vqs44jq3"))))
+                "1r94880d4khbjhhfnhaba3y3d4hv2bri82rzfzxn27s5iybpqras"))
+              (patches (search-patches "gnome-todo-libportal.patch"))))
     (build-system meson-build-system)
     (arguments
-     `(#:glib-or-gtk? #t
-       ;; XXX: Some tests fail with the following error:
-       ;; Settings schema 'org.gnome.todo' is not installed.
-       #:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'skip-gtk-update-icon-cache
-           ;; Don't create 'icon-theme.cache'.
-           (lambda _
-             (substitute* "build-aux/meson/meson_post_install.py"
-               (("gtk-update-icon-cache") "true")))))))
+     (list
+      #:glib-or-gtk? #t
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'skip-gtk-update-icon-cache
+            (lambda _
+              (substitute* "build-aux/meson/meson_post_install.py"
+                (("gtk-update-icon-cache") "true"))))
+          (delete 'check)
+          (add-after 'install 'check
+            (assoc-ref %standard-phases
+                       'check))
+          (add-before 'check 'pre-check
+            (lambda _
+              (setenv "GSETTINGS_SCHEMA_DIR"
+                      (string-append #$output "/share/glib-2.0/schemas")))))))
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("gobject-introspection" ,gobject-introspection)
-       ("glib:bin" ,glib "bin")         ; For glib-compile-resources
-       ("gtk-bin" ,gtk "bin")           ; For gtk-update-icon-cache
-       ("pkg-config" ,pkg-config)))
+     (list gettext-minimal
+           gobject-introspection
+           `(,glib "bin")               ;for glib-compile-resources
+           `(,gtk "bin")                ;for gtk-update-icon-cache
+           itstool
+           pkg-config))
     (inputs
-     `(("rest" ,rest)                   ; For Todoist plugin
-       ("gtk" ,gtk)
-       ("json-glib" ,json-glib)         ; For Todoist plugin
-       ("libadwaita" ,libadwaita)
-       ("libedataserverui" ,evolution-data-server)
-       ("libical" ,libical)
-       ("libpeas" ,libpeas)
-       ("libportal" ,libportal)
-       ("python-pygobject" ,python-pygobject)
-       ("evolution-data-server" ,evolution-data-server)
-       ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
+     (list rest                         ;for Todoist plugin
+           gtk
+           json-glib                    ;for Todoist plugin
+           libadwaita
+           evolution-data-server
+           libical
+           libpeas
+           libportal
+           python-pygobject
+           evolution-data-server
+           `(,gnome-online-accounts "lib")
+           gsettings-desktop-schemas))
     (home-page "https://wiki.gnome.org/Apps/Todo")
     (synopsis "GNOME's ToDo Application")
-    (description
-     "GNOME To Do is a simplistic personal task manager designed to perfectly
-fit the GNOME desktop.")
+    (description "GNOME To Do is a simplistic personal task manager designed
+to perfectly fit the GNOME desktop.")
     (license license:gpl3+)))
 
 (define-public gnome-dictionary
