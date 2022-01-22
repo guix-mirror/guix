@@ -38435,6 +38435,32 @@ under its new name.")
 platform-native strings.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-ouroboros-macro-0.14
+  (package
+    (name "rust-ouroboros-macro")
+    (version "0.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ouroboros_macro" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "11cav04x82liknlrv50lpl1i1ln2jw4isdqzdjnjsg0pcpvwik9r"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-inflector" ,rust-inflector-0.11)
+        ("rust-proc-macro-error" ,rust-proc-macro-error-1)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/joshua-maros/ouroboros")
+    (synopsis "Proc macro for ouroboros")
+    (description
+     "This package provides a proc macro for the @code{ouroboros} crate.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-output-vt100-0.1
   (package
     (name "rust-output-vt100")
