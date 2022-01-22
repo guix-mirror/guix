@@ -1492,6 +1492,30 @@ background agent taking care of maintaining the necessary state.")
          (add-before 'install 'chdir
            (lambda _
              (chdir "crates/rust-analyzer")))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (rust-src-path (search-input-directory
+                                    inputs "/lib/rustlib/src/rust/library")))
+               ;; if environment variable RUST_SRC_PATH is not set, set it,
+               ;; make rust-analyzer work out of box.
+               (with-directory-excursion bin
+                 (let* ((prog "rust-analyzer")
+                        (wrapped-file (string-append (dirname prog)
+                                                     "/." (basename prog) "-real"))
+                        (prog-tmp (string-append wrapped-file "-tmp")))
+                   (link prog wrapped-file)
+                   (call-with-output-file prog-tmp
+                     (lambda (port)
+                       (format port "#!~a
+if test -z \"${RUST_SRC_PATH}\";then export RUST_SRC_PATH=~S;fi;
+exec -a \"$0\" \"~a\" \"$@\""
+                               (which "bash")
+                               rust-src-path
+                               (canonicalize-path wrapped-file))))
+                   (chmod prog-tmp #o755)
+                   (rename-file prog-tmp prog))))))
          (replace 'install-license-files
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1500,6 +1524,7 @@ background agent taking care of maintaining the necessary state.")
                (chdir "../..")
                (install-file "LICENSE-MIT" doc)
                (install-file "LICENSE-APACHE" doc)))))))
+    (native-inputs (list rust-src))
     (home-page "https://rust-analyzer.github.io/")
     (synopsis "Experimental Rust compiler front-end for IDEs")
     (description "Rust-analyzer is a modular compiler frontend for the Rust
