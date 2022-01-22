@@ -2464,23 +2464,33 @@ backported from Python 2.7 for Python 2.4+.")
 (define-public behave
   (package
     (name "behave")
-    (version "1.2.6")
+    ;; The 1.2.6 release from 2018 has several problems with newer Python
+    ;; versions, so we package a recent snapshot.
+    (version "1.2.7.dev2")
     (source (origin
-             (method url-fetch)
-             (uri (pypi-uri "behave" version))
-             (sha256
-              (base32
-               "11hsz365qglvpp1m1w16239c3kiw15lw7adha49lqaakm8kj6rmr"))
-             (patches (search-patches
-                       "behave-skip-a-couple-of-tests.patch"))))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/behave/behave")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0sv94wagi214h0l91zn8m04f78x5wn83vqxib81hnl1qahvx9hq7"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests?
+                        (invoke "pytest" "-c" "/dev/null" "-vv")))))))
     (native-inputs
      (list python-mock python-nose python-pathpy python-pyhamcrest
            python-pytest))
     (propagated-inputs
-     (list python-parse python-parse-type))
-    (arguments
-     '(#:test-target "behave_test"))
+     (list python-colorama
+           python-cucumber-tag-expressions
+           python-parse
+           python-parse-type))
     (home-page "https://github.com/behave/behave")
     (synopsis "Python behavior-driven development")
     (description
