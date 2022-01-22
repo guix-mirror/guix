@@ -29798,6 +29798,29 @@ wraps GNU Global calls and integration to editor using this API with
 project.el and xref.el.")
       (license license:gpl3+))))
 
+(define-public emacs-setup
+  (package
+    (name "emacs-setup")
+    (version "1.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://elpa.gnu.org/packages/setup-"
+                            version ".tar"))
+        (sha256
+          (base32 "1fyzkm42gsvsjpk3vahfb7asfldarixm0wsw3g66q3ad0r7cbjnz"))))
+    (build-system emacs-build-system)
+    (home-page "https://git.sr.ht/~pkal/setup")
+    (synopsis "Helpful configuration macro")
+    (description
+"The @code{setup} macro simplifies repetitive configuration patterns, by
+providing context-sensitive local macros in @code{setup} bodies.  These macros
+can be mixed with regular elisp code without any issues, allowing for
+flexible and terse configurations.  The list of local macros can be
+extended by the user via @code{setup-define}.  A list of currently known
+local macros are documented in the docstring for @code{setup}.")
+    (license license:gpl3+)))
+
 (define-public emacs-fennel-mode
   (package
     (name "emacs-fennel-mode")
