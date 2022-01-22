@@ -10235,16 +10235,19 @@ Processing of very large files is supported.")
           r-ggformula
           r-ggplot2
           r-ggrepel
+          r-ggridges
+          r-ggstance
           r-glue
           r-gridextra
           r-lattice
           r-latticeextra
-          r-lazyeval
+          r-leaflet
           r-mass
           r-matrix
           r-mosaiccore
           r-mosaicdata
           r-readr
+          r-rlang
           r-tidyr))
    (native-inputs
     (list r-knitr))
