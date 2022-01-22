@@ -12784,6 +12784,31 @@ Anderson-Darling Distribution\".")
     ;; Any version of the GPL.
     (license license:gpl3+)))
 
+(define-public r-admisc
+  (package
+    (name "r-admisc")
+    (version "0.22")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "admisc" version))
+       (sha256
+        (base32 "1jwz9z3brq4lbnqrkxx40vrn47rknkkj4xfv2gi8kmf1mzc5aqcd"))))
+    (properties `((upstream-name . "admisc")))
+    (build-system r-build-system)
+    (home-page "https://github.com/dusadrian/admisc")
+    (synopsis "Adrian Dusa's miscellaneous")
+    (description
+     "This package contains miscellaneous functions used to interpret and
+translate, factorize and negate Sum of Products expressions, for both binary
+and multi-value crisp sets, and to extract information (set names, set values)
+from those expressions.  Other functions perform various other checks if
+possibly numeric (even if all numbers reside in a character vector) and coerce
+to numeric, or check if the numbers are whole.  It also offers, among many
+others, a highly flexible recoding routine and a more flexible alternative to
+the base function @code{with()}.")
+    (license license:gpl3+)))
+
 (define-public r-sodium
   (package
     (name "r-sodium")
