@@ -8843,7 +8843,7 @@ like switching to windows and launching applications.")
        ("vala" ,vala)))
     (inputs
      `(("cairo" ,cairo)
-       ("librsvg" ,librsvg)
+       ("librsvg" ,(librsvg-for-system))
        ("glib" ,glib)
        ("gnutls" ,gnutls)
        ("libgcrypt" ,libgcrypt)
