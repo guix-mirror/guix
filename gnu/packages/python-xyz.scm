@@ -28663,6 +28663,28 @@ it supports reStructuredText, Markdown, IPython (Jupyter) Notebooks and HTML,
 and has plugins for many other formats.")
     (license license:expat)))
 
+(define-public nbss-upload
+  (package
+    (name "nbss-upload")
+    (version "0.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "nbss-upload" version))
+        (sha256
+          (base32 "0jhyfm7w2ssknmh9789fmpnf79xr7sxbdcjwak6hfha6qparvk38"))))
+    (build-system python-build-system)
+    (propagated-inputs
+      (list python-requests))
+    (arguments
+     `(#:tests? #f)) ;no tests
+    (home-page "https://github.com/notebook-sharing-space/nbss-upload")
+    (synopsis "Upload notebooks to a notebooksharing.space instance")
+    (description
+"Upload notebooks as @code{.ipynb}, @code{.rmd}, and @code{.html} to a
+notebooksharing.space instance.")
+    (license license:bsd-3)))
+
 (define-public python-reedsolo
   (package
     (name "python-reedsolo")
