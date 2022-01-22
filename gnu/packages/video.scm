@@ -57,6 +57,7 @@
 ;;; Copyright © 2021 Robin Templeton <robin@terpri.org>
 ;;; Copyright © 2021 Aleksandr Vityazev <avityazev@posteo.org>
 ;;; Copyright © 2021 Pradana Aumars <paumars@courrier.dev>
+;;; Copyright © 2022 Denis 'GNUtoo' Carikli <GNUtoo@cyberdimension.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1910,7 +1911,7 @@ videoformats depend on the configuration flags of ffmpeg.")
        ("libogg" ,libogg)
        ("libpng" ,libpng)
        ("libraw1394" ,libraw1394)
-       ("librsvg" ,librsvg)
+       ("librsvg" ,(librsvg-for-system))
        ("libsamplerate" ,libsamplerate)
        ("libsecret" ,libsecret)
        ("libssh2" ,libssh2)
