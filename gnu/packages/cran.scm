@@ -6268,6 +6268,184 @@ Leaflet.js, to be used with the @code{leaflet} R package.  Additionally,
 information between package updates.")
     (license license:bsd-2)))
 
+;; This package contains a lot of minified JavaScript with unclear provenance.
+;; When upgrading please make sure that all minified JavaScript files are
+;; removed in a snippet and that the replacement sources correspond to the
+;; original minified scripts.
+(define-public r-leaflet
+  (package
+    (name "r-leaflet")
+    (version "2.0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "leaflet" version))
+       (sha256
+        (base32 "07whi3zkz1lmbqx5ydpiya802ck22ny0s7gskwnx7r8xbwlkiw5h"))
+       (snippet
+        '(for-each
+          delete-file
+          (list "inst/htmlwidgets/lib/leaflet/leaflet.js"
+                "inst/htmlwidgets/lib/leaflet-measure/leaflet-measure.min.js"
+                "inst/htmlwidgets/lib/leaflet-omnivore/leaflet-omnivore.min.js"
+                "inst/htmlwidgets/lib/jquery/jquery.min.js"
+                "inst/htmlwidgets/plugins/Leaflet-MiniMap/Control.MiniMap.min.js"
+                "inst/htmlwidgets/plugins/Leaflet.awesome-markers/bootstrap.min.js"
+                "inst/htmlwidgets/plugins/Leaflet.awesome-markers/leaflet.awesome-markers.min.js"
+                "inst/htmlwidgets/plugins/Leaflet.markercluster/leaflet.markercluster.js"
+                "inst/htmlwidgets/plugins/Leaflet.markercluster/leaflet.markercluster.freezable.js"
+                "inst/htmlwidgets/plugins/Leaflet.markercluster/leaflet.markercluster.layersupport.js"
+                "inst/legacy/www/leaflet.js")))))
+    (properties `((upstream-name . "leaflet")))
+    (build-system r-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build r-build-system)
+                  (srfi srfi-1))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'process-javascript
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; The inst directory contains some minified JavaScript files.
+             ;; Regenerate them from sources.
+             (invoke "unzip" "-d" "/tmp" (assoc-ref inputs "js-leaflet"))
+             (with-directory-excursion "inst/"
+               (call-with-values
+                   (lambda ()
+                     (unzip2
+                      `(("/tmp/leaflet-src.js"
+                         "htmlwidgets/lib/leaflet/leaflet.js")
+                        (,(assoc-ref inputs "js-leaflet-measure")
+                         "htmlwidgets/lib/leaflet-measure/leaflet-measure.min.js")
+                        (,(assoc-ref inputs "js-leaflet-omnivore")
+                         "htmlwidgets/lib/leaflet-omnivore/leaflet-omnivore.min.js")
+                        (,(assoc-ref inputs "js-jquery")
+                         "htmlwidgets/lib/jquery/jquery.min.js")
+                        ("htmlwidgets/plugins/Leaflet-MiniMap/Control.MiniMap.js"
+                         "htmlwidgets/plugins/Leaflet-MiniMap/Control.MiniMap.min.js")
+                        (,(assoc-ref inputs "js-bootstrap3")
+                         "htmlwidgets/plugins/Leaflet.awesome-markers/bootstrap.min.js")
+                        ("htmlwidgets/plugins/Leaflet.awesome-markers/leaflet.awesome-markers.js"
+                         "htmlwidgets/plugins/Leaflet.awesome-markers/leaflet.awesome-markers.min.js")
+                        (,(string-append (assoc-ref inputs "js-leaflet-markercluster")
+                                         "/dist/leaflet.markercluster-src.js")
+                         "htmlwidgets/plugins/Leaflet.markercluster/leaflet.markercluster.js")
+                        (,(assoc-ref inputs "js-leaflet-markercluster-freezable")
+                         "htmlwidgets/plugins/Leaflet.markercluster/leaflet.markercluster.freezable.js")
+                        (,(assoc-ref inputs "js-leaflet-markercluster-layersupport")
+                         "htmlwidgets/plugins/Leaflet.markercluster/leaflet.markercluster.layersupport.js")
+                        (,(assoc-ref inputs "js-proj4leaflet")
+                         "htmlwidgets/plugins/Proj4Leaflet/proj4.min.js")
+                        ("legacy/www/leaflet-src.js"
+                         "legacy/www/leaflet.js"))))
+                 (lambda (sources targets)
+                   (for-each (lambda (source target)
+                               (format #true "Processing ~a --> ~a~%"
+                                       source target)
+                               (invoke "esbuild" source "--minify"
+                                       (string-append "--outfile=" target)))
+                             sources targets)))))))))
+    (native-inputs
+     `(("esbuild" ,esbuild)
+       ("unzip" ,unzip)
+       ("js-bootstrap3"
+        ,(origin
+           (method url-fetch)
+           (uri "https://raw.githubusercontent.com/twbs/bootstrap/v3.3.7/dist/js/bootstrap.js")
+           (sha256
+            (base32
+             "1j1qjagwj0m3q322z9wxxnpkd8zbk6g3kl047dsbmqad6gmqvgha"))))
+       ("js-jquery"
+        ,(origin
+           (method url-fetch)
+           (uri "https://code.jquery.com/jquery-1.12.4.js")
+           (sha256
+            (base32
+             "0x9mrc1668icvhpwzvgafm8xm11x9lfai9nwr66aw6pjnpwkc3s3"))))
+       ("js-leaflet"
+        ,(origin
+           (method url-fetch)
+           (uri "http://cdn.leafletjs.com/leaflet/v1.3.1/leaflet.zip")
+           (sha256
+            (base32
+             "10phzd2vczy3zm1b64whp2nna69cf9hlj2bndc9yq47vf3ddqx8f"))))
+       ("js-leaflet-omnivore"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "https://api.tiles.mapbox.com/mapbox.js/plugins/"
+                               "leaflet-omnivore/v0.3.1/leaflet-omnivore.js"))
+           (sha256
+            (base32
+             "1b8zxrp6xwzpw25apn8j4qws0f6sr7qr7h2va5h1mjyfqvn29anq"))))
+       ("js-leaflet-markercluster"
+        ,(origin
+           (method git-fetch)
+           (uri (git-reference
+                 (url "https://github.com/Leaflet/Leaflet.markercluster.git")
+                 (commit "v1.1.0")))
+           (file-name (git-file-name "js-leaflet-markercluster" "1.1.0"))
+           (sha256
+            (base32
+             "0ds8c7picqjmc86bm5n6hm8k71fwsa2cpgib19sbdamzr9hm0rs1"))))
+       ("js-leaflet-markercluster-freezable"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://raw.githubusercontent.com/ghybs/Leaflet.MarkerCluster.Freezable/"
+                 "9db80a3fba7dff4aee940e05d3d4dceaa1fffcf9/src/freezable.js"))
+           (file-name "leaflet-markercluster-freezable.js")
+           (sha256
+            (base32
+             "1k6sn5n0z2x3an91vwvkzmqq4b8ppswgk5hi5qrr79klas1hbx1k"))))
+       ("js-leaflet-markercluster-layersupport"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://raw.githubusercontent.com/ghybs/Leaflet.MarkerCluster.LayerSupport/"
+                 "87f3848b92e0516d9c98f6d4cd175f7b8a4e3805/src/layersupport.js"))
+           (file-name "leaflet-markercluster-layersupport.js")
+           (sha256
+            (base32
+             "15qa21xif94y762c65yxxysxykz3mma6y6agw3nxpr3s7wbb75ff"))))
+       ("js-leaflet-measure"
+        ,(origin
+           (method url-fetch)
+           (uri "https://unpkg.com/leaflet-measure@1.5.2/dist/leaflet-measure.js")
+           (file-name "js-leaflet-measure-1.5.2.js")
+           (sha256
+            (base32
+             "0ggg3ffmm7pj9ry4gssrh0a17pnad3p6gwi0dg98y819pmpqa7y0"))))
+       ("js-proj4leaflet"
+        ,(origin
+           (method url-fetch)
+           (uri "https://raw.githubusercontent.com/kartena/Proj4Leaflet/1.0.2/lib/proj4.js")
+           (file-name "js-proj4leaflet-1.0.2.js")
+           (sha256
+            (base32
+             "0vyrbf6gv2lyh4c2bzp5349ivwvvg28gpn87y52a7jdb13rlkpab"))))))
+    (propagated-inputs
+     (list r-base64enc
+           r-crosstalk
+           r-htmltools
+           r-htmlwidgets
+           r-leaflet-providers
+           r-magrittr
+           r-markdown
+           r-png
+           r-raster
+           r-rcolorbrewer
+           r-scales
+           r-sp
+           r-viridis))
+    (home-page "https://rstudio.github.io/leaflet/")
+    (synopsis "Create interactive web maps with the JavaScript Leaflet library")
+    (description
+     "Create and customize interactive maps using the Leaflet JavaScript
+library and the @code{htmlwidgets} package.  These maps can be used directly
+from the R console, from RStudio, in Shiny applications and R Markdown
+documents.")
+    (license license:gpl3)))
+
 (define-public r-leaps
   (package
     (name "r-leaps")
