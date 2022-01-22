@@ -15321,7 +15321,9 @@ for the analysis and visualization of raw nanopore signal.")
               (delete-file-recursively (string-append
                                          (site-packages inputs outputs)
                                          "/vcf/test")))))))
-    (native-inputs (list python-cython))
+    (native-inputs
+     ;; Older setuptools is needed for use_2to3.
+     (list python-cython python-setuptools))
     (propagated-inputs
      (list python-pysam python-rpy2))
     (home-page "https://github.com/jamescasbon/PyVCF")
