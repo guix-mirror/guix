@@ -20238,9 +20238,6 @@ iterable with @code{|tqdm(iterable)|}.  Offers many options to define
 design and layout.")
     (license (list license:mpl2.0 license:expat))))
 
-(define-public python2-tqdm
-  (package-with-python2 python-tqdm))
-
 (define-public python-pkginfo
   (package
     (name "python-pkginfo")
