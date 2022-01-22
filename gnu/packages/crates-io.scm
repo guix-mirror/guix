@@ -39987,6 +39987,30 @@ procedural macros for rust-peg.  To use rust-peg, see the peg package.")
 runtime support for rust-peg grammars.  To use rust-peg, see the peg crate.")
     (license license:expat)))
 
+(define-public rust-pem-1
+  (package
+    (name "rust-pem")
+    (version "1.0.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "pem" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "0iqrvfnm71x9pvff39d5ajwn3gc9glxlv4d4h22max7342db18z9"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:cargo-inputs
+        (("rust-base64" ,rust-base64-0.13))
+        #:cargo-development-inputs
+        (("rust-criterion" ,rust-criterion-0.3))))
+    (home-page "https://github.com/jcreekmore/pem-rs")
+    (synopsis "Parse and encode PEM-encoded data")
+    (description
+     "This package provides a Rust library for parsing and encoding
+PEM-encoded data.")
+    (license license:expat)))
+
 (define-public rust-pem-rfc7468-0.2
   (package
     (name "rust-pem-rfc7468")
