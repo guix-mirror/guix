@@ -20,6 +20,7 @@
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2021 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2021 Foo Chuan Wei <chuanwei.foo@hotmail.com>
+;;; Copyright © 2022 Pradana AUMARS <paumars@courrier.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -237,14 +238,14 @@ datetime module, available in Python 2.3+.")
 (define-public python-parsedatetime
   (package
     (name "python-parsedatetime")
-    (version "2.4")
+    (version "2.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "parsedatetime" version))
        (sha256
         (base32
-         "0jxqkjks7z9dn222cqgvskp4wr6d92aglinxq7pd2w4mzdc7r09x"))))
+         "0mfl0ixshqkwx7z5siaib7ix5j2iahb1jqfpyhqp42wan7xnicsc"))))
     (build-system python-build-system)
     (native-inputs
      (list python-nose python-pyicu python-pytest python-pytest-runner))
