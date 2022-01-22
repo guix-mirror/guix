@@ -203,7 +203,7 @@ fundamental object types for C.")
              (let ((config.h (open-file "config.h.in" "a")))
                (display (string-append "
 /* Missing in commits on original repo, dunno why but won't work without. */
-#define SMB_HAS_NEW_NDR_PULL_STEAL_SWITCH 1
+#undef SMB_HAS_NEW_NDR_PULL_STEAL_SWITCH
 ")
                         config.h)
                (close config.h))))
