@@ -1516,6 +1516,29 @@ Rust.")
        (("rust-actix-rt" ,rust-actix-rt-1)
         ("rust-actix-web" ,rust-actix-web-2))))))
 
+(define-public rust-actix-web-codegen-0.1
+  (package
+    (inherit rust-actix-web-codegen-0.4)
+    (name "rust-actix-web-codegen")
+    (version "0.1.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "actix-web-codegen" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "1frs0id6k1vjczhnfhwh8q8birp27imlvgi6jylfxh911r9372h6"))))
+    (arguments
+      `(#:cargo-inputs
+        (("rust-proc-macro2" ,rust-proc-macro2-1)
+         ("rust-quote" ,rust-quote-1)
+         ("rust-syn" ,rust-syn-1))
+        #:cargo-development-inputs
+        (("rust-actix-http" ,rust-actix-http-0.2)
+         ("rust-actix-http-test" ,rust-actix-http-test-0.2)
+         ("rust-actix-web" ,rust-actix-web-1)
+         ("rust-futures" ,rust-futures-0.1))))))
+
 (define-public rust-adaptive-barrier-0.1
   (package
     (name "rust-adaptive-barrier")
