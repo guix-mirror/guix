@@ -26196,19 +26196,28 @@ validation.")
 (define-public python-flufl-bounce
   (package
     (name "python-flufl-bounce")
-    (version "3.0.1")
+    (version "4.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "flufl.bounce" version))
         (sha256
          (base32
-          "01lg1b0jpf8605mzaz9miq3nray6s7a7gc8n4wzg5nsxl8fglcp4"))))
+          "0c9qc2l47lyqnpwskp6vvi7m3jqh6hx42v6d35dgxh3fjzmlll15"))))
     (build-system python-build-system)
+    (arguments
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (replace 'check
+                 (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+                   (when tests?
+                     (with-directory-excursion
+                         (string-append (site-packages inputs outputs) "/flufl")
+                       (invoke "python" "-m" "nose2" "-v"))))))))
     (propagated-inputs
      (list python-atpublic python-zope-interface))
     (native-inputs
-     (list python-nose2))
+     (list python-flufl-testing python-nose2))
     (home-page "https://fluflbounce.readthedocs.io/en/latest/")
     (synopsis "Email bounce detectors")
     (description "The @code{flufl.bounce} library provides a set of heuristics
