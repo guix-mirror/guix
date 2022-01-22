@@ -23361,52 +23361,49 @@ according to their use.")
       (license license:gpl3+))))
 
 (define-public emacs-dtache
-  ;; XXX: The following commit includes a fix for a test.
-  (let ((commit "9e0acd552db62fb696bafb6b9ba9a78522309dd8")
-        (revision "0"))
-    (package
-      (name "emacs-dtache")
-      (version (git-version "0.3" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://gitlab.com/niklaseklund/dtache")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1jb48x33mhb4awnjrqi268wigp07j08xi02s9yhg8b04l6mnms0d"))))
-      (arguments
-       (list
-        #:tests? #t
-        #:test-command #~(list "ert-runner")
-        #:phases
-        #~(modify-phases %standard-phases
-            (add-before 'install 'install-dtache-env
-              (lambda _
-                (install-file "dtache-env" (string-append #$output "/bin"))))
-            (add-after 'unpack 'configure
-              (lambda* (#:key inputs #:allow-other-keys)
-                (make-file-writable "dtache.el")
-                (emacs-substitute-variables "dtache.el"
-                  ("dtache-env" (string-append #$output
-                                               "/bin/dtache-env"))
-                  ("dtache-dtach-program" (search-input-file
-                                           inputs
-                                           "/bin/dtach"))
-                  ("dtache-shell-program" (search-input-file
-                                           inputs
-                                           "/bin/bash"))))))))
-      (build-system emacs-build-system)
-      (native-inputs (list emacs-ert-runner))
-      (inputs (list dtach))
-      (home-page "https://gitlab.com/niklaseklund/dtache")
-      (synopsis "Run and interact with detached shell commands")
-      (description
-       "The dtache package allows users to run shell commands
+  (package
+    (name "emacs-dtache")
+    (version "0.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.com/niklaseklund/dtache")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1hndv0qzibkc4177lkam30j8cgvzxd8r60v3dnqn2bmrgxw04j6b"))))
+    (arguments
+     (list
+      #:tests? #t
+      #:test-command #~(list "ert-runner")
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'install 'install-dtache-env
+            (lambda _
+              (install-file "dtache-env" (string-append #$output "/bin"))))
+          (add-after 'unpack 'configure
+            (lambda* (#:key inputs #:allow-other-keys)
+              (make-file-writable "dtache.el")
+              (emacs-substitute-variables "dtache.el"
+                ("dtache-env" (string-append #$output
+                                             "/bin/dtache-env"))
+                ("dtache-dtach-program" (search-input-file
+                                         inputs
+                                         "/bin/dtach"))
+                ("dtache-shell-program" (search-input-file
+                                         inputs
+                                         "/bin/bash"))))))))
+    (build-system emacs-build-system)
+    (native-inputs (list emacs-ert-runner))
+    (inputs (list dtach))
+    (home-page "https://gitlab.com/niklaseklund/dtache")
+    (synopsis "Run and interact with detached shell commands")
+    (description
+     "The dtache package allows users to run shell commands
 detached from Emacs.  These commands are launched in sessions, using the
 program dtach.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-dtrt-indent
   (package
