@@ -866,7 +866,8 @@ patterns.")
            (file-name (git-file-name "libgd" version))
            (sha256
             (base32 "16yld0ap7qj1n96h4f2sqkjmibg7xx5xwkqxdfzam2nmyfdlrrrs"))))
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("python" ,python)))
     (home-page "https://wiki.gnome.org/Apps/Recipes")
     (synopsis "Discover recipes for preparing food")
     (description "GNOME Recipes helps you discover what to cook today,
