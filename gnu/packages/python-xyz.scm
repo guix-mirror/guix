@@ -10939,7 +10939,7 @@ It has a flexible system of @samp{authorizers} able to manage both
                          (setenv "HOME" "/tmp")
                          (invoke "pytest" "-m" "not slow")))))))
     (propagated-inputs
-     (list python-appdirs python-pytz python-typing python-six))
+     (list python-appdirs python-pytz python-six))
     (native-inputs
      (list python-mock python-parameterized python-pyftpdlib python-pytest))
     (home-page "https://github.com/PyFilesystem/pyfilesystem2/")
