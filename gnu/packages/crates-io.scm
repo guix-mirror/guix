@@ -1522,22 +1522,26 @@ Rust.")
     (name "rust-actix-web-codegen")
     (version "0.1.3")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "actix-web-codegen" version))
-        (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-          (base32 "1frs0id6k1vjczhnfhwh8q8birp27imlvgi6jylfxh911r9372h6"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-web-codegen" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1frs0id6k1vjczhnfhwh8q8birp27imlvgi6jylfxh911r9372h6"))))
     (arguments
-      `(#:cargo-inputs
-        (("rust-proc-macro2" ,rust-proc-macro2-1)
-         ("rust-quote" ,rust-quote-1)
-         ("rust-syn" ,rust-syn-1))
-        #:cargo-development-inputs
-        (("rust-actix-http" ,rust-actix-http-0.2)
-         ("rust-actix-http-test" ,rust-actix-http-test-0.2)
-         ("rust-actix-web" ,rust-actix-web-1)
-         ("rust-futures" ,rust-futures-0.1))))))
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))
+       #:cargo-development-inputs
+       (("rust-actix-http" ,rust-actix-http-0.2)
+        ("rust-actix-http-test" ,rust-actix-http-test-0.2)
+        ("rust-actix-web" ,rust-actix-web-1)
+        ("rust-futures" ,rust-futures-0.1))))
+    (native-inputs
+     (list pkg-config))
+    (inputs
+     (list openssl))))
 
 (define-public rust-adaptive-barrier-0.1
   (package
