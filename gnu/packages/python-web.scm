@@ -3609,15 +3609,22 @@ library for Python")
 (define-public python-flask-oidc
   (package
     (name "python-flask-oidc")
-    (version "1.1.1")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "flask-oidc" version))
        (sha256
         (base32
-         "1ay5j0mf174bix7i67hclr95gv16z81fpx0dijvi0gydvdj3ddy2"))))
+         "0klgwpn2iy5y7011xh2c8zkryxdwkpxh7qjs3hp5cynl748ia4hc"))))
     (build-system python-build-system)
+    (arguments
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (replace 'check
+                 (lambda* (#:key tests? #:allow-other-keys)
+                   (when tests?
+                     (invoke "nosetests")))))))
     (propagated-inputs
      (list python-flask python-itsdangerous python-oauth2client
            python-six))
