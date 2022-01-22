@@ -38461,6 +38461,29 @@ platform-native strings.")
      "This package provides a proc macro for the @code{ouroboros} crate.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-ouroboros-0.14
+  (package
+    (name "rust-ouroboros")
+    (version "0.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ouroboros" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1ih1lna1d2is3a6aicmc7lpfhqmg046kssxpryk24kwg8j42ymh6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-aliasable" ,rust-aliasable-0.1)
+        ("rust-ouroboros-macro" ,rust-ouroboros-macro-0.14)
+        ("rust-stable-deref-trait" ,rust-stable-deref-trait-1))))
+    (home-page "https://github.com/joshua-maros/ouroboros")
+    (synopsis "Self-referential struct generation")
+    (description
+     "Easy, safe self-referential struct generation for Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-output-vt100-0.1
   (package
     (name "rust-output-vt100")
