@@ -561,14 +561,14 @@ regular-expression notation.")
 (define-public slib
   (package
     (name "slib")
-    (version "3b5")
+    (version "3b6")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://groups.csail.mit.edu/mac/ftpdir/scm/slib-"
                                  version ".zip"))
              (sha256
               (base32
-               "0q0p2d53p8qw2592yknzgy2y1p5a9k7ppjx0cfrbvk6242c4mdpq"))))
+               "137dn2wwwwg0qbifgxfckjhzj4m4820crpg9kziv402l7f2b931f"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There is no check target.
