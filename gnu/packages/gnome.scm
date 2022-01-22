@@ -10436,7 +10436,7 @@ accessibility infrastructure.")
 (define-public orca
   (package
     (name "orca")
-    (version "40.0")
+    (version "41.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -10445,7 +10445,7 @@ accessibility infrastructure.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0hq0zdcn80ficpcffbk667907v6m7dih3dhyc7ss01mrj3iyw000"))))
+                "1gflnsv6d5qn5rh1f16yfa0q0yv8yvd0l5lbwrsdg7z18lafb5vn"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases
@@ -10455,8 +10455,7 @@ accessibility infrastructure.")
              (let ((xkbcomp (string-append
                              (assoc-ref inputs "xkbcomp") "/bin/xkbcomp")))
                (substitute* "src/orca/orca.py"
-                 (("'xkbcomp'") (format #f "'~a'" xkbcomp))))
-             #t))
+                 (("'xkbcomp'") (format #f "'~a'" xkbcomp))))))
          (add-after 'install 'wrap-orca
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
@@ -10467,25 +10466,24 @@ accessibility infrastructure.")
                  `("GST_PLUGIN_SYSTEM_PATH" ":" prefix
                    (,(getenv "GST_PLUGIN_SYSTEM_PATH")))
                  `("GUIX_PYTHONPATH" ":" prefix
-                   (,(getenv "GUIX_PYTHONPATH")))))
-             #t)))))
+                   (,(getenv "GUIX_PYTHONPATH"))))))))))
     (native-inputs
-     `(("intltool" ,intltool)
-       ("itstool" ,itstool)
-       ("pkg-config" ,pkg-config)
-       ("xmllint" ,libxml2)))
+     (list intltool
+           itstool
+           pkg-config
+           libxml2))
     (inputs
-     `(("at-spi2-atk" ,at-spi2-atk)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("gstreamer" ,gstreamer)
-       ("gst-plugins-base" ,gst-plugins-base)
-       ("gst-plugins-good" ,gst-plugins-good)
-       ("gtk+" ,gtk+)
-       ("python" ,python)
-       ("python-pygobject" ,python-pygobject)
-       ("python-pyatspi" ,python-pyatspi)
-       ("python-speechd" ,speech-dispatcher)
-       ("xkbcomp" ,xkbcomp)))
+     (list at-spi2-atk
+           gsettings-desktop-schemas
+           gstreamer
+           gst-plugins-base
+           gst-plugins-good
+           gtk+
+           python
+           python-pygobject
+           python-pyatspi
+           speech-dispatcher
+           xkbcomp))
     (synopsis
      "Screen reader for individuals who are blind or visually impaired")
     (home-page "https://wiki.gnome.org/Projects/Orca")
