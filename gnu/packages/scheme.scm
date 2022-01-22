@@ -17,6 +17,7 @@
 ;;; Copyright © 2021 Philip McGrath <philip@philipmcgrath.com>
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2021 Foo Chuan Wei <chuanwei.foo@hotmail.com>
+;;; Copyright © 2022 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -621,7 +622,7 @@ utility functions for all standard Scheme implementations.")
          (replace 'build
                   (lambda* (#:key inputs outputs #:allow-other-keys)
                     (setenv "SCHEME_LIBRARY_PATH"
-                            (search-input-directory inputs "lib/slib"))
+                            (search-input-directory inputs "lib/slib/"))
                     (invoke "make" "scmlit" "CC=gcc")
                     (invoke "make" "all")))
          (add-after 'install 'post-install
@@ -631,7 +632,7 @@ utility functions for all standard Scheme implementations.")
                         (delete-file req)
                         (format (open req (logior O_WRONLY O_CREAT))
                                 "(define (library-vicinity) ~s)\n"
-                                (search-input-directory inputs "lib/slib"))
+                                (search-input-directory inputs "lib/slib/"))
 
                         ;; We must generate the slibcat file.
                         (invoke (string-append out "/bin/scm")
