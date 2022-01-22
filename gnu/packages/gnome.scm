@@ -829,45 +829,42 @@ patterns.")
                 "1h049mzqnlcfqwrhmzbq3pzzdglvy2bn9fj1p8wql7a60pn8sr32"))))
     (build-system meson-build-system)
     (arguments
-     `(#:glib-or-gtk? #t
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'skip-gtk-update-icon-cache
-           (lambda _
-             (substitute* "meson_post_install.py"
-               (("gtk-update-icon-cache") (which "true")))
-             #t))
-         (add-after 'unpack 'unpack-libgd
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((libgd (assoc-ref inputs "libgd")))
-               (copy-recursively libgd "subprojects/libgd")
-               #t))))))
-    (inputs
-     `(("glib" ,glib)
-       ("gnome-autoar" ,gnome-autoar)
-       ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
-       ("gspell" ,gspell)
-       ("gtk+" ,gtk+)
-       ("json-glib" ,json-glib)
-       ("libcanberra" ,libcanberra)
-       ("libsoup" ,libsoup)
-       ("rest" ,rest)))
-    (native-inputs
-     `(("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
-       ("gettext" ,gettext-minimal)
-       ("glib:bin" ,glib "bin")
-       ("itstool" ,itstool)
-       ("libgd"
-        ,(origin
-           (method git-fetch)
-           (uri (git-reference
-                 (url "https://gitlab.gnome.org/GNOME/libgd")
-                 (commit "c7c7ff4e05d3fe82854219091cf116cce6b19de0")))
-           (file-name (git-file-name "libgd" version))
-           (sha256
-            (base32 "16yld0ap7qj1n96h4f2sqkjmibg7xx5xwkqxdfzam2nmyfdlrrrs"))))
-       ("pkg-config" ,pkg-config)
-       ("python" ,python)))
+     (list
+      #:glib-or-gtk? #t
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'skip-gtk-update-icon-cache
+            (lambda _
+              (substitute* "meson_post_install.py"
+                (("gtk-update-icon-cache") (which "true")))))
+          (add-after 'unpack 'unpack-libgd
+            (lambda _
+              (copy-recursively
+               #$(origin
+                   (method git-fetch)
+                   (uri (git-reference
+                         (url "https://gitlab.gnome.org/GNOME/libgd")
+                         (commit "c7c7ff4e05d3fe82854219091cf116cce6b19de0")))
+                   (file-name (git-file-name "libgd" version))
+                   (sha256
+                    (base32
+                     "16yld0ap7qj1n96h4f2sqkjmibg7xx5xwkqxdfzam2nmyfdlrrrs")))
+               "subprojects/libgd"))))))
+    (inputs (list glib
+                  gnome-autoar
+                  `(,gnome-online-accounts "lib")
+                  gspell
+                  gtk+
+                  json-glib
+                  libcanberra
+                  libsoup
+                  rest))
+    (native-inputs (list desktop-file-utils ;for update-desktop-database
+                         gettext-minimal
+                         `(,glib "bin")
+                         itstool
+                         pkg-config
+                         python))
     (home-page "https://wiki.gnome.org/Apps/Recipes")
     (synopsis "Discover recipes for preparing food")
     (description "GNOME Recipes helps you discover what to cook today,
