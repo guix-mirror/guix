@@ -5789,15 +5789,14 @@ Longest Commons Subsequence of a set of strings.")
 (define-public jacal
   (package
     (name "jacal")
-    (version "1c4")
+    (version "1c7")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "http://groups.csail.mit.edu/mac/ftpdir/scm/jacal-"
                     version ".zip"))
-              (sha256 (base32
-                       "055zrn12a1dmy0dqkwrkq3fklbhg3yir6vn0lacp4mvbg8573a3q"))
-              (patches (search-patches "jacal-fix-texinfo.patch"))))
+              (sha256
+               (base32 "06a5sx9ikd62bpnd898g3yk818b020b1a27mk7dbfla2zizib4xz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -5823,7 +5822,7 @@ Longest Commons Subsequence of a set of strings.")
                         (chmod wrapper #o555))))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "./configure"
+             (invoke "sh" "configure"
                      (string-append "--prefix="
                                     (assoc-ref outputs "out"))))))))
     (inputs (list scm))
