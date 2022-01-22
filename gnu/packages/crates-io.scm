@@ -25,6 +25,7 @@
 ;;; Copyright © 2021 Jacob Hrbek <kreyren@rixotstudio.cz>
 ;;; Copyright © 2021 Nicolas Graves <ngraves@ngraves.fr>
 ;;; Copyright © 2022 Aleksandr Vityazev <avityazev@posteo.org>
+;;; Copyright © 2022 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3639,6 +3640,54 @@ Askama.")
     (description
      "This package provides a type-safe, compiled Jinja-like templates for Rust.")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-asn1-derive-0.8
+  (package
+    (name "rust-asn1-derive")
+    (version "0.8.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "asn1_derive" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "098w0mxz4bx9w7v72gsl5wva6f0qbvzyc52m0s0n8svqbyh4z2dw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/alex/rust-asn1")
+    (synopsis "#[derive] support for asn1")
+    (description
+     "This package provides #[derive] support for @code{asn1}.")
+    (license license:bsd-3)))
+
+(define-public rust-asn1-0.8
+  (package
+    (name "rust-asn1")
+    (version "0.8.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "asn1" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1caacmvgn463n1yc4ac6vl9phrh56ij7l3xgf6qgzbpyjm8v7zyg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-asn1-derive" ,rust-asn1-derive-0.8)
+        ("rust-chrono" ,rust-chrono-0.4))
+       #:cargo-development-inputs
+       (("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://github.com/alex/rust-asn1")
+    (synopsis "ASN.1 (DER) parser and writer")
+    (description
+     "This is a Rust library for parsing and generating ASN.1 data (DER only).")
+    (license license:bsd-3)))
 
 (define-public rust-as-slice-0.1
   (package
