@@ -3733,40 +3733,6 @@ this it tries to be opinion-free and very extendable.")
 server.")
     (license license:expat)))
 
-(define-public python-flask-script
-  (package
-  (name "python-flask-script")
-  (version "2.0.6")
-  (source
-    (origin
-      (method url-fetch)
-      (uri (pypi-uri "Flask-Script" version))
-      (sha256
-        (base32
-          "0r8w2v89nj6b9p91p495cga5m72a673l2wc0hp0zqk05j4yrc9b4"))))
-  (build-system python-build-system)
-  (arguments
-   `(#:phases
-     (modify-phases %standard-phases
-       (add-after 'unpack 'patch-tests
-         (lambda _
-           (substitute* "tests.py"
-            (("flask\\.ext\\.script") "flask_script"))
-           #t)))))
-  (propagated-inputs
-   (list python-flask python-argcomplete python-werkzeug))
-  (native-inputs
-   (list python-pytest))
-  (home-page
-    "https://github.com/smurfix/flask-script")
-  (synopsis "Scripting support for Flask")
-  (description "The Flask-Script extension provides support for writing
-external scripts in Flask.  This includes running a development server,
-a customised Python shell, scripts to set up your database, cronjobs,
-and other command-line tasks that belong outside the web application
-itself.")
-  (license license:bsd-3)))
-
 (define-public python-flask-migrate
   (package
     (name "python-flask-migrate")
