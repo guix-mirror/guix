@@ -3769,25 +3769,24 @@ itself.")
 
 (define-public python-flask-migrate
   (package
-  (name "python-flask-migrate")
-  (version "2.5.3")
-  (source
-    (origin
-      (method url-fetch)
-      (uri (pypi-uri "Flask-Migrate" version))
-      (sha256
-        (base32
-          "1vip9ww6l18dxffjsggm83k71zkvihxpnhaswpv8klh95s6517d6"))))
-  (build-system python-build-system)
-  (propagated-inputs
-   (list python-flask python-alembic python-sqlalchemy
-         python-flask-script python-flask-sqlalchemy))
-  (home-page "https://github.com/miguelgrinberg/flask-migrate/")
-  (synopsis "SQLAlchemy database migrations for Flask programs using
+    (name "python-flask-migrate")
+    (version "3.1.0")
+    (home-page "https://github.com/miguelgrinberg/flask-migrate/")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "0zj7qpknvlhrh4fsp5sx4fwyx3sp41ynclka992zympm3xym9zyq"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     (list python-flask python-alembic python-flask-sqlalchemy))
+    (synopsis "SQLAlchemy database migrations for Flask programs using
 Alembic")
-  (description "This package contains SQLAlchemy database migration tools
+    (description "This package contains SQLAlchemy database migration tools
 for Flask programs that are using @code{python-alembic}.")
-  (license license:expat)))
+    (license license:expat)))
 
 (define-public python-genshi
   (package
