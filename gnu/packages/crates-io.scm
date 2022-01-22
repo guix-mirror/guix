@@ -2538,6 +2538,26 @@ code that is generic with regard to the algebraic entity types.")
 @code{alga} crate.")
     (license license:asl2.0)))
 
+(define-public rust-aliasable-deref-trait-0.2
+  (package
+    (name "rust-aliasable-deref-trait")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "aliasable_deref_trait" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0abzqsxd09jxl01brzjnwk8zg7k8zma76gzq87385q8fqm710jxb"))))
+    (build-system cargo-build-system)
+    (arguments '(#:skip-build? #t))
+    (home-page "https://github.com/avitex/rust-aliasable-deref-trait")
+    (synopsis "Marker trait for aliasable pointers")
+    (description
+     "This package provides a marker trait for types that deref to an
+address that is aliasable when coerced to a raw pointer")
+    (license license:expat)))
+
 (define-public rust-alloc-no-stdlib-2
   (package
     (name "rust-alloc-no-stdlib")
