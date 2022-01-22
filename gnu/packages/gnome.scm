@@ -11601,7 +11601,7 @@ environment.")
 (define-public polari
   (package
     (name "polari")
-    (version "40.1")
+    (version "41.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/polari/"
@@ -11609,7 +11609,7 @@ environment.")
                                   "/polari-" version ".tar.xz"))
               (sha256
                (base32
-                "001h9gppn79gnj7dl61jl9gas5wmbjdx0v8xwsx7v4xsv2hwz91g"))))
+                "1ss0x8idwar1q9p9535kzqb8idy7k2r48vrbjiyccw03cs0mzc53"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -11618,8 +11618,7 @@ environment.")
          (add-after 'unpack 'skip-gtk-update-icon-cache
            (lambda _
              (substitute* "meson/meson-postinstall.sh"
-               (("gtk-update-icon-cache") (which "true")))
-             #t))
+               (("gtk-update-icon-cache") (which "true")))))
          (add-after 'install 'fix-desktop-file
            ;; Hardcode launcher to be on the safe side
            (lambda* (#:key outputs #:allow-other-keys)
@@ -11632,8 +11631,7 @@ environment.")
              (let ((prog (string-append (assoc-ref outputs "out")
                                         "/bin/polari")))
                (wrap-program prog
-                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
-               #t))))))
+                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))))))))
     (inputs
      (list glib
            gsettings-desktop-schemas
