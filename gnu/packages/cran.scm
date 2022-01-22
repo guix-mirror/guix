@@ -26528,6 +26528,27 @@ jumps from the C API as well as C++ exceptions, conform to normal R function
 semantics and supports interaction with @code{ALTREP} vectors.")
     (license license:expat)))
 
+(define-public r-rcpptoml
+  (package
+    (name "r-rcpptoml")
+    (version "0.1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RcppTOML" version))
+       (sha256
+        (base32 "0h8517ipwqhqkhcfiyqmvsb585g01p0ra0azbpzyxip6pq6g029g"))))
+    (properties `((upstream-name . "RcppTOML")))
+    (build-system r-build-system)
+    (propagated-inputs (list r-rcpp))
+    (home-page "http://dirk.eddelbuettel.com/code/rcpp.toml.html")
+    (synopsis "Rcpp bindings to TOML parser")
+    (description
+     "The TOML configuration format specifies an excellent format suitable for
+both human editing as well as the common uses of a machine-readable format.
+This package provides Rcpp bindings to a TOML parser.")
+    (license license:gpl2+)))
+
 (define-public r-rcppziggurat
   (package
     (name "r-rcppziggurat")
