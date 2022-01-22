@@ -283,17 +283,17 @@ Coding (AAC) encoder.")
 (define-public tinyalsa
   (package
     (name "tinyalsa")
-    (version "1.1.1")
+    (version "2.0.0")
     (source
      (origin
        (method git-fetch)
        (uri
         (git-reference
          (url "https://github.com/tinyalsa/tinyalsa")
-         (commit version)))
+         (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ajyvml5bnzvhiyyrn42gqwgg23ssxkfh09rvsnywhzxhd0xai4h"))))
+        (base32 "1p9khz3bdpdcrnc9p6w522a0ankdchj4nxd3ki41z9401rxmnljq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; No target
