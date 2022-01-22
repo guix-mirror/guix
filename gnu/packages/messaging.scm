@@ -2349,43 +2349,43 @@ for the Matrix protocol.  It is built on to of @code{Boost.Asio}.")
         '(begin
            (delete-file-recursively "third_party")))))
     (arguments
-     `(#:tests? #f                      ;no test target
-       #:configure-flags
-       '("-DCMAKE_BUILD_TYPE=Release"
-         "-DBUILD_DOCS=ON"
-         ;; Fix required because we are using a static SingleApplication
-         "-DCMAKE_CXX_FLAGS= \"-DQAPPLICATION_CLASS=QApplication\" "
-         ;; Compile Qml will make Nheko faster, but you will need to recompile
-         ;; it, when you update Qt.  That's fine for us.
-         "-DCOMPILE_QML=ON")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'unbundle-dependencies
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((single-app (assoc-ref inputs "single-application")))
-               (substitute* "CMakeLists.txt"
-                 ;; Remove include and source dirs,replace with the correct one
-                 (("third_party/blurhash/blurhash.cpp") "")
-                 (("third_party/cpp-httplib-0.5.12")
-                  (string-append "\"" single-app "/include\""))
-                 (("add_subdirectory.*third_party/SingleApplication.*") "")
-                 ;; Link using the correct static/shared libs
-                 (("SingleApplication::SingleApplication")
-                  (string-append
-                   ;; Dynamic libraries
-                   "httplib" "\n" "blurhash" "\n"
-                   ;; Static library
-                   single-app "/lib/libSingleApplication.a"))))))
-         (add-after 'unpack 'fix-determinism
-           (lambda _
-             ;; Make Qt deterministic.
-             (setenv "QT_RCC_SOURCE_DATE_OVERRIDE" "1")))
-         (add-after 'install 'wrap-program
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (gst-plugin-path (getenv "GST_PLUGIN_SYSTEM_PATH")))
-               (wrap-program (string-append out "/bin/nheko")
-                 `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path)))))))))
+     (list
+      #:tests? #f                       ;no test target
+      #:configure-flags
+      #~(list "-DCMAKE_BUILD_TYPE=Release"
+              "-DBUILD_DOCS=ON"
+              ;; Fix required because we are using a static SingleApplication
+              "-DCMAKE_CXX_FLAGS= \"-DQAPPLICATION_CLASS=QApplication\" "
+              ;; Compile Qml will make Nheko faster, but you will need to recompile
+              ;; it, when you update Qt.  That's fine for us.
+              "-DCOMPILE_QML=ON")
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'unbundle-dependencies
+            (lambda _
+              (let ((single-app #$(this-package-input "single-application-qt5")))
+                (substitute* "CMakeLists.txt"
+                  ;; Remove include and source dirs,replace with the correct one
+                  (("third_party/blurhash/blurhash.cpp") "")
+                  (("third_party/cpp-httplib-0.5.12")
+                   (string-append "\"" single-app "/include\""))
+                  (("add_subdirectory.*third_party/SingleApplication.*") "")
+                  ;; Link using the correct static/shared libs
+                  (("SingleApplication::SingleApplication")
+                   (string-append
+                    ;; Dynamic libraries
+                    "httplib" "\n" "blurhash" "\n"
+                    ;; Static library
+                    single-app "/lib/libSingleApplication.a"))))))
+          (add-after 'unpack 'fix-determinism
+            (lambda _
+              ;; Make Qt deterministic.
+              (setenv "QT_RCC_SOURCE_DATE_OVERRIDE" "1")))
+          (add-after 'install 'wrap-program
+            (lambda _
+              (let ((gst-plugin-path (getenv "GST_PLUGIN_SYSTEM_PATH")))
+                (wrap-program (string-append #$output "/bin/nheko")
+                  `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path)))))))))
     (build-system qt-build-system)
     (inputs
      (list boost
@@ -2395,11 +2395,11 @@ for the Matrix protocol.  It is built on to of @code{Boost.Asio}.")
            coeurl
            curl
            gst-plugins-base
-           gst-plugins-bad ; sdp & webrtc for voip
-           gst-plugins-good ; rtpmanager for voip
+           gst-plugins-bad              ; sdp & webrtc for voip
+           gst-plugins-good             ; rtpmanager for voip
            json-modern-cxx
            libevent
-           libnice ; for voip
+           libnice                      ; for voip
            libolm
            lmdb
            lmdbxx
