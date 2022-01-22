@@ -279,6 +279,7 @@ Programming Interface
 * Build Systems::               Specifying how packages are built.
 * Build Phases::                Phases of the build process of a package.
 * Build Utilities::             Helpers for your package definitions and more.
+* Search Paths::                Declaring search path environment variables.
 * The Store::                   Manipulating the package store.
 * Derivations::                 Low-level interface to package derivations.
 * The Store Monad::             Purely functional interface to the store.
@@ -3442,7 +3443,8 @@ libraries in the user's profile (@pxref{Environment Variables,,, gcc,
 Using the GNU Compiler Collection (GCC)}).  If GCC and, say, the C
 library are installed in the profile, then @option{--search-paths} will
 suggest setting these variables to @file{@var{profile}/include} and
-@file{@var{profile}/lib}, respectively.
+@file{@var{profile}/lib}, respectively (@pxref{Search Paths}, for info
+on search path specifications associated with packages.)
 
 The typical use case is to define these environment variables in the
 shell:
@@ -6859,6 +6861,7 @@ package definitions.
 * Build Systems::               Specifying how packages are built.
 * Build Phases::                Phases of the build process of a package.
 * Build Utilities::             Helpers for your package definitions and more.
+* Search Paths::                Declaring search path environment variables.
 * The Store::                   Manipulating the package store.
 * Derivations::                 Low-level interface to package derivations.
 * The Store Monad::             Purely functional interface to the store.
@@ -7239,7 +7242,8 @@ Outputs}, for typical uses of additional outputs.
 @item @code{native-search-paths} (default: @code{'()})
 @itemx @code{search-paths} (default: @code{'()})
 A list of @code{search-path-specification} objects describing
-search-path environment variables honored by the package.
+search-path environment variables honored by the package.  @xref{Search
+Paths}, for more on search path specifications.
 
 @item @code{replacement} (default: @code{#f})
 This must be either @code{#f} or a package object that will be used as a
@@ -8900,6 +8904,10 @@ standard list of phases.  For @code{gnu-build-system}, the main build
 phases are the following:
 
 @table @code
+@item set-paths
+Define search path environment variables for all the input packages,
+including @env{PATH} (@pxref{Search Paths}).
+
 @item unpack
 Unpack the source tarball, and change the current directory to the
 extracted source tree.  If the source is actually a directory, copy it
@@ -9392,6 +9400,184 @@ executable files to be installed:
 @end lisp
 
 @c TODO: Add more examples.
+
+@node Search Paths
+@section Search Paths
+
+@cindex search path
+Many programs and libraries look for input data in a @dfn{search path},
+a list of directories: shells like Bash look for executables in the
+command search path, a C compiler looks for @file{.h} files in its
+header search path, and the Python interpreter looks for @file{.py}
+files in its search path, the spell checker has a search path for
+dictionaries, and so on.
+
+Search paths can usually be defined or overridden @i{via} environment
+variables (@pxref{Environment Variables,,, libc, The GNU C Library
+Reference Manual}).  For example, the search paths mentioned above can
+be changed by defining the @env{PATH}, @env{C_INCLUDE_PATH},
+@env{PYTHONPATH} (or @env{GUIX_PYTHONPATH}), and @env{DICPATH}
+environment variables---you know, all these something-PATH variables
+that you need to get right or things ``won't be found''.
+
+You may have noticed from the command line that Guix ``knows'' which
+search path environment variables should be defined, and how.  When you
+install packages in your default profile, the file
+@file{~/.guix-profile/etc/profile} is created, which you can ``source''
+from the shell to set those variables.  Likewise, if you ask
+@command{guix shell} to create an environment containing Python and
+NumPy, a Python library, and if you pass it the @option{--search-paths}
+option, it will tell you about @env{PATH} and @env{GUIX_PYTHONPATH}
+(@pxref{Invoking guix shell}):
+
+@example
+$ guix shell python python-numpy --pure --search-paths
+export PATH="/gnu/store/@dots{}-profile/bin"
+export GUIX_PYTHONPATH="/gnu/store/@dots{}-profile/lib/python3.9/site-packages"
+@end example
+
+When you omit @option{--search-paths}, it defines these environment
+variables right away, such that Python can readily find NumPy:
+
+@example
+$ guix shell python python-numpy -- python3
+Python 3.9.6 (default, Jan  1 1970, 00:00:01)
+[GCC 10.3.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import numpy
+>>> numpy.version.version
+'1.20.3'
+@end example
+
+For this to work, the definition of the @code{python} package
+@emph{declares} the search path it cares about and its associated
+environment variable, @env{GUIX_PYTHONPATH}.  It looks like this:
+
+@lisp
+(package
+  (name "python")
+  (version "3.9.9")
+  ;; some fields omitted...
+  (native-search-paths
+   (list (search-path-specification
+          (variable "GUIX_PYTHONPATH")
+          (files (list "lib/python/3.9/site-packages"))))))
+@end lisp
+
+What this @code{native-search-paths} field says is that, when the
+@code{python} package is used, the @env{GUIX_PYTHONPATH} environment
+variable must be defined to include all the
+@file{lib/python/3.9/site-packages} sub-directories encountered in its
+environment.  (The @code{native-} bit means that, if we are in a
+cross-compilation environment, only native inputs may be added to the
+search path.)  In the NumPy example above, the profile where
+@code{python} appears contains exactly one such sub-directory, and
+@env{GUIX_PYTHONPATH} is set to that.  When there are several
+@file{lib/python/3.9/site-packages}---this is the case in package build
+environments---they are all added to @env{GUIX_PYTHONPATH}, separated by
+colons (@code{:}).
+
+@quotation Note
+Notice that @env{GUIX_PYTHONPATH} is specified as part of the definition
+of the @code{python} package, and @emph{not} as part of that of
+@code{python-numpy}.  This is because this environment variable
+``belongs'' to Python, not NumPy: Python actually reads the value of
+that variable and honors it.
+
+Corollary: if you create a profile that does not contain @code{python},
+@code{GUIX_PYTHONPATH} will @emph{not} be defined, even if it contains
+packages that provide @file{.py} files:
+
+@example
+$ guix shell python-numpy --search-paths --pure
+export PATH="/gnu/store/@dots{}-profile/bin"
+@end example
+
+This makes a lot of sense if we look at this profile in isolation: no
+software in this profile would read @env{GUIX_PYTHONPATH}.
+@end quotation
+
+Of course, there are many variations on that theme: some packages honor
+more than one search path, some use separators other than colon, some
+accumulate several directories in their search path, and so on.  A more
+complex example is the search path of libxml2: the value of the
+@env{XML_CATALOG_FILES} environment variable is space-separated, it must
+contain a list of @file{catalog.xml} files (not directories), which are
+to be found in @file{xml} sub-directories---nothing less.  The search
+path specification looks like this:
+
+@lisp
+(define libxml2
+  (package
+    (name "libxml2")
+    ;; some fields omitted
+    (native-search-paths
+     (list (search-path-specification
+            (variable "XML_CATALOG_FILES")
+            (separator " ")
+            (files '("xml"))
+            (file-pattern "^catalog\\.xml$")
+            (file-type 'regular))))))
+@end lisp
+
+Worry not, search path specifications are usually not this tricky.
+
+The @code{(guix search-paths)} module defines the data type of search
+path specifications and a number of helper procedures.  Below is the
+reference of search path specifications.
+
+@deftp {Data Type} search-path-specification
+The data type for search path specifications.
+
+@table @asis
+@item @code{variable}
+The name of the environment variable for this search path (a string).
+
+@item @code{files}
+The list of sub-directories (strings) that should be added to the search
+path.
+
+@item @code{separator} (default: @code{":"})
+The string used to separate search path components.
+
+As a special case, a @code{separator} value of @code{#f} specifies a
+``single-component search path''---in other words, a search path that
+cannot contain more than one element.  This is useful in some cases,
+such as the @code{SSL_CERT_DIR} variable (honored by OpenSSL, cURL, and
+a few other packages) or the @code{ASPELL_DICT_DIR} variable (honored by
+the GNU Aspell spell checker), both of which must point to a single
+directory.
+
+@item @code{file-type} (default: @code{'directory})
+The type of file being matched---@code{'directory} or @code{'regular},
+though it can be any symbol returned by @code{stat:type} (@pxref{File
+System, @code{stat},, guile, GNU Guile Reference Manual}).
+
+In the libxml2 example above, we would match regular files; in the
+Python example, we would match directories.
+
+@item @code{file-pattern} (default: @code{#f})
+When true, this is a regular expression specifying files to be matched
+@emph{within} the sub-directories specified by the @code{files} field.
+
+Again, the libxml2 example shows a situation where this is needed.
+@end table
+@end deftp
+
+How do you turn search path specifications on one hand and a bunch of
+directories on the other hand in a set of environment variable
+definitions?  That's the job of @code{evaluate-search-paths}.
+
+@deffn {Scheme Procedure} evaluate-search-paths @var{search-paths} @
+  @var{directories} [@var{getenv}]
+Evaluate @var{search-paths}, a list of search-path specifications, for
+@var{directories}, a list of directory names, and return a list of
+specification/value pairs.  Use @var{getenv} to determine the current
+settings and report only settings not already effective.
+@end deffn
+
+The @code{(guix profiles)} provides a higher-level helper procedure,
+@code{load-profile}, that sets the environment variables of a profile.
 
 @node The Store
 @section The Store
