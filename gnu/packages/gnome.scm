@@ -11563,7 +11563,7 @@ index files needed for Adwaita to be used outside of GNOME.")
 (define-public gnote
   (package
     (name "gnote")
-    (version "40.2")
+    (version "41.2")
     (source
      (origin
        (method url-fetch)
@@ -11571,8 +11571,16 @@ index files needed for Adwaita to be used outside of GNOME.")
                            (version-major version)  "/"
                            "gnote-" version ".tar.xz"))
        (sha256
-        (base32 "01fqdfgcl32cf40jw9q0h7f5bghl1lvf89vln1lh41ncrk0iw6vy"))))
-    (build-system glib-or-gtk-build-system)
+        (base32 "0gs2j988rwfrxckb8qxlkyxnvqsv30q32myqish6hssfa51yzc11"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'skip-gtk-update-icon-cache
+                    ;; Don't create 'icon-theme.cache'.
+                    (lambda _
+                      (substitute* "post-install.py"
+                        (("gtk-update-icon-cache") "true")))))))
     (native-inputs
      (list desktop-file-utils
            `(,glib "bin")
@@ -11580,7 +11588,7 @@ index files needed for Adwaita to be used outside of GNOME.")
            intltool
            itstool
            pkg-config
-           unittest-cpp)) ;FIXME: not found by pkg-config
+           python))
     (inputs
      (list glibmm
            gsettings-desktop-schemas
@@ -11592,9 +11600,8 @@ index files needed for Adwaita to be used outside of GNOME.")
            libxml2
            libxslt))
     (synopsis "Note-taking application for the GNOME desktop")
-    (description
-     "Gnote is a note-taking application written for the GNOME desktop
-environment.")
+    (description "Gnote is a note-taking application written for the GNOME
+desktop environment.")
     (home-page "https://wiki.gnome.org/Apps/Gnote")
     (license license:gpl3+)))
 
