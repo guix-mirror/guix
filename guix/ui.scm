@@ -940,7 +940,7 @@ warning."
 
 (define (colorize-store-file-name file)
   "Colorize FILE, a store file name, such that the hash part is less prominent
-that the rest."
+than the rest."
   (let ((len    (string-length file))
         (prefix (+ (string-length (%store-prefix)) 32 2)))
     (if (< len prefix)
