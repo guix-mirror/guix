@@ -17268,9 +17268,6 @@ multitouch applications.")
         (base32 "153x2clrnigs74jdgnn3qmljdjj4gprmvpdvh49i18ls4m8mbm5y"))))
     (propagated-inputs (list python-six))))
 
-(define-public python2-nltk
-  (package-with-python2 python-nltk))
-
 (define-public python-pymongo
   (package
     (name "python-pymongo")
