@@ -24855,7 +24855,7 @@ files.  These files are used to translate strings in android apps.")
                        ;; This test failed.
                        "not test_kill_auto_restart")))))))
     (propagated-inputs
-     (list python-argh python-pathtools python-pyyaml))
+     (list python-pathtools python-pyyaml))
     (native-inputs
      (list python-pytest-cov python-pytest-timeout))
     (home-page "https://github.com/gorakhargosh/watchdog")
