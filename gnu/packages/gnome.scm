@@ -10345,7 +10345,7 @@ Bluefish supports many programming and markup languages.")
 (define-public gnome-system-monitor
   (package
     (name "gnome-system-monitor")
-    (version "40.1")
+    (version "41.0")
     (source
      (origin
        (method url-fetch)
@@ -10354,21 +10354,21 @@ Bluefish supports many programming and markup languages.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "06hxd4igxas2kyind5jwfq5qbfkknykpdfy2sy3anylhcx1hzczx"))))
+         "0pwy2c95rm0ym3x5pr6rqg7zh58crjxyns4r52q99ds937349z67"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
        #:configure-flags '("-Dsystemd=false")))
     (native-inputs
-     `(("glib:bin" ,glib "bin") ; for glib-mkenums.
-       ("gtk+" ,gtk+ "bin") ; gtk-update-icon-cache
-       ("intltool" ,intltool)
-       ("itstool" ,itstool)
-       ("libgtop" ,libgtop)
-       ("polkit" ,polkit)
-       ("pkg-config" ,pkg-config)))
+     (list `(,glib "bin")               ;for glib-mkenums.
+           `(,gtk+ "bin")               ;gtk-update-icon-cache
+           intltool
+           itstool
+           libgtop
+           polkit
+           pkg-config))
     (inputs
-     (list gdk-pixbuf ; for loading SVG files.
+     (list gdk-pixbuf                   ;for loading SVG files.
            gtk+
            gtkmm-3
            libhandy
