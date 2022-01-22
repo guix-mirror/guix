@@ -5627,7 +5627,7 @@ services for numerous locations.")
            cups
            gsettings-desktop-schemas
            libwacom
-           librsvg
+           (librsvg-for-system)
            xf86-input-wacom
            wayland
            network-manager
