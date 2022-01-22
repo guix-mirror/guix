@@ -68,6 +68,7 @@
 ;;; Copyright © 2022 Daniel Meißner <daniel.meissner-i4k@ruhr-uni-bochum.de>
 ;;; Copyright © 2022 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2022 John Kehayias <john.kehayias@protonmail.com>
+;;; Copyright © 2022 Denis 'GNUtoo' Carikli <GNUtoo@cyberdimension.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -8827,7 +8828,11 @@ like switching to windows and launching applications.")
     (arguments
      `(#:glib-or-gtk? #t))   ; To wrap binaries and/or compile schemas
     (native-inputs
-     `(("gjs" ,gjs)
+     `(;; GJS depends on Rust, which is x86_64-only so far, so remove the GJS
+       ;; dependency on other platforms (FIXME).
+       ,@(if (target-x86-64?)
+             `(("gjs" ,gjs))
+             '())
        ("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
