@@ -20003,14 +20003,14 @@ porting.")
 (define-public r-subplex
   (package
     (name "r-subplex")
-    (version "1.6")
+    (version "1.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "subplex" version))
        (sha256
         (base32
-         "1yfbfjvpbhgky7vihw3f4jl41pxpqb39z4nc045d5z7z48bdl18d"))))
+         "11zqzydbj6ivgvlw1gv1r2yxra7misbc622g575p2vckhjjg9v6m"))))
     (build-system r-build-system)
     (native-inputs
      (list gfortran))
