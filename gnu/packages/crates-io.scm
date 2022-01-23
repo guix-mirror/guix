@@ -27518,6 +27518,26 @@ crate.")
 crate.")
     (license license:asl2.0)))
 
+(define-public rust-indenter-0.3
+  (package
+    (name "rust-indenter")
+    (version "0.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "indenter" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "10y6i6y4ls7xsfsc1r3p5j2hhbxhaqnk5zzk8aj52b14v05ba8yf"))))
+    (build-system cargo-build-system)
+    (arguments '(#:skip-build? #t))
+    (home-page "https://github.com/yaahc/indenter")
+    (synopsis "Display trait indentation helper for errors")
+    (description
+     "This package provides a few wrappers for the @code{fmt::Write} object
+that efficiently appends and removes common indentation after every newline.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-indexmap-1
   (package
     (name "rust-indexmap")
