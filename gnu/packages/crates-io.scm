@@ -20275,6 +20275,30 @@ testing.")
 traits but without the boilerplate.")
     (license license:expat)))
 
+(define-public rust-eyre-0.6
+  (package
+    (name "rust-eyre")
+    (version "0.6.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "eyre" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1f0fbmrcykp84av1yb1d4cqj28jwf0zg1z49a1cgw8vrcf7ms8mw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-indenter" ,rust-indenter-0.3)
+        ("rust-once-cell" ,rust-once-cell-1))))
+    (home-page "https://github.com/yaahc/eyre")
+    (synopsis "Trait object based error handling type")
+    (description
+     "This library provides @code{eyre::Report}, a trait object based error
+handling type for easy idiomatic error handling and reporting in Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-fake-simd-0.1
   (package
     (name "rust-fake-simd")
