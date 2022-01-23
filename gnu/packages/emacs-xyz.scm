@@ -19672,6 +19672,29 @@ interactive behavior should be different.")
 decreasing the default font size in all GUI Emacs frames.")
     (license license:gpl3+)))
 
+(define-public emacs-fixed-pitch
+  (package
+    (name "emacs-fixed-pitch")
+    (version "0.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cstby/fixed-pitch-mode")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0qlavjvib0r71xdy6y6pan9dhr57lw7jhmqk60mwa8fq6km8kpkj"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/cstby/fixed-pitch-mode")
+    (synopsis
+     "Use a monospaced typeface for code and a proportional one elsewhere")
+    (description
+     "Fixed-pitch mode is an Emacs minor mode for setting a monospaced typeface.
+This allows you to set a proportional typeface for UI elements while keeping
+a monospaced typeface for code.")
+    (license license:gpl3+)))
+
 (define-public emacs-mixed-pitch
   (package
     (name "emacs-mixed-pitch")
