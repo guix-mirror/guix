@@ -29778,7 +29778,7 @@ dict.org) from within Emacs.")
 (define-public emacs-multitran
   (package
     (name "emacs-multitran")
-    (version "0.4.11")
+    (version "0.4.14")
     (source
      (origin
        (method git-fetch)
@@ -29787,7 +29787,7 @@ dict.org) from within Emacs.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0iqkgs3rrkhbj2mind4aa4qv7bf7vflnkdysd39b50jbwd7rv4fx"))))
+        (base32 "13lmhp2vm953s4phqdd119kp7s3p0kb3kqz4z6g3ga6m6py3gq3i"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/zevlg/multitran.el")
     (synopsis "Emacs interface to the multitran.com online dictionary")
