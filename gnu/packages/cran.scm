@@ -8215,14 +8215,14 @@ always locate the files relative to your project root.")
 (define-public r-reticulate
   (package
     (name "r-reticulate")
-    (version "1.22")
+    (version "1.23")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "reticulate" version))
        (sha256
         (base32
-         "0v7m2pv94lfqiw8rhz3c9g66vvz4qvih4vd29rhfk2phmcwpnvmh"))))
+         "1mindiw7k7pa33hpwrgq0g5808c8qs9hl0351n8z2w9wyczlm87y"))))
     (build-system r-build-system)
     (inputs (list python))
     (propagated-inputs
@@ -8232,6 +8232,7 @@ always locate the files relative to your project root.")
            r-png
            r-rappdirs
            r-rcpp
+           r-rcpptoml
            r-withr))
     (native-inputs
      (list r-knitr))
