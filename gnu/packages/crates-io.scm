@@ -23927,6 +23927,33 @@ authenticated encryption cipher.")
        (("rust-polyval" ,rust-polyval-0.3)
         ("rust-zeroize" ,rust-zeroize-1))))))
 
+(define-public rust-ghost-0.1
+  (package
+    (name "rust-ghost")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ghost" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0yalg3g1g3cz63n3phy7cdhh7p2qd220mrpxy96alwxbpqdwynqs"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/dtolnay/ghost")
+    (synopsis "Define your own PhantomData")
+    (description
+     "This package makes it possible to define your own PhantomData and
+similarly behaved unit types with generic parameters, which is not
+permitted in ordinary Rust.")
+    ;; Either license can be chosen at the users option.
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-gif-0.11
   (package
     (name "rust-gif")
