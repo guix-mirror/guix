@@ -12336,73 +12336,71 @@ libraries.  Applications do not need to be recompiled--or even restarted.")
                (search-patches "gnome-builder-update-libportal.patch"))))
     (build-system meson-build-system)
     (arguments
-     `(#:glib-or-gtk? #t     ; To wrap binaries and compile schemas
-       #:configure-flags (list "-Dnetwork_tests=false"
-                               ;; TODO: Enable all plugins...
-                               ;; Flatpak plugin wants libsoup 2
-                               "-Dplugin_flatpak=false"
-                               ;; ... except this one.
-                               "-Dplugin_update_manager=false")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-meson
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "build-aux/meson/post_install.py"
-               (("gtk-update-icon-cache") "true")
-               (("update-desktop-database") "true"))
-             (substitute* "src/libide/meson.build"
-               (("/usr/lib")
-                (string-append (assoc-ref inputs "python-pygobject")
-                               "/lib")))))
-         (add-after 'configure 'fix-ninja
-           (lambda _
-             ;; #43296: meson(?) incorrectly assumes we want to link
-             ;;         this PIE against a static libselinux.
-             (substitute* "build.ninja"
-               (("libselinux\\.a") "libselinux.so"))
-             #t))
-         (add-before 'check 'pre-check
-           (lambda _
-             (system "Xvfb :1 &")
-             (setenv "DISPLAY" ":1")
-             #t)))))
-    (inputs
-     `(("cmark" ,cmark)
-       ("clang" ,clang)
-       ("devhelp" ,devhelp-with-libsoup2)
-       ("glade" ,glade3)
-       ("gspell" ,gspell)
-       ("gtk+" ,gtk+)
-       ("json-glib" ,json-glib)
-       ("jsonrpc-glib" ,jsonrpc-glib)
-       ("libdazzle" ,libdazzle)
-       ("libgit2-glib" ,libgit2-glib)
-       ("libpeas" ,libpeas)
-       ("libportal" ,libportal)
-       ("libsoup" ,libsoup-minimal-2)
-       ("llvm" ,llvm)
-       ("python" ,python)
-       ("python-pygobject" ,python-pygobject)
-       ("sysprof" ,sysprof)
-       ("template-glib" ,template-glib)
-       ("vte" ,vte)
-       ("webkitgtk" ,webkitgtk-with-libsoup2)))
-    (propagated-inputs
-     (list gtksourceview))         ;needed for settings
-    (native-inputs
-     `(("desktop-file-utils" ,desktop-file-utils) ;for desktop-file-validate
-       ("glib:bin" ,glib "bin")
-       ("gettext" ,gettext-minimal)
-       ("pkg-config" ,pkg-config)
-       ("python" ,python)
-       ("vala" ,vala)
-       ("xorg-server" ,xorg-server-for-tests)))
+     (list
+      #:glib-or-gtk? #t ;To wrap binaries and compile schemas
+      #:configure-flags
+      #~(list "-Dnetwork_tests=false"
+              ;; TODO: Enable all plugins...
+              ;; Flatpak plugin wants libsoup 2
+              "-Dplugin_flatpak=false"
+              ;; ... except this one.
+              "-Dplugin_update_manager=false")
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'patch-meson
+            (lambda* (#:key inputs #:allow-other-keys)
+              (substitute* "build-aux/meson/post_install.py"
+                (("gtk-update-icon-cache") "true")
+                (("update-desktop-database") "true"))
+              (substitute* "src/libide/meson.build"
+                (("/usr/lib") (string-append (assoc-ref inputs
+                                                        "python-pygobject")
+                                             "/lib")))))
+          (add-after 'configure 'fix-ninja
+            (lambda _
+              ;; #43296: meson(?) incorrectly assumes we want to link
+              ;; this PIE against a static libselinux.
+              (substitute* "build.ninja"
+                (("libselinux\\.a") "libselinux.so"))))
+          (add-before 'check 'pre-check
+            (lambda _
+              (system "Xvfb :1 &")
+              (setenv "DISPLAY" ":1"))))))
+    (inputs (list cmark
+                  clang
+                  devhelp-with-libsoup2
+                  glade3
+                  gspell
+                  gtk+
+                  json-glib
+                  jsonrpc-glib
+                  libdazzle
+                  libgit2-glib
+                  libpeas
+                  libportal
+                  libsoup-minimal-2
+                  llvm
+                  python
+                  python-pygobject
+                  sysprof
+                  template-glib
+                  vte
+                  webkitgtk-with-libsoup2))
+    (propagated-inputs (list gtksourceview)) ; needed for settings
+    (native-inputs (list desktop-file-utils  ; for desktop-file-validate
+                         `(,glib "bin")
+                         gettext-minimal
+                         pkg-config
+                         python              ; for meson scripts
+                         vala
+                         xorg-server-for-tests))
     (home-page "https://wiki.gnome.org/Apps/Builder")
     (synopsis "Toolsmith for GNOME-based applications")
-    (description "Builder aims to be an integrated development
-environment (IDE) for writing GNOME-based software.  It features fuzzy search,
-auto-completion, a mini code map, documentation browsing, Git integration, an
-integrated profiler via Sysprof, debugging support, and more.")
+    (description
+     "Builder aims to be an integrated development environment (IDE) for
+writing GNOME-based software.  It features fuzzy search, auto-completion,
+a mini code map, documentation browsing, Git integration, an integrated
+profiler via Sysprof, debugging support, and more.")
     (license license:gpl3+)))
 
 (define-public komikku
