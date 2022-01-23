@@ -14691,13 +14691,13 @@ But it can also be used to do data analysis for small scale data sets.")
 (define-public r-cmprsk
   (package
     (name "r-cmprsk")
-    (version "2.2-10")
+    (version "2.2-11")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "cmprsk" version))
        (sha256
-        (base32 "1xnx2zanw548prxsw2zw5cddkkg6kj97jgyzw67achq5mnsvfbg8"))))
+        (base32 "050f24l5ab1ds9824c7yjahimf6pg8ih2k83jzpzfb0n5k5jfh44"))))
     (build-system r-build-system)
     (propagated-inputs
      (list r-survival))
