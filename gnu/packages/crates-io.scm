@@ -35582,7 +35582,7 @@ while still providing platform specific APIs.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-bitflags" ,rust-bitflags-1)
+       (("rust-bitflags" ,rust-bitflags-1.2)
         ("rust-cc" ,rust-cc-1)
         ("rust-cfg-if" ,rust-cfg-if-1)
         ("rust-libc" ,rust-libc-0.2)
