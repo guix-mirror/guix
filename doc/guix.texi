@@ -37720,9 +37720,15 @@ specifications,, mcron, GNU@tie{}mcron}).
 @end deftp
 
 @node Shepherd Home Service
-@subsection Managing User's Daemons
+@subsection Managing User Daemons
 
-@cindex shepherd services
+@cindex shepherd services, for users
+The @code{(gnu home services shepherd)} module supports the definitions
+of per-user Shepherd services (@pxref{Introduction,,, shepherd, The GNU
+Shepherd Manual}).  You extend @code{home-shepherd-service-type} with
+new services; Guix Home then takes care of starting the @code{shepherd}
+daemon for you when you log in, which in turns starts the services you
+asked for.
 
 @defvr {Scheme Variable} home-shepherd-service-type
 The service type for the userland Shepherd, which allows one to manage
@@ -37809,7 +37815,7 @@ relevance: 1
 @dots{}
 @end example
 
-As for @command{guix package --search}, the result is written in
+As for @command{guix search}, the result is written in
 @code{recutils} format, which makes it easy to filter the output
 (@pxref{Top, GNU recutils databases,, recutils, GNU recutils manual}).
 
@@ -37819,7 +37825,7 @@ Switching means that the activation script will be evaluated and (in
 basic scenario) symlinks to configuration files generated from
 @code{home-environment} declaration will be created in @file{~}.  If the
 file with the same path already exists in home folder it will be moved
-to @file{~/TIMESTAMP-guix-home-legacy-configs-backup}, where TIMESTAMP
+to @file{~/@var{timestamp}-guix-home-legacy-configs-backup}, where @var{timestamp}
 is a current UNIX epoch time.
 
 @quotation Note
@@ -37832,7 +37838,7 @@ This effects all the configuration specified in @var{file}.  The command
 starts Shepherd services specified in @var{file} that are not currently
 running; if a service is currently running, this command will arrange
 for it to be upgraded the next time it is stopped (e.g.@: by @code{herd
-stop X} or @code{herd restart X}).
+stop @var{service}} or @code{herd restart @var{service}}).
 
 This command creates a new generation whose number is one greater than
 the current generation (as reported by @command{guix home
