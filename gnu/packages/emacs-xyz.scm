@@ -26701,6 +26701,31 @@ The contents and aspect is controlled by the @code{minibuffer-line-format}
 variable and the @code{minibuffer-line} face.")
     (license license:gpl3+)))
 
+(define-public emacs-minimap
+  (package
+    (name "emacs-minimap")
+    (version "1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://elpa.gnu.org/packages/minimap-"
+             version
+             ".el"))
+       (sha256
+        (base32 "09fm0ziy8cdzzw08l7l6p63dxz2a27p3laia2v51mvbva8177ls1"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/minimap.html")
+    (synopsis "Sidebar showing a @emph{mini-map} of a buffer")
+    (description
+     "Minimap provides Emacs with a minimap sidebar, which is a smaller
+display of the current buffer on the side, like a scrollbar.  It highlights
+the currently shown region and updates its position automatically.  You can
+navigate in the minibar by dragging the active region with the mouse, which
+will scroll the corresponding edit buffer.  Additionally, you can overlay
+information from the tags gathered by CEDET's semantic analyzer.)")
+    (license license:gpl3+)))
+
 (define-public emacs-eshell-prompt-extras
   (package
     (name "emacs-eshell-prompt-extras")
