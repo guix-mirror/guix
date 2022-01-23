@@ -27634,6 +27634,49 @@ The @code{indoc!()} macro takes a multiline string literal and un-indents it
 at compile time so the leftmost non-space character is in the first column.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-indoc-0.3
+  (package
+    (inherit rust-indoc-1)
+    (version "0.3.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "indoc" version))
+       (file-name (string-append "rust-indoc-" version ".tar.gz"))
+       (sha256
+        (base32 "1n2fd2wm1h005hd7pjgx4gv5ymyq4sxqn8z0ssw6xchgqs5ilx27"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-indoc-impl" ,rust-indoc-impl-0.3)
+        ("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5))))))
+
+(define-public rust-indoc-impl-0.3
+  (package
+    (inherit rust-indoc-0.3)
+    (name "rust-indoc-impl")
+    (version "0.3.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "indoc-impl" version))
+       (file-name (string-append "rust-indoc-impl-" version ".tar.gz"))
+       (sha256
+        (base32 "1w58yg249kmzsn75kcj34qaxqh839l1hsaj3bzggy3q03wb6s16f"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1)
+        ("rust-unindent" ,rust-unindent-0.1))))
+    (synopsis "Macros for @code{rust-indoc}")
+    (description
+     "This package provides macros for use with the @code{rust-indoc}
+package.  It is obsolete for indoc versions > 1.")))
+
 (define-public rust-infer-0.2
   (package
     (name "rust-infer")
