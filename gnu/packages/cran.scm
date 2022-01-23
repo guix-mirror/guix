@@ -21849,21 +21849,20 @@ allowed.")
 (define-public r-gdina
   (package
     (name "r-gdina")
-    (version "2.8.7")
+    (version "2.8.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "GDINA" version))
        (sha256
         (base32
-         "08cdjp4mqn81j3wa770v7n8zkslys9jqqb3d3c09dkfmgdk6hga4"))))
+         "1slq1npsq8s8aghnrpm6vvc6kxj4svz0kr2x0akblndrcr25wxjr"))))
     (properties `((upstream-name . "GDINA")))
     (build-system r-build-system)
     (propagated-inputs
      (list r-alabama
            r-ggplot2
            r-mass
-           r-nloptr
            r-numderiv
            r-rcpp
            r-rcpparmadillo
