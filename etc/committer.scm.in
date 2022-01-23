@@ -215,7 +215,12 @@ corresponding to the top-level definition containing the staged changes."
   "Print ChangeLog commit message for changes between OLD and NEW."
   (define (get-values expr field)
     (match ((sxpath `(// ,field quasiquote *)) expr)
-      (() '())
+      (()
+       ;; New-style plain lists
+       (match ((sxpath `(// ,field list *)) expr)
+         ((inner) inner)
+         (_ '())))
+      ;; Old-style labelled inputs
       ((first . rest)
        (map cadadr first))))
   (define (listify items)
