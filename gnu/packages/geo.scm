@@ -2274,6 +2274,8 @@ growing set of geoscientific methods.")
        #:imported-modules (,@%cmake-build-system-modules
                            (guix build python-build-system)
                            (guix build qt-utils))
+       #:configure-flags
+       '("-DWITH_QTWEBKIT=NO")
        #:phases
        (modify-phases %standard-phases
          ;; Configure correct path to PyQt5 SIP directory
@@ -2320,7 +2322,8 @@ growing set of geoscientific methods.")
                (("^REV=.*") "REV=currentrev\n"))
              #t))
          (replace 'check
-           (lambda* (#:key inputs #:allow-other-keys)
+           (lambda* (#:key inputs tests? #:allow-other-keys)
+             (when tests?
              (setenv "HOME" "/tmp")
              (system "Xvfb :1 &")
              (setenv "DISPLAY" ":1")
@@ -2400,11 +2403,14 @@ growing set of geoscientific methods.")
                              "qgis_imagecachetest"
                              "qgis_labelingenginetest"
                              "qgis_layouthtmltest"
+                             "qgis_layoutlabeltest"
                              "qgis_layoutmanualtabletest"
                              "qgis_layoutmapgridtest"
                              "qgis_layoutmaptest"
+                             "qgis_layoutmultiframetest"
                              "qgis_layoutpicturetest"
                              "qgis_layouttabletest"
+                             "qgis_layouttest"
                              "qgis_mapdevicepixelratiotest"
                              "qgis_maprendererjobtest"
                              "qgis_ogrproviderguitest"
@@ -2421,7 +2427,7 @@ growing set of geoscientific methods.")
                              "qgis_taskmanagertest"
                              "qgis_wcsprovidertest"
                              "qgis_ziplayertest")
-                           "|"))))
+                           "|")))))
          (add-after 'install 'wrap-python
            (assoc-ref python:%standard-phases 'wrap))
          (add-after 'wrap-python 'wrap-qt
@@ -2490,7 +2496,6 @@ growing set of geoscientific methods.")
            qtlocation
            qtserialport
            qtsvg
-           qtwebkit
            qwt
            ;;("saga" ,saga)
            sqlite))
