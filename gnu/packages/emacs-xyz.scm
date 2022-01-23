@@ -18531,6 +18531,29 @@ width is an integer multiple of character width.")
 or expressions with SVG rounded box labels that are fully customizable.")
       (license license:gpl3+))))
 
+(define-public emacs-kind-icon
+  (package
+    (name "emacs-kind-icon")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://elpa.gnu.org/packages/kind-icon-"
+             version
+             ".tar"))
+       (sha256
+        (base32 "00pyvnq4dx51l2wbhvm6k6cx5xmy32j4h1lkr5kr8s3j5w83ip25"))))
+    (build-system emacs-build-system)
+    (propagated-inputs (list emacs-svg-lib))
+    (home-page "https://github.com/jdtsmith/kind-icon")
+    (synopsis "Completion kind icons in Emacs")
+    (description "Kind-icon mode adds a colorful icon or text prefix based
+on :company-kind for compatible completion UIs.  The \"kind\" prefix is
+typically used for differentiating completion candidates such as variables,
+functions, etc.")
+    (license license:agpl3)))
+
 (define-public emacs-svg-icon
   (let ((commit "ebc2b8d0f6c680fd575a90e683cc7b832acd1eb7")
         (revision "1"))
