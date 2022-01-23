@@ -1178,42 +1178,48 @@ enabled.")
    (license license:boost1.0)))
 
 (define-public fennel
-  (package
-    (name "fennel")
-    (version "1.0.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://git.sr.ht/~technomancy/fennel")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0d4rpf0f2aqxlca3kxrbhjjhf1knhiz8ccwlx8xid05mc16la70y"))))
-    (build-system gnu-build-system)
-    (arguments
-     '(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
-       #:tests? #t      ; even on cross-build
-       #:test-target "test"
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (add-after 'build 'patch-fennel
+  ;; The 1.0.0 release had a bug where fennel installed under 5.4 no matter
+  ;; what lua was used to compile it. There has since been an update that
+  ;; corrects this issue, so we can rely on the version of the lua input to
+  ;; determine where the fennel.lua file got installed to.
+  (let ((commit "03c1c95f2a79e45a9baf607f96a74c693b8b70f4")
+        (revision "0"))
+    (package
+      (name "fennel")
+      (version (git-version "1.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.sr.ht/~technomancy/fennel")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1znp38h5q819gvcyl248zwvjsljfxdxdk8n82fnj6lyibiiqzgvx"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+         #:tests? #t      ; even on cross-build
+         #:test-target "test"
+         #:phases
+         (modify-phases %standard-phases
+          (delete 'configure)
+          (add-after 'build 'patch-fennel
            (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "fennel"
-               (("/usr/bin/env .*lua")
-                (search-input-file inputs "/bin/lua")))))
-         (delete 'check)
-         (add-after 'install 'check
+            (substitute* "fennel"
+             (("/usr/bin/env .*lua")
+              (search-input-file inputs "/bin/lua")))))
+          (delete 'check)
+          (add-after 'install 'check
            (assoc-ref %standard-phases 'check)))))
-    (inputs (list lua))
-    (home-page "https://fennel-lang.org/")
-    (synopsis "Lisp that compiles to Lua")
-    (description
-     "Fennel is a programming language that brings together the speed,
+      (inputs (list lua))
+      (home-page "https://fennel-lang.org/")
+      (synopsis "Lisp that compiles to Lua")
+      (description
+       "Fennel is a programming language that brings together the speed,
 simplicity, and reach of Lua with the flexibility of a Lisp syntax and macro
 system.")
-    (license license:expat)))
+      (license license:expat))))
 
 (define-public fnlfmt
   (package
