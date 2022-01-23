@@ -20502,6 +20502,29 @@ belong to tagged versions.")
 Git.")
     (license license:bsd-3)))
 
+(define-public python-setuptools-rust
+  (package
+    (name "python-setuptools-rust")
+    (version "1.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "setuptools-rust" version))
+       (sha256
+        (base32 "1lb57qx1azklgzmalflq960agvwci4bwddw0zvlc9zy00fsvkbd0"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f))          ;no tests
+    (native-inputs
+     (list python-setuptools-scm))
+    (propagated-inputs
+     (list python-semantic-version python-typing-extensions))
+    (home-page "https://github.com/PyO3/setuptools-rust")
+    (synopsis "Setuptools plugin for Rust extensions")
+    (description
+     "@code{setuptools-rust} is a plugin for @code{setuptools} to build
+Rust Python extensions implemented with @code{PyO3} or @code{rust-cpython}.")
+    (license license:expat)))
+
 (define-public python-pyclipper
   (package
     (name "python-pyclipper")
