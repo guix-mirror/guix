@@ -12331,7 +12331,9 @@ libraries.  Applications do not need to be recompiled--or even restarted.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "04p031i999dccbnlbysmr6f93x7dji7b559j6yhdsqbqgxb7ncan"))))
+                "04p031i999dccbnlbysmr6f93x7dji7b559j6yhdsqbqgxb7ncan"))
+              (patches
+               (search-patches "gnome-builder-update-libportal.patch"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t     ; To wrap binaries and compile schemas
@@ -12379,6 +12381,7 @@ libraries.  Applications do not need to be recompiled--or even restarted.")
        ("libportal" ,libportal)
        ("libsoup" ,libsoup-minimal-2)
        ("llvm" ,llvm)
+       ("python" ,python)
        ("python-pygobject" ,python-pygobject)
        ("sysprof" ,sysprof)
        ("template-glib" ,template-glib)
@@ -12391,6 +12394,7 @@ libraries.  Applications do not need to be recompiled--or even restarted.")
        ("glib:bin" ,glib "bin")
        ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)
+       ("python" ,python)
        ("vala" ,vala)
        ("xorg-server" ,xorg-server-for-tests)))
     (home-page "https://wiki.gnome.org/Apps/Builder")
