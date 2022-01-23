@@ -2,7 +2,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2016, 2017, 2019 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2017, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2020, 2022 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
@@ -47,9 +47,11 @@
   #:use-module (guix download)
   #:use-module (guix gexp)
   #:use-module (guix git-download)
+  #:use-module (guix build-system cargo)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages crates-io)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages libffi)
@@ -62,6 +64,7 @@
   #:use-module (gnu packages python-compression)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages rust)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
@@ -546,6 +549,129 @@ message digests and key derivation functions.")
           ,python2-backport-ssl-match-hostname)
          ("python2-enum34" ,python2-enum34)
          ,@(package-propagated-inputs crypto))))))
+
+;; TODO: Make this the default in the next staging cycle.
+(define-public python-cryptography-vectors-next
+  (package
+    (inherit python-cryptography-vectors)
+    (version "36.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cryptography_vectors" version))
+       (sha256
+        (base32
+         "166mvhhmgglqai1sjkkb76mpdkad2yykam11d2w44hs2snpr117w"))))))
+
+(define-public python-cryptography-next
+  (package
+    (inherit python-cryptography)
+    (version "36.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cryptography" version))
+       (sha256
+        (base32
+         "0f1n8bvngarhsssm60xc59xfzkh7yqpyyyypaph3v5bs7pfc3rak"))))
+    (build-system python-build-system)
+    (arguments
+     (list
+      #:imported-modules (append %cargo-build-system-modules
+                                 %python-build-system-modules)
+      #:modules `(((guix build cargo-build-system) #:prefix cargo:)
+                  ,@%python-build-system-modules
+                  (srfi srfi-1)
+                  (ice-9 match))
+      #:phases
+      #~(modify-phases (@ (guix build python-build-system) %standard-phases)
+          (add-after 'unpack 'loosen-ouroboros-version
+            (lambda _
+              (substitute* "src/rust/Cargo.toml"
+                (("ouroboros = \"0\\.13\"")
+                 "ouroboros = \"0.14\""))))
+          (add-before 'build 'configure-cargo
+            (lambda* (#:key inputs #:allow-other-keys)
+              ;; Hide irrelevant inputs from cargo-build-system so it does
+              ;; not try to unpack sanity-check.py, etc.
+              (let ((cargo-inputs (filter (match-lambda
+                                            ((name . path)
+                                             (or (string-prefix? "rust-" name)
+                                                 (string=? "gcc" name))))
+                                          inputs)))
+                (with-directory-excursion "src/rust"
+                  ((assoc-ref cargo:%standard-phases 'unpack-rust-crates)
+                   #:inputs cargo-inputs
+                   #:vendor-dir "guix-vendor")
+                  ((assoc-ref cargo:%standard-phases 'configure)
+                   #:inputs cargo-inputs)
+                  ((assoc-ref cargo:%standard-phases 'patch-cargo-checksums)
+                   #:vendor-dir "guix-vendor"))
+                (rename-file "src/rust/.cargo" ".cargo"))))
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (invoke "pytest" "-vv" "tests")))))))
+    (inputs
+     (list openssl
+           rust-aliasable-0.1
+           rust-asn1-0.8
+           rust-asn1-derive-0.8
+           rust-autocfg-1
+           rust-base64-0.13
+           rust-bitflags-1
+           rust-cfg-if-0.1
+           rust-cfg-if-1
+           rust-chrono-0.4
+           rust-cloudabi-0.1
+           rust-lazy-static-1
+           rust-libc-0.2
+           rust-indoc-0.3
+           rust-indoc-impl-0.3
+           rust-inflector-0.11
+           rust-instant-0.1
+           rust-lock-api-0.4
+           rust-num-integer-0.1
+           rust-num-traits-0.2
+           rust-once-cell-1
+           rust-ouroboros-0.14
+           rust-ouroboros-macro-0.14
+           rust-parking-lot-0.11
+           rust-parking-lot-core-0.8
+           rust-paste-0.1
+           rust-paste-impl-0.1
+           rust-pem-1
+           rust-proc-macro-error-1
+           rust-proc-macro-error-attr-1
+           rust-proc-macro-hack-0.5
+           rust-proc-macro2-1
+           rust-pyo3-0.15
+           rust-pyo3-build-config-0.15
+           rust-pyo3-macros-0.15
+           rust-pyo3-macros-backend-0.15
+           rust-quote-1
+           rust-redox-syscall-0.1
+           rust-scopeguard-1
+           rust-smallvec-1
+           rust-stable-deref-trait-1
+           rust-syn-1
+           rust-unicode-xid-0.2
+           rust-unindent-0.1
+           rust-version-check-0.9
+           rust-winapi-0.3))
+    (propagated-inputs
+     (list python-asn1crypto python-cffi python-six python-idna
+           python-iso8601))
+    (native-inputs
+     (list python-cryptography-vectors-next
+           python-hypothesis
+           python-pretend
+           python-pytz
+           python-pytest
+           python-pytest-subtests
+           python-setuptools-rust
+           rust `(,rust "cargo")))
+    (properties '())))
 
 (define-public python-pyopenssl
   (package
