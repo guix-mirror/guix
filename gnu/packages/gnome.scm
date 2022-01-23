@@ -158,6 +158,7 @@
   #:use-module (gnu packages mail)
   #:use-module (gnu packages man)
   #:use-module (gnu packages markup)
+  #:use-module (gnu packages messaging)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages music)
@@ -7680,14 +7681,13 @@ Microsoft Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
                              '("addressbook-backends" "calendar-backends"
                                "camel-providers" "credential-modules"
                                "registry-modules"))))
-         (list "-DENABLE_UOA=OFF"             ;disable Ubuntu Online Accounts support
-               "-DENABLE_GOOGLE=OFF"          ;disable Google Contacts support
-               "-DENABLE_GOOGLE_AUTH=OFF"     ;disable Google authentication
+         (list "-DENABLE_GOOGLE=OFF"          ;disable Google Contacts support
                "-DENABLE_VALA_BINDINGS=ON"
                (string-append "-DCMAKE_INSTALL_RPATH=" lib ";"
                               (string-append lib "/evolution-data-server;")
                               (string-join runpaths ";"))
-               "-DENABLE_INTROSPECTION=ON"))  ;required for Vala bindings
+               "-DENABLE_INTROSPECTION=ON" ;required for Vala bindings
+               "-DWITH_PHONENUMBER=ON"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'disable-failing-tests
@@ -7717,6 +7717,7 @@ Microsoft Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
+       ("protobuf" ,protobuf)
        ("vala" ,vala)
        ("python" ,python-wrapper)))
     (propagated-inputs
@@ -7729,11 +7730,13 @@ Microsoft Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
        ("sqlite" ,sqlite)))
     (inputs
      `(("bdb" ,bdb)
+       ("boost" ,boost)
        ("gcr" ,gcr)
        ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
        ("json-glib" ,json-glib)
        ("libcanberra" ,libcanberra)
        ("libgweather" ,libgweather)
+       ("libphonenumber" ,libphonenumber)
        ("mit-krb5" ,mit-krb5)
        ("openldap" ,openldap)
        ("webkitgtk" ,webkitgtk-with-libsoup2)))
