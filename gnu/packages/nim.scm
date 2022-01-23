@@ -3,6 +3,7 @@
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2022 (unmatched parenthesis <paren@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,14 +29,14 @@
 (define-public nim
   (package
     (name "nim")
-    (version "1.4.6")
+    (version "1.6.2")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://nim-lang.org/download/"
                           name "-" version ".tar.xz"))
       (sha256
-       (base32 "1gfkk15q022s31ffbsm2lbfrsnsjfslbyixwk7g8bzngha90zg0g"))))
+       (base32 "0wz3jccdbhi7wd19fz9r6zad945iq50qjpbzva8xc5f3lr7p3i4s"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; No tests.
