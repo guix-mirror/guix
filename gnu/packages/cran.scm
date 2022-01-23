@@ -7935,14 +7935,14 @@ finance, conversion from and to JSON, and many other applications.")
 (define-public r-dtplyr
   (package
     (name "r-dtplyr")
-    (version "1.2.0")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "dtplyr" version))
        (sha256
         (base32
-         "053l0w97sfsdx3n3b65likdbzdv0q0sbcnh0kp9c3pw0vnvdzpm6"))))
+         "1wyhhn16mvdj55k2xsh7vy489l7xk4mkz7pjrw16z87awk6yjh16"))))
     (properties `((upstream-name . "dtplyr")))
     (build-system r-build-system)
     (propagated-inputs
