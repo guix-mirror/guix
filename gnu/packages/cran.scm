@@ -16522,38 +16522,28 @@ datum transformations.")
 (define-public r-spdep
   (package
     (name "r-spdep")
-    (version "1.1-13")
+    (version "1.2-1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "spdep" version))
               (sha256
                (base32
-                "0yyrjp1ngi9699475dr5137xi208q7h15rx0n2120y25d2k4r787"))
+                "1ya39bgmzagrk4k51zd96l4xvnbc2vzmvd0z9qprdfvg9s6pik78"))
               (snippet
-               '(for-each delete-file '("inst/doc/nb_igraph.html"
-                                        "inst/doc/nb_igraph.R"
-                                        "inst/doc/nb_igraph.Rmd"
-                                        "inst/doc/sids.html"
-                                        "inst/doc/sids.R"
+               '(for-each delete-file '("inst/doc/CO69.html"
+                                        "inst/doc/CO69.R"
                                         "inst/doc/nb.html"
                                         "inst/doc/nb.R"
-                                        "inst/doc/CO69.html"
-                                        "inst/doc/CO69.R"
                                         "inst/doc/nb_sf.html"
                                         "inst/doc/nb_sf.R"
-                                        "inst/doc/nb_sf.Rmd")))))
+                                        "inst/doc/nb_sf.Rmd"
+                                        "inst/doc/sids.html"
+                                        "inst/doc/sids.R")))))
     (build-system r-build-system)
     (propagated-inputs
      (list r-boot
-           r-coda
            r-deldir
            r-e1071
-           r-expm
-           r-gmodels
-           r-learnbayes
-           r-mass
-           r-matrix
-           r-nlme
            r-s2
            r-sf
            r-sp
