@@ -3860,6 +3860,27 @@ standard library.")
     (description "This package provides assertions for testing.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-assert-approx-eq-1
+  (package
+    (name "rust-assert-approx-eq")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "assert_approx_eq" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1zagfwfad5wssmr830gk3489f97ppczv6xs627jxniwm6ssdl1rw"))))
+    (build-system cargo-build-system)
+    (arguments '(#:skip-build? #t))
+    (home-page "https://github.com/ashleygwilliams/assert_approx_eq")
+    (synopsis "Assert approximately equal")
+    (description
+     "This package provides a Rust macro for asserting two numbers are
+approximately equal.")
+    ;; Either license can be chosen at the users option.
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-assert-cli-0.6
   (package
     (name "rust-assert-cli")
