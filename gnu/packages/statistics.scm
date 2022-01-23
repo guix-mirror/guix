@@ -6491,14 +6491,14 @@ interface).  The recommended routine @code{logspline()} uses an algorithm from
 (define-public r-effects
   (package
     (name "r-effects")
-    (version "4.2-0")
+    (version "4.2-1")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "effects" version))
         (sha256
           (base32
-            "0iks79rd4knrd81x4kvcpgpclr69l0m0v6sfla8k3wzkcnydycv8"))))
+            "0h3n2kd43fddy29hlv1nckw3wglykwrgk1hp8khb0pnm2i12b5sk"))))
     (properties `((upstream-name . "effects")))
     (build-system r-build-system)
     (propagated-inputs
