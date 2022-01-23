@@ -36001,6 +36001,30 @@ be accomplished with the following operating system configuration snippet:
 For more information regarding the format of the @file{sudoers} file,
 consult @command{man sudoers}.
 
+Once you've deployed a system on a set of machines, you may find it
+useful to run a command on all of them.  The @option{--execute} or
+@option{-x} option lets you do that; the example below runs
+@command{uname -a} on all the machines listed in the deployment file:
+
+@example
+guix deploy @var{file} -x -- uname -a
+@end example
+
+One thing you may often need to do after deployment is restart specific
+services on all the machines, which you can do like so:
+
+@example
+guix deploy @var{file} -x -- herd restart @var{service}
+@end example
+
+The @command{guix deploy -x} command returns zero if and only if the
+command succeeded on all the machines.
+
+@c FIXME/TODO: Separate the API doc from the CLI doc.
+
+Below are the data types you need to know about when writing a
+deployment file.
+
 @deftp {Data Type} machine
 This is the data type representing a single machine in a heterogeneous Guix
 deployment.

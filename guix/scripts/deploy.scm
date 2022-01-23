@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 David Thompson <davet@gnu.org>
 ;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.org>
-;;; Copyright © 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020-2022 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,18 +24,21 @@
   #:use-module (guix scripts)
   #:use-module (guix scripts build)
   #:use-module (guix store)
+  #:use-module (guix gexp)
   #:use-module (guix ui)
   #:use-module (guix utils)
   #:use-module (guix grafts)
-  #:use-module (guix status)
+  #:use-module ((guix status) #:select (with-status-verbosity))
   #:use-module (guix diagnostics)
   #:use-module (guix i18n)
   #:use-module (ice-9 format)
+  #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-37)
+  #:use-module (srfi srfi-71)
   #:export (guix-deploy))
 
 ;;; Commentary:
@@ -58,6 +61,9 @@ Perform the deployment specified by FILE.\n"))
   -V, --version          display version information and exit"))
   (newline)
   (display (G_ "
+  -x, --execute          execute the following command on all the machines"))
+  (newline)
+  (display (G_ "
   -v, --verbosity=LEVEL  use the given verbosity LEVEL"))
   (show-bug-report-information))
 
@@ -70,6 +76,9 @@ Perform the deployment specified by FILE.\n"))
                  (lambda args
                    (show-version-and-exit "guix deploy")))
 
+         (option '(#\x "execute") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'execute-command? #t result)))
          (option '(#\s "system") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'system arg
@@ -152,6 +161,74 @@ Perform the deployment specified by FILE.\n"))
     (info (G_ "successfully deployed ~a~%")
           (machine-display-name machine))))
 
+(define (invoke-command store machine command)
+  "Invoke COMMAND, a list of strings, on MACHINE.  Display its output (if any)
+and its error code if it's non-zero.  Return true if COMMAND succeeded, false
+otherwise."
+  (define invocation
+    #~(begin
+        (use-modules (ice-9 match)
+                     (ice-9 rdelim)
+                     (srfi srfi-11))
+
+        (define (spawn . command)
+          ;; Spawn COMMAND; return its PID and an input port to read its
+          ;; standard output and standard error.
+          (match (pipe)
+            ((input . output)
+             (match (pipe)
+               ((input .  output)
+                (match (primitive-fork)
+                  (0
+                   (dynamic-wind
+                     (const #t)
+                     (lambda ()
+                       (close-port input)
+                       (dup2 (fileno output) 1)
+                       (dup2 (fileno output) 2)
+                       (apply execlp (car command) command))
+                     (lambda ()
+                       (primitive-exit 127))))
+                  (pid
+                   (close-port output)
+                   (values pid input))))))))
+
+        ;; XXX: 'open-pipe*' is unsuitable here because it does not capture
+        ;; stderr, so roll our own.
+        (let-values (((pid pipe) (spawn #$@command)))
+          (let loop ((lines '()))
+            (match (read-line pipe 'concat)
+              ((? eof-object?)
+               (list (cdr (waitpid pid))
+                     (string-concatenate-reverse lines)))
+              (line
+               (loop (cons line lines))))))))
+
+  (match (run-with-store store
+           (machine-remote-eval machine invocation))
+    ((code output)
+     (match code
+       ((? zero?)
+        (info (G_ "~a: command succeeded~%")
+              (machine-display-name machine)))
+       ((= status:exit-val code)
+        (report-error (G_ "~a: command exited with code ~a~%")
+                      (machine-display-name machine) code))
+       ((= status:stop-sig signal)
+        (report-error (G_ "~a: command stopped with signal ~a~%")
+                      signal))
+       ((= status:term-sig signal)
+        (report-error (G_ "~a: command terminated with signal ~a~%")
+                      signal)))
+
+     (unless (string-null? output)
+       (info (G_ "command output on ~a:~%")
+             (machine-display-name machine))
+       (display output)
+       (newline))
+
+     (zero? code))))
+
 
 (define-command (guix-deploy . args)
   (synopsis "deploy operating systems on a set of machines")
@@ -159,14 +236,17 @@ Perform the deployment specified by FILE.\n"))
     (alist-cons 'file arg result))
 
   (with-error-handling
-    (let* ((opts (parse-command-line args %options (list %default-options)
+    (let* ((args command (break (cut string=? "--" <>) args))
+           (opts (parse-command-line args %options (list %default-options)
                                      #:argument-handler handle-argument))
            (file (assq-ref opts 'file))
-           (machines (and file (load-source-file file))))
+           (machines (and file (load-source-file file)))
+           (execute-command? (assoc-ref opts 'execute-command?)))
       (unless file
         (leave (G_ "missing deployment file argument~%")))
 
-      (show-what-to-deploy machines)
+      (when (and (pair? command) (not execute-command?))
+        (leave (G_ "'--' was used by '-x' was not specified~%")))
 
       (with-status-verbosity (assoc-ref opts 'verbosity)
         (with-store store
@@ -176,6 +256,21 @@ Perform the deployment specified by FILE.\n"))
                                               #:verbosity
                                               (assoc-ref opts 'verbosity))
             (parameterize ((%graft? (assq-ref opts 'graft?)))
-              (map/accumulate-builds store
-                                     (cut deploy-machine* store <>)
-                                     machines))))))))
+              (if execute-command?
+                  (match command
+                    (("--" command ..1)
+                     ;; Exit with zero unless COMMAND failed on one or more
+                     ;; machines.
+                     (exit
+                      (fold (lambda (machine result)
+                              (and (invoke-command store machine command)
+                                   result))
+                            #t
+                            machines)))
+                    (_
+                     (leave (G_ "'-x' specified but no command given~%"))))
+                  (begin
+                    (show-what-to-deploy machines)
+                    (map/accumulate-builds store
+                                           (cut deploy-machine* store <>)
+                                           machines))))))))))
