@@ -23639,18 +23639,18 @@ regressions.")
 (define-public r-polycor
   (package
     (name "r-polycor")
-    (version "0.8-0")
+    (version "0.8-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "polycor" version))
        (sha256
         (base32
-         "1dnc3ndy5a1pas40xnvgj790ix05mi7bhns3d98nsdkh22lvp0hg"))))
+         "0285rvx8238qp8dix0jq0cqq7ks8h6cjwsscbc7dx4n9nph56pzh"))))
     (properties `((upstream-name . "polycor")))
     (build-system r-build-system)
     (propagated-inputs
-     (list r-matrix r-mvtnorm))
+     (list r-admisc r-matrix r-mvtnorm))
     (home-page "https://r-forge.r-project.org/projects/polycor/")
     (synopsis "Polychoric and polyserial correlations")
     (description
