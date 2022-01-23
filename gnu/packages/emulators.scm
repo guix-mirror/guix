@@ -6,7 +6,7 @@
 ;;; Copyright © 2015, 2018 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2016, 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017, 2018, 2019, 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2017-2022 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2017, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -654,14 +654,14 @@ V2.")
 (define-public mednafen
   (package
     (name "mednafen")
-    (version "1.27.1")
+    (version "1.29.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://mednafen.github.io/releases/files/"
                            "mednafen-" version ".tar.xz"))
        (sha256
-        (base32 "1ysmb56wzr17ki6f1b486r2dzjr11igd021qb4r3437l68prpa7k"))))
+        (base32 "0binkxnki8w8jgiyf3xr9503m5cynlf5vylb087vxybp53qbqgys"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
