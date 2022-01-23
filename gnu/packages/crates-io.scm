@@ -6883,6 +6883,22 @@ behave like a set of bitflags.")
     (license (list license:asl2.0
                    license:expat))))
 
+;; XXX: The package below is meant to fix rust-nix-0.22, which has the
+;; following requirements for bitflags version: ">=1.1.0 <1.3.0", and every
+;; package using the latter as a dependency (e.g., nushell 0.43).
+(define-public rust-bitflags-1.2
+  (package
+    (inherit rust-bitflags-1)
+    (name "rust-bitflags")
+    (version "1.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bitflags" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "14qnd5nq8p2almk79m4m8ydqhd413yaxsyjp5xd19g3mikzf47fg"))))))
+
 (define-public rust-bitflags-0.9
   (package
     (inherit rust-bitflags-1)
