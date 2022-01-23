@@ -1,4 +1,4 @@
-From 942730ce7148cd54a30d4a606ce71a2654c8a2e0 Mon Sep 17 00:00:00 2001
+From debc32a287209e1d1bb6fedb479bd923fd016399 Mon Sep 17 00:00:00 2001
 From: Liliana Marie Prikler <liliana.prikler@gmail.com>
 Date: Sat, 5 Jun 2021 22:47:00 -0400
 Subject: [PATCH] ppsspp: Remove upgrade code and gold support.
@@ -6,27 +6,46 @@ Subject: [PATCH] ppsspp: Remove upgrade code and gold support.
 Original patch from Liliana Marie Prikler.
 Rebased on master (commit 69fa20744958aef8da9ca052ba7675fdc1636e46) by
 Maxim Cournoyer.
+Revised once again by Liliana Marie Prikler for version 1.12.3.
 ---
- Core/Config.cpp             | 11 ------
+ Common/System/System.h      |  1 -
+ Core/Config.cpp             | 12 -------
  Core/Config.h               |  2 --
  Qt/QtMain.cpp               |  6 ----
+ Qt/mainwindow.cpp           |  6 ----
+ Qt/mainwindow.h             |  1 -
  SDL/SDLMain.cpp             |  6 ----
  UI/DevScreens.cpp           |  3 --
- UI/GameSettingsScreen.cpp   |  2 --
+ UI/GameSettingsScreen.cpp   |  4 +--
  UI/MainScreen.cpp           | 70 +------------------------------------
+ UI/MemStickScreen.cpp       |  8 -----
  UI/MiscScreens.cpp          | 31 ++--------------
  UWP/PPSSPP_UWPMain.cpp      |  6 ----
- Windows/MainWindowMenu.cpp  |  2 +-
+ Windows/MainWindowMenu.cpp  |  8 +----
+ Windows/WindowsHost.cpp     |  4 ---
  Windows/main.cpp            |  6 ----
+ Windows/resource.h          |  1 -
  android/jni/app-android.cpp |  6 ----
  ios/main.mm                 |  6 ----
- 13 files changed, 5 insertions(+), 152 deletions(-)
+ 19 files changed, 6 insertions(+), 181 deletions(-)
 
+diff --git a/Common/System/System.h b/Common/System/System.h
+index 09560191e..5df68a120 100644
+--- a/Common/System/System.h
++++ b/Common/System/System.h
+@@ -83,7 +83,6 @@ enum SystemProperty {
+ 	SYSPROP_DISPLAY_SAFE_INSET_BOTTOM,
+ 
+ 	SYSPROP_DEVICE_TYPE,
+-	SYSPROP_APP_GOLD,  // To avoid having #ifdef GOLD other than in main.cpp and similar.
+ 
+ 	// Exposed on Android. Choosing the optimal sample rate for audio
+ 	// will result in lower latencies. Buffer size is automatically matched
 diff --git a/Core/Config.cpp b/Core/Config.cpp
-index 74be99d75..b14aa22c7 100644
+index 305098f47..9c28a3315 100644
 --- a/Core/Config.cpp
 +++ b/Core/Config.cpp
-@@ -467,7 +467,6 @@ static ConfigSetting generalSettings[] = {
+@@ -512,7 +512,6 @@ static ConfigSetting generalSettings[] = {
  	ConfigSetting("IgnoreBadMemAccess", &g_Config.bIgnoreBadMemAccess, true, true),
  	ConfigSetting("CurrentDirectory", &g_Config.currentDirectory, ""),
  	ConfigSetting("ShowDebuggerOnLoad", &g_Config.bShowDebuggerOnLoad, false),
@@ -34,7 +53,7 @@ index 74be99d75..b14aa22c7 100644
  	ConfigSetting("Language", &g_Config.sLanguageIni, &DefaultLangRegion),
  	ConfigSetting("ForceLagSync2", &g_Config.bForceLagSync, false, true, true),
  	ConfigSetting("DiscordPresence", &g_Config.bDiscordPresence, true, true, false),  // Or maybe it makes sense to have it per-game? Race conditions abound...
-@@ -1323,16 +1322,6 @@ void Config::Load(const char *iniFileName, const char *controllerIniFilename) {
+@@ -1395,17 +1394,6 @@ void Config::Load(const char *iniFileName, const char *controllerIniFilename) {
  		upgradeMessage = "";
  	}
  
@@ -43,8 +62,9 @@ index 74be99d75..b14aa22c7 100644
 -	// splash screen quickly), but then we'll just show the notification next time instead, we store the
 -	// upgrade number in the ini.
 -	if (iRunCount % 10 == 0 && bCheckForNewVersion) {
--		std::shared_ptr<http::Download> dl = g_DownloadManager.StartDownloadWithCallback(
--			"http://www.ppsspp.org/version.json", Path(), &DownloadCompletedCallback);
+-		const char *versionUrl = "http://www.ppsspp.org/version.json";
+-		const char *acceptMime = "application/json, text/*; q=0.9, */*; q=0.8";
+-		auto dl = g_DownloadManager.StartDownloadWithCallback(versionUrl, Path(), &DownloadCompletedCallback, acceptMime);
 -		dl->SetHidden(true);
 -	}
 -
@@ -52,10 +72,10 @@ index 74be99d75..b14aa22c7 100644
  	bSaveSettings = true;
  
 diff --git a/Core/Config.h b/Core/Config.h
-index 79323eefc..d47bec0c7 100644
+index 7bbbf2798..1bc1c2296 100644
 --- a/Core/Config.h
 +++ b/Core/Config.h
-@@ -103,7 +103,6 @@ struct Config {
+@@ -109,7 +109,6 @@ struct Config {
  
  	bool bFastMemory;
  	int iCpuCore;
@@ -63,7 +83,7 @@ index 79323eefc..d47bec0c7 100644
  	bool bForceLagSync;
  	bool bFuncReplacements;
  	bool bHideSlowWarnings;
-@@ -542,4 +541,3 @@ std::string CreateRandMAC();
+@@ -562,4 +561,3 @@ std::string CreateRandMAC();
  // TODO: Find a better place for this.
  extern http::Downloader g_DownloadManager;
  extern Config g_Config;
@@ -85,6 +105,42 @@ index b642f7442..a880d7c94 100644
  	case SYSPROP_CAN_JIT:
  		return true;
  	default:
+diff --git a/Qt/mainwindow.cpp b/Qt/mainwindow.cpp
+index 1f56e0e76..0b7680427 100644
+--- a/Qt/mainwindow.cpp
++++ b/Qt/mainwindow.cpp
+@@ -413,11 +413,6 @@ void MainWindow::forumAct()
+ 	QDesktopServices::openUrl(QUrl("https://forums.ppsspp.org/"));
+ }
+ 
+-void MainWindow::goldAct()
+-{
+-	QDesktopServices::openUrl(QUrl("https://central.ppsspp.org/buygold"));
+-}
+-
+ void MainWindow::gitAct()
+ {
+ 	QDesktopServices::openUrl(QUrl("https://github.com/hrydgard/ppsspp/"));
+@@ -666,7 +661,6 @@ void MainWindow::createMenus()
+ 	MenuTree* helpMenu = new MenuTree(this, menuBar(),    QT_TR_NOOP("&Help"));
+ 	helpMenu->add(new MenuAction(this, SLOT(websiteAct()),    QT_TR_NOOP("Visit www.&ppsspp.org")));
+ 	helpMenu->add(new MenuAction(this, SLOT(forumAct()),      QT_TR_NOOP("PPSSPP &forums")));
+-	helpMenu->add(new MenuAction(this, SLOT(goldAct()),       QT_TR_NOOP("Buy &Gold")));
+ 	helpMenu->add(new MenuAction(this, SLOT(gitAct()),        QT_TR_NOOP("Git&Hub")));
+ 	helpMenu->add(new MenuAction(this, SLOT(discordAct()),      QT_TR_NOOP("Discord")));
+ 	helpMenu->addSeparator();
+diff --git a/Qt/mainwindow.h b/Qt/mainwindow.h
+index 99c9fc3ad..8cd6cbf79 100644
+--- a/Qt/mainwindow.h
++++ b/Qt/mainwindow.h
+@@ -197,7 +197,6 @@ private slots:
+ 	// Help
+ 	void websiteAct();
+ 	void forumAct();
+-	void goldAct();
+ 	void gitAct();
+ 	void discordAct();
+ 	void aboutAct();
 diff --git a/SDL/SDLMain.cpp b/SDL/SDLMain.cpp
 index f0f74f979..f963f36e9 100644
 --- a/SDL/SDLMain.cpp
@@ -103,10 +159,10 @@ index f0f74f979..f963f36e9 100644
  		return true;
  	default:
 diff --git a/UI/DevScreens.cpp b/UI/DevScreens.cpp
-index 29baf2f2e..926692363 100644
+index 389fdf096..8442ee8c6 100644
 --- a/UI/DevScreens.cpp
 +++ b/UI/DevScreens.cpp
-@@ -635,9 +635,6 @@ void SystemInfoScreen::CreateViews() {
+@@ -649,9 +649,6 @@ void SystemInfoScreen::CreateViews() {
  #ifdef _M_SSE
  	buildConfig->Add(new InfoItem("_M_SSE", StringFromFormat("0x%x", _M_SSE)));
  #endif
@@ -117,23 +173,32 @@ index 29baf2f2e..926692363 100644
  	ViewGroup *cpuExtensionsScroll = new ScrollView(ORIENT_VERTICAL, new LinearLayoutParams(FILL_PARENT, FILL_PARENT));
  	cpuExtensionsScroll->SetTag("DevSystemInfoCPUExt");
 diff --git a/UI/GameSettingsScreen.cpp b/UI/GameSettingsScreen.cpp
-index 393e33cd9..d07d00d45 100644
+index 99fb151b9..90f26d5dc 100644
 --- a/UI/GameSettingsScreen.cpp
 +++ b/UI/GameSettingsScreen.cpp
-@@ -922,8 +922,6 @@ void GameSettingsScreen::CreateViews() {
+@@ -1023,7 +1023,6 @@ void GameSettingsScreen::CreateViews() {
  		}
  	}
  #endif
 -	systemSettings->Add(new CheckBox(&g_Config.bCheckForNewVersion, sy->T("VersionCheck", "Check for new versions of PPSSPP")));
--
+ 
  	systemSettings->Add(new Choice(sy->T("Restore Default Settings")))->OnClick.Handle(this, &GameSettingsScreen::OnRestoreDefaultSettings);
  	systemSettings->Add(new CheckBox(&g_Config.bEnableStateUndo, sy->T("Savestate slot backups")));
- 	static const char *autoLoadSaveStateChoices[] = { "Off", "Oldest Save", "Newest Save", "Slot 1", "Slot 2", "Slot 3", "Slot 4", "Slot 5" };
+@@ -2076,8 +2075,7 @@ void GestureMappingScreen::CreateViews() {
+ 	vert->Add(new PopupMultiChoice(&g_Config.iSwipeRight, mc->T("Swipe Right"), gestureButton, 0, ARRAY_SIZE(gestureButton), mc->GetName(), screenManager()))->SetEnabledPtr(&g_Config.bGestureControlEnabled);
+ 	vert->Add(new PopupSliderChoiceFloat(&g_Config.fSwipeSensitivity, 0.01f, 1.0f, co->T("Swipe sensitivity"), 0.01f, screenManager(), "x"))->SetEnabledPtr(&g_Config.bGestureControlEnabled);
+ 	vert->Add(new PopupSliderChoiceFloat(&g_Config.fSwipeSmoothing, 0.0f, 0.95f, co->T("Swipe smoothing"), 0.05f, screenManager(), "x"))->SetEnabledPtr(&g_Config.bGestureControlEnabled);
+-	
++
+ 	vert->Add(new ItemHeader(co->T("Double tap")));
+ 	vert->Add(new PopupMultiChoice(&g_Config.iDoubleTapGesture, mc->T("Double tap button"), gestureButton, 0, ARRAY_SIZE(gestureButton), mc->GetName(), screenManager()))->SetEnabledPtr(&g_Config.bGestureControlEnabled);
+ }
+-
 diff --git a/UI/MainScreen.cpp b/UI/MainScreen.cpp
-index f88509276..51b21b640 100644
+index 4e86ac1ab..be49c3add 100644
 --- a/UI/MainScreen.cpp
 +++ b/UI/MainScreen.cpp
-@@ -1080,11 +1080,7 @@ void MainScreen::CreateViews() {
+@@ -1100,11 +1100,7 @@ void MainScreen::CreateViews() {
  	sprintf(versionString, "%s", PPSSPP_GIT_VERSION);
  	rightColumnItems->SetSpacing(0.0f);
  	AnchorLayout *logos = new AnchorLayout(new AnchorLayoutParams(FILL_PARENT, 60.0f, false));
@@ -146,19 +211,19 @@ index f88509276..51b21b640 100644
  	logos->Add(new ImageView(ImageID("I_LOGO"), "PPSSPP", IS_DEFAULT, new AnchorLayoutParams(180, 64, 64, -5.0f, NONE, NONE, false)));
  
  #if !defined(MOBILE_DEVICE)
-@@ -1107,11 +1103,6 @@ void MainScreen::CreateViews() {
+@@ -1127,11 +1123,6 @@ void MainScreen::CreateViews() {
  	rightColumnItems->Add(new Choice(mm->T("Game Settings", "Settings")))->OnClick.Handle(this, &MainScreen::OnGameSettings);
  	rightColumnItems->Add(new Choice(mm->T("Credits")))->OnClick.Handle(this, &MainScreen::OnCredits);
  	rightColumnItems->Add(new Choice(mm->T("www.ppsspp.org")))->OnClick.Handle(this, &MainScreen::OnPPSSPPOrg);
 -	if (!System_GetPropertyBool(SYSPROP_APP_GOLD)) {
 -		Choice *gold = rightColumnItems->Add(new Choice(mm->T("Buy PPSSPP Gold")));
 -		gold->OnClick.Handle(this, &MainScreen::OnSupport);
--		gold->SetIcon(ImageID("I_ICONGOLD"));
+-		gold->SetIcon(ImageID("I_ICONGOLD"), 0.5f);
 -	}
  
  #if !PPSSPP_PLATFORM(UWP)
  	// Having an exit button is against UWP guidelines.
-@@ -1136,32 +1127,6 @@ void MainScreen::CreateViews() {
+@@ -1156,32 +1147,6 @@ void MainScreen::CreateViews() {
  	} else if (tabHolder_->GetVisibility() != V_GONE) {
  		root_->SetDefaultFocusView(tabHolder_);
  	}
@@ -191,7 +256,7 @@ index f88509276..51b21b640 100644
  }
  
  UI::EventReturn MainScreen::OnAllowStorage(UI::EventParams &e) {
-@@ -1169,30 +1134,6 @@ UI::EventReturn MainScreen::OnAllowStorage(UI::EventParams &e) {
+@@ -1189,30 +1154,6 @@ UI::EventReturn MainScreen::OnAllowStorage(UI::EventParams &e) {
  	return UI::EVENT_DONE;
  }
  
@@ -222,7 +287,7 @@ index f88509276..51b21b640 100644
  void MainScreen::sendMessage(const char *message, const char *value) {
  	// Always call the base class method first to handle the most common messages.
  	UIScreenWithBackground::sendMessage(message, value);
-@@ -1396,15 +1337,6 @@ UI::EventReturn MainScreen::OnCredits(UI::EventParams &e) {
+@@ -1386,15 +1327,6 @@ UI::EventReturn MainScreen::OnCredits(UI::EventParams &e) {
  	return UI::EVENT_DONE;
  }
  
@@ -238,11 +303,47 @@ index f88509276..51b21b640 100644
  UI::EventReturn MainScreen::OnPPSSPPOrg(UI::EventParams &e) {
  	LaunchBrowser("https://www.ppsspp.org");
  	return UI::EVENT_DONE;
+diff --git a/UI/MemStickScreen.cpp b/UI/MemStickScreen.cpp
+index ef617c5b5..664614c62 100644
+--- a/UI/MemStickScreen.cpp
++++ b/UI/MemStickScreen.cpp
+@@ -157,23 +157,16 @@ static void AddExplanation(UI::ViewGroup *viewGroup, MemStickScreen::Choice choi
+ 	case MemStickScreen::CHOICE_STORAGE_ROOT:
+ 		// Old school choice
+ 		holder->Add(new TextView(iz->T("DataWillStay", "Data will stay even if you uninstall PPSSPP"), flags, false))->SetBullet(true);
+-		holder->Add(new TextView(iz->T("DataCanBeShared", "Data can be shared between PPSSPP regular/Gold"), flags, false))->SetBullet(true);
+ 		holder->Add(new TextView(iz->T("EasyUSBAccess", "Easy USB access"), flags, false))->SetBullet(true);
+ 		break;
+ 	case MemStickScreen::CHOICE_BROWSE_FOLDER:
+ 		holder->Add(new TextView(iz->T("DataWillStay", "Data will stay even if you uninstall PPSSPP"), flags, false))->SetBullet(true);
+-		holder->Add(new TextView(iz->T("DataCanBeShared", "Data can be shared between PPSSPP regular/Gold"), flags, false))->SetBullet(true);
+ 		holder->Add(new TextView(iz->T("EasyUSBAccess", "Easy USB access"), flags, false))->SetBullet(true);
+ 		break;
+ 	case MemStickScreen::CHOICE_PRIVATE_DIRECTORY:
+ 		// Consider https://www.compart.com/en/unicode/U+26A0 (unicode warning sign?)? or a graphic?
+ 		holder->Add(new TextView(iz->T("DataWillBeLostOnUninstall", "Warning! Data will be lost when you uninstall PPSSPP!"), flags, false))->SetBullet(true);
+-		holder->Add(new TextView(iz->T("DataCannotBeShared", "Data CANNOT be shared between PPSSPP regular/Gold!"), flags, false))->SetBullet(true);
+-#if GOLD
+-		holder->Add(new TextView(iz->T("USBAccessThroughGold", "USB access through Android/data/org.ppsspp.ppssppgold/files"), flags, false))->SetBullet(true);
+-#else
+ 		holder->Add(new TextView(iz->T("USBAccessThrough", "USB access through Android/data/org.ppsspp.ppsspp/files"), flags, false))->SetBullet(true);
+-#endif
+ 		break;
+ 	case MemStickScreen::CHOICE_SET_MANUAL:
+ 	default:
+@@ -243,7 +236,6 @@ void MemStickScreen::CreateViews() {
+ 	} else {
+ 		leftColumn->Add(new RadioButton(&choice_, CHOICE_SET_MANUAL, iz->T("Manually specify PSP folder")))->OnClick.Handle(this, &MemStickScreen::OnChoiceClick);
+ 		leftColumn->Add(new TextView(iz->T("DataWillStay", "Data will stay even if you uninstall PPSSPP.")))->SetBullet(true);
+-		leftColumn->Add(new TextView(iz->T("DataCanBeShared", "Data can be shared between PPSSPP regular/Gold.")))->SetBullet(true);
+ 		// TODO: Show current folder here if we have one set.
+ 	}
+ 	if (choice_ == CHOICE_BROWSE_FOLDER || choice_ == CHOICE_SET_MANUAL) {
 diff --git a/UI/MiscScreens.cpp b/UI/MiscScreens.cpp
-index 901a5fb09..9d067aee6 100644
+index 04e5df6c3..fb6c29725 100644
 --- a/UI/MiscScreens.cpp
 +++ b/UI/MiscScreens.cpp
-@@ -661,11 +661,7 @@ void LogoScreen::render() {
+@@ -769,11 +769,7 @@ void LogoScreen::render() {
  	char temp[256];
  	// Manually formatting UTF-8 is fun.  \xXX doesn't work everywhere.
  	snprintf(temp, sizeof(temp), "%s Henrik Rydg%c%crd", cr->T("created", "Created by"), 0xC3, 0xA5);
@@ -255,7 +356,7 @@ index 901a5fb09..9d067aee6 100644
  	dc.Draw()->DrawImage(ImageID("I_LOGO"), bounds.centerX() + 40, bounds.centerY() - 30, 1.5f, textColor, ALIGN_CENTER);
  	//dc.Draw()->DrawTextShadow(UBUNTU48, "PPSSPP", bounds.w / 2, bounds.h / 2 - 30, textColor, ALIGN_CENTER);
  	dc.SetFontScale(1.0f, 1.0f);
-@@ -701,10 +697,6 @@ void CreditsScreen::CreateViews() {
+@@ -809,10 +805,6 @@ void CreditsScreen::CreateViews() {
  	// Really need to redo this whole layout with some linear layouts...
  
  	int rightYOffset = 0;
@@ -266,7 +367,7 @@ index 901a5fb09..9d067aee6 100644
  	root_->Add(new Button(cr->T("PPSSPP Forums"), new AnchorLayoutParams(260, 64, 10, NONE, NONE, 158, false)))->OnClick.Handle(this, &CreditsScreen::OnForums);
  	root_->Add(new Button(cr->T("Discord"), new AnchorLayoutParams(260, 64, 10, NONE, NONE, 232, false)))->OnClick.Handle(this, &CreditsScreen::OnDiscord);
  	root_->Add(new Button("www.ppsspp.org", new AnchorLayoutParams(260, 64, 10, NONE, NONE, 10, false)))->OnClick.Handle(this, &CreditsScreen::OnPPSSPPOrg);
-@@ -713,20 +705,7 @@ void CreditsScreen::CreateViews() {
+@@ -821,20 +813,7 @@ void CreditsScreen::CreateViews() {
  #if PPSSPP_PLATFORM(ANDROID) || PPSSPP_PLATFORM(IOS)
  	root_->Add(new Button(cr->T("Share PPSSPP"), new AnchorLayoutParams(260, 64, NONE, NONE, 10, rightYOffset + 158, false)))->OnClick.Handle(this, &CreditsScreen::OnShare);
  #endif
@@ -288,7 +389,7 @@ index 901a5fb09..9d067aee6 100644
  }
  
  UI::EventReturn CreditsScreen::OnTwitter(UI::EventParams &e) {
-@@ -916,11 +895,7 @@ void CreditsScreen::render() {
+@@ -1024,11 +1003,7 @@ void CreditsScreen::render() {
  
  	// TODO: This is kinda ugly, done on every frame...
  	char temp[256];
@@ -319,10 +420,37 @@ index 29afda806..b7028fc0c 100644
  		return true;
  	default:
 diff --git a/Windows/MainWindowMenu.cpp b/Windows/MainWindowMenu.cpp
-index c0d790e06..e8de4f956 100644
+index 006fed4f4..4761171ff 100644
 --- a/Windows/MainWindowMenu.cpp
 +++ b/Windows/MainWindowMenu.cpp
-@@ -1395,7 +1395,7 @@ namespace MainWindow {
+@@ -136,7 +136,6 @@ namespace MainWindow {
+ 
+ 		const std::wstring visitMainWebsite = ConvertUTF8ToWString(des->T("www.ppsspp.org"));
+ 		const std::wstring visitForum = ConvertUTF8ToWString(des->T("PPSSPP Forums"));
+-		const std::wstring buyGold = ConvertUTF8ToWString(des->T("Buy Gold"));
+ 		const std::wstring gitHub = ConvertUTF8ToWString(des->T("GitHub"));
+ 		const std::wstring discord = ConvertUTF8ToWString(des->T("Discord"));
+ 		const std::wstring aboutPPSSPP = ConvertUTF8ToWString(des->T("About PPSSPP..."));
+@@ -147,7 +146,6 @@ namespace MainWindow {
+ 		AppendMenu(helpMenu, MF_STRING | MF_BYCOMMAND, ID_HELP_OPENWEBSITE, visitMainWebsite.c_str());
+ 		AppendMenu(helpMenu, MF_STRING | MF_BYCOMMAND, ID_HELP_OPENFORUM, visitForum.c_str());
+ 		// Repeat the process for other languages, if necessary.
+-		AppendMenu(helpMenu, MF_STRING | MF_BYCOMMAND, ID_HELP_BUYGOLD, buyGold.c_str());
+ 		AppendMenu(helpMenu, MF_STRING | MF_BYCOMMAND, ID_HELP_GITHUB, gitHub.c_str());
+ 		AppendMenu(helpMenu, MF_STRING | MF_BYCOMMAND, ID_HELP_DISCORD, discord.c_str());
+ 		AppendMenu(helpMenu, MF_SEPARATOR, 0, 0);
+@@ -1015,10 +1013,6 @@ namespace MainWindow {
+ 			ShellExecute(NULL, L"open", L"https://www.ppsspp.org/", NULL, NULL, SW_SHOWNORMAL);
+ 			break;
+ 
+-		case ID_HELP_BUYGOLD:
+-			ShellExecute(NULL, L"open", L"https://central.ppsspp.org/buygold", NULL, NULL, SW_SHOWNORMAL);
+-			break;
+-
+ 		case ID_HELP_OPENFORUM:
+ 			ShellExecute(NULL, L"open", L"https://forums.ppsspp.org/", NULL, NULL, SW_SHOWNORMAL);
+ 			break;
+@@ -1397,7 +1391,7 @@ namespace MainWindow {
  		{
  			W32Util::CenterWindow(hDlg);
  			HWND versionBox = GetDlgItem(hDlg, IDC_VERSION);
@@ -331,8 +459,24 @@ index c0d790e06..e8de4f956 100644
  			windowText.append(PPSSPP_GIT_VERSION);
  			SetWindowText(versionBox, ConvertUTF8ToWString(windowText).c_str());
  		}
+diff --git a/Windows/WindowsHost.cpp b/Windows/WindowsHost.cpp
+index 610b79890..3d5926fce 100644
+--- a/Windows/WindowsHost.cpp
++++ b/Windows/WindowsHost.cpp
+@@ -155,11 +155,7 @@ void WindowsHost::ShutdownGraphics() {
+ }
+ 
+ void WindowsHost::SetWindowTitle(const char *message) {
+-#ifdef GOLD
+-	const char *name = "PPSSPP Gold ";
+-#else
+ 	const char *name = "PPSSPP ";
+-#endif
+ 	std::wstring winTitle = ConvertUTF8ToWString(std::string(name) + PPSSPP_GIT_VERSION);
+ 	if (message != nullptr) {
+ 		winTitle.append(ConvertUTF8ToWString(" - "));
 diff --git a/Windows/main.cpp b/Windows/main.cpp
-index ecfe18fa4..3261151d2 100644
+index 9395233e2..90abec570 100644
 --- a/Windows/main.cpp
 +++ b/Windows/main.cpp
 @@ -304,12 +304,6 @@ bool System_GetPropertyBool(SystemProperty prop) {
@@ -348,13 +492,25 @@ index ecfe18fa4..3261151d2 100644
  	case SYSPROP_CAN_JIT:
  		return true;
  	default:
+diff --git a/Windows/resource.h b/Windows/resource.h
+index ce21b3a85..1f8002c10 100644
+--- a/Windows/resource.h
++++ b/Windows/resource.h
+@@ -322,7 +322,6 @@
+ // Dummy option to let the buffered rendering hotkey cycle through all the options.
+ #define ID_OPTIONS_BUFFEREDRENDERINGDUMMY 40500
+ #define IDC_STEPOUT                       40501
+-#define ID_HELP_BUYGOLD                   40502
+ 
+ #define IDC_STATIC                      -1
+ 
 diff --git a/android/jni/app-android.cpp b/android/jni/app-android.cpp
-index 2fad16224..8ed6dd9cd 100644
+index df395e304..cebdf5804 100644
 --- a/android/jni/app-android.cpp
 +++ b/android/jni/app-android.cpp
-@@ -490,12 +490,6 @@ bool System_GetPropertyBool(SystemProperty prop) {
- 	case SYSPROP_HAS_FOLDER_BROWSER:
- 		// Uses OPEN_DOCUMENT_TREE to let you select a folder.
+@@ -458,12 +458,6 @@ bool System_GetPropertyBool(SystemProperty prop) {
+ 		// Doesn't actually mean it's usable though, in many early versions of Android
+ 		// this dialog is complete garbage and only lets you select subfolders of the Downloads folder.
  		return androidVersion >= 21;  // when ACTION_OPEN_DOCUMENT_TREE was added
 -	case SYSPROP_APP_GOLD:
 -#ifdef GOLD
@@ -383,5 +539,5 @@ index e53b7c7ab..fe69647ed 100644
  			return g_jitAvailable;
  
 -- 
-2.31.1
+2.34.0
 
