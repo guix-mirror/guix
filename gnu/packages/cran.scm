@@ -15927,17 +15927,18 @@ network.")
 (define-public r-apcluster
   (package
     (name "r-apcluster")
-    (version "1.4.8")
+    (version "1.4.9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "apcluster" version))
        (sha256
         (base32
-         "0lzf2jqm56i74wif6x5sw3j0w2qc4sni49zq2fgbl89b7lwkvchj"))))
+         "0wnbb3kj9m7rfq63xr43jjf6n8jxm1r2wvvx6g0qkss0wvipbb1s"))))
     (build-system r-build-system)
     (propagated-inputs
      (list r-matrix r-rcpp))
+    (native-inputs (list r-knitr))
     (home-page "https://cran.r-project.org/web/packages/apcluster/")
     (synopsis "Affinity propagation clustering")
     (description
