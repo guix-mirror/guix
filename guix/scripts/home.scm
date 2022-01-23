@@ -36,7 +36,8 @@
   #:use-module (guix scripts)
   #:use-module (guix scripts package)
   #:use-module (guix scripts build)
-  #:use-module (guix scripts system search)
+  #:autoload   (guix scripts system search) (service-type->recutils)
+  #:use-module (guix scripts system reconfigure)
   #:autoload   (guix scripts pull) (channel-commit-hyperlink)
   #:use-module (guix scripts home import)
   #:use-module ((guix status) #:select (with-status-verbosity))
@@ -92,6 +93,9 @@ Some ACTIONS support additional ARGS.\n"))
   -e, --expression=EXPR  consider the home-environment EXPR evaluates to
                          instead of reading FILE, when applicable"))
   (display (G_ "
+      --allow-downgrades for 'reconfigure', allow downgrades to earlier
+                         channel revisions"))
+  (display (G_ "
   -v, --verbosity=LEVEL  use the given verbosity LEVEL"))
   (newline)
   (display (G_ "
@@ -127,18 +131,23 @@ Some ACTIONS support additional ARGS.\n"))
          (option '(#\e "expression") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'expression arg result)))
+         (option '("allow-downgrades") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'validate-reconfigure
+                               warn-about-backward-reconfigure
+                               result)))
          %standard-build-options))
 
 (define %default-options
-  `((build-mode . ,(build-mode normal))
-    (graft? . #t)
+  `((graft? . #t)
     (substitutes? . #t)
     (offload? . #t)
     (print-build-trace? . #t)
     (print-extended-build-trace? . #t)
     (multiplexed-build-output? . #t)
     (verbosity . #f)                              ;default
-    (debug . 0)))
+    (debug . 0)
+    (validate-reconfigure . ,ensure-forward-reconfigure)))
 
 
 ;;;
@@ -149,11 +158,16 @@ Some ACTIONS support additional ARGS.\n"))
                          #:key
                          dry-run?
                          derivations-only?
-                         use-substitutes?)
+                         use-substitutes?
+                         (validate-reconfigure ensure-forward-reconfigure))
   "Perform ACTION for home environment. "
 
   (define println
     (cut format #t "~a~%" <>))
+
+  (when (eq? action 'reconfigure)
+    (check-forward-update validate-reconfigure
+                          #:current-channels (home-provenance %guix-home)))
 
   (mlet* %store-monad
       ((he-drv   (home-environment-derivation he))
@@ -237,13 +251,12 @@ resulting from command-line parsing."
           (mbegin %store-monad
             (set-guile-for-build (default-guile))
 
-            (case action
-              (else
-               (perform-action action home-environment
-                               #:dry-run? dry?
-                               #:derivations-only? (assoc-ref opts 'derivations-only?)
-                               #:use-substitutes? (assoc-ref opts 'substitutes?))
-               ))))))
+            (perform-action action home-environment
+                            #:dry-run? dry?
+                            #:derivations-only? (assoc-ref opts 'derivations-only?)
+                            #:use-substitutes? (assoc-ref opts 'substitutes?)
+                            #:validate-reconfigure
+                            (assoc-ref opts 'validate-reconfigure))))))
     (warn-about-disk-space)))
 
 

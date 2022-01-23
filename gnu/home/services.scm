@@ -43,6 +43,7 @@
             home-provenance-service-type
 
             fold-home-service-types
+            home-provenance
 
             %initialize-gettext)
 

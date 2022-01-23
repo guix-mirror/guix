@@ -38072,6 +38072,16 @@ Consider the home-environment @var{expr} evaluates to.
 This is an alternative to specifying a file which evaluates to a home
 environment.
 
+@item --allow-downgrades
+Instruct @command{guix home reconfigure} to allow system downgrades.
+
+Just like @command{guix system}, @command{guix home reconfigure}, by
+default, prevents you from downgrading your home to older or unrelated
+revisions compared to the channel revisions that were used to deploy
+it---those shown by @command{guix home describe}.  Using
+@option{--allow-downgrades} allows you to bypass that check, at the risk
+of downgrading your home---be careful!
+
 @end table
 
 @node Documentation
