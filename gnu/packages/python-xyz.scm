@@ -7105,13 +7105,13 @@ retrieve text and metadata from PDFs as well as merge entire files together.")
     (native-inputs
      (list python-pytest))
     (inputs
-     `(("freetype" ,freetype)
-       ("lcms"     ,lcms)
-       ("libjpeg"  ,libjpeg-turbo)
-       ("libtiff"  ,libtiff)
-       ("libwebp"  ,libwebp)
-       ("openjpeg" ,openjpeg)
-       ("zlib"     ,zlib)))
+     (list freetype
+           lcms
+           libjpeg-turbo
+           libtiff
+           libwebp
+           openjpeg
+           zlib))
     (propagated-inputs
      (list python-olefile))
     (arguments
