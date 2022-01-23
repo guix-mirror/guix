@@ -2430,7 +2430,7 @@ comments.")))
 (define-public freecad
   (package
     (name "freecad")
-    (version "0.19.2")
+    (version "0.19.3")
     (source
      (origin
        (method git-fetch)
@@ -2439,7 +2439,7 @@ comments.")))
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0fhjv0x3dix1c7jml91yx63z9xifjlbhjbcdb73lw80smpxrq7mm"))
+        (base32 "1dkiwnqr6bhi2d90hz7ijqd872144c9n9xxpd1vbrmxr2x8cfl88"))
        (patches (search-patches "freecad-vtk9.patch"
                                 "freecad-boost-serialization.patch"))))
     (build-system qt-build-system)
