@@ -18552,7 +18552,7 @@ or expressions with SVG rounded box labels that are fully customizable.")
 on :company-kind for compatible completion UIs.  The \"kind\" prefix is
 typically used for differentiating completion candidates such as variables,
 functions, etc.")
-    (license license:agpl3)))
+    (license license:gpl3+)))
 
 (define-public emacs-svg-icon
   (let ((commit "ebc2b8d0f6c680fd575a90e683cc7b832acd1eb7")
