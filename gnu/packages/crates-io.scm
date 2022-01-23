@@ -57885,17 +57885,17 @@ no_std compatible by default, only relying on alloc.")
         ("rust-errno" ,rust-errno-0.2)
         ("rust-libc" ,rust-libc-0.2))))))
 
-(define-public rust-sysinfo-0.21
+(define-public rust-sysinfo-0.23
   (package
     (name "rust-sysinfo")
-    (version "0.21.2")
+    (version "0.23.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "sysinfo" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "16j4wfiihlq261dh2k939br6q9zzaiwh719m7lb8idj16dpxd24g"))))
+        (base32 "14d5fgg24x4rfd6226dl1grsv5lnid0kynp6kfzb3lmylh070xcy"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -57913,6 +57913,29 @@ no_std compatible by default, only relying on alloc.")
      "This package is a library to get system information such as processes,
 processors, disks, components and networks.")
     (license license:expat)))
+
+(define-public rust-sysinfo-0.21
+  (package
+    (inherit rust-sysinfo-0.23)
+    (name "rust-sysinfo")
+    (version "0.21.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "sysinfo" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "16j4wfiihlq261dh2k939br6q9zzaiwh719m7lb8idj16dpxd24g"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-core-foundation-sys" ,rust-core-foundation-sys-0.8)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-ntapi" ,rust-ntapi-0.3)
+        ("rust-once-cell" ,rust-once-cell-1)
+        ("rust-rayon" ,rust-rayon-1)
+        ("rust-winapi" ,rust-winapi-0.3))))))
 
 (define-public rust-sysinfo-0.20
   (package
