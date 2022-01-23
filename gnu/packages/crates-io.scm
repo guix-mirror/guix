@@ -5563,7 +5563,8 @@ c6e7d37.  However, this package works only up to 128 bytes.")
          (add-after 'unpack 'fix-criterion-minor-version
           (lambda* _
            (substitute* "Cargo.toml"
-            (("0.3.2") "0.3.3")))))))
+             (("0\\.3\\.2")
+              ,(package-version rust-criterion-0.3))))))))
     (home-page "https://github.com/marshallpierce/rust-base64")
     (synopsis "Encodes and decodes base64 as bytes or utf8")
     (description
