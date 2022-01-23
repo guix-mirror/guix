@@ -37598,6 +37598,7 @@ services)}.
 * Shells: Shells Home Services.          POSIX shells, Bash, Zsh.
 * Mcron: Mcron Home Service.             Scheduled User's Job Execution.
 * Shepherd: Shepherd Home Service.       Managing User's Daemons.
+* Desktop: Desktop Home Services.        Services for graphical environments.
 @end menu
 @c In addition to that Home Services can provide
 
@@ -37984,6 +37985,85 @@ You should probably use the service extension
 mechanism instead (@pxref{Shepherd Services}).
 @end table
 @end deftp
+
+@node Desktop Home Services
+@subsection Desktop Home Services
+
+The @code{(gnu home services desktop)} module provides services that you
+may find useful on ``desktop'' systems running a graphical user
+environment such as Xorg.
+
+@defvr {Scheme Variable} home-redshift-service-type
+This is the service type for @uref{https://github.com/jonls/redshift,
+Redshift}, a program that adjusts the display color temperature
+according to the time of day.  Its associated value must be a
+@code{home-redshift-configuration} record, as shown below.
+
+A typical configuration, where we manually specify the latitude and
+longitude, might look like this:
+
+@lisp
+(service home-redshift-service-type
+         (home-redshift-configuration
+          (location-provider 'manual)
+          (latitude 35.81)    ;northern hemisphere
+          (longitude -0.80))) ;west of Greenwich
+@end lisp
+@end defvr
+
+@deftp {Data Type} home-redshift-configuration
+Available @code{home-redshift-configuration} fields are:
+
+@table @asis
+@item @code{redshift} (default: @code{redshift}) (type: file-like)
+Redshift package to use.
+
+@item @code{location-provider} (default: @code{geoclue2}) (type: symbol)
+Geolocation provider---@code{'manual} or @code{'geoclue2}.  In the
+former case, you must also specify the @code{latitude} and
+@code{longitude} fields so Redshift can determine daytime at your place.
+In the latter case, the Geoclue system service must be running; it will
+be queried for location information.
+
+@item @code{adjustment-method} (default: @code{randr}) (type: symbol)
+Color adjustment method.
+
+@item @code{daytime-temperature} (default: @code{6500}) (type: integer)
+Daytime color temperature (kelvins).
+
+@item @code{nighttime-temperature} (default: @code{4500}) (type: integer)
+Nighttime color temperature (kelvins).
+
+@item @code{daytime-brightness} (default: @code{disabled}) (type: maybe-inexact-number)
+Daytime screen brightness, between 0.1 and 1.0.
+
+@item @code{nighttime-brightness} (default: @code{disabled}) (type: maybe-inexact-number)
+Nighttime screen brightness, between 0.1 and 1.0.
+
+@item @code{latitude} (default: @code{disabled}) (type: maybe-inexact-number)
+Latitude, when @code{location-provider} is @code{'manual}.
+
+@item @code{longitude} (default: @code{disabled}) (type: maybe-inexact-number)
+Longitude, when @code{location-provider} is @code{'manual}.
+
+@item @code{dawn-time} (default: @code{disabled}) (type: maybe-string)
+Custom time for the transition from night to day in the
+morning---@code{"HH:MM"} format.  When specified, solar elevation is not
+used to determine the daytime/nighttime period.
+
+@item @code{dusk-time} (default: @code{disabled}) (type: maybe-string)
+Likewise, custom time for the transition from day to night in the
+evening.
+
+@item @code{extra-content} (default: @code{""}) (type: raw-configuration-string)
+Extra content appended as-is to the Redshift configuration file.  Run
+@command{man redshift} for more information about the configuration file
+format.
+
+@end table
+
+@end deftp
+
 
 @node Invoking guix home
 @section Invoking @code{guix home}

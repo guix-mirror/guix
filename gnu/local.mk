@@ -79,6 +79,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/ci.scm					\
   %D%/home.scm					\
   %D%/home/services.scm			\
+  %D%/home/services/desktop.scm			\
   %D%/home/services/symlink-manager.scm		\
   %D%/home/services/fontutils.scm		\
   %D%/home/services/shells.scm			\
