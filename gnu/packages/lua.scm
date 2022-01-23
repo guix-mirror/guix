@@ -15,6 +15,7 @@
 ;;; Copyright © 2020 Paul A. Patience <paul@apatience.com>
 ;;; Copyright © 2021 Vinícius dos Santos Oliveira <vini.ipsmaker@gmail.com>
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
+;;; Copyright © 2022 Brandon Lucas <br@ndon.dk>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,12 +37,14 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages build-tools)
   #:use-module (gnu packages glib)
@@ -1211,3 +1214,66 @@ enabled.")
 simplicity, and reach of Lua with the flexibility of a Lisp syntax and macro
 system.")
     (license license:expat)))
+
+(define-public fnlfmt
+  (package
+    (name "fnlfmt")
+    (version "0.2.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.sr.ht/~technomancy/fnlfmt")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1rv0amqhy5ypi3pvxfaadn3k1cy4mjlc49wdzl2psz3i11w9gr36"))
+              (modules '((guix build utils)))
+              (snippet
+               #~(begin
+                   ;; Use input fennel instead of bundled fennel.
+                   (delete-file "fennel")
+                   (delete-file "fennel.lua")
+                   (substitute* "Makefile"
+                     (("./fennel") "fennel"))))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (ice-9 match))
+       #:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+        (delete 'configure)
+        (add-before 'build 'patch-makefile
+         (lambda* (#:key native-inputs inputs #:allow-other-keys)
+          (substitute* "Makefile"
+           ;; Patch lua shebang that gets inserted to fnlfmt.
+           (("/usr/bin/env lua")
+            (search-input-file (or native-inputs inputs) "/bin/lua")))))
+        (replace 'install
+         ;; There is no install target; manually install the output file.
+         (lambda* (#:key outputs #:allow-other-keys)
+          (let* ((out (assoc-ref outputs "out"))
+                 (bin (string-append out "/bin")))
+           (for-each (lambda (file)
+                      (install-file file bin))
+            (find-files "." "fnlfmt")))))
+        (add-after 'install 'wrap
+         (lambda* (#:key inputs native-inputs outputs #:allow-other-keys)
+          (let* ((all-inputs (or native-inputs inputs))
+                 (fnlfmt (assoc-ref outputs "out"))
+                 (lua-version ,(version-major+minor (package-version lua)))
+                 (fennel (assoc-ref all-inputs "fennel")))
+           (wrap-program (string-append fnlfmt "/bin/fnlfmt")
+            `("LUA_PATH" ";" suffix
+              (,(format #f "~a/share/lua/~a/?.lua" fennel lua-version))))
+           #t))))))
+    (inputs (list bash-minimal))
+    (native-inputs (list lua fennel))
+    (home-page "https://git.sr.ht/~technomancy/fnlfmt")
+    (synopsis "Automatic formatting of Fennel code")
+    (description
+     "Fnlfmt is a tool for automatically formatting Fennel code in a consistent
+way, following established lisp conventions.")
+    (license license:lgpl3+)))
