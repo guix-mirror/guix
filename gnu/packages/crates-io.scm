@@ -44154,6 +44154,128 @@ they were parsed from")
 @code{LC_COLLATE} and @code{LC_CTYPE} are not yet supported.")
     (license license:expat)))
 
+(define-public rust-pyo3-build-config-0.15
+  (package
+    (name "rust-pyo3-build-config")
+    (version "0.15.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pyo3-build-config" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0aw5zfqwzj5rzfxjyqvrqfam138d1009jh6kia4xrgdz538y9yfv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-once-cell" ,rust-once-cell-1))))
+    (home-page "https://github.com/pyo3/pyo3")
+    (synopsis "Build configuration for PyO3")
+    (description
+     "This package contains build configuration helpers for the PyO3
+ecosystem.")
+    (license license:asl2.0)))
+
+(define-public rust-pyo3-macros-backend-0.15
+  (package
+    (name "rust-pyo3-macros-backend")
+    (version "0.15.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pyo3-macros-backend" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "12i1n1j8l4q4lzalsvvlw2pak1h8wnz3xcn7y82s2jgf4pl0jkzl"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-pyo3-build-config" ,rust-pyo3-build-config-0.15)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/pyo3/pyo3")
+    (synopsis "Code generation for PyO3")
+    (description
+     "This package provides code generation backends for PyO3.")
+    (license license:asl2.0)))
+
+(define-public rust-pyo3-macros-0.15
+  (package
+    (name "rust-pyo3-macros")
+    (version "0.15.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "pyo3-macros" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "0mfp3yz6743vrsp2vh8is3gbyzlxzx4bam5wnhi9g6hz5friww37"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build? #t
+        #:cargo-inputs
+        (("rust-pyo3-macros-backend" ,rust-pyo3-macros-backend-0.15)
+         ("rust-quote" ,rust-quote-1)
+         ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/pyo3/pyo3")
+    (synopsis "Proc macros for PyO3")
+    (description
+     "This package provides compiler macros for use with PyO3.")
+    (license license:asl2.0)))
+
+(define-public rust-pyo3-0.15
+  (package
+    (name "rust-pyo3")
+    (version "0.15.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pyo3" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "082p014xd8ipwnfsq1ln871wkslxmbrxd7kpqwa0mbq53jzivw3w"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-anyhow" ,rust-anyhow-1)
+        ("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-eyre" ,rust-eyre-0.6)
+        ("rust-hashbrown" ,rust-hashbrown-0.11)
+        ("rust-indexmap" ,rust-indexmap-1)
+        ("rust-indoc" ,rust-indoc-0.3)
+        ("rust-inventory" ,rust-inventory-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-num-bigint" ,rust-num-bigint-0.4)
+        ("rust-num-complex" ,rust-num-complex-0.4)
+        ("rust-parking-lot" ,rust-parking-lot-0.11)
+        ("rust-paste" ,rust-paste-0.1)
+        ("rust-pyo3-build-config" ,rust-pyo3-build-config-0.15)
+        ("rust-pyo3-macros" ,rust-pyo3-macros-0.15)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-unindent" ,rust-unindent-0.1))
+       #:cargo-development-inputs
+       (("rust-assert-approx-eq" ,rust-assert-approx-eq-1)
+        ("rust-bitflags" ,rust-bitflags-1.2)
+        ("rust-criterion" ,rust-criterion-0.3)
+        ("rust-half" ,rust-half-1)
+        ("rust-proptest" ,rust-proptest-0.10)
+        ("rust-rustversion" ,rust-rustversion-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-trybuild" ,rust-trybuild-1))
+       ;; FIXME: fails to initialize Python interpreter.
+       #:tests? #f))
+    (inputs (list python))
+    (home-page "https://github.com/pyo3/pyo3")
+    (synopsis "Rust bindings for the Python interpreter")
+    (description
+     "This package provides Rust bindings for Python, including tools for
+creating native Python extension modules.  Running and interacting with
+Python code from a Rust binary is also supported.")
+    (license license:asl2.0)))
+
 (define-public rust-quantiles-0.7
   (package
     (name "rust-quantiles")
