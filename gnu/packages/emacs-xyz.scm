@@ -22381,6 +22381,32 @@ scaling of and anti aliasing of the icons.")
     (license
      (list license:expat license:gpl3+ license:silofl1.1 license:asl2.0))))
 
+(define-public emacs-all-the-icons-completion
+  ;; XXX: No tags. Extract version from keyword in main file.
+  (let ((commit "9e7d456b0934ecb568b6f05a8445e3f4ce32261f")
+        (revision "0"))
+    (package
+      (name "emacs-all-the-icons-completion")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/iyefrat/all-the-icons-completion")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "04bnmmd6lyx0p39sgymqvmcy7bk8mr7sikbpy49adxi7d2891ldg"))))
+      (build-system emacs-build-system)
+      (propagated-inputs (list emacs-all-the-icons))
+      (home-page "https://github.com/iyefrat/all-the-icons-completion")
+      (synopsis "Add icons to completion candidates")
+      (description "This package adds icons to completion candidates using the
+built-in completion metadata functions.  For example, with this package,
+@code{find-file} can display a file icon for each candidate based on the file
+type.")
+      (license license:gpl3+))))
+
 (define-public emacs-wttrin
   (let ((commit "df5427ce2a5ad4dab652dbb1c4a1834d7ddc2abc")
         (revision "1"))
