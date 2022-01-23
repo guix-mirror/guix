@@ -2483,8 +2483,10 @@ comments.")))
            python-shiboken-2
            python-wrapper
            qtbase-5
+           qtdeclarative
            qtsvg
-           qtwebkit
+           qtwebchannel
+           qtwebengine
            qtx11extras
            qtxmlpatterns
            sqlite
