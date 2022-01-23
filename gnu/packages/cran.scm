@@ -28691,13 +28691,13 @@ well as email and push notifications.")
 (define-public r-mlr3measures
   (package
     (name "r-mlr3measures")
-    (version "0.4.0")
+    (version "0.4.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "mlr3measures" version))
               (sha256
                (base32
-                "1qlqfan5akz42zwkcz3ncln6rd9c302dy4cyp7nx0jcafr5i459f"))))
+                "1kbw3xd7c9x65v9zzs8i5skmrvl0mf2wsbyssmiif0lvrbzfhcmb"))))
     (build-system r-build-system)
     (propagated-inputs
      (list r-checkmate r-prroc))
