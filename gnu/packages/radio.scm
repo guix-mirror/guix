@@ -1583,7 +1583,7 @@ programs using the library: cw, cwgen, cwcp and xcwcp.  The programs are
 intended for people who want to learn receiving and sending morse code.")
     (license license:gpl2+)))
 
-(define-public kockmorse
+(define-public kochmorse
   (package
     (name "kochmorse")
     (version "3.5.1")
