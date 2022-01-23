@@ -2778,14 +2778,14 @@ Projection code and larger maps are in separate packages (@code{mapproj} and
 (define-public r-mapproj
   (package
     (name "r-mapproj")
-    (version "1.2.7")
+    (version "1.2.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "mapproj" version))
        (sha256
         (base32
-         "0nscsfq8md6ri9258xz57c3dj81wdl6kdwf4a9qcrwwbn20i427h"))))
+         "10bpib827011fpgvzsmlv4j3i41s0r3cv1hvawwdlk753s7i0pw6"))))
     (build-system r-build-system)
     (propagated-inputs (list r-maps))
     (home-page "https://cran.r-project.org/web/packages/mapproj")
