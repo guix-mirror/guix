@@ -2757,7 +2757,7 @@ validating international phone numbers.")
 (define-public chatty
  (package
    (name "chatty")
-   (version "0.1.17")
+   (version "0.4.0")
    (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2766,7 +2766,7 @@ validating international phone numbers.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0ba1rw8a3vif9k3570hxjfm25vqys3vk3f6g8z5irklwq4bi6lmn"))))
+                "12k1a5xrwd6zk4x0m53hbzggk695z3bpbzy1wcikzy0jvch7h13d"))))
    (build-system meson-build-system)
    (arguments
     '(#:phases
@@ -2774,19 +2774,21 @@ validating international phone numbers.")
         (add-after 'unpack 'skip-updating-desktop-database
           (lambda _
             (substitute* "meson.build"
-              (("meson.add_install_script.*") ""))
-            #t)))))
+              (("meson.add_install_script.*") "")))))))
    (native-inputs
-    `(("gettext" ,gettext-minimal)
-      ("glib:bin" ,glib "bin")
-      ("pkg-config" ,pkg-config)))
+    (list gettext-minimal `(,glib "bin") pkg-config protobuf))
    (inputs
     (list feedbackd
           folks
           gsettings-desktop-schemas
+          gspell
+          json-glib
           libgcrypt
           libgee
-          libhandy-0.0
+          libhandy
+          libolm
+          libphonenumber
+          modem-manager
           pidgin
           purple-mm-sms
           sqlite))
