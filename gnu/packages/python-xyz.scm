@@ -14,7 +14,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Erik Edrosa <erik.edrosa@gmail.com>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2017, 2020 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
@@ -7089,14 +7089,18 @@ retrieve text and metadata from PDFs as well as merge entire files together.")
 (define-public python-pillow
   (package
     (name "python-pillow")
-    (version "8.1.1")
+    (version "9.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Pillow" version))
        (sha256
         (base32
-         "086g7nhv52wclrwnzbzs2x3nvyzs2hfq1bvgivsrp5f7r7wiiz7n"))))
+         "0gjry0yqryd2678sm47jhdnbghzxn5wk8pgyaqwr4qi7x5ijjvpf"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file-recursively "src/thirdparty")))))
     (build-system python-build-system)
     (native-inputs
      (list python-pytest))
@@ -7119,14 +7123,12 @@ retrieve text and metadata from PDFs as well as merge entire files together.")
                (("\\['/sbin/ldconfig', '-p'\\]") "['true']"))))
          (replace 'check
            (lambda* (#:key outputs inputs tests? #:allow-other-keys)
-             (if tests?
-               (begin
-                 (setenv "HOME" (getcwd))
-                 ;; Make installed package available for running the tests.
-                 (add-installed-pythonpath inputs outputs)
-                 (invoke "python" "selftest.py" "--installed")
-                 (invoke "python" "-m" "pytest" "-vv"))
-               #t))))))
+             (when tests?
+               (setenv "HOME" (getcwd))
+               ;; Make installed package available for running the tests.
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "selftest.py" "--installed")
+               (invoke "python" "-m" "pytest" "-vv")))))))
     (home-page "https://python-pillow.org")
     (synopsis "Fork of the Python Imaging Library")
     (description
