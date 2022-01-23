@@ -2902,6 +2902,30 @@ overlay below or above the point.  Corfu can be considered the minimalistic
 @code{completion-in-region} counterpart of the Vertico minibuffer UI.")
     (license license:gpl3+)))
 
+(define-public emacs-cape
+  (package
+    (name "emacs-cape")
+    (version "0.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/minad/cape")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0780qymlrg3glyxypizqzwicp5ly5xavxgpmayhx8cxlgp2zlkjh"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/minad/cape")
+    (synopsis "Completion at point extensions for Emacs")
+    (description
+     "Cape provides some Completion At Point Extensions, which can be used in
+combination with Corfu completion UI or the default completion UI.  The
+completion backends used by @code{completion-at-point} are so called
+@code{completion-at-point-functions} (Capfs).  In principle, the Capfs
+provided by Cape can also be used by Company.")
+    (license license:gpl3+)))
+
 (define-public emacs-direnv
   (package
     (name "emacs-direnv")
