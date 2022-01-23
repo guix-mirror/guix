@@ -28126,6 +28126,60 @@ bytestring representations.")
 immutable interval tree.")
     (license license:expat)))
 
+(define-public rust-inventory-0.1
+  (package
+    (name "rust-inventory")
+    (version "0.1.11")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "inventory" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "1m1zdjgs3nzfdxf86mc1i0id56fvk8rfw63rf04yi88bqrh53szh"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build? #t
+        #:cargo-inputs
+        (("rust-ctor" ,rust-ctor-0.1)
+         ("rust-ghost" ,rust-ghost-0.1)
+         ("rust-inventory-impl" ,rust-inventory-impl-0.1))))
+    (home-page "https://github.com/dtolnay/inventory")
+    (synopsis "Typed distributed plugin registration")
+    (description
+     "This package provides a way to set up a plugin registry into which
+plugins can be registered from any source file linked into your program.
+There does not need to be a central list of all the plugins.")
+    ;; Either license can be chosen at the users option.
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-inventory-impl-0.1
+  (package
+    (name "rust-inventory-impl")
+    (version "0.1.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "inventory-impl" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0j45a7nq4vircnz5m23db34527icxqnvh2si96zc9w662lvvahby"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/dtolnay/inventory")
+    (synopsis "Macros for the @code{inventory} crate")
+    (description
+     "This package provides macros for the @code{rust-inventory} package.
+It has been merged with the @code{inventory} crate and is only useful for
+versions < 0.2.")
+    ;; Either license can be chosen at the users option.
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-iovec-0.1
   (package
     (name "rust-iovec")
