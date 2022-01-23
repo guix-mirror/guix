@@ -9063,23 +9063,23 @@ hypothesis of normality.")
 (define-public r-moonbook
   (package
     (name "r-moonbook")
-    (version "0.2.4")
+    (version "0.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "moonBook" version))
        (sha256
         (base32
-         "0z78pzc8sr2g19xjdd9cmai4iqyifmh79gj8x40ddww6a27dalry"))))
+         "1ml4vvm0mvrprpyi0l50aw38brx18bk2qny4gybmkvlbakalz9bx"))))
     (properties `((upstream-name . "moonBook")))
     (build-system r-build-system)
     (propagated-inputs
-     (list r-magrittr
+     (list r-crayon
+           r-magrittr
            r-nortest
            r-sjmisc
            r-stringr
-           r-survival
-           r-ztable))
+           r-survival))
     (native-inputs
      (list r-knitr))
     (home-page "https://github.com/cardiomoon/moonBook")
