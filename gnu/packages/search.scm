@@ -8,7 +8,7 @@
 ;;; Copyright © 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 Alexandr Vityazev <avityazev@posteo.org>
-;;; Copyright © 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2021, 2022 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -299,7 +299,7 @@ for parsing HTML files.")
 (define-public fsearch
   (package
     (name "fsearch")
-    (version "0.1")
+    (version "0.1.1")
     (source
      (origin
        (method git-fetch)
@@ -308,7 +308,7 @@ for parsing HTML files.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1qscnrds5q6a6hcfx3apr9cvph7airvbivhgv82qci5dc8rm2jhz"))))
+        (base32 "0vfwnx83zs0jymmzjww1k597sj3wvc9xq0nbslwci58rjpk3d0lg"))))
     (build-system meson-build-system)
     (native-inputs
      (list autoconf
