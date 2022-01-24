@@ -36,6 +36,7 @@
   #:use-module (gnu packages libunistring)
   #:use-module (gnu packages bootstrap)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 sandbox)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
@@ -112,6 +113,33 @@ edges."
                      (map edge->tuple
                           (list p4 p4)
                           (list p2 p3))))))))
+
+(test-assert "package DAG, oops it was a cycle"
+  (let-values (((backend nodes+edges) (make-recording-backend)))
+    (letrec ((p1 (dummy-package "p1" (inputs `(("p3" ,p3)))))
+             (p2 (dummy-package "p2" (inputs `(("p1" ,p1)))))
+             (p3 (dummy-package "p3" (inputs `(("p2" ,p2) ("p1", p1))))))
+      (call-with-time-limit
+       600 ;; If ever this test should fail, we still want it to terminate
+       (lambda ()
+         (run-with-store %store
+           (export-graph (list p3) 'port
+                         #:node-type %package-node-type
+                         #:backend backend)))
+       (lambda ()
+         (run-with-store %store
+           (export-graph
+            (list (dummy-package "timeout-reached"))
+            'port
+            #:node-type %package-node-type
+            #:backend backend))))
+      ;; We should see nothing more than these 3 packages.
+      (let-values (((nodes edges) (nodes+edges)))
+        (and (equal? nodes (map package->tuple (list p3 p2 p1)))
+             (equal? edges
+                     (map edge->tuple
+                          (list p3 p3 p2 p1)
+                          (list p2 p1 p1 p3))))))))
 
 (test-assert "reverse package DAG"
   (let-values (((backend nodes+edges) (make-recording-backend)))
