@@ -14033,7 +14033,7 @@ which code derived from Kelvin H's org-page.")
 (define-public emacs-meow
   (package
     (name "emacs-meow")
-    (version "1.3.0")
+    (version "1.4.0")
     (source
      (origin
        (method git-fetch)
@@ -14042,7 +14042,7 @@ which code derived from Kelvin H's org-page.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "082f013f8gbd67s6q9636lqhlhwlbg6z6n7icrqfj9x6671phwgn"))))
+        (base32 "04vin23bmds8dp2i1xihph9r7v43lcfz6fm23f4nvcyka9rqxc0z"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/meow-edit/meow")
     (synopsis "Yet another modal editing on Emacs")
