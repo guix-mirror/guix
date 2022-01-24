@@ -302,9 +302,6 @@
   (allow guix_daemon_t
          guix_daemon_conf_t
          (lnk_file (create getattr rename unlink read)))
-  (allow guix_daemon_t
-         guix_daemon_conf_t
-         (sock_file (write)))
   (allow guix_daemon_t net_conf_t
          (file (getattr open read)))
   (allow guix_daemon_t net_conf_t
@@ -358,7 +355,7 @@
          (unix_stream_socket (listen)))
   (allow guix_daemon_t
          guix_daemon_conf_t
-         (sock_file (create unlink)))
+         (sock_file (create unlink write)))
   (allow guix_daemon_t
          self
          (unix_stream_socket (create
