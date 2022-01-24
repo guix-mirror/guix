@@ -7245,6 +7245,19 @@ A list of @code{search-path-specification} objects describing
 search-path environment variables honored by the package.  @xref{Search
 Paths}, for more on search path specifications.
 
+As for inputs, the distinction between @code{native-search-paths} and
+@code{search-paths} only matters when cross-compiling.  In a
+cross-compilation context, @code{native-search-paths} applies
+exclusively to native inputs whereas @code{search-paths} applies only to
+host inputs.
+
+Packages such as cross-compilers care about target inputs---for
+instance, our (modified) GCC cross-compiler has
+@env{CROSS_C_INCLUDE_PATH} in @code{search-paths}, which allows it to
+pick @file{.h} files for the target system and @emph{not} those of
+native inputs.  For the majority of packages though, only
+@code{native-search-paths} makes sense.
+
 @item @code{replacement} (default: @code{#f})
 This must be either @code{#f} or a package object that will be used as a
 @dfn{replacement} for this package.  @xref{Security Updates, grafts},
@@ -9408,7 +9421,7 @@ executable files to be installed:
 Many programs and libraries look for input data in a @dfn{search path},
 a list of directories: shells like Bash look for executables in the
 command search path, a C compiler looks for @file{.h} files in its
-header search path, and the Python interpreter looks for @file{.py}
+header search path, the Python interpreter looks for @file{.py}
 files in its search path, the spell checker has a search path for
 dictionaries, and so on.
 
@@ -9470,7 +9483,8 @@ variable must be defined to include all the
 @file{lib/python/3.9/site-packages} sub-directories encountered in its
 environment.  (The @code{native-} bit means that, if we are in a
 cross-compilation environment, only native inputs may be added to the
-search path.)  In the NumPy example above, the profile where
+search path; @pxref{package Reference, @code{search-paths}}.)
+In the NumPy example above, the profile where
 @code{python} appears contains exactly one such sub-directory, and
 @env{GUIX_PYTHONPATH} is set to that.  When there are several
 @file{lib/python/3.9/site-packages}---this is the case in package build
@@ -9507,17 +9521,16 @@ to be found in @file{xml} sub-directories---nothing less.  The search
 path specification looks like this:
 
 @lisp
-(define libxml2
-  (package
-    (name "libxml2")
-    ;; some fields omitted
-    (native-search-paths
-     (list (search-path-specification
-            (variable "XML_CATALOG_FILES")
-            (separator " ")
-            (files '("xml"))
-            (file-pattern "^catalog\\.xml$")
-            (file-type 'regular))))))
+(package
+  (name "libxml2")
+  ;; some fields omitted
+  (native-search-paths
+   (list (search-path-specification
+          (variable "XML_CATALOG_FILES")
+          (separator " ")
+          (files '("xml"))
+          (file-pattern "^catalog\\.xml$")
+          (file-type 'regular)))))
 @end lisp
 
 Worry not, search path specifications are usually not this tricky.
@@ -9557,8 +9570,9 @@ In the libxml2 example above, we would match regular files; in the
 Python example, we would match directories.
 
 @item @code{file-pattern} (default: @code{#f})
-When true, this is a regular expression specifying files to be matched
-@emph{within} the sub-directories specified by the @code{files} field.
+This must be either @code{#f} or a regular expression specifying
+files to be matched @emph{within} the sub-directories specified by the
+@code{files} field.
 
 Again, the libxml2 example shows a situation where this is needed.
 @end table
