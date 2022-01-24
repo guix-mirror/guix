@@ -187,7 +187,10 @@ without requiring the source code to be rewritten.")
    (outputs '("out" "debug"))
 
    (arguments
-    `(#:configure-flags '("--disable-static") ; saves 3 MiB
+    `(#:configure-flags
+      ,(if (target-x86-32?)               ;<https://issues.guix.gnu.org/49368>
+           ''("--disable-static" "CFLAGS=-g -O2 -fexcess-precision=standard")
+           ''("--disable-static"))                ;saves 3 MiB
 
       ;; Work around non-reproducible .go files as described in
       ;; <https://bugs.gnu.org/20272>, which affects 2.0, 2.2, and 3.0 so far.
@@ -273,7 +276,8 @@ without requiring the source code to be rewritten.")
      (substitute-keyword-arguments (package-arguments guile-2.0)
        ((#:configure-flags flags ''())
         (if (target-x86-32?)            ;<https://issues.guix.gnu.org/49368>
-            `(append ,flags '("CFLAGS=-g -O2 -fexcess-precision=standard"))
+            `(append '("--disable-static")
+                 '("CFLAGS=-g -O2 -fexcess-precision=standard"))
             flags))))
 
     (properties '((timeout . 72000)               ;20 hours
@@ -345,7 +349,7 @@ without requiring the source code to be rewritten.")
                       '("CFLAGS=-g -O2 -fexcess-precision=standard")
                       '())
                 "--enable-mini-gmp"
-                ,flags))
+                '("--disable-static")))
        ((#:phases phases)
         `(modify-phases ,phases
            (add-before 'check 'disable-stack-overflow-test
