@@ -3994,10 +3994,7 @@ extension to the X11 protocol.  It includes:
     (inputs
       (list libx11 xkbcomp-intermediate))
     (native-inputs
-      `(("gettext" ,gettext-minimal)
-        ("perl" ,perl)
-        ("pkg-config" ,pkg-config)
-        ("python" ,python)))
+      (list gettext-minimal libxslt perl pkg-config python))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg XKB configuration files")
     (description
