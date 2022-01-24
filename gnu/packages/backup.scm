@@ -21,6 +21,7 @@
 ;;; Copyright © 2021 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
+;;; Copyright © 2022 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,10 +48,12 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
+  #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages base)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -71,6 +74,7 @@
   #:use-module (gnu packages mcrypt)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages nettle)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
@@ -81,6 +85,7 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages rsync)
+  #:use-module (gnu packages ruby)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages tls)
@@ -1066,6 +1071,85 @@ dump; it can restore a full backup of a file system.  Single files and
 directory subtrees may also be restored from full or partial backups in
 interactive mode.")
     (license license:bsd-3)))
+
+(define-public btrbk
+  (package
+    (name "btrbk")
+    (version "0.31.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://digint.ch/download/btrbk/releases/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1lx7vnf386nsik8mxrrfyx1h7mkqk5zs26sy0s0lynfxcm4lkxb2"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list
+      #:make-flags #~(list (string-append "PREFIX=" #$output))
+      #:phases #~(modify-phases %standard-phases
+                   (replace 'configure
+                     (lambda _
+                       (substitute* "Makefile"
+                         (("= /etc")
+                          (string-append "= " #$output "/etc")))))
+                   (delete 'check)
+                   (add-after 'install 'wrap-scripts
+                     (lambda* (#:key inputs outputs #:allow-other-keys)
+                       (define btrbk (search-input-file outputs "bin/btrbk"))
+                       ;; From a comment in btrbk, "Calling btrbk via 'lsbtr'
+                       ;; symlink acts as an alias for 'btrbk ls', while also
+                       ;; changing the semantics of the command line options."
+                       (substitute* btrbk
+                         (("program_name = \\$0")
+                          (string-append "program_name = "
+                                         "$ENV{'BTRBK_PROGRAM_NAME'}")))
+                       ;; Wrap the script, so that it works with SSH URI and
+                       ;; finds mbuffer out of the box.
+                       (wrap-program btrbk
+                         #:sh (search-input-file inputs "bin/bash")
+                         '("BTRBK_PROGRAM_NAME" = ("$0"))
+                         `("PATH" prefix
+                           ,(list (string-append #$btrfs-progs "/bin")
+                                  (string-append #$coreutils "/bin")
+                                  (string-append #$mbuffer "/bin")
+                                  (string-append #$openssh "/bin")))))))))
+    (native-inputs (list ruby-asciidoctor))
+    (inputs (list bash-minimal
+                  btrfs-progs
+                  coreutils
+                  mbuffer
+                  openssh
+                  perl))
+    (home-page "https://digint.ch/btrbk/")
+    (synopsis "Backup tool for Btrfs subvolumes")
+    (description "Btrbk is a backup tool for Btrfs subvolumes, taking
+advantage of Btrfs specific capabilities to create atomic snapshots and
+transfer them incrementally to your backup locations.  The source and target
+locations are specified in a config file, which allows easily configuring
+simple scenarios like e.g. a @i{laptop with locally attached backup disks}, as
+well as more complex ones, e.g. a @i{server receiving backups from several
+hosts via SSH, with different retention policy}.  It has features such as:
+@itemize
+@item atomic snapshots
+@item incremental backups
+@item flexible retention policy
+@item backups to multiple destinations
+@item transfer via SSH
+@item resume backups (for removable and mobile devices)
+@item archive to offline storage
+@item encrypted backups to non-btrfs storage
+@item wildcard subvolumes (useful for Docker and LXC containers)
+@item transaction log
+@item comprehensive list and statistics output
+@item resolve and trace Btrfs parent-child and received-from relationships
+@item list file changes between backups
+@item calculate accurate disk space usage based on block regions.
+@end itemize
+Btrbk is designed to run as a cron job for triggering periodic snapshots and
+backups, as well as from the command line (e.g. for instantly creating
+additional snapshots).")
+    (license license:gpl3+)))
 
 (define-public burp
   (package
