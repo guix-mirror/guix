@@ -3,7 +3,7 @@
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2017, 2018, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2019, 2021, 2022 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
@@ -3735,6 +3735,10 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
       ("libc" ,glibc-final)
       ("libc:static" ,glibc-final "static")
       ("locales" ,glibc-utf8-locales-final))))
+
+(define-public %final-inputs-riscv64
+  `(("gcc:lib" ,gcc-final "lib")
+    ,@%final-inputs))
 
 (define-public canonical-package
   (let ((name->package (fold (lambda (input result)

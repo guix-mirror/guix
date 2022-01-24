@@ -273,7 +273,9 @@ standard packages used as implicit inputs of the GNU build system."
 
   ;; Resolve (gnu packages commencement) lazily to hide circular dependency.
   (let ((distro (resolve-module '(gnu packages commencement))))
-    (module-ref distro '%final-inputs)))
+    (if (target-riscv64?)
+      (module-ref distro '%final-inputs-riscv64)
+      (module-ref distro '%final-inputs))))
 
 (define* (lower name
                 #:key source inputs native-inputs outputs target
