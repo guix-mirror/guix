@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017, 2018, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2017, 2018, 2021, 2022 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -49,47 +49,47 @@
 (define-public scribus
   (package
     (name "scribus")
-    (version "1.5.7")
+    (version "1.5.8")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/scribus/scribus-devel/"
                            version "/scribus-" version ".tar.xz"))
        (sha256
-        (base32 "1kpq4vc95hj3w8l205kh0pmdlisi4v1gilz0sf8n39y7ryr1d0ri"))))
+        (base32 "0x3bw58v920akca8jxvsfwf468pzjyglk93ay67ph1bdry7nx0a7"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no test target
        #:configure-flags
        '("-DWANT_GRAPHICSMAGICK=1")))
     (inputs
-     `(("boost" ,boost)
-       ("cairo" ,cairo)
-       ("cups" ,cups)
-       ("fontconfig" ,fontconfig)
-       ("freetype" ,freetype)
-       ("graphicsmagick" ,graphicsmagick)
-       ("harfbuzz" ,harfbuzz)
-       ("hunspell" ,hunspell)
-       ("icu4c" ,icu4c)
-       ("lcms" ,lcms)
-       ("libcdr" ,libcdr)
-       ("libfreehand" ,libfreehand)
-       ("libjpeg" ,libjpeg-turbo)
-       ("libmspub" ,libmspub)
-       ("libpagemaker" ,libpagemaker)
-       ("librevenge" ,librevenge)
-       ("libtiff" ,libtiff)
-       ("libvisio" ,libvisio)
-       ("libxml2" ,libxml2)
-       ("libzmf" ,libzmf)
-       ("openssl" ,openssl)
-       ("podofo" ,podofo)
-       ("poppler" ,poppler)
-       ("python" ,python)               ; need Python library
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("zlib" ,zlib)))
+     (list boost
+           cairo
+           cups
+           fontconfig
+           freetype
+           graphicsmagick
+           harfbuzz
+           hunspell
+           icu4c
+           lcms
+           libcdr
+           libfreehand
+           libjpeg-turbo
+           libmspub
+           libpagemaker
+           librevenge
+           libtiff
+           libvisio
+           libxml2
+           libzmf
+           openssl
+           podofo
+           poppler
+           python                       ;need Python library
+           qtbase-5
+           qtdeclarative
+           zlib))
     (native-inputs
      (list pkg-config qttools util-linux))
     (home-page "https://www.scribus.net")
