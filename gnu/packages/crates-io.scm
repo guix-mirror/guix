@@ -7268,7 +7268,7 @@ streams in big-endian and little-endian formats.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-funty" ,rust-funty-1.2)
+       (("rust-funty" ,rust-funty-1)
         ("rust-radium" ,rust-radium-0.6)
         ("rust-serde" ,rust-serde-1)
         ("rust-tap" ,rust-tap-1)
@@ -7301,7 +7301,7 @@ streams in big-endian and little-endian formats.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-funty" ,rust-funty-1)
+       (("rust-funty" ,rust-funty-1.1)
         ("rust-radium" ,rust-radium-0.6)
         ("rust-serde" ,rust-serde-1)
         ("rust-tap" ,rust-tap-1)
@@ -7330,7 +7330,7 @@ streams in big-endian and little-endian formats.")
          "10bz751jbsy8fj203ibjwil07p2fwfzvx7b326wfssaravlkbfm7"))))
     (arguments
      `(#:cargo-inputs
-       (("rust-funty" ,rust-funty-1)
+       (("rust-funty" ,rust-funty-1.1)
         ("rust-radium" ,rust-radium-0.5)
         ("rust-serde" ,rust-serde-1)
         ("rust-tap" ,rust-tap-1)
@@ -22695,7 +22695,7 @@ pseudorandom number generator")
     (description "Low-level Rust bindings for the Zircon kernel.")
     (license license:bsd-3)))
 
-(define-public rust-funty-1.2
+(define-public rust-funty-1
   (package
     (name "rust-funty")
     (version "1.2.0")
@@ -22720,9 +22720,9 @@ code to generalize over which specific type it accepted. This was never
 stabilized, and eventually removed.  This library reïnstates these traits.")
     (license license:expat)))
 
-(define-public rust-funty-1
+(define-public rust-funty-1.1
   (package
-    (inherit rust-funty-1.2)
+    (inherit rust-funty-1)
     (name "rust-funty")
     (version "1.1.0")
     (source
