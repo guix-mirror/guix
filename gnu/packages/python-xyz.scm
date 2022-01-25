@@ -28768,3 +28768,21 @@ implementation, so that it supports any Galois field higher than 2^3,
 but not binary streams.")
     (license license:public-domain)))
 
+(define-public python-esprima
+  (package
+    (name "python-esprima")
+    (version "4.0.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "esprima" version))
+        (sha256
+          (base32 "1vi32g991lxcxzmncfiszh8m9bwkh4887szskkdi0a9wdn3imnq8"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/Kronuz/esprima-python")
+    (synopsis
+      "ECMAScript parsing infrastructure for analysis in Python")
+    (description
+      "This package provides ECMAScript parsing infrastructure for
+multipurpose analysis in Python.")
+    (license license:bsd-3)))
