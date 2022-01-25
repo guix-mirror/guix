@@ -4602,31 +4602,56 @@ hard or impossible to fix in cssselect.")
 (define-public python-uvloop
   (package
     (name "python-uvloop")
-    (version "0.14.0")
+    (version "0.16.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "uvloop" version))
        (sha256
-        (base32 "07j678z9gf41j98w72ysrnb5sa41pl5yxd7ib17lcwfxqz0cjfhj"))))
+        (base32 "0a0jzwrhkszknh14alflrp1db6dyjp7ph730f9yc5lb7gc6c4jzp"))
+       (modules '((guix build utils)))
+        (snippet
+         '(begin (delete-file-recursively "vendor")
+                 (delete-file  "uvloop/loop.c")))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f ;FIXME: tests hang and with some errors in the way
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'preparations
            (lambda _
              ;; Use packaged libuv.
              (substitute* "setup.py" (("self.use_system_libuv = False")
                                       "self.use_system_libuv = True"))
-             #t)))))
+             ;; Replace hardcoded shell command.
+             (substitute* "uvloop/loop.pyx"
+               (("b'/bin/sh'") (string-append "b'" (which "sh") "'")))
+             #t))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; Remove Python module, which conflicts with the installed version,
+               ;; but lacks the built C module.
+               (delete-file-recursively "uvloop")
+               ;; The tests are prone to get stuck. Use pytest-timeout’s --timeout
+               ;; flag to get a meaningful idea about where.
+               (invoke "pytest" "-vv" "--timeout=300"
+                       "-k" ,(string-append
+                              ;; Timeout, because SIGINT cannot be sent to child.
+                              "not test_signals_sigint_pycode_continue "
+                              "and not test_signals_sigint_pycode_stop "
+                              "and not test_signals_sigint_uvcode "
+                              "and not test_signals_sigint_uvcode_two_loop_runs "
+                              ;; It looks like pytest is preventing
+                              ;; custom stdout/stderr redirection,
+                              ;; even with -s.
+                              "and not test_process_streams_redirect "))))))))
     (native-inputs
      (list python-aiohttp
            python-cython
-           python-flake8
            python-psutil
            python-pyopenssl
-           python-twine))
+           python-pytest
+           python-pytest-timeout))
     (inputs
      (list libuv))
     (home-page "https://github.com/MagicStack/uvloop")
