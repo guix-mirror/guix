@@ -302,6 +302,7 @@ interface that might look familiar to @command{mutt} or @command{slrn} users.
 Newsboat supports OPML import/exports, HTML rendering, podcasts (with
 @command{podboat}), off-line reading, searching and storing articles to your
 file system, and many more features.")
+    (properties '((release-monitoring-url . "https://newsboat.org/news.atom")))
     (license (list license:gpl2+        ; filter/*
                    license:expat))))    ; everything else
 
