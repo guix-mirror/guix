@@ -2478,6 +2478,7 @@ YouTube.com and many more sites.")
 YouTube.com and many more sites.  It is a fork of youtube-dl with a
 focus on adding new features while keeping up-to-date with the
 original project.")
+    (properties '((release-monitoring-url . "https://pypi.org/project/yt-dlp/")))
     (home-page "https://github.com/yt-dlp/yt-dlp")))
 
 (define-public youtube-dl-gui
