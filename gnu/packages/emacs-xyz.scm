@@ -633,6 +633,32 @@ for those who may want transient periods of unbalanced parentheses, such as
 when typing parentheses directly or commenting out code line by line.")
     (license license:gpl3+)))
 
+(define-public emacs-puni
+  ;; No tagged release upstream
+  (let ((commit "ed4a863460329a3019c286ff382e2ddc0ffdc9d7")
+        (revision "0"))
+    (package
+      (name "emacs-puni")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/AmaiKinono/puni")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "14lcqf0qdkq2rklx12v12qpgfahz2bpqmnl3bzcz5myawgjjcphd"))))
+      (build-system emacs-build-system)
+      (propagated-inputs (list emacs-with-editor))
+      (home-page "https://github.com/AmaiKinono/puni")
+      (synopsis "Emacs minor mode for structured editing")
+      (description
+       "Puni is an Emacs minor mode for structured editing: soft deletion,
+expression navigating and manipulating.  It supports many major modes
+out of the box.")
+      (license license:gpl3+))))
+
 (define-public emacs-project
   (package
     (name "emacs-project")
