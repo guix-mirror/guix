@@ -58,6 +58,7 @@
 ;;; Copyright © 2021 Aleksandr Vityazev <avityazev@posteo.org>
 ;;; Copyright © 2021 Pradana Aumars <paumars@courrier.dev>
 ;;; Copyright © 2022 Denis 'GNUtoo' Carikli <GNUtoo@cyberdimension.org>
+;;; Copyright © 2022 Bird <birdsite@airmail.cc>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
