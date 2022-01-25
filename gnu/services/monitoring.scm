@@ -431,8 +431,8 @@ configuration file."))
 
 (define (zabbix-agent-account config)
   "Return the user accounts and user groups for CONFIG."
-  (let ((zabbix-user "zabbix")
-        (zabbix-group "zabbix"))
+  (let ((zabbix-user (zabbix-agent-configuration-user config))
+        (zabbix-group (zabbix-agent-configuration-group config)))
     (list (user-group (name zabbix-group) (system? #t))
           (user-account
            (name zabbix-user)
