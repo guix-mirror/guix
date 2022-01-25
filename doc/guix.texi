@@ -9338,6 +9338,80 @@ in a build phase of the @code{wireguard-tools} package:
         `("PATH" ":" prefix ,(list coreutils))))))
 @end lisp
 
+@subsection Program Invocation
+
+@cindex program invocation, from Scheme
+@cindex invoking programs, from Scheme
+You'll find handy procedures to spawn processes in this module,
+essentially convenient wrappers around Guile's @code{system*}
+(@pxref{Processes, @code{system*},, guile, GNU Guile Reference Manual}).
+
+@deffn {Scheme Procedure} invoke @var{program} @var{args}@dots{}
+Invoke @var{program} with the given @var{args}.  Raise an
+@code{&invoke-error} exception if the exit code is non-zero; otherwise
+return @code{#t}.
+
+The advantage compared to @code{system*} is that you do not need to
+check the return value.  This reduces boilerplate in shell-script-like
+snippets for instance in package build phases.
+@end deffn
+
+@deffn {Scheme Procedure} invoke-error? @var{c}
+Return true if @var{c} is an @code{&invoke-error} condition.
+@end deffn
+
+@deffn {Scheme Procedure} invoke-error-program @var{c}
+@deffnx {Scheme Procedure} invoke-error-arguments @var{c}
+@deffnx {Scheme Procedure} invoke-error-exit-status @var{c}
+@deffnx {Scheme Procedure} invoke-error-term-signal @var{c}
+@deffnx {Scheme Procedure} invoke-error-stop-signal @var{c}
+Access specific fields of @var{c}, an @code{&invoke-error} condition.
+@end deffn
+
+@deffn {Scheme Procedure} report-invoke-error @var{c} [@var{port}]
+Report to @var{port} (by default the current error port) about @var{c},
+an @code{&invoke-error} condition, in a human-friendly way.
+
+Typical usage would look like this:
+
+@lisp
+(use-modules (srfi srfi-34) ;for 'guard'
+             (guix build utils))
+
+(guard (c ((invoke-error? c)
+           (report-invoke-error c)))
+  (invoke "date" "--imaginary-option"))
+
+@print{} command "date" "--imaginary-option" failed with status 1
+@end lisp
+@end deffn
+
+@deffn {Scheme Procedure} invoke/quiet @var{program} @var{args}@dots{}
+Invoke @var{program} with @var{args} and capture @var{program}'s
+standard output and standard error.  If @var{program} succeeds, print
+nothing and return the unspecified value; otherwise, raise a
+@code{&message} error condition that includes the status code and the
+output of @var{program}.
+
+Here's an example:
+
+@lisp
+(use-modules (srfi srfi-34) ;for 'guard'
+             (srfi srfi-35) ;for 'message-condition?'
+             (guix build utils))
+
+(guard (c ((message-condition? c)
+           (display (condition-message c))))
+  (invoke/quiet "date")  ;all is fine
+  (invoke/quiet "date" "--imaginary-option"))
+
+@print{} 'date --imaginary-option' exited with status 1; output follows:
+
+    date: unrecognized option '--imaginary-option'
+    Try 'date --help' for more information.
+@end lisp
+@end deffn
+
 @subsection Build Phases
 
 @cindex build phases
