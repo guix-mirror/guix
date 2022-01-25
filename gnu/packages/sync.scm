@@ -359,58 +359,6 @@ synchronize to the same server and any change to the files on one computer will
 silently and reliably flow across to every other.")
     (license license:gpl2+)))
 
-(define-public qsyncthingtray
-  (package
-    (name "qsyncthingtray")
-    (version "0.5.8")
-    (source
-      (origin
-        (method git-fetch)
-        (uri (git-reference
-               (url "https://github.com/sieren/QSyncthingTray")
-               (commit version)))
-        (file-name (git-file-name name version))
-        (sha256
-         (base32
-          "1n9g4j7qznvg9zl6x163pi9f7wsc3x6q76i33psnm7x2v1i22x5w"))))
-    (build-system cmake-build-system)
-    (arguments
-     `(#:configure-flags '("-DQST_BUILD_WEBKIT=1")
-       #:phases
-       (modify-phases %standard-phases
-         ;; The program is meant to be run from the git repo or source tarball.
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (bin (string-append out "/bin")))
-               (install-file "QSyncthingTray" bin)
-               (mkdir-p (string-append out "/share/pixmaps"))
-               (copy-file "../source/resources/images/Icon1024.png"
-                          (string-append
-                            out "/share/pixmaps/QSyncthingTray.png"))
-               #t))))
-       #:tests? #f)) ; no test target
-    (inputs
-     (list qtbase-5 qtwebkit))
-    (home-page "https://github.com/sieren/QSyncthingTray")
-    (synopsis "Traybar Application for Syncthing")
-    (description
-     "A traybar application for syncthing.
-@enumerate
-@item Shows number of connections at a glance.
-@item Traffic statistics about incoming, outgoing and total throughput.
-@item Launches Syncthing and Syncthing-iNotifier if specified.
-@item Quickly pause Syncthing with one click.
-@item Last Synced Files - Quickly see the recently synchronised files and open
-their folder.
-@item Quick Access to all shared folders.
-@item Presents Syncthing UI in a separate view instead of using the browser.
-@item Supports authenticated HTTPS connections.
-@item Uses System Notifications about current connection status.
-@item Toggle for monochrome icon.
-@end enumerate\n")
-    (license license:lgpl3+)))
-
 (define-public lsyncd
   (package
     (name "lsyncd")
