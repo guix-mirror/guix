@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2018, 2020 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2015, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Alex Vong <alexvong1995@gmail.com>
@@ -2410,6 +2410,7 @@ To load this plugin, specify the following option when starting mpv:
      "Youtube-dl is a small command-line program to download videos from
 YouTube.com and many more sites.")
     (home-page "https://yt-dl.org")
+    (properties '((release-monitoring-url . "https://yt-dl.org/downloads/")))
     (license license:public-domain)))
 
 (define-public yt-dlp
