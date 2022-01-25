@@ -102,6 +102,9 @@ if test "x$GUILD" = "x"; then
    AC_MSG_ERROR(['guild' binary not found; please check your Guile installation.])
 fi
 
+dnl (guix ui), notably, requires 'default-optimization-level' added in 3.0.3.
+PKG_CHECK_MODULES([GUILE], [guile-3.0 >= 3.0.3])
+
 dnl Get CFLAGS and LDFLAGS for libguile.
 GUILE_FLAGS
 
