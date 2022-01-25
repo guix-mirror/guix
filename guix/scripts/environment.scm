@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2018 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015-2022 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Mike Gerwitz <mtg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -975,7 +975,10 @@ command-line option processing with 'parse-command-line'."
 
                   (mwhen (assoc-ref opts 'check?)
                     (return
-                     (validate-child-shell-environment profile manifest)))
+                     (if container?
+                         (warning (G_ "'--check' is unnecessary \
+when using '--container'; doing nothing~%"))
+                         (validate-child-shell-environment profile manifest))))
 
                   (cond
                    ((assoc-ref opts 'search-paths)
