@@ -231,7 +231,7 @@ solution (client-side agent)")
                         "--with-libcurl"
                         (string-append "--with-zlib="
                                        (assoc-ref %build-inputs "zlib")))
-                  #$flags))))
+                  (delete "--enable-agent" #$flags)))))
     (inputs
      (modify-inputs (package-inputs zabbix-agentd)
        (prepend curl
