@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2015, 2017, 2018, 2021 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016–2022 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016-2022 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2014, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2018, 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
@@ -328,7 +328,7 @@ precision.")
 (define-public giac
   (package
     (name "giac")
-    (version "1.7.0-45")
+    (version "1.7.0-47")
     (source
      (origin
        (method url-fetch)
@@ -340,7 +340,7 @@ precision.")
                            "~parisse/debian/dists/stable/main/source/"
                            "giac_" version ".tar.gz"))
        (sha256
-        (base32 "19hxbx27n5zby96d4pzhxxqn7mzk29g8sxn08fi638l17lr9x2q2"))))
+        (base32 "1cbc0vm79q9z3ajn4m5sjg9931ah1wq3icj0m16jsxp52km1h7jx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 ftw)
