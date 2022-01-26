@@ -29965,6 +29965,27 @@ extended by the user via @code{setup-define}.  A list of currently known
 local macros are documented in the docstring for @code{setup}.")
     (license license:gpl3+)))
 
+(define-public emacs-alsamixer-el
+  (package
+    (name "emacs-alsamixer-el")
+    (version "0.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/remvee/alsamixer-el")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0c40vycphv5nf374rp8pnzvi50vlmgab3wrdq92hyprjw76gwxhk"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/remvee/alsamixer-el")
+    (synopsis "Emacs interface to amixer")
+    (description "@code{emacs-alsamixer-el} provides basic commands to control
+audio volume via amixer.")
+    (license license:gpl3+)))
+
 (define-public emacs-fennel-mode
   (package
     (name "emacs-fennel-mode")
