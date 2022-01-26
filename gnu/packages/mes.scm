@@ -112,6 +112,15 @@ extensive examples, including parsers for the Javascript and C99 languages.")
                   (("GUILE_GLOBAL_SITE=\\$prefix.*")
                    "GUILE_GLOBAL_SITE=\
 $prefix/share/guile/site/$GUILE_EFFECTIVE_VERSION\n")))))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; See https://savannah.nongnu.org/bugs/index.php?60474
+         (add-after 'unpack 'fix-60474
+           (lambda _
+             (substitute* "module/nyacc/lang/c99/parser.scm"
+               (("\\(memq \\(car stmt\\) '\\(include include-next\\)\\)")
+                "(memq (car stmt) '(include include-next define))")))))))
     (inputs (list guile-3.0))
     (description
      "@acronym{NYACC, Not Yet Another Compiler Compiler} is set of Guile modules
