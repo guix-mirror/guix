@@ -29,7 +29,7 @@
 ;;; Copyright © 2020, 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 John D. Boy <jboy@bius.moe>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020, 2021, 2022 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
@@ -1626,7 +1626,7 @@ visualize your public Git repositories on a web interface.")
 (define-public pre-commit
   (package
     (name "pre-commit")
-    (version "2.16.0")
+    (version "2.17.0")
     (source
      (origin
        (method git-fetch)               ; no tests in PyPI release
@@ -1635,7 +1635,7 @@ visualize your public Git repositories on a web interface.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1sf9mqpiv3pgzi6aar7xfna9v7n63lgm7d7b24fhni0jxn56384b"))))
+        (base32 "1y4h6zrypxgm9j8q66hcx5cs4q2dkh9schzn2nsdmdqad19356s9"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
