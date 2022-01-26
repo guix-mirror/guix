@@ -8,7 +8,7 @@
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020 Sebastian Schott <sschott@mailbox.org>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
-;;; Copyright © 2020. 2021 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020. 2021, 2022 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -562,6 +562,8 @@ them through a zoomable lighttable and enables you to develop raw images
 and enhance them.")
     ;; See src/is_supported_platform.h for supported platforms.
     (supported-systems '("x86_64-linux" "aarch64-linux" "powerpc64le-linux"))
+    (properties
+     '((release-monitoring-url . "https://github.com/darktable-org/darktable/releases")))
     (license (list license:gpl3+ ;; Darktable itself.
                    license:lgpl2.1+)))) ;; Rawspeed library.
 
