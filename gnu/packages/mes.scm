@@ -2,7 +2,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020, 2021 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020, 2021, 2022 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2021 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
@@ -120,8 +120,13 @@ $prefix/share/guile/site/$GUILE_EFFECTIVE_VERSION\n")))))
            (lambda _
              (substitute* "module/nyacc/lang/c99/parser.scm"
                (("\\(memq \\(car stmt\\) '\\(include include-next\\)\\)")
-                "(memq (car stmt) '(include include-next define))")))))))
+                "(memq (car stmt) '(include include-next define))"))))
+         (add-after 'unpack 'install-system-module
+           (lambda _
+             (substitute* "module/Makefile.in"
+               (("@NYACC_FH_BINS@") "$(NYACC_FH_BINS)")))))))
     (inputs (list guile-3.0))
+    (propagated-inputs (list guile-bytestructures))
     (description
      "@acronym{NYACC, Not Yet Another Compiler Compiler} is set of Guile modules
 for generating parsers and lexical analyzers.  It provides sample parsers,
