@@ -237,10 +237,9 @@ solution (client-side agent)")
        (prepend curl
                 libevent
                 gnutls
-                postgresql
-                zlib
                 net-snmp
-                curl)))
+                postgresql
+                zlib)))
     (synopsis "Distributed monitoring solution (server-side)")
     (description "This package provides a distributed monitoring
 solution (server-side)")))
