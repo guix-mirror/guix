@@ -4333,17 +4333,26 @@ a Gtk.Grid Widget.")
        (uri (git-reference
              (url "https://github.com/sqlitebrowser/sqlitebrowser")
              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32 "1ljqzcx388mmni8lv9jz5r58alhsjrrqi4nzjnbfki94rn4ray6z"))
-       (file-name (git-file-name name version))))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file-recursively "libs/qcustomplot-source/")
+           (delete-file-recursively "libs/qscintilla")))))
     (build-system qt-build-system)
     (arguments
      (list #:tests? #f                  ; no tests
            #:configure-flags
-           ;; TODO: Unbundle QHexEdit, QScintilla.
-           #~(list "-DFORCE_INTERNAL_QCUSTOMPLOT=OFF")))
+           ;; TODO: Unbundle QHexEdit.
+           #~(list (string-append "-DQSCINTILLA_INCLUDE_DIR="
+                                  #$(this-package-input "qscintilla")
+                                  "/include/Qsci")
+                   "-DFORCE_INTERNAL_QCUSTOMPLOT=OFF")))
     (inputs
      (list qcustomplot
+           qscintilla
            qtbase-5
            sqlite))
     (native-inputs (list qttools))
