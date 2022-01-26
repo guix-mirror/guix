@@ -383,6 +383,7 @@ OpenSSL for TARGET."
   (package
     (name "openssl")
     (version "1.1.1l")
+    (replacement openssl/fixed)
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -507,6 +508,25 @@ OpenSSL for TARGET."
      "OpenSSL is an implementation of SSL/TLS.")
     (license license:openssl)
     (home-page "https://www.openssl.org/")))
+
+(define openssl/fixed
+  (package
+    (inherit openssl)
+    (name "openssl")
+    (version "1.1.1m")
+    (source (origin
+              (method url-fetch)
+              (uri (list (string-append "https://www.openssl.org/source/openssl-"
+                                        version ".tar.gz")
+                         (string-append "ftp://ftp.openssl.org/source/"
+                                        "openssl-" version ".tar.gz")
+                         (string-append "ftp://ftp.openssl.org/source/old/"
+                                        (string-trim-right version char-set:letter)
+                                        "/openssl-" version ".tar.gz")))
+              (patches (search-patches "openssl-1.1-c-rehash-in.patch"))
+              (sha256
+               (base32
+                "15kcvdi69jka67sk1l3a50c26cb7xv9xiwdrgky4bji3ifz9k4gq"))))))
 
 ;; We will not add any new uses of this package. If you add new code that uses
 ;; this package, your change will be reverted!
