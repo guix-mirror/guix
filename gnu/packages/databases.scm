@@ -4343,13 +4343,13 @@ a Gtk.Grid Widget.")
            (delete-file-recursively "libs/qscintilla")))))
     (build-system qt-build-system)
     (arguments
-     (list #:tests? #f                  ; no tests
-           #:configure-flags
+     (list #:configure-flags
            ;; TODO: Unbundle QHexEdit.
            #~(list (string-append "-DQSCINTILLA_INCLUDE_DIR="
                                   #$(this-package-input "qscintilla")
                                   "/include/Qsci")
-                   "-DFORCE_INTERNAL_QCUSTOMPLOT=OFF")))
+                   "-DFORCE_INTERNAL_QCUSTOMPLOT=OFF"
+                   "-DENABLE_TESTING=ON")))
     (inputs
      (list qcustomplot
            qscintilla
