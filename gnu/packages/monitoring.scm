@@ -7,7 +7,7 @@
 ;;; Copyright © 2018, 2019, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Alex ter Weele <alex.ter.weele@gmail.com>
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
-;;; Copyright © 2021 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2021, 2022 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2021 Raphaël Mélotte <raphael.melotte@mind.be>
 ;;;
@@ -196,10 +196,10 @@ solution (client-side agent)")
     (name "zabbix-server")
     (outputs '("out" "front-end" "schema"))
     (arguments
-     (substitute-keyword-arguments
-         `(#:phases
-           (modify-phases %standard-phases
-             (add-after 'install 'install-front-end
+     (substitute-keyword-arguments (package-arguments zabbix-agentd)
+       ((#:phases phases '%standard-phases)
+        #~(modify-phases #$phases
+            (add-after 'install 'install-front-end
                (lambda* (#:key outputs #:allow-other-keys)
                  (let* ((php (string-append (assoc-ref outputs "front-end")
                                             "/share/zabbix/php"))
@@ -207,11 +207,10 @@ solution (client-side agent)")
                         (etc (string-append php "/etc")))
                    (mkdir-p php)
                    (copy-recursively "ui" php)
-                   ;; Make front-end write config to ‘/etc/zabbix’ directory.
+                   ;; Make front-end read config from ‘/etc/zabbix’ directory.
                    (rename-file front-end-conf
                                 (string-append front-end-conf "-example"))
-                   (symlink "/etc/zabbix" front-end-conf))
-                 #t))
+                   (symlink "/etc/zabbix" front-end-conf))))
              (add-after 'install 'install-schema
                (lambda* (#:key outputs #:allow-other-keys)
                  (let ((database-directory
@@ -220,21 +219,19 @@ solution (client-side agent)")
                    (for-each delete-file
                              (find-files "database" "Makefile\\.in|\\.am$"))
                    (mkdir-p database-directory)
-                   (copy-recursively "database" database-directory))
-                 #t)))
-           ,@(package-arguments zabbix-agentd))
-       ((#:configure-flags flags)
-        `(cons* "--enable-server"
-                "--with-postgresql"
-                (string-append "--with-libevent="
-                               (assoc-ref %build-inputs "libevent"))
-                "--with-net-snmp"
-                (string-append "--with-gnutls="
-                               (assoc-ref %build-inputs "gnutls"))
-                "--with-libcurl"
-                (string-append "--with-zlib="
-                               (assoc-ref %build-inputs "zlib"))
-                ,flags))))
+                   (copy-recursively "database" database-directory))))))
+       ((#:configure-flags flags ''())
+        #~(append (list "--enable-server"
+                        "--with-postgresql"
+                        (string-append "--with-libevent="
+                                       (assoc-ref %build-inputs "libevent"))
+                        "--with-net-snmp"
+                        (string-append "--with-gnutls="
+                                       (assoc-ref %build-inputs "gnutls"))
+                        "--with-libcurl"
+                        (string-append "--with-zlib="
+                                       (assoc-ref %build-inputs "zlib")))
+                  #$flags))))
     (inputs
      (modify-inputs (package-inputs zabbix-agentd)
        (prepend curl
