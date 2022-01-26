@@ -120,11 +120,7 @@ $prefix/share/guile/site/$GUILE_EFFECTIVE_VERSION\n")))))
            (lambda _
              (substitute* "module/nyacc/lang/c99/parser.scm"
                (("\\(memq \\(car stmt\\) '\\(include include-next\\)\\)")
-                "(memq (car stmt) '(include include-next define))"))))
-         (add-after 'unpack 'install-system-module
-           (lambda _
-             (substitute* "module/Makefile.in"
-               (("@NYACC_FH_BINS@") "$(NYACC_FH_BINS)")))))))
+                "(memq (car stmt) '(include include-next define))")))))))
     (inputs (list guile-3.0))
     (propagated-inputs (list guile-bytestructures))
     (description
