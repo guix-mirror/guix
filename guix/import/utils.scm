@@ -10,6 +10,7 @@
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2022 Alice Brenon <alice.brenon@ens-lyon.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,10 +38,11 @@
   #:use-module (guix discovery)
   #:use-module (guix build-system)
   #:use-module (guix gexp)
+  #:use-module ((guix i18n) #:select (G_))
   #:use-module (guix store)
   #:use-module (guix download)
   #:use-module (guix sets)
-  #:use-module (guix ui)
+  #:use-module ((guix ui) #:select (fill-paragraph))
   #:use-module (gnu packages)
   #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
@@ -241,6 +243,9 @@ with dashes."
 a proper sentence and by using two spaces between sentences, and wrap lines at
 LENGTH characters."
   (let ((cleaned (cond
+                  ((not (string? description))
+                   (G_ "This package lacks a description.  Run \
+\"info '(guix) Synopses and Descriptions'\" for more information."))
                   ((string-prefix? "A " description)
                    (string-append "This package provides a"
                                   (substring description 1)))

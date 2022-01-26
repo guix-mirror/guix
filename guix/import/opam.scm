@@ -3,7 +3,7 @@
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
-;;; Copyright © 2021 Alice Brenon <alice.brenon@ens-lyon.fr>
+;;; Copyright © 2021, 2022 Alice Brenon <alice.brenon@ens-lyon.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,7 +42,11 @@
   #:use-module ((guix utils) #:select (cache-directory
                                        version>?
                                        call-with-temporary-output-file))
-  #:use-module (guix import utils)
+  #:use-module ((guix import utils) #:select (beautify-description
+                                              guix-hash-url
+                                              recursive-import
+                                              spdx-string->license
+                                              url-fetch))
   #:use-module ((guix licenses) #:prefix license:)
   #:export (opam->guix-package
             opam-recursive-import
