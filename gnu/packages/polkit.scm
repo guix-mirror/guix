@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
-;;; Copyright © 2015, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2021-2022 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Huang Ying <huang.ying.caritas@gmail.com>
@@ -54,6 +54,7 @@
   (package
     (name "polkit")
     (version "0.120")
+    (replacement polkit-mozjs/fixed)
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -145,6 +146,16 @@ privileged processes.  It is a framework for centralizing the decision
 making process with respect to granting access to privileged operations
 for unprivileged applications.")
     (license lgpl2.0+)))
+
+(define-public polkit-mozjs/fixed
+  (package
+    (inherit polkit-mozjs)
+    (version "0.121")
+    (source (origin
+              (inherit (package-source polkit-mozjs))
+              (patches (cons (search-patch "polkit-CVE-2021-4034.patch")
+                             (origin-patches
+                              (package-source polkit-mozjs))))))))
 
 ;;; Variant of polkit built with Duktape, a lighter JavaScript engine compared
 ;;; to mozjs.
