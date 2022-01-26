@@ -577,7 +577,7 @@ $DB['SERVER']   = '" db-host "';
 $DB['PORT']     = '" (number->string db-port) "';
 $DB['DATABASE'] = '" db-name "';
 $DB['USER']     = '" db-user "';
-$DB['PASSWORD'] = '" (let ((file (location-file %location))
+$DB['PASSWORD'] = " (let ((file (location-file %location))
                            (line (location-line %location))
                            (column (location-column %location)))
                        (if (string-null? db-password)
@@ -592,15 +592,14 @@ $DB['PASSWORD'] = '" (let ((file (location-file %location))
                                        (condition
                                         (&error-location
                                          (location %location)))))
-                               (string-trim-both
-                                (with-input-from-file db-secret-file
-                                  read-string)))
+                               (string-append "trim(file_get_contents('"
+                                              db-secret-file "'));\n"))
                            (begin
                              (display-hint (format #f (G_ "~a:~a:~a: ~a:
 Consider using @code{db-secret-file} instead of @code{db-password} for better
 security.") file line column 'zabbix-front-end-configuration))
-                             db-password))) "';
-
+                             db-password)))
+"
 // Schema name. Used for IBM DB2 and PostgreSQL.
 $DB['SCHEMA'] = '';
 
