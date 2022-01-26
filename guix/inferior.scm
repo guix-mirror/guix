@@ -25,7 +25,6 @@
                 #:select (source-properties->location))
   #:use-module ((guix utils)
                 #:select (%current-system
-                          call-with-temporary-directory
                           version>? version-prefix?
                           cache-directory))
   #:use-module ((guix store)
@@ -36,6 +35,8 @@
                           &store-protocol-error))
   #:use-module ((guix derivations)
                 #:select (read-derivation-from-file))
+  #:use-module ((guix build syscalls)
+                #:select (mkdtemp!))
   #:use-module (guix gexp)
   #:use-module (guix search-paths)
   #:use-module (guix profiles)
@@ -112,14 +113,21 @@
 
 ;; Inferior Guix process.
 (define-record-type <inferior>
-  (inferior pid socket close version packages table)
+  (inferior pid socket close version packages table
+            bridge-file-name bridge-socket)
   inferior?
   (pid      inferior-pid)
   (socket   inferior-socket)
   (close    inferior-close-socket)               ;procedure
   (version  inferior-version)                    ;REPL protocol version
   (packages inferior-package-promise)            ;promise of inferior packages
-  (table    inferior-package-table))             ;promise of vhash
+  (table    inferior-package-table)              ;promise of vhash
+
+  ;; Bridging with a store.
+  (bridge-file-name inferior-bridge-file-name     ;#f | string
+                    set-inferior-bridge-file-name!)
+  (bridge-socket    inferior-bridge-socket        ;#f | port
+                    set-inferior-bridge-socket!))
 
 (define (write-inferior inferior port)
   (match inferior
@@ -172,7 +180,8 @@ inferior."
     (('repl-version 0 rest ...)
      (letrec ((result (inferior 'pipe pipe close (cons 0 rest)
                                 (delay (%inferior-packages result))
-                                (delay (%inferior-package-table result)))))
+                                (delay (%inferior-package-table result))
+                                #f #f)))
 
        ;; For protocol (0 1) and later, send the protocol version we support.
        (match rest
@@ -205,7 +214,13 @@ equivalent.  Return #f if the inferior could not be launched."
 (define (close-inferior inferior)
   "Close INFERIOR."
   (let ((close (inferior-close-socket inferior)))
-    (close (inferior-socket inferior))))
+    (close (inferior-socket inferior))
+
+    ;; Close and delete the store bridge, if any.
+    (when (inferior-bridge-socket inferior)
+      (close-port (inferior-bridge-socket inferior))
+      (delete-file (inferior-bridge-file-name inferior))
+      (rmdir (dirname (inferior-bridge-file-name inferior))))))
 
 ;; Non-self-quoting object of the inferior.
 (define-record-type <inferior-object>
@@ -524,67 +539,84 @@ input/output ports.)"
        (unless (port-closed? client)
          (loop))))))
 
+(define (open-store-bridge! inferior)
+  "Open a \"store bridge\" for INFERIOR--a named socket in /tmp that will be
+used to proxy store RPCs from the inferior to the store of the calling
+process."
+  ;; Create a named socket in /tmp to let INFERIOR connect to it and use it as
+  ;; its store.  This ensures the inferior uses the same store, with the same
+  ;; options, the same per-session GC roots, etc.
+  ;; FIXME: This strategy doesn't work for remote inferiors (SSH).
+  (define directory
+    (mkdtemp! (string-append (or (getenv "TMPDIR") "/tmp")
+                             "/guix-inferior.XXXXXX")))
+
+  (chmod directory #o700)
+  (let ((name   (string-append directory "/inferior"))
+        (socket (socket AF_UNIX SOCK_STREAM 0)))
+    (bind socket AF_UNIX name)
+    (listen socket 2)
+    (set-inferior-bridge-file-name! inferior name)
+    (set-inferior-bridge-socket! inferior socket)))
+
+(define (ensure-store-bridge! inferior)
+  "Ensure INFERIOR has a connected bridge."
+  (or (inferior-bridge-socket inferior)
+      (begin
+        (open-store-bridge! inferior)
+        (inferior-bridge-socket inferior))))
+
 (define (inferior-eval-with-store inferior store code)
   "Evaluate CODE in INFERIOR, passing it STORE as its argument.  CODE must
 thus be the code of a one-argument procedure that accepts a store."
-  ;; Create a named socket in /tmp and let INFERIOR connect to it and use it
-  ;; as its store.  This ensures the inferior uses the same store, with the
-  ;; same options, the same per-session GC roots, etc.
-  ;; FIXME: This strategy doesn't work for remote inferiors (SSH).
-  (call-with-temporary-directory
-   (lambda (directory)
-     (chmod directory #o700)
-     (let* ((name     (string-append directory "/inferior"))
-            (socket   (socket AF_UNIX SOCK_STREAM 0))
-            (major    (store-connection-major-version store))
-            (minor    (store-connection-minor-version store))
-            (proto    (logior major minor)))
-       (bind socket AF_UNIX name)
-       (listen socket 1024)
-       (send-inferior-request
-        `(let ((proc   ,code)
-               (socket (socket AF_UNIX SOCK_STREAM 0))
-               (error? (if (defined? 'store-protocol-error?)
-                           store-protocol-error?
-                           nix-protocol-error?))
-               (error-message (if (defined? 'store-protocol-error-message)
-                                  store-protocol-error-message
-                                  nix-protocol-error-message)))
-           (connect socket AF_UNIX ,name)
+  (let* ((major    (store-connection-major-version store))
+         (minor    (store-connection-minor-version store))
+         (proto    (logior major minor)))
+    (ensure-store-bridge! inferior)
+    (send-inferior-request
+     `(let ((proc   ,code)
+            (socket (socket AF_UNIX SOCK_STREAM 0))
+            (error? (if (defined? 'store-protocol-error?)
+                        store-protocol-error?
+                        nix-protocol-error?))
+            (error-message (if (defined? 'store-protocol-error-message)
+                               store-protocol-error-message
+                               nix-protocol-error-message)))
+        (connect socket AF_UNIX
+                 ,(inferior-bridge-file-name inferior))
 
-           ;; 'port->connection' appeared in June 2018 and we can hardly
-           ;; emulate it on older versions.  Thus fall back to
-           ;; 'open-connection', at the risk of talking to the wrong daemon or
-           ;; having our build result reclaimed (XXX).
-           (let ((store (if (defined? 'port->connection)
-                            (port->connection socket #:version ,proto)
-                            (open-connection))))
-             (dynamic-wind
-               (const #t)
-               (lambda ()
-                 ;; Serialize '&store-protocol-error' conditions.  The
-                 ;; exception serialization mechanism that
-                 ;; 'read-repl-response' expects is unsuitable for SRFI-35
-                 ;; error conditions, hence this special case.
-                 (guard (c ((error? c)
-                            `(store-protocol-error ,(error-message c))))
-                   `(result ,(proc store))))
-               (lambda ()
-                 (close-connection store)
-                 (close-port socket)))))
-        inferior)
-       (match (accept socket)
-         ((client . address)
-          (proxy client (store-connection-socket store))))
-       (close-port socket)
+        ;; 'port->connection' appeared in June 2018 and we can hardly
+        ;; emulate it on older versions.  Thus fall back to
+        ;; 'open-connection', at the risk of talking to the wrong daemon or
+        ;; having our build result reclaimed (XXX).
+        (let ((store (if (defined? 'port->connection)
+                         (port->connection socket #:version ,proto)
+                         (open-connection))))
+          (dynamic-wind
+            (const #t)
+            (lambda ()
+              ;; Serialize '&store-protocol-error' conditions.  The
+              ;; exception serialization mechanism that
+              ;; 'read-repl-response' expects is unsuitable for SRFI-35
+              ;; error conditions, hence this special case.
+              (guard (c ((error? c)
+                         `(store-protocol-error ,(error-message c))))
+                `(result ,(proc store))))
+            (lambda ()
+              (close-connection store)
+              (close-port socket)))))
+     inferior)
+    (match (accept (inferior-bridge-socket inferior))
+      ((client . address)
+       (proxy client (store-connection-socket store))))
 
-       (match (read-inferior-response inferior)
-         (('store-protocol-error message)
-          (raise (condition
-                  (&store-protocol-error (message message)
-                                         (status 1)))))
-         (('result result)
-          result))))))
+    (match (read-inferior-response inferior)
+      (('store-protocol-error message)
+       (raise (condition
+               (&store-protocol-error (message message)
+                                      (status 1)))))
+      (('result result)
+       result))))
 
 (define* (inferior-package-derivation store package
                                       #:optional
