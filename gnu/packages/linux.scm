@@ -1820,6 +1820,7 @@ providing the system administrator with some help in common tasks.")
 (define-public util-linux
   (package
     (name "util-linux")
+    (replacement util-linux/fixed)
     (version "2.37.2")
     (source (origin
               (method url-fetch)
@@ -1970,6 +1971,21 @@ block devices, UUIDs, TTYs, and many other tools.")
    (inputs
     `(("udev" ,eudev)
       ,@(package-inputs util-linux)))))
+
+;; This is mostly equivalent to the upstream release version v2.37.3, except
+;; that the upstream tarball was generated improperly, which breaks the build.
+;; There will not be a v2.37.3-fixed release or anything like that to fix it:
+;; https://github.com/util-linux/util-linux/issues/1577
+(define-public util-linux/fixed
+  (hidden-package
+    (package
+      (inherit util-linux)
+      (source (origin
+                (inherit (package-source util-linux))
+                (patches (append (search-patches "util-linux-CVE-2021-3995.patch"
+                                                 "util-linux-CVE-2021-3996.patch")
+                                 (origin-patches (package-source util-linux)))))))))
+
 
 (define-public ddate
   (package
