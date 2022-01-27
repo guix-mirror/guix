@@ -1583,6 +1583,32 @@ programs using the library: cw, cwgen, cwcp and xcwcp.  The programs are
 intended for people who want to learn receiving and sending morse code.")
     (license license:gpl2+)))
 
+(define-public kockmorse
+  (package
+    (name "kochmorse")
+    (version "3.5.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/hmatuschek/kochmorse")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1s1aj223n57rpc95rih98z08xnyhq2zp02byzrc3f7s01fv3nj0l"))))
+    (build-system qt-build-system)
+    (native-inputs
+     (list qttools))
+    (inputs
+     (list qtbase-5 qtmultimedia))
+    (arguments
+     `(#:tests? #f)) ; No test suite
+    (home-page "https://dm3mat.darc.de/kochmorse/")
+    (synopsis "Morse code tutor")
+    (description
+     "KochMorse is a simple morse-code tutor using the Koch method.")
+    (license license:gpl2+)))
+
 (define-public gnuais
   (package
     (name "gnuais")
