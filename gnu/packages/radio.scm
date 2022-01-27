@@ -1285,15 +1285,22 @@ operators.")
            libtool
            pkg-config))
     (inputs
-     (list gtk+))
+     (list gtk+ openblas))
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       ,#~(list (string-append "--with-openblas-incdir="
+                               #$(this-package-input "openblas")
+                               "/include"))
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "src/Makefile.am"
                (("\\$\\(GLIB_COMPILE_RESOURCES\\)")
-                (search-input-file inputs "bin/glib-compile-resources"))))))))
+                (search-input-file inputs "bin/glib-compile-resources")))
+             (substitute* "src/mathlib.c"
+               (("libopenblas\\.so")
+                (search-input-file inputs "lib/libopenblas.so"))))))))
     (synopsis "Antenna modeling software")
     (description
      "Xnec2c is a GTK3-based graphical version of nec2c, a translation to the
