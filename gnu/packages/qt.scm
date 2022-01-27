@@ -2173,7 +2173,7 @@ contain over 620 classes.")
     (inputs
      `(("python" ,python-wrapper)
        ("python-sip" ,python-sip)
-       ("python-pyqt" ,python-pyqt)
+       ("python-pyqt" ,python-pyqt-without-qtwebkit)
        ("qtbase" ,qtbase-5)
        ("qtsvg" ,qtsvg)
        ("qtdeclarative" ,qtdeclarative)
@@ -2232,7 +2232,9 @@ set of three modules.  Prior to v5.12 these bindings were part of PyQt
 itself.")
     (license license:gpl3)))
 
-;; XXX: This is useful because qtwebkit does not build reliably at this time.
+;; XXX: This is useful for removing qtwebkit from other packages' dependency
+;; graphs, as well as for preventing python-pyqtwebengine from transitively
+;; depending on qtwebkit.
 ;; Ultimately, it would be nicer to have a more modular set of python-pyqt-*
 ;; packages that could be used together.
 (define-public python-pyqt-without-qtwebkit
