@@ -43,7 +43,7 @@
 ;;; Copyright © 2020, 2021 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018, 2019, 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2020, 2021 Paul Garlick <pgarlick@tourbillion-technology.com>
-;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020, 2022 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020, 2021 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -7888,6 +7888,7 @@ solution for any project's interface needs:
      `(("icu4c" ,icu4c)
        ("liblzma" ,xz)
        ("libuuid" ,util-linux "lib")
+       ("python" ,python-wrapper)       ;for libzim-compile-resources
        ("xapian" ,xapian)
        ("zstd" ,zstd "lib")))
     (native-inputs
