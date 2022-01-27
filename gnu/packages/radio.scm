@@ -2,7 +2,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019, 2020 Christopher Howard <christopher@librehacker.com>
 ;;; Copyright © 2019, 2020 Evan Straw <evan.straw99@gmail.com>
-;;; Copyright © 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2020, 2021, 2022 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2020 Charlie Ritter <chewzerita@posteo.net>
 ;;; Copyright © 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -946,6 +946,32 @@ or USB connection.")
     (description
      "FLAMP is a program for transferring files by radio waves using AMP
 (Amateur Multicast Protocol).")
+    (home-page "http://www.w1hkj.com/")
+    (license license:gpl3+)))
+
+(define-public flmsg
+  (package
+    (name "flmsg")
+    (version "4.0.19")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.code.sf.net/p/fldigi/flmsg")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "157s6mvky9h094hkncm47964qh0bnwg0m2rw3wx0qj1mh5isxv4j"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     (list autoconf automake pkg-config))
+    (inputs
+     (list fltk libx11 libxext libxfixes libxft))
+    (synopsis "NBEMS messaging system")
+    (description
+     "FLMSG is a Narrow Band Emergency Messaging Software (NBEMS).
+It can be used to manage, send and receive the forms that are used as basis
+for emergency communications data transfers (like ICS213 forms).")
     (home-page "http://www.w1hkj.com/")
     (license license:gpl3+)))
 
