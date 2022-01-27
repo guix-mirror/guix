@@ -13412,24 +13412,26 @@ the hunks and revert them selectively.")
     (license license:gpl3+)))
 
 (define-public emacs-diminish
-  (package
-    (name "emacs-diminish")
-    (version "0.45")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/myrjola/diminish.el")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0qpgfgp8hrzz4vdifxq8h25n0a0jlzgf7aa1fpy6r0080v5rqbb6"))))
-    (build-system emacs-build-system)
-    (home-page "https://github.com/myrjola/diminish.el")
-    (synopsis "Diminish minor modes with no modeline display")
-    (description "@code{emacs-diminish} implements hiding or
+  (let ((commit "fd486ef76e4c1d8211ae337a43b8bba106d4bca7")
+        (revision "1"))
+    (package
+      (name "emacs-diminish")
+      (version (git-version "0.46" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/myrjola/diminish.el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1vlgn7swwfzy6yr880698h3qsmfcqprcb1jvffkzmbvhvf458szf"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/myrjola/diminish.el")
+      (synopsis "Diminish minor modes with no modeline display")
+      (description "@code{emacs-diminish} implements hiding or
 abbreviation of the mode line displays (lighters) of minor modes.")
-    (license license:gpl2+)))
+      (license license:gpl3+))))
 
 (define-public emacs-use-package
   (package
