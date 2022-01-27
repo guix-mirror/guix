@@ -1946,7 +1946,7 @@ voice formats.")
 (define-public sdrangel
   (package
     (name "sdrangel")
-    (version "6.17.5")
+    (version "6.18.1")
     (source
      (origin
        (method git-fetch)
@@ -1955,7 +1955,7 @@ voice formats.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1g9972q78nxl62hpyn029s85ny5jj9dxlmmfqyz3l9sd6kdv9kl6"))))
+        (base32 "17lakqy55p481fa5w6ylh79xbd4rdiqk9y21vmi4m2r4wx893zw1"))))
     (build-system qt-build-system)
     (native-inputs
      (list doxygen graphviz pkg-config))
