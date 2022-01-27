@@ -3360,21 +3360,20 @@ be used for realtime video capture via Linux-specific APIs.")
                (search-patches "obs-modules-location.patch"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags
-       (list (string-append "-DOBS_VERSION_OVERRIDE=" ,version)
-             "-DENABLE_UNIT_TESTS=TRUE"
-             ;; Browser plugin requires cef, but it is not packaged yet.
-             ;; <https://bitbucket.org/chromiumembedded/cef/src/master/>
-             "-DBUILD_BROWSER=FALSE")
+     (list
+      #:configure-flags
+      #~(list (string-append "-DOBS_VERSION_OVERRIDE=" #$version)
+              "-DENABLE_UNIT_TESTS=TRUE"
+              ;; Browser plugin requires cef, but it is not packaged yet.
+              ;; <https://bitbucket.org/chromiumembedded/cef/src/master/>
+              "-DBUILD_BROWSER=FALSE")
        #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'wrap-executable
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (plugin-path (getenv "QT_PLUGIN_PATH")))
-               (wrap-program (string-append out "/bin/obs")
-                 `("QT_PLUGIN_PATH" ":" prefix (,plugin-path))))
-             #t)))))
+       #~(modify-phases %standard-phases
+           (add-after 'install 'wrap-executable
+             (lambda* _
+               (let ((plugin-path (getenv "QT_PLUGIN_PATH")))
+                 (wrap-program (string-append #$output "/bin/obs")
+                   `("QT_PLUGIN_PATH" ":" prefix (,plugin-path)))))))))
     (native-search-paths
      (list (search-path-specification
             (variable "OBS_PLUGINS_DIRECTORY")
@@ -3387,30 +3386,31 @@ be used for realtime video capture via Linux-specific APIs.")
     (native-inputs
      (list cmocka pkg-config))
     (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("curl" ,curl)
-       ("eudev" ,eudev)
-       ("ffmpeg" ,ffmpeg)
-       ("fontconfig" ,fontconfig)
-       ("freetype" ,freetype)
-       ("glib" ,glib)
-       ("jack" ,jack-1)
-       ("jansson" ,jansson)
-       ("libx264" ,libx264)
-       ("libxcomposite" ,libxcomposite)
-       ("mbedtls" ,mbedtls-apache)
-       ("mesa" ,mesa)
-       ("pipewire" ,pipewire-0.3)
-       ("pulseaudio" ,pulseaudio)
-       ("qtbase" ,qtbase-5)
-       ("qtsvg" ,qtsvg)
-       ("qtx11extras" ,qtx11extras)
-       ("qtwayland" ,qtwayland)
-       ("speexdsp" ,speexdsp)
-       ("v4l-utils" ,v4l-utils)
-       ("wayland" ,wayland)
-       ("wayland-protocols" ,wayland-protocols)
-       ("zlib" ,zlib)))
+     (list
+      alsa-lib
+      curl
+      eudev
+      ffmpeg
+      fontconfig
+      freetype
+      glib
+      jack-1
+      jansson
+      libx264
+      libxcomposite
+      mbedtls-apache
+      mesa
+      pipewire-0.3
+      pulseaudio
+      qtbase-5
+      qtsvg
+      qtx11extras
+      qtwayland
+      speexdsp
+      v4l-utils
+      wayland
+      wayland-protocols
+      zlib))
     (synopsis "Live streaming software")
     (description "Open Broadcaster Software provides a graphical interface for
 video recording and live streaming.  OBS supports capturing audio and video
