@@ -270,7 +270,7 @@ with this package.  E.g.: @code{(udev-rules-service 'airspyhf airspyhf)}")
 (define-public soapysdr
   (package
     (name "soapysdr")
-    (version "0.8.0")
+    (version "0.8.1")
     (source
      (origin
        (method git-fetch)
@@ -279,7 +279,7 @@ with this package.  E.g.: @code{(udev-rules-service 'airspyhf airspyhf)}")
              (commit (string-append "soapy-sdr-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1dy25zxk7wmg7ik82dx7h3bbbynvalbz1dxsl7kgm3374yxhnixv"))))
+        (base32 "19f2x0pkxvf9figa0pl6xqlcz8fblvqb19mcnj632p0l8vk6qdv2"))))
     (build-system cmake-build-system)
     (native-inputs
      (list python swig))
