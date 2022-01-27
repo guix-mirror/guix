@@ -20331,8 +20331,39 @@ decoding.")
        (("rust-serde" ,rust-serde-1)
         ("rust-serde-json" ,rust-serde-json-1))))))
 
+(define-public rust-ethbloom-0.11
+  (package
+    (name "rust-ethbloom")
+    (version "0.11.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ethbloom" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1y73c4v60jy6wc4gssrg775y6vzc4axn523qkxswbxm8iyn89dmz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-crunchy" ,rust-crunchy-0.2)
+        ("rust-fixed-hash" ,rust-fixed-hash-0.7)
+        ("rust-impl-codec" ,rust-impl-codec-0.5)
+        ("rust-impl-rlp" ,rust-impl-rlp-0.3)
+        ("rust-impl-serde" ,rust-impl-serde-0.3)
+        ("rust-scale-info" ,rust-scale-info-1)
+        ("rust-tiny-keccak" ,rust-tiny-keccak-2))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-hex-literal" ,rust-hex-literal-0.3)
+        ("rust-rand" ,rust-rand-0.8))))
+    (home-page "https://github.com/paritytech/parity-common")
+    (synopsis "Ethereum bloom filter")
+    (description "This Rust library implements the Ethereum bloom filter.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-ethbloom-0.5
   (package
+    (inherit rust-ethbloom-0.11)
     (name "rust-ethbloom")
     (version "0.5.3")
     (source
@@ -20342,7 +20373,6 @@ decoding.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "0q2kix0p067rrfffhbfra453dw51s4cfgs0lhirslsv4callsad6"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:tests? #f                      ; The tests fail.
        #:cargo-inputs
@@ -20354,11 +20384,7 @@ decoding.")
        #:cargo-development-inputs
        (("rust-hex-literal" ,rust-hex-literal-0.1)
         ("rust-rand" ,rust-rand-0.4)
-        ("rust-rustc-hex" ,rust-rustc-hex-1))))
-    (home-page "https://github.com/paritytech/parity-common")
-    (synopsis "Ethereum bloom filter")
-    (description "This package provides an Ethereum bloom filter.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-rustc-hex" ,rust-rustc-hex-1))))))
 
 (define-public rust-ethereum-types-0.12
   (package
