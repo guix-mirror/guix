@@ -225,6 +225,8 @@ inferior."
        (inferior-eval '(use-modules (srfi srfi-34)) result)
        (inferior-eval '(define %package-table (make-hash-table))
                       result)
+       (inferior-eval '(define %store-table (make-hash-table))
+                      result)
        result))
     (_
      #f)))
@@ -617,7 +619,12 @@ process."
 thus be the code of a one-argument procedure that accepts a store."
   (let* ((major    (store-connection-major-version store))
          (minor    (store-connection-minor-version store))
-         (proto    (logior major minor)))
+         (proto    (logior major minor))
+
+         ;; The address of STORE itself is not a good identifier because it
+         ;; keeps changing through the use of "functional caches".  The
+         ;; address of its socket port makes more sense.
+         (store-id (object-address (store-connection-socket store))))
     (ensure-store-bridge! inferior)
     (send-inferior-request
      `(let ((proc   ,code)
@@ -628,26 +635,31 @@ thus be the code of a one-argument procedure that accepts a store."
                                store-protocol-error-message
                                nix-protocol-error-message)))
 
-        ;; 'port->connection' appeared in June 2018 and we can hardly
-        ;; emulate it on older versions.  Thus fall back to
-        ;; 'open-connection', at the risk of talking to the wrong daemon or
-        ;; having our build result reclaimed (XXX).
-        (let ((store (if (defined? 'port->connection)
-                         (port->connection %bridge-socket #:version ,proto)
-                         (open-connection))))
-          (dynamic-wind
-            (const #t)
-            (lambda ()
-              ;; Serialize '&store-protocol-error' conditions.  The
-              ;; exception serialization mechanism that
-              ;; 'read-repl-response' expects is unsuitable for SRFI-35
-              ;; error conditions, hence this special case.
-              (guard (c ((error? c)
-                         `(store-protocol-error ,(error-message c))))
-                `(result ,(proc store))))
-            (lambda ()
-              (unless (defined? 'port->connection)
-                (close-port store))))))
+        ;; Cache connections to STORE-ID.  This ensures that the caches within
+        ;; <store-connection> (in particular the object cache) are reused
+        ;; across calls to 'inferior-eval-with-store', which makes a
+        ;; significant difference when it is called repeatedly.
+        (let ((store (or (hashv-ref %store-table ,store-id)
+
+                         ;; 'port->connection' appeared in June 2018 and we
+                         ;; can hardly emulate it on older versions.  Thus
+                         ;; fall back to 'open-connection', at the risk of
+                         ;; talking to the wrong daemon or having our build
+                         ;; result reclaimed (XXX).
+                         (let ((store (if (defined? 'port->connection)
+                                          (port->connection %bridge-socket
+                                                            #:version ,proto)
+                                          (open-connection))))
+                           (hashv-set! %store-table ,store-id store)
+                           store))))
+
+          ;; Serialize '&store-protocol-error' conditions.  The
+          ;; exception serialization mechanism that
+          ;; 'read-repl-response' expects is unsuitable for SRFI-35
+          ;; error conditions, hence this special case.
+          (guard (c ((error? c)
+                     `(store-protocol-error ,(error-message c))))
+            `(result ,(proc store)))))
      inferior)
     (proxy inferior store)
 
