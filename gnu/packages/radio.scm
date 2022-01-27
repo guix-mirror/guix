@@ -393,8 +393,8 @@ memory contents between them.")
 
 (define-public aptdec
   ;; No release since 2013, use commit directly.
-  (let ((commit "5f91799637d93dfe7791caa7e9a6683050c4f8f3")
-        (revision "1"))
+  (let ((commit "51405971fd4e97714d1e987269e49c6edfe4e0da")
+        (revision "2"))
     (package
       (name "aptdec")
       (version (git-version "1.7" revision commit))
@@ -406,7 +406,7 @@ memory contents between them.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0i7vkjjrq392gs9qaibr7j3v4hijqqg8458dn21dwh16ncrvr9bp"))))
+          (base32 "0fzkhqnbkc2dd39jzb5m5mwcl31b0x3w0yykpx4s195llq4bdvis"))))
       (build-system cmake-build-system)
       (inputs
        (list libpng libsndfile))
