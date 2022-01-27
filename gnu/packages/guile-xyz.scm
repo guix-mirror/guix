@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017 Christine Lemmer-Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021, 2022 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Erik Edrosa <erik.edrosa@gmail.com>
 ;;; Copyright © 2016, 2019, 2020, 2021 Eraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2021 Alex Kost <alezost@gmail.com>
@@ -4474,7 +4474,7 @@ including parsing and code generation.")
 (define-public guile-drmaa
   (package
     (name "guile-drmaa")
-    (version "0.1.0")
+    (version "0.1.1")
     (source
      (origin
        (method git-fetch)
@@ -4484,7 +4484,7 @@ including parsing and code generation.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1m2x62n3x5hi5vnsvv2zgqhgpzrfq7r5095fzzjd1aaybi9i9igg"))))
+         "1pail39f3iwllcdma4pk4sxsaypplgb5zjyvjwqf5hdv8s3y211x"))))
     (build-system gnu-build-system)
     (native-inputs
      (list autoconf automake pkg-config texinfo sed))
