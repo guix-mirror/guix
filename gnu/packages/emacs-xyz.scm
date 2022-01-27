@@ -29917,6 +29917,32 @@ It includes syntax highlighting, automatic indentation, and imenu integration.
 Unlike Emacs' generic ASM mode, it understands NASM-specific syntax.")
     (license license:unlicense)))
 
+(define-public emacs-validate-html
+  ;; XXX: Upstream did not tag commits yet.  However, commit below matches the
+  ;; last version bump.  Version is extracted from the keyword in main file.
+  (let ((commit "748e874d50c3a95c61590ae293778e26de05c5f9"))
+    (package
+      (name "emacs-validate-html")
+      (version "1.3")
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/arthurgleckler/validate-html")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0b2b5dm85jwgkqvga23r3vfya07vxv2n7a3a6r1pxpk8asqlw41c"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/arthurgleckler/validate-html")
+      (synopsis "Run the W3C HTML Validator directly from Emacs")
+      (description
+       "@command{emacs-validate-html} installs the command @code{validate-html},
+which sends the current buffer to the World Wide Web Consortium’s HTML
+Validator service and displays the results in a buffer in Compilation mode.")
+      (license license:gpl3+))))
+
 (define-public emacs-global-tags
   (let ((commit "06db25d91cc8bfb5e24e02adc04de1226c7e742d")
         (revision "0"))
