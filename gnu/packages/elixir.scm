@@ -35,7 +35,7 @@
 (define-public elixir
   (package
     (name "elixir")
-    (version "1.12.3")
+    (version "1.13.2")
     (source
      (origin
        (method git-fetch)
@@ -44,7 +44,7 @@
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "07fisdx755cgyghwy95gvdds38sh138z56biariml18jjw5mk3r6"))
+        (base32 "1d3mk7abn3rk536vmsfbm4smj52rljff6s40sndg0i7p6dl3kzxa"))
        (patches (search-patches "elixir-path-length.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -69,7 +69,7 @@
                  (("#!/bin/sh")
                   (string-append "#!" (which "sh"))))
                (substitute* "bin/elixir"
-                 (("ERTS_BIN=")
+                 (("^ERTS_BIN=$")
                   (string-append
                     "ERTS_BIN="
                     ;; Elixir Releases will prepend to ERTS_BIN the path of a copy of erl.
@@ -78,7 +78,7 @@
                     ;; erl binary in Guix store.
                     "\nif [ -z \"$ERTS_BIN\" ]; then ERTS_BIN="
                     (string-drop-right (which "erl") 3)
-                    "; fi")))
+                    "; fi\n")))
                (substitute* "bin/mix"
                  (("#!/usr/bin/env elixir")
                   (string-append "#!" out "/bin/elixir"))))))
