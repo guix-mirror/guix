@@ -1301,6 +1301,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/jami-fix-crash-on-quit.patch		\
   %D%/packages/patches/jami-images-loading.patch		\
   %D%/packages/patches/jami-memory-usage.patch			\
+  %D%/packages/patches/jami-libclient-audio-managers.patch	\
   %D%/packages/patches/jamvm-1.5.1-aarch64-support.patch	\
   %D%/packages/patches/jamvm-1.5.1-armv7-support.patch	\
   %D%/packages/patches/jamvm-2.0.0-aarch64-support.patch	\

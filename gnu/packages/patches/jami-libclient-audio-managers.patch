@@ -1,0 +1,23 @@
+From f5e4619d02526d961c14012a6cae1a091aa149d4 Mon Sep 17 00:00:00 2001
+From: Sébastien Blin <sebastien.blin@savoirfairelinux.com>
+Date: Thu, 27 Jan 2022 13:48:32 -0500
+Subject: [PATCH] misc: link getSupportedAudioManagers
+q
+Change-Id: I897e49cd131d3cbffef9fb1d5c9be3c0bc9bcb3f
+GitLab: #495
+---
+
+diff --git a/lrc/src/qtwrapper/configurationmanager_wrap.h b/lrc/src/qtwrapper/configurationmanager_wrap.h
+index a680138..2807f8a 100644
+--- a/lrc/src/qtwrapper/configurationmanager_wrap.h
++++ b/lrc/src/qtwrapper/configurationmanager_wrap.h
+@@ -526,8 +526,7 @@
+ 
+     QStringList getSupportedAudioManagers()
+     {
+-        QStringList temp;
+-        return temp;
++        return convertStringList(DRing::getSupportedAudioManagers());
+     }
+ 
+     QStringList getSupportedTlsMethod()
