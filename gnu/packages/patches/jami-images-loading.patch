@@ -1,0 +1,152 @@
+From be9dd0d0d8cb4556cd930edd783c0a1699565ac0 Mon Sep 17 00:00:00 2001
+From: kkostiuk <kateryna.kostiuk@savoirfairelinux.com>
+Date: Mon, 1 Nov 2021 17:39:23 -0400
+Subject: [PATCH] conversation: fix long loading time for images
+
+Change-Id: Id88cfbd571f4b504f258758bd13b4e4a91bf1b49
+---
+ .../DataTransferMessageDelegate.qml           | 52 +++++++++++++++++--
+ src/messagesadapter.cpp                       | 20 +++++--
+ src/messagesadapter.h                         |  2 +-
+ 3 files changed, 66 insertions(+), 8 deletions(-)
+
+diff --git a/client-qt/src/commoncomponents/DataTransferMessageDelegate.qml b/client-qt/src/commoncomponents/DataTransferMessageDelegate.qml
+index 7875e01..2e7dcc0 100644
+--- a/client-qt/src/commoncomponents/DataTransferMessageDelegate.qml
++++ b/client-qt/src/commoncomponents/DataTransferMessageDelegate.qml
+@@ -252,10 +252,11 @@ Loader {
+                 Loader {
+                     id: localMediaCompLoader
+                     anchors.right: isOutgoing ? parent.right : undefined
++                    asynchronous: true
+                     width: sourceComponent.width
+                     height: sourceComponent.height
+                     sourceComponent: mediaInfo.isImage !== undefined ?
+-                                         imageComp :
++                                         imageComp : mediaInfo.isAnimatedImage !== undefined ? animatedImageComp :
+                                          avComp
+                     Component {
+                         id: avComp
+@@ -302,9 +303,9 @@ Loader {
+                         }
+                     }
+                     Component {
+-                        id: imageComp
++                        id: animatedImageComp
+                         AnimatedImage {
+-                            id: img
++                            id: animatedImg
+                             anchors.right: isOutgoing ? parent.right : undefined
+                             property real minSize: 192
+                             property real maxSize: 256
+@@ -327,6 +328,51 @@ Loader {
+                                 anchors.fill: parent
+                             }
+                             layer.enabled: true
++                            layer.effect: OpacityMask {
++                                maskSource: MessageBubble {
++                                    out: isOutgoing
++                                    type: seq
++                                    width: animatedImg.width
++                                    height: animatedImg.height
++                                    radius: msgRadius
++                                }
++                            }
++                            HoverHandler {
++                                target : parent
++                                onHoveredChanged: {
++                                    localMediaMsgItem.hoveredLink = hovered ? animatedImg.source : ""
++                                }
++                                cursorShape: Qt.PointingHandCursor
++                            }
++                        }
++                    }
++
++                    Component {
++                        id: imageComp
++                        Image {
++                            id: img
++                            anchors.right: isOutgoing ? parent.right : undefined
++                            property real minSize: 192
++                            property real maxSize: 256
++                            cache: true
++                            fillMode: Image.PreserveAspectCrop
++                            mipmap: true
++                            antialiasing: true
++                            autoTransform: false
++                            asynchronous: true
++                            source: "file:///" + Body
++                            property real aspectRatio: implicitWidth / implicitHeight
++                            property real adjustedWidth: Math.min(maxSize,
++                                                                  Math.max(minSize,
++                                                                           innerContent.width - senderMargin))
++                            width: adjustedWidth
++                            height: Math.ceil(adjustedWidth / aspectRatio)
++                            Rectangle {
++                                color: JamiTheme.previewImageBackgroundColor
++                                z: -1
++                                anchors.fill: parent
++                            }
++                            layer.enabled: true
+                             layer.effect: OpacityMask {
+                                 maskSource: MessageBubble {
+                                     out: isOutgoing
+diff --git a/client-qt/src/messagesadapter.cpp b/client-qt/src/messagesadapter.cpp
+index 91f8eed..ba38e53 100644
+--- a/client-qt/src/messagesadapter.cpp
++++ b/client-qt/src/messagesadapter.cpp
+@@ -458,13 +458,24 @@ MessagesAdapter::conversationTypersUrlToName(const QSet<QString>& typersSet)
+     return nameList;
+ }
+ 
+-bool
++QVariantMap
+ MessagesAdapter::isLocalImage(const QString& msg)
+ {
+     QImageReader reader;
+     reader.setDecideFormatFromContent(true);
+     reader.setFileName(msg);
+-    return !reader.read().isNull();
++    QByteArray fileFormat = reader.format();
++    if (fileFormat == "gif") {
++        return {{"isAnimatedImage", true}};
++    }
++    QList<QByteArray> supportedFormats = reader.supportedImageFormats();
++    auto iterator = std::find_if(supportedFormats.begin(),
++                                 supportedFormats.end(),
++                                 [fileFormat](QByteArray format) { return format == fileFormat; });
++    if (iterator != supportedFormats.end()) {
++        return {{"isImage", true}};
++    }
++    return {{"isImage", false}};
+ }
+ 
+ QVariantMap
+@@ -476,8 +487,9 @@ MessagesAdapter::getMediaInfo(const QString& msg)
+           "<%1 style='width:100%;height:%2;outline:none;background-color:#f1f3f4;"
+           "object-fit:cover;' "
+           "controls controlsList='nodownload' src='file://%3' type='%4'/></body>";
+-    if (isLocalImage(msg)) {
+-        return {{"isImage", true}};
++    QVariantMap fileInfo = isLocalImage(msg);
++    if (fileInfo["isImage"].toBool() || fileInfo["isAnimatedImage"].toBool()) {
++        return fileInfo;
+     }
+     QRegularExpression vPattern("[^\\s]+(.*?)\\.(avi|mov|webm|webp|rmvb)$",
+                                 QRegularExpression::CaseInsensitiveOption);
+diff --git a/client-qt/src/messagesadapter.h b/client-qt/src/messagesadapter.h
+index bfa4e62..1965c5e 100644
+--- a/client-qt/src/messagesadapter.h
++++ b/client-qt/src/messagesadapter.h
+@@ -101,7 +101,7 @@ protected:
+     Q_INVOKABLE void deleteInteraction(const QString& interactionId);
+     Q_INVOKABLE void copyToDownloads(const QString& interactionId, const QString& displayName);
+     Q_INVOKABLE void userIsComposing(bool isComposing);
+-    Q_INVOKABLE bool isLocalImage(const QString& msg);
++    Q_INVOKABLE QVariantMap isLocalImage(const QString& msg);
+     Q_INVOKABLE QVariantMap getMediaInfo(const QString& msg);
+     Q_INVOKABLE bool isRemoteImage(const QString& msg);
+     Q_INVOKABLE QString getFormattedTime(const quint64 timestamp);
+-- 
+GitLab
+

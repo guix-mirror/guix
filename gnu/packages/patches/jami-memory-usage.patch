@@ -1,0 +1,70 @@
+From e796b3325d95b5ddd6162b5513c8325210f41fc5 Mon Sep 17 00:00:00 2001
+From: Sébastien Blin <sebastien.blin@savoirfairelinux.com>
+Date: Wed, 26 Jan 2022 11:37:07 -0500
+Subject: [PATCH] datatransferimage: improve memory usage
+
++ Reduce listview caching' size by 50%
++ use sourceSize to compress images and speedup loading
++ use autoTransform: true to rotate images when needed
+
+Change-Id: Idf1babdc73f43aa6a79b89428c25c5d06856c0ef
+GitLab: #649
+---
+
+diff --git a/client-qt/src/commoncomponents/DataTransferMessageDelegate.qml b/client-qt/src/commoncomponents/DataTransferMessageDelegate.qml
+index d017c03..ca5913e 100644
+--- a/client-qt/src/commoncomponents/DataTransferMessageDelegate.qml
++++ b/client-qt/src/commoncomponents/DataTransferMessageDelegate.qml
+@@ -255,9 +255,13 @@
+                     asynchronous: true
+                     width: sourceComponent.width
+                     height: sourceComponent.height
+-                    sourceComponent: mediaInfo.isImage !== undefined ?
+-                                         imageComp : mediaInfo.isAnimatedImage !== undefined ? animatedImageComp :
+-                                         avComp
++                    sourceComponent: {
++                        if (mediaInfo.isImage)
++                            return imageComp
++                        if (mediaInfo.isAnimatedImage)
++                            return animatedImageComp
++                        return avComp
++                    }
+                     Component {
+                         id: avComp
+                         WebEngineView {
+@@ -316,7 +320,7 @@
+                             fillMode: Image.PreserveAspectCrop
+                             mipmap: true
+                             antialiasing: true
+-                            autoTransform: false
++                            autoTransform: true
+                             asynchronous: true
+                             source: "file:///" + Body
+                             property real aspectRatio: implicitWidth / implicitHeight
+@@ -361,8 +365,10 @@
+                             fillMode: Image.PreserveAspectCrop
+                             mipmap: true
+                             antialiasing: true
+-                            autoTransform: false
++                            autoTransform: true
+                             asynchronous: true
++                            sourceSize.width: width
++                            sourceSize.height: height
+                             source: "file:///" + Body
+                             property real aspectRatio: implicitWidth / implicitHeight
+                             property real adjustedWidth: Math.min(maxSize,
+diff --git a/client-qt/src/mainview/components/MessageListView.qml b/client-qt/src/mainview/components/MessageListView.qml
+index 2b7c326..f65e67b 100644
+--- a/client-qt/src/mainview/components/MessageListView.qml
++++ b/client-qt/src/mainview/components/MessageListView.qml
+@@ -174,8 +174,8 @@
+     width: parent.width
+     // this offscreen caching is pretty huge
+     // displayMarginEnd may be removed
+-    displayMarginBeginning: 4096
+-    displayMarginEnd: 4096
++    displayMarginBeginning: 2048
++    displayMarginEnd: 2048
+     maximumFlickVelocity: 2048
+     verticalLayoutDirection: ListView.BottomToTop
+     boundsBehavior: Flickable.StopAtBounds

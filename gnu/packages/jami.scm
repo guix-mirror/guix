@@ -568,7 +568,9 @@ decentralized calling using P2P-DHT.")
     (version %jami-version)
     (source (origin
               (inherit %jami-sources)
-              (patches (search-patches "jami-fix-crash-on-quit.patch"))))
+              (patches (search-patches "jami-fix-crash-on-quit.patch"
+                                       "jami-images-loading.patch"
+                                       "jami-memory-usage.patch"))))
     (build-system qt-build-system)
     (outputs '("out" "debug"))
     (arguments
