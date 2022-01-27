@@ -63,7 +63,7 @@
 ;;; Copyright © 2020 Evan Straw <evan.straw99@gmail.com>
 ;;; Copyright © 2020, 2021 Masaya Tojo <masaya@tojo.tokyo>
 ;;; Copyright © 2020, 2021 Martin Becze <mjbecze@riseup.net>
-;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020, 2021, 2022 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 6033fe7de85d <6033fe7de85d@airmail.cc>
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
@@ -21478,11 +21478,12 @@ accept and reject GitHub pull requests.")
       (license license:gpl3+))))
 
 (define-public emacs-deadgrep
-  (let ((commit "7e50e71c6ff4e17dded43e0836dae4e5ec020fcf")
+  ;; Latest release is not tagged.
+  (let ((commit "aebaf72e35546fd235b4861399791814e4e4c7d8")
         (revision "1"))
     (package
       (name "emacs-deadgrep")
-      (version (git-version "0.10" revision commit))
+      (version (git-version "0.11" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -21492,7 +21493,7 @@ accept and reject GitHub pull requests.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1vjhrq02l8gvdn2haygzq7277hnhjchs9xrfpcnh76gqip200gx4"))))
+           "1qd60winrrpxmrjsx77i24921p6dad9halz5l5s6biwa421zcgr3"))))
       (build-system emacs-build-system)
       (inputs (list ripgrep))
       (propagated-inputs
