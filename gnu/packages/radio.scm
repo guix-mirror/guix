@@ -1268,19 +1268,32 @@ operators.")
 (define-public xnec2c
   (package
     (name "xnec2c")
-    (version "4.2")
+    (version "4.4.5")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.5b4az.org/pkg/nec2/xnec2c/xnec2c-"
-                           version ".tar.bz2"))
+       (uri (string-append "https://www.xnec2c.org/releases/xnec2c-v"
+                           version ".tar.gz"))
        (sha256
-        (base32 "0jprahww6jvwq616lkq80sac166ffy0fp83gr5kvjc9k4pcls00n"))))
+        (base32 "0v3qr16d42jri2vwwgrhhknaypdcjyn6ccdjpqfzr8zzr33z5pca"))))
     (build-system gnu-build-system)
     (native-inputs
-     (list pkg-config))
+     (list autoconf
+           automake
+           gettext-minimal
+           `(,glib "bin")
+           libtool
+           pkg-config))
     (inputs
      (list gtk+))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/Makefile.am"
+               (("\\$\\(GLIB_COMPILE_RESOURCES\\)")
+                (search-input-file inputs "bin/glib-compile-resources"))))))))
     (synopsis "Antenna modeling software")
     (description
      "Xnec2c is a GTK3-based graphical version of nec2c, a translation to the
@@ -1288,7 +1301,7 @@ C language of NEC2, the FORTRAN Numerical Electromagnetics Code commonly used
 for antenna simulation and analysis.  It can be used to define the geometry of
 an antenna, and then plot the radiation pattern or frequency-related data like
 gain and standing wave ratio.")
-    (home-page "http://www.5b4az.org/")
+    (home-page "https://www.xnec2c.org/")
     (license license:gpl3+)))
 
 (define-public dump1090
