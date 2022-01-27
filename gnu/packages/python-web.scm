@@ -741,21 +741,27 @@ other HTTP libraries.")
 (define-public httpie
   (package
     (name "httpie")
-    (version "2.3.0")
+    (version "3.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "httpie" version))
        (sha256
         (base32
-         "15ngl3yc186gkgqdx8iav9bpj8gxjpzz26y32z92jwyhj4cmfh6m"))))
+         "16ay8mx2v1z3rywsszy055l5k50qjiwyc3pds5wxxzd1n9a79w97"))))
     (build-system python-build-system)
     (arguments
      ;; The tests attempt to access external web servers, so we cannot run them.
      '(#:tests? #f))
     (propagated-inputs
-     (list python-colorama python-pygments python-requests
-           python-requests-toolbelt))
+     (list python-colorama
+           python-pygments
+           python-requests
+           python-requests-toolbelt
+           python-pysocks
+           python-charset-normalizer
+           python-defusedxml
+           python-multidict))
     (home-page "https://httpie.io")
     (synopsis "cURL-like tool for humans")
     (description
