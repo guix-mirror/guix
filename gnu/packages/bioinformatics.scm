@@ -11209,7 +11209,10 @@ based methods.")
        (modify-phases %standard-phases
          (add-before 'bootstrap 'autoreconf
            (lambda _
-             (invoke "autoreconf" "-vif"))))))
+             (invoke "autoreconf" "-vif")))
+         (add-before 'configure 'set-PYTHONPATH
+           (lambda _
+             (setenv "PYTHONPATH" (getenv "GUIX_PYTHONPATH")))))))
     (native-inputs
      (list automake autoconf))
     (inputs
