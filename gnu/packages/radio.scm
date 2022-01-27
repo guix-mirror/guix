@@ -1172,7 +1172,7 @@ instances over the network, and general QSO and DXpedition logging.")
 (define-public wsjtx
   (package
     (name "wsjtx")
-    (version "2.5.2")
+    (version "2.5.4")
     (source
      (origin
        (method git-fetch)
@@ -1181,7 +1181,7 @@ instances over the network, and general QSO and DXpedition logging.")
              (commit (string-append "wsjtx-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "01346f2x3jc0gbzdi7ihzr9rxibnbzn31ix0879qfavrv8l31k1s"))))
+        (base32 "0nciw9smrfcsirlwyny5r9h7sk2zvm40m56y1hxpgpmbnh6mqikh"))))
     (build-system qt-build-system)
     (native-inputs
      (list asciidoc gfortran pkg-config qttools ruby-asciidoctor))
