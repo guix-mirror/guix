@@ -370,14 +370,14 @@ SoapySDR library.")
 (define-public chirp
   (package
     (name "chirp")
-    (version "20211016")
+    (version "20220118")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://trac.chirp.danplanet.com/chirp_daily/daily-"
                            version "/chirp-daily-" version ".tar.gz"))
        (sha256
-        (base32 "13xzqnhvnw6yipv4izkq0s9ykyl9pc5ifpr1ii8xfp28ch706qyw"))))
+        (base32 "0q2ifmprxqqxnww8fx8fjmm2lv9vdv6xzsk1ysa27fb290vgyawn"))))
     (build-system python-build-system)
     (inputs
      (list python2-libxml2 python2-pygtk python2-pyserial))
