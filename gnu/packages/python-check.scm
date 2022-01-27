@@ -1494,7 +1494,7 @@ libraries.")
              (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
     (propagated-inputs
-     (list python-pyqt))
+     (list python-pyqt-without-qtwebkit))
     (native-inputs
      (list python-pytest python-pytest-runner python-setuptools-scm))
     (home-page "https://github.com/pytest-dev/pytest-qt")
