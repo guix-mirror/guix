@@ -10895,6 +10895,9 @@ once.  This package provides tools to perform Drop-seq analyses.")
          (add-before 'bootstrap 'autoreconf
            (lambda _
              (invoke "autoreconf" "-vif")))
+         (add-before 'configure 'set-PYTHONPATH
+           (lambda _
+             (setenv "PYTHONPATH" (getenv "GUIX_PYTHONPATH"))))
          (add-before 'check 'set-timezone
            ;; The readr package is picky about timezones.
            (lambda* (#:key inputs #:allow-other-keys)
