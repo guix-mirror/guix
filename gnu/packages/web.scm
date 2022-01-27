@@ -7949,7 +7949,9 @@ for ZIM files.")
                       (sha256
                        (base32
                         "0r9rbk6v1wpld2ismfsk2lkhbyv3dkf0p03hkjivbj05qkfhvlbb"))))
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ;; for kiwix-compile-resources
+       ("python" ,python-wrapper)))
     (synopsis "Common code base for all Kiwix ports")
     (description "The Kiwix library provides the Kiwix software suite core.
 It contains the code shared by all Kiwix ports.")
