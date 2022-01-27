@@ -1321,7 +1321,7 @@ borgmatic is powered by borg.")
            python-paramiko
            python-peewee
            python-psutil
-           python-pyqt
+           python-pyqt-without-qtwebkit
            python-secretstorage
            ;; This is included so that the qt-wrap phase picks it up.
            qtsvg))
