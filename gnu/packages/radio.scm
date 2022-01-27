@@ -901,7 +901,7 @@ hardware.")
 (define-public flrig
   (package
     (name "flrig")
-    (version "1.3.52")
+    (version "1.4.04")
     (source
      (origin
        (method git-fetch)
@@ -910,12 +910,12 @@ hardware.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0vxn1wy5b2zfq20k93rfgq34m1nd3mxd74h8l98f90d85fhcqggy"))))
+        (base32 "06alzln46x08110v1ghasphr2mmznzk0x5h59vl9g2w1z12i9zsm"))))
     (build-system gnu-build-system)
     (native-inputs
      (list autoconf automake pkg-config))
     (inputs
-     (list fltk libx11 libxext libxfixes libxft))
+     (list eudev fltk libx11 libxext libxfixes libxft))
     (synopsis "Radio transceiver control program")
     (description
      "Flrig is a transceiver control program for amateur radio use.
