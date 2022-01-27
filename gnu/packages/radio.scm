@@ -424,7 +424,7 @@ and a dedicated receiver.")
 (define-public redsea
   (package
     (name "redsea")
-    (version "0.18")
+    (version "0.20")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -433,7 +433,7 @@ and a dedicated receiver.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1y96g0ra2krjb2kypm8s5gdfia45yci4f36klsvyzg8d53v5cwhn"))))
+                "1bx4l87vz935cj5hapdh1dkjlmlfg73cgsjaf27314n7p4xkv50v"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
