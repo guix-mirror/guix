@@ -54,7 +54,7 @@
 ;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020, 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020, 2022 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2020, 2021 Andy Tai <atai@atai.org>
 ;;; Copyright © 2020, 2021 Sébastien Lerique <sl@eauchat.org>
@@ -5106,6 +5106,7 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
        ("desktop-file-utils" ,desktop-file-utils)
        ("intltool" ,intltool)
        ("itstool" ,itstool)
+       ("python" ,python-wrapper)       ; for meson_post_install.py
        ("vala" ,vala)
        ("yelp" ,yelp)
        ("appstream-glib" ,appstream-glib)))
