@@ -6237,6 +6237,12 @@ interpreted as packages whose dependencies will be added to the
 environment, the default behavior.  Packages appearing after are
 interpreted as packages that will be added to the environment directly.
 
+@item --profile=@var{profile}
+@itemx -p @var{profile}
+Create an environment containing the packages installed in @var{profile}. 
+Use @command{guix package} (@pxref{Invoking guix package}) to create
+and manage profiles.
+
 @item --pure
 Unset existing environment variables when building the new environment, except
 those specified with @option{--preserve} (see below).  This has the effect of
