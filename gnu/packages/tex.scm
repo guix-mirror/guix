@@ -7843,7 +7843,7 @@ from a typewriter.  The package also offers double and wavy underlining, and
 striking out (line through words) and crossing out (/// over words).")
     (license license:lppl1.3c+)))
 
-(define-deprecated-package texlive-latex-ulem texlive-ulem)
+(define-deprecated-package texlive-generic-ulem texlive-ulem)
 
 (define-public texlive-latex-pgf
   (package

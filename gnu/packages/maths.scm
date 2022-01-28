@@ -5551,7 +5551,6 @@ set.")
                                              texlive-xcolor
                                              texlive-xypic
                                              texlive-generic-listofitems
-                                             texlive-generic-ulem
                                              texlive-latex-cmap
                                              texlive-latex-colortbl
                                              texlive-latex-etoc
@@ -5574,6 +5573,7 @@ set.")
                                              texlive-latex-tocloft
                                              texlive-latex-upquote
                                              texlive-latex-varwidth
+                                             texlive-ulem
                                              texlive-wasysym
                                              texlive-latex-wrapfig)))))
     (inputs

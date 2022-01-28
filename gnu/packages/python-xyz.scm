@@ -12615,7 +12615,6 @@ time.")
                                         texlive-enumitem
                                         texlive-eurosym
                                         texlive-fonts-rsfs
-                                        texlive-generic-ulem
                                         texlive-generic-iftex
                                         texlive-jknappen
                                         texlive-latex-amsmath
@@ -12638,6 +12637,7 @@ time.")
                                         texlive-tcolorbox
                                         texlive-titling
                                         texlive-tools
+                                        texlive-ulem
                                         texlive-xcolor
                                         texlive-zapfding)))))
     (propagated-inputs
