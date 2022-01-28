@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2017, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2020, 2021, 2022 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
 ;;; Copyright © 2017, 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
@@ -1221,13 +1221,13 @@ allow for great power and flexibility.
 (define-public gwl
   (package
     (name "gwl")
-    (version "0.3.0")
+    (version "0.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gwl/gwl-" version ".tar.gz"))
               (sha256
                (base32
-                "1lqif00mq7fsaknbc2gvvcv1j89k311sm44jp9jklbrv0v2lc83n"))))
+                "0sgaaq430l3dqmqqiikfb0ilxnd2cq28626y18kxx5c781qwpys9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #false ; for reproducibility
@@ -1239,14 +1239,15 @@ allow for great power and flexibility.
      (let ((p (package-input-rewriting
                `((,guile-3.0 . ,guile-3.0-latest))
                #:deep? #false)))
-       `(("guix" ,guix)
-         ("guile" ,guile-3.0-latest)
-         ("guile-commonmark" ,(p guile-commonmark))
-         ("guile-config" ,(p guile-config))
-         ("guile-gcrypt" ,(p guile-gcrypt))
-         ("guile-pfds" ,(p guile-pfds))
-         ("guile-syntax-highlight" ,(p guile-syntax-highlight))
-         ("guile-wisp" ,(p guile-wisp)))))
+       (list guix
+             guile-3.0-latest
+             (p guile-commonmark)
+             (p guile-config)
+             (p guile-drmaa)
+             (p guile-gcrypt)
+             (p guile-pfds)
+             (p guile-syntax-highlight)
+             (p guile-wisp))))
     (home-page "https://workflows.guix.info")
     (synopsis "Workflow management extension for GNU Guix")
     (description "The @dfn{Guix Workflow Language} (GWL) provides an
