@@ -5044,6 +5044,19 @@ both); or to remove surrounding spaces within a macro definition, or to define
 space-stripped macros.")
     (license license:lppl)))
 
+(define-public texlive-calrsfs
+  (package
+    (inherit
+     (simple-texlive-package
+      "texlive-calrsfs"
+      (list "doc/latex/calrsfs/" "tex/latex/calrsfs/")
+      (base32 "0aqa0k0zzzicx5nynd29i9pdb7a4j6fvf1xwrbm4qg64pl55i6xa")
+      #:trivial? #t))
+    (home-page "https://ctan.org/macros/latex/contrib/calrsfs")
+    (synopsis "Copperplate calligraphic letters in LaTeX")
+    (description "This package provides a math interface to the Rsfs fonts.")
+    (license license:public-domain)))
+
 (define-public texlive-capt-of
   (let ((template
          (simple-texlive-package
