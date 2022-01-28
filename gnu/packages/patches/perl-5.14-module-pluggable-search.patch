@@ -1,0 +1,25 @@
+Fix core Perl module Module::Pluggable such that it can find plugins that live
+in symlinked directories.
+
+Patch borrowed/adapted from Nixpkgs.
+
+--- perl-5.16.1/cpan/Module-Pluggable/lib/Module/Pluggable/Object.pm	2015-04-08 23:28:48.120164135 -0500
++++ perl-5.16.1/cpan/Module-Pluggable/lib/Module/Pluggable/Object.pm	2015-04-08 23:30:27.032166704 -0500
+@@ -164,7 +164,7 @@
+         my $sp = catdir($dir, (split /::/, $searchpath));
+ 
+         # if it doesn't exist or it's not a dir then skip it
+-        next unless ( -e $sp && -d _ ); # Use the cached stat the second time
++        next unless ( -e $sp );
+ 
+         my @files = $self->find_files($sp);
+ 
+@@ -279,7 +279,7 @@
+                              (my $path = $File::Find::name) =~ s#^\\./##;
+                              push @files, $path;
+                            }
+-                      }, $search_path );
++                      }, "$search_path/." );
+     }
+     #chdir $cwd;
+     return @files;

@@ -1629,6 +1629,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/p11-kit-hurd.patch			\
   %D%/packages/patches/patchutils-test-perms.patch		\
   %D%/packages/patches/patch-hurd-path-max.patch		\
+  %D%/packages/patches/perl-5.14-autosplit-default-time.patch	\
+  %D%/packages/patches/perl-5.14-module-pluggable-search.patch	\
+  %D%/packages/patches/perl-5.14-no-sys-dirs.patch		\
   %D%/packages/patches/perl-autosplit-default-time.patch	\
   %D%/packages/patches/perl-finance-quote-unuse-mozilla-ca.patch \
   %D%/packages/patches/perl-image-exiftool-CVE-2021-22204.patch	\

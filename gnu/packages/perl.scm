@@ -65,6 +65,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages gtk)
@@ -257,6 +258,78 @@ administration, web development, network programming, GUI development, and
 more.")
     (home-page "https://www.perl.org/")
     (license license:gpl1+)))                          ; or "Artistic"
+
+(define-public perl-5.14
+  (package
+    (name "perl")
+    (version "5.14.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/src/5.0/perl-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1js47zzna3v38fjnirf2vq6y0rjp8m86ysj5vagzgkig956d8gw0"))
+              (patches (search-patches
+                        "perl-5.14-no-sys-dirs.patch"
+                        "perl-5.14-autosplit-default-time.patch"
+                        "perl-5.14-module-pluggable-search.patch"))))
+    (properties `((release-date . "2013-03-10")))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out  (assoc-ref outputs "out"))
+                   (libc (assoc-ref inputs "libc")))
+               ;; Use the right path for `pwd'.
+               (substitute* "dist/Cwd/Cwd.pm"
+                 (("/bin/pwd")
+                  (which "pwd")))
+
+               (invoke "./Configure"
+                       (string-append "-Dprefix=" out)
+                       (string-append "-Dman1dir=" out "/share/man/man1")
+                       (string-append "-Dman3dir=" out "/share/man/man3")
+                       "-de" "-Dcc=gcc"
+                       "-Uinstallusrbinperl"
+                       "-Dinstallstyle=lib/perl5"
+                       "-Duseshrplib"
+                       (string-append "-Dlocincpth=" libc "/include")
+                       (string-append "-Dloclibpth=" libc "/lib")
+
+                       ;; Force the library search path to contain only libc
+                       ;; because it is recorded in Config.pm and
+                       ;; Config_heavy.pl; we don't want to keep a reference
+                       ;; to everything that's in $LIBRARY_PATH at build
+                       ;; time (Binutils, bzip2, file, etc.)
+                       (string-append "-Dlibpth=" libc "/lib")
+                       (string-append "-Dplibpth=" libc "/lib")))))
+
+         (add-before 'strip 'make-shared-objects-writable
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; The 'lib/perl5' directory contains ~50 MiB of .so.  Make them
+             ;; writable so that 'strip' actually strips them.
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib")))
+               (for-each (lambda (dso)
+                           (chmod dso #o755))
+                         (find-files lib "\\.so$"))))))))
+    (native-inputs
+     (list gcc-7))
+    (native-search-paths (list (search-path-specification
+                                (variable "PERL5LIB")
+                                (files '("lib/perl5/site_perl")))))
+    (home-page "https://www.perl.org/")
+    (synopsis "Implementation of the Perl programming language")
+    (description
+     "Perl is a general-purpose programming language originally developed for
+text manipulation and now used for a wide range of tasks including system
+administration, web development, network programming, GUI development, and
+more.")
+    (license license:gpl1+)))
 
 (define-public perl-algorithm-c3
   (package
