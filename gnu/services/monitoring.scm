@@ -622,28 +622,28 @@ $DB['PORT']     = '" (number->string db-port) "';
 $DB['DATABASE'] = '" db-name "';
 $DB['USER']     = '" db-user "';
 $DB['PASSWORD'] = " (let ((file (location-file %location))
-                           (line (location-line %location))
-                           (column (location-column %location)))
-                       (if (string-null? db-password)
-                           (if (string-null? db-secret-file)
-                               (raise (make-compound-condition
-                                       (condition
-                                        (&message
-                                         (message
-                                          (format #f "no '~A' or '~A' field in your '~A' record"
-                                                  'db-secret-file 'db-password
-                                                  'zabbix-front-end-configuration))))
-                                       (condition
-                                        (&error-location
-                                         (location %location)))))
-                               (string-append "trim(file_get_contents('"
-                                              db-secret-file "'));\n"))
-                           (begin
-                             (display-hint (format #f (G_ "~a:~a:~a: ~a:
+                          (line (location-line %location))
+                          (column (location-column %location)))
+                      (if (string-null? db-password)
+                          (if (string-null? db-secret-file)
+                              (raise (make-compound-condition
+                                      (condition
+                                       (&message
+                                        (message
+                                         (format #f "no '~A' or '~A' field in your '~A' record"
+                                                 'db-secret-file 'db-password
+                                                 'zabbix-front-end-configuration))))
+                                      (condition
+                                       (&error-location
+                                        (location %location)))))
+                              (string-append "trim(file_get_contents('"
+                                             db-secret-file "'));\n"))
+                          (begin
+                            (display-hint (format #f (G_ "~a:~a:~a: ~a:
 Consider using @code{db-secret-file} instead of @code{db-password} for better
 security.") file line column 'zabbix-front-end-configuration))
-                             (format #f "'~a';~%" db-password))))
-"
+                            (format #f "'~a';~%" db-password))))
+                     "
 // Schema name. Used for IBM DB2 and PostgreSQL.
 $DB['SCHEMA'] = '';
 
