@@ -598,7 +598,7 @@ $DB['PASSWORD'] = " (let ((file (location-file %location))
                              (display-hint (format #f (G_ "~a:~a:~a: ~a:
 Consider using @code{db-secret-file} instead of @code{db-password} for better
 security.") file line column 'zabbix-front-end-configuration))
-                             db-password)))
+                             (format #f "'~a';~%" db-password))))
 "
 // Schema name. Used for IBM DB2 and PostgreSQL.
 $DB['SCHEMA'] = '';
