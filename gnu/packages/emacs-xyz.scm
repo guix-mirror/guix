@@ -7005,13 +7005,11 @@ in @code{html-mode}.")
        (modify-phases %standard-phases
          (add-after 'unpack 'make-git-checkout-writable
            (lambda _
-             (for-each make-file-writable (find-files "."))
-             #t))
+             (for-each make-file-writable (find-files "."))))
          (add-before 'install 'configure
            (lambda* _
              (emacs-substitute-variables "slime.el"
-               ("inferior-lisp-program" "sbcl"))
-             #t))
+               ("inferior-lisp-program" "sbcl"))))
          (add-before 'install 'install-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -7033,8 +7031,7 @@ in @code{html-mode}.")
                            (install-file f doc-dir)
                            (delete-file f))
                          doc-files)
-               (delete-file-recursively "doc")
-               #t))))))
+               (delete-file-recursively "doc")))))))
     (home-page "https://github.com/slime/slime")
     (synopsis "Superior Lisp Interaction Mode for Emacs")
     (description
