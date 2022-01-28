@@ -3297,6 +3297,32 @@ values for the purpose of fuzz testing.")
 incoming requests with their respective handler.")
     (license license:bsd-3)))
 
+(define-public go-github-com-andybalholm-brotli
+  (package
+    (name "go-github-com-andybalholm-brotli")
+    (version "1.0.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/andybalholm/brotli")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1zvmj7gbnkq9xwv1bvcxk9acxl06y902148qwbd2kqwgs52wy2c0"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/andybalholm/brotli"))
+    (home-page "https://github.com/andybalholm/brotli")
+    (synopsis "Pure Go Brotli encoder and decoder")
+    (description
+     "This package is a brotli compressor and decompressor implemented in Go.
+It was translated from the reference implementation
+(@url{https://github.com/google/brotli,https://github.com/google/brotli}) with
+the @code{c2go} tool at
+@url{https://github.com/andybalholm/c2go,https://github.com/andybalholm/c2go}.")
+    (license license:expat)))
+
 (define-public go-github-com-gorilla-handlers
   (package
     (name "go-github-com-gorilla-handlers")
