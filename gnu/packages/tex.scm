@@ -4422,6 +4422,18 @@ It includes little more than the required set of LaTeX packages.")
                      '()
                      default-packages)))))
 
+(define-public texlive-default-updmap.cfg
+  (origin
+    (method url-fetch)
+    (uri (string-append "https://tug.org/svn/texlive/tags/"
+                        %texlive-tag "/Master/texmf-dist/web2c/updmap.cfg"
+                        "?revision=" (number->string %texlive-revision)))
+    (file-name (string-append "updmap.cfg-"
+                              (number->string %texlive-revision)))
+    (sha256
+     (base32
+      "0zhpyld702im6352fwp41f2hgfkpj2b4j1kfsjqbkijlcmvb6w2c"))))
+
 ;;; TODO: Add a TeX Live profile hook computing fonts maps (and others?)
 ;;; configuration from the packages in the profile, similar to what's done
 ;;; below.
