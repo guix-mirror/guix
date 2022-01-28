@@ -7824,33 +7824,13 @@ is preferred in many parts of the world, as distinct from that which is used in
 @code{\\maketitle} of the article class, \"June 26, 2008\", the 'US format'.")
     (license license:lppl)))
 
-(define-public texlive-generic-ulem
+(define-public texlive-ulem
   (package
-    (name "texlive-generic-ulem")
-    (version (number->string %texlive-revision))
-    (source
-     (origin
-       (method svn-fetch)
-       (uri (svn-reference
-             (url (string-append "svn://www.tug.org/texlive/tags/"
-                                 %texlive-tag "/Master/texmf-dist/"
-                                 "/tex/generic/ulem"))
-             (revision %texlive-revision)))
-       (file-name (string-append name "-" version "-checkout"))
-       (sha256
-        (base32
-         "161ka7sckiakcr1fgydxpc580sr16vp4sp3avjl2v9jn1pd2pwp0"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((target (string-append (assoc-ref %outputs "out")
-                                      "/share/texmf-dist/tex/generic/ulem")))
-           (mkdir-p target)
-           (copy-recursively (assoc-ref %build-inputs "source") target)
-           #t))))
+    (inherit (simple-texlive-package
+              "texlive-ulem"
+              (list "doc/generic/ulem/" "tex/generic/ulem/")
+              (base32 "0wcfnw5h6lsg2ilvkkf7mns8jgcn0n5sh45iznfsb49pfb4mming")
+              #:trivial? #t))
     (home-page "https://www.ctan.org/pkg/ulem")
     (synopsis "Underline text in TeX")
     (description
@@ -7860,6 +7840,8 @@ form and as the @code{\\emph} command), so as to make output look as if it comes
 from a typewriter.  The package also offers double and wavy underlining, and
 striking out (line through words) and crossing out (/// over words).")
     (license license:lppl1.3c+)))
+
+(define-deprecated-package texlive-latex-ulem texlive-ulem)
 
 (define-public texlive-latex-pgf
   (package
