@@ -763,7 +763,6 @@ engineers, musicians, soundtrack editors and composers.")
            alsa-lib
            jack-1
            expat
-           ffmpeg
            lame
            linux-libre-headers
            flac
