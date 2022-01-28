@@ -8929,6 +8929,37 @@ non-cryptographic hash algorithm, working at speeds close to RAM limits.")
 anti-fragmentation protection.")
     (license license:expat)))
 
+(define-public go-github-com-valyala-fasthttp
+  (package
+    (name "go-github-com-valyala-fasthttp")
+    (version "1.31.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/valyala/fasthttp")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ra0n2shcp11736xv37cjnsqn32gvqfm3dkf9v8j98xmch2wqxqg"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/valyala/fasthttp"))
+    (propagated-inputs
+     (list go-golang-org-x-sys
+           go-golang-org-x-net
+           go-golang-org-x-crypto
+           go-github-com-valyala-tcplisten
+           go-github-com-valyala-bytebufferpool
+           go-github-com-klauspost-compress
+           go-github-com-andybalholm-brotli))
+    (home-page "https://github.com/valyala/fasthttp")
+    (synopsis "Provides fast HTTP server and client API")
+    (description
+     "This package provides a Go module @code{fasthttp} which may be used as
+replacement for native @code{net/http} module.")
+    (license license:expat)))
+
 (define-public go-github-com-valyala-tcplisten
   (package
     (name "go-github-com-valyala-tcplisten")
