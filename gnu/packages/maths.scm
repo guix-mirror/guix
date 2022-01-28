@@ -30,7 +30,7 @@
 ;;; Copyright © 2018 Eric Brown <brown@fastmail.com>
 ;;; Copyright © 2018, 2021 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Amin Bandali <bandali@gnu.org>
-;;; Copyright © 2019, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2019, 2021, 2022 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Steve Sprang <scs@stevesprang.com>
 ;;; Copyright © 2019 Robert Smith <robertsmith@posteo.net>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
@@ -5540,6 +5540,7 @@ set.")
        ("texlive" ,(texlive-updmap.cfg (list texlive-adjustbox
                                              texlive-amsfonts
                                              texlive-bibtex
+                                             texlive-capt-of
                                              texlive-caption
                                              texlive-cm
                                              texlive-etoolbox
@@ -5551,7 +5552,6 @@ set.")
                                              texlive-xypic
                                              texlive-generic-listofitems
                                              texlive-generic-ulem
-                                             texlive-latex-capt-of
                                              texlive-latex-cmap
                                              texlive-latex-colortbl
                                              texlive-latex-etoc

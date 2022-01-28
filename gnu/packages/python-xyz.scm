@@ -5829,12 +5829,13 @@ readable format.")
        ("pkg-config" ,pkg-config)
        ("python-sphinx" ,python-sphinx)
        ("python-numpydoc" ,python-numpydoc)
-       ("texlive" ,(texlive-updmap.cfg (list texlive-cm-super
+       ("texlive" ,(texlive-updmap.cfg (list
+                                        texlive-capt-of
+                                        texlive-cm-super
                                         texlive-fonts-ec
                                         texlive-generic-iftex
                                         texlive-pdftex
                                         texlive-amsfonts
-                                        texlive-latex-capt-of
                                         texlive-latex-cmap
                                         texlive-latex-environ
                                         texlive-latex-eqparbox
@@ -8916,10 +8917,10 @@ computing.")
        ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)
        ;; FIXME: It's possible that a smaller union would work just as well.
        ("texlive" ,(texlive-updmap.cfg (list texlive-amsfonts
+                                        texlive-capt-of
                                         texlive-fonts-ec
                                         texlive-generic-iftex
                                         texlive-pdftex
-                                        texlive-latex-capt-of
                                         texlive-latex-cmap
                                         texlive-latex-environ
                                         texlive-latex-eqparbox
