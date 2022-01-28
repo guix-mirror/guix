@@ -4898,8 +4898,8 @@ Emacs can load Org files as Lisp source files directly.")
     (license license:gpl3+)))
 
 (define-public emacs-literate-calc-mode
-  (let ((commit "a50e897a816cb5580ad6ec867eeaae212e0e4798")
-        (revision "1"))
+  (let ((commit "ba7d22140a165b0fdd900a8d04916115ca6ab8ff")
+        (revision "2"))
     (package
       (name "emacs-literate-calc-mode")
       (version (git-version "0.1" revision commit))
@@ -4911,7 +4911,7 @@ Emacs can load Org files as Lisp source files directly.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0z6y5f1rj28lbr30m6g4a9l6ahs66whi8861g4cx9xzhs84nwv5g"))))
+          (base32 "1bdybw44pmhfpikdv1kg2sx88546xyncks5a4b2s0ak4p66r82k3"))))
       (build-system emacs-build-system)
       (propagated-inputs
        (list emacs-s))
@@ -13412,6 +13412,7 @@ the hunks and revert them selectively.")
     (license license:gpl3+)))
 
 (define-public emacs-diminish
+  ;; XXX: Upstream did not tag last release.
   (let ((commit "fd486ef76e4c1d8211ae337a43b8bba106d4bca7")
         (revision "1"))
     (package
