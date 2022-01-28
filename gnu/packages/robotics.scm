@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2022 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +23,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages avahi)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages cpp)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages linux)
@@ -91,17 +92,27 @@ hundred times faster than real-time.")
                 (modules '((guix build utils)))
                 (snippet
                  ;; Add missing Qt5::Network.
-                 '(begin
-                    (substitute* "targets/playground/CMakeLists.txt"
-                      (("target_link_libraries(.*)\\$\\{EXTRA_LIBS\\}" _ middle)
-                       (string-append "target_link_libraries" middle
-                                      " Qt5::Network ${EXTRA_LIBS}")))
-                    #t))))
+                 '(substitute* "targets/playground/CMakeLists.txt"
+                    (("target_link_libraries(.*)\\$\\{EXTRA_LIBS\\}" _ middle)
+                     (string-append "target_link_libraries" middle
+                                    " Qt5::Network ${EXTRA_LIBS}"))))))
       (build-system cmake-build-system)
       (arguments
-       '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
+       '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")
+         #:parallel-build? #f                    ;occasionally fails with '-j'
+         #:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'help-valgrind
+                      (lambda* (#:key inputs #:allow-other-keys)
+                        (let ((debug (search-input-directory inputs
+                                                             "/lib/debug")))
+                          (substitute* "tests/common/CMakeLists.txt"
+                            (("--error-exitcode=1" flag)
+                             (string-append "--extra-debuginfo-path="
+                                            debug " " flag)))))))))
       (native-inputs
-       (list pkg-config valgrind))                 ;for tests
+       (list pkg-config
+             valgrind                             ;for tests
+             `(,(canonical-package glibc) "debug")))
       (inputs
        (list dashel
              enki
