@@ -6163,6 +6163,8 @@ in the form @code{key=value} are available, for example:
 @code{\\begin{itemize}[itemsep=1ex,leftmargin=1cm]}.")
     (license license:lppl1.3+)))
 
+(define-deprecated-package texlive-latex-enumitem texlive-enumitem)
+
 (define-public texlive-latex-multirow
   (package
     (name "texlive-latex-multirow")

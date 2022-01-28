@@ -6543,19 +6543,19 @@ toolkits.")
        ("python-mock" ,python-mock)
        ("graphviz" ,graphviz)
        ("texlive" ,(texlive-updmap.cfg (list texlive-amsfonts
-                                        texlive-latex-amsmath
-                                        texlive-latex-enumitem
-                                        texlive-latex-expdlist
-                                        texlive-latex-geometry
-                                        texlive-latex-preview
-                                        texlive-latex-type1cm
-                                        texlive-latex-ucs
+                                             texlive-enumitem
+                                             texlive-latex-amsmath
+                                             texlive-latex-expdlist
+                                             texlive-latex-geometry
+                                             texlive-latex-preview
+                                             texlive-latex-type1cm
+                                             texlive-latex-ucs
 
-                                        texlive-pdftex
+                                             texlive-pdftex
 
-                                        texlive-fonts-ec
-                                        texlive-times
-                                        texlive-txfonts)))
+                                             texlive-fonts-ec
+                                             texlive-times
+                                             texlive-txfonts)))
        ("texinfo" ,texinfo)
        ,@(package-native-inputs python-matplotlib)))
     (arguments
@@ -12611,13 +12611,13 @@ time.")
                                         texlive-amsfonts
                                         texlive-booktabs
                                         texlive-caption
+                                        texlive-enumitem
                                         texlive-eurosym
                                         texlive-fonts-rsfs
                                         texlive-generic-ulem
                                         texlive-generic-iftex
                                         texlive-jknappen
                                         texlive-latex-amsmath
-                                        texlive-latex-enumitem
                                         texlive-latex-fancyvrb
                                         texlive-latex-float
                                         texlive-fontspec
