@@ -728,14 +728,16 @@ engineers, musicians, soundtrack editors and composers.")
     (version "3.1.3")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/audacity/audacity")
-             (commit (string-append "Audacity-" version))))
-       (file-name (git-file-name name version))
+       ;; If built from the release tag, Audacity will describe itself
+       ;; as an "Alpha test version" and suggest to users that they use
+       ;; the "latest stable released version".
+       (method url-fetch)
+       (uri (string-append "https://github.com/audacity/audacity/releases/download/"
+                           "Audacity-" version "/audacity-" version
+                           "-source.tar.gz"))
        (sha256
         (base32
-         "1689q9apbjf9nnda62shb8j7hm4hxd47mhk4l5h3c728mjjkilmi"))
+         "189agx11361k9j958s6q5bngnnfx0rwaf0dwbjxy6fwvsb1wv3px"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.
