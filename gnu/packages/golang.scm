@@ -8929,6 +8929,37 @@ non-cryptographic hash algorithm, working at speeds close to RAM limits.")
 anti-fragmentation protection.")
     (license license:expat)))
 
+(define-public go-github-com-valyala-tcplisten
+  (package
+    (name "go-github-com-valyala-tcplisten")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/valyala/tcplisten")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1fv5hxmq1jwrjn1rdjvbmjrrkb601zcdh01qhx6d8l7ss6n05zb8"))))
+    (build-system go-build-system)
+    (arguments
+     ;; NOTE: (Sharlatan-20211218T165504+0000): Tests failing:
+     ;;
+     ;;   tcplisten_test.go:56: cannot create listener 0 using Config
+     ;;   &tcplisten.Config{ReusePort:false, DeferAccept:false, FastOpen:false,
+     ;;   Backlog:32}: lookup ip6-localhost on [::1]:53: read udp
+     ;;   [::1]:33932->[::1]:53: read: connection refused
+     ;;
+     '(#:tests? #f
+       #:import-path "github.com/valyala/tcplisten"))
+    (home-page "https://github.com/valyala/tcplisten")
+    (synopsis "Customizable TCP net.Listener for Go")
+    (description
+     "@code{tcplisten} provides customizable TCP net.Listener with various
+performance-related options.")
+    (license license:expat)))
+
 (define-public go-github-com-vmihailenco-msgpack-v4
   (package
     (name "go-github-com-vmihailenco-msgpack-v4")
