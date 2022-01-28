@@ -1319,6 +1319,85 @@ pictures, sounds, or video.")
 
 (define-public postgresql postgresql-13)
 
+(define-public timescaledb
+  (package
+    (name "timescaledb")
+    (version "2.5.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/timescale/timescaledb")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "174dm3higa0i7al9r2hdv5hk36pd0d5fnqj57w5a350kxshxyvyw"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Remove files carrying the proprietary TIMESCALE license.
+               '(begin
+                  (delete-file-recursively "tsl")
+                  (for-each delete-file
+                            '("test/perl/AccessNode.pm"
+                              "test/perl/DataNode.pm"
+                              "test/perl/TimescaleNode.pm"))))))
+    (build-system cmake-build-system)
+    (arguments
+     (list #:imported-modules `((guix build union)
+                                ,@%cmake-build-system-modules)
+           #:modules `(,@%cmake-build-system-modules
+                       (guix build union)
+                       (ice-9 match))
+           #:configure-flags #~(list "-DAPACHE_ONLY=ON"
+                                     "-DSEND_TELEMETRY_DEFAULT=OFF")
+           #:test-target "regresschecklocal"
+           #:phases
+           #~(modify-phases (@ (guix build cmake-build-system) %standard-phases)
+               (add-after 'unpack 'patch-install-location
+                 (lambda _
+                   ;; Install extension to the output instead of the
+                   ;; PostgreSQL store directory.
+                   (substitute* '("CMakeLists.txt"
+                                  "cmake/GenerateScripts.cmake"
+                                  "sql/CMakeLists.txt")
+                     (("\\$\\{PG_SHAREDIR\\}/extension")
+                      (string-append #$output "/share/extension")))
+                   ;; Likewise for the library.
+                   (substitute* '("src/CMakeLists.txt"
+                                  "src/loader/CMakeLists.txt")
+                     (("\\$\\{PG_PKGLIBDIR\\}")
+                      (string-append #$output "/lib")))))
+               ;; Run the tests after install to make it easier to create the
+               ;; required PostgreSQL+TimescaleDB filesystem union.
+               (delete 'check)
+               (add-after 'install 'prepare-tests
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (let ((pg-data (string-append (getcwd) "/../pg-data"))
+                         (pg-union (string-append (getcwd) "/../pg-union")))
+                     (match inputs
+                       (((names . directories) ...)
+                        (union-build pg-union (cons #$output directories))))
+                     (setenv "PATH" (string-append pg-union "/bin:"
+                                                   (getenv "PATH")))
+                     (invoke "initdb" "-D" pg-data)
+                     (copy-file "test/postgresql.conf"
+                                (string-append pg-data "/postgresql.conf"))
+                     (invoke "pg_ctl" "-D" pg-data
+                             "-o" (string-append "-k " pg-data)
+                             "-l" (string-append pg-data "/db.log")
+                             "start"))))
+               (add-after 'prepare-tests 'check
+                 (assoc-ref %standard-phases 'check)))))
+    (inputs (list openssl postgresql))
+    (home-page "https://www.timescale.com/")
+    (synopsis "Time-series extension for PostgreSQL")
+    (description
+     "TimescaleDB is an database designed to make SQL scalable for
+time-series data.  It is engineered up from PostgreSQL and packaged as a
+PostgreSQL extension, providing automatic partitioning across time and space
+(partitioning key), as well as full SQL support.")
+    (license license:asl2.0)))
+
 (define-public pgloader
   (package
     (name "pgloader")
