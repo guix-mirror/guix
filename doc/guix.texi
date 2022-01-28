@@ -5824,6 +5824,12 @@ This is similar to the same-named option in @command{guix package}
 (@pxref{profile-manifest, @option{--manifest}}) and uses the same
 manifest files.
 
+@item --profile=@var{profile}
+@itemx -p @var{profile}
+Create an environment containing the packages installed in @var{profile}. 
+Use @command{guix package} (@pxref{Invoking guix package}) to create
+and manage profiles.
+
 @item --pure
 Unset existing environment variables when building the new environment, except
 those specified with @option{--preserve} (see below).  This has the effect of
