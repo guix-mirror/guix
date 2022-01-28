@@ -5015,38 +5015,45 @@ both); or to remove surrounding spaces within a macro definition, or to define
 space-stripped macros.")
     (license license:lppl)))
 
-(define-public texlive-latex-capt-of
-  (package
-    (name "texlive-latex-capt-of")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (svn-reference
-                    (url (string-append "svn://www.tug.org/texlive/tags/"
-                                        %texlive-tag "/Master/texmf-dist/"
-                                        "/tex/latex/capt-of"))
-                    (revision %texlive-revision)))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "1y2s50f6lz0jx2748lj3iy56hrpcczgnbzmvphxv7aqndyyamd4x"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((target (string-append (assoc-ref %outputs "out")
-                                      "/share/texmf-dist/tex/latex/capt-of")))
-           (mkdir-p target)
-           (copy-recursively (assoc-ref %build-inputs "source") target)
-           #t))))
-    (home-page "https://www.ctan.org/pkg/capt-of")
-    (synopsis "Captions on more than floats")
-    (description
-     "This package defines a command @code{\\captionof} for putting a caption
+(define-public texlive-capt-of
+  (let ((template
+         (simple-texlive-package
+          "texlive-capt-of"
+          (list "doc/latex/capt-of/"
+                "source/latex/capt-of/"
+                "tex/latex/capt-of/")
+          (base32 "0bf0cdd9ca3kkqxqqkq6jalh5ybs60l80l5gfkl2whk2v4bnzfvz"))))
+    (package
+      (inherit template)
+      (outputs '("out" "doc"))
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ '())
+          "latex/capt-of")
+         ((#:build-targets _ '())
+          '(list "capt-of.ins"))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _
+                 (chdir "source/latex/capt-of")))
+             (replace 'copy-files
+               (lambda* (#:key inputs outputs #:allow-other-keys)
+                 (let ((origin (assoc-ref inputs "source"))
+                       (source (string-append (assoc-ref outputs "out")
+                                              "/share/texmf-dist/source"))
+                       (doc (string-append (assoc-ref outputs "doc")
+                                           "/share/texmf-dist/doc")))
+                   (copy-recursively (string-append origin "/source") source)
+                   (copy-recursively (string-append origin "/doc") doc))))))))
+      (home-page "https://www.ctan.org/pkg/capt-of")
+      (synopsis "Captions on more than floats")
+      (description
+       "This package defines a command @code{\\captionof} for putting a caption
 to something that's not a float.")
-    (license license:lppl)))
+      (license license:lppl))))
+
+(define-deprecated-package texlive-latex-capt-of texlive-capt-of)
 
 (define-public texlive-doi
   (package
