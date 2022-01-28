@@ -2816,6 +2816,35 @@ feature required for movable installations, layered on top of a general search
 mechanism.  This package provides supporting files.")
       (license license:lgpl3+))))
 
+(define-public texlive-kpfonts
+  (package
+    (inherit (simple-texlive-package
+              "texlive-kpfonts"
+              (list "doc/fonts/kpfonts/"
+                    "fonts/enc/dvips/kpfonts/"
+                    "fonts/map/dvips/kpfonts/"
+                    "fonts/tfm/public/kpfonts/"
+                    "fonts/type1/public/kpfonts/"
+                    "fonts/vf/public/kpfonts/"
+                    "source/fonts/kpfonts/"
+                    "tex/latex/kpfonts/")
+              (base32 "0inai1p9bbjd5x790nsamakjaj0imvwv21mp9f98dwvdlj58vkqb")
+              #:trivial? #t))
+    (home-page "https://ctan.org/fonts/kpfonts")
+    (synopsis "Complete set of fonts for text and mathematics")
+    (description
+     "The family contains text fonts in roman, sans-serif and monospaced
+shapes, with true small caps and old-style numbers; the package offers full
+support of the textcomp package.  The mathematics fonts include all the AMS
+fonts, in both normal and bold weights.  Each of the font types is available
+in two main versions: default and light.  Each version is available in four
+variants: default; oldstyle numbers; oldstyle numbers with old ligatures such
+as ct and st, and long-tailed capital Q; and veryoldstyle with long s.  Other
+variants include small caps as default or large small caps, and for
+mathematics both upright and slanted shapes for Greek letters, as well as
+default and narrow versions of multiple integrals.")
+    (license license:gpl3+)))
+
 (define-public texlive-latexconfig
   (package
     (inherit (simple-texlive-package
