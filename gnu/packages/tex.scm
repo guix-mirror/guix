@@ -7663,23 +7663,41 @@ It also ensures compatibility with the @code{media9} and @code{animate} packages
 @end itemize\n")
     (license license:lppl1.3c+)))
 
-(define-public texlive-latex-numprint
-  (package
-    (name "texlive-latex-numprint")
-    (version (number->string %texlive-revision))
-    (source
-     (origin
-       (method svn-fetch)
-       (uri (texlive-ref "latex" "numprint"))
-       (file-name (string-append name "-" version "-checkout"))
-       (sha256
-        (base32 "00xyvdfvypfj2wj7wf2qrxpc34wwd0dkdv3bqvb86ydhlpn1jg76"))))
-    (build-system texlive-build-system)
-    (arguments '(#:tex-directory "latex/numprint"))
-    (home-page "https://www.ctan.org/pkg/numprint")
-    (synopsis "Print numbers with separators and exponent if necessary")
-    (description
-     "The package numprint prints numbers with a separator every three
+(define-public texlive-numprint
+  (let ((template
+         (simple-texlive-package
+          "texlive-numprint"
+          (list "doc/latex/numprint/"
+                "source/latex/numprint/"
+                "tex/latex/numprint/")
+          (base32 "1rqbqj4ffcfxxxxbs100pdslaiimwzgg19mf2qzcmm5snxwrf7zj"))))
+    (package
+      (inherit template)
+      (outputs '("out" "doc"))
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ '())
+          "latex/numprint")
+         ((#:build-targets _ '())
+          '(list "numprint.ins"))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _
+                 (chdir "source/latex/numprint")))
+             (replace 'copy-files
+               (lambda* (#:key inputs outputs #:allow-other-keys)
+                 (let ((origin (assoc-ref inputs "source"))
+                       (source (string-append (assoc-ref outputs "out")
+                                              "/share/texmf-dist/source"))
+                       (doc (string-append (assoc-ref outputs "doc")
+                                           "/share/texmf-dist/doc")))
+                   (copy-recursively (string-append origin "/source") source)
+                   (copy-recursively (string-append origin "/doc") doc))))))))
+      (home-page "https://www.ctan.org/pkg/numprint")
+      (synopsis "Print numbers with separators and exponent if necessary")
+      (description
+       "The package numprint prints numbers with a separator every three
 digits and converts numbers given as 12345.6e789 to 12\\,345,6\\cdot
 10^{789}.  Numbers are printed in the current mode (text or math) in
 order to use the correct font.
@@ -7696,7 +7714,9 @@ Tabular alignment using the tabular, array, tabularx, and longtable
 environments (similar to the dcolumn and rccol packages) is supported
 using all features of numprint.  Additional text can be added before
 and after the formatted number.")
-    (license license:lppl)))
+      (license license:lppl))))
+
+(define-deprecated-package texlive-latex-numprint texlive-numprint)
 
 (define-public texlive-latex-needspace
   (package
