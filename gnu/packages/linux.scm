@@ -687,7 +687,10 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
     (search-auxiliary-file file)))
 
 (define %default-extra-linux-options
-  `(;; Some very mild hardening.
+  `(;; Make the kernel config available at /proc/config.gz
+    ("CONFIG_IKCONFIG" . #t)
+    ("CONFIG_IKCONFIG_PROC" . #t)
+    ;; Some very mild hardening.
     ("CONFIG_SECURITY_DMESG_RESTRICT" . #t)
     ;; All kernels should have NAMESPACES options enabled
     ("CONFIG_NAMESPACES" . #t)
