@@ -74,6 +74,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages ruby)
   #:use-module (gnu packages syncthing)
   #:use-module (gnu packages terminals)
   #:use-module (gnu packages textutils)
