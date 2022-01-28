@@ -1152,7 +1152,7 @@ between different versions of ØMQ.")
 (define-public cppzmq
   (package
     (name "cppzmq")
-    (version "4.6.0")
+    (version "4.8.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1160,19 +1160,15 @@ between different versions of ØMQ.")
                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "19acx2bzi4n6fdnfgkja1nds7m1bwg8lw5vfcijrx9fv75pa7m8h"))
+                "0zzq20wzk5grshxfqhqgqqfwb38w3k83r821isvyaxghsglpwks3"))
               (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
-     '(;; FIXME: The test suite requires downloading Catch and custom
-       ;; CMake targets, and refuses to use the system version.
-       ;; See <https://github.com/zeromq/cppzmq/issues/334>.
-       #:tests? #f
-       #:configure-flags '("-DCPPZMQ_BUILD_TESTS=OFF")))
+     `(#:tests? ,(not (%current-target-system)))) ; run unless cross-compiling
     (native-inputs
      (list pkg-config))
     (inputs
-     (list zeromq))
+     (list catch-framework2 zeromq))
     (home-page "https://zeromq.org")
     (synopsis "C++ bindings for the ØMQ messaging library")
     (description
