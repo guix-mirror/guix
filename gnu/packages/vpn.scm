@@ -659,7 +659,7 @@ and probably others.")
            python-lxml
            python-prompt-toolkit
            python-requests
-           python-pyqt
+           python-pyqt-without-qtwebkit
            python-pyqtwebengine
            python-pysocks
            python-pyxdg
