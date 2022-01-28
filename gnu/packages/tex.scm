@@ -4059,16 +4059,27 @@ for Canadian and USA text.")
           (base32 "0cgn4dq5wnlfh9wddjzxsf7p56pk29lyndg56zg6558y7xf67cw8"))))
     (package
       (inherit template)
+      (outputs '("out" "doc"))
       (arguments
        (substitute-keyword-arguments (package-arguments template)
          ((#:tex-directory _ '())
           "generic/babel-french")
          ((#:build-targets _ '())
-          ''("frenchb.ins"))           ; TODO: use dtx and build documentation
+          ;; TODO: use dtx and build documentation.
+          '(list "frenchb.ins"))
          ((#:phases phases)
           `(modify-phases ,phases
              (add-after 'unpack 'chdir
-               (lambda _ (chdir "source/generic/babel-french")))))))
+               (lambda _ (chdir "source/generic/babel-french")))
+             (replace 'copy-files
+               (lambda* (#:key inputs outputs #:allow-other-keys)
+                 (let ((origin (assoc-ref inputs "source"))
+                       (source (string-append (assoc-ref outputs "out")
+                                              "/share/texmf-dist/source"))
+                       (doc (string-append (assoc-ref outputs "doc")
+                                           "/share/texmf-dist/doc")))
+                   (copy-recursively (string-append origin "/source") source)
+                   (copy-recursively (string-append origin "/doc") doc))))))))
       (home-page "https://ctan.org/macros/latex/contrib/babel-contrib/french")
       (synopsis "Babel contributed support for French")
       (description
