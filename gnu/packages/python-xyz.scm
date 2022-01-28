@@ -5075,7 +5075,7 @@ which can produce feeds in RSS 2.0, RSS 0.91, and Atom formats.")
 (define-public python-pydantic
   (package
     (name "python-pydantic")
-    (version "1.8.2")
+    (version "1.9.0")
     (source
      (origin
        (method git-fetch)
@@ -5084,7 +5084,7 @@ which can produce feeds in RSS 2.0, RSS 0.91, and Atom formats.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "06162dss6mvi7wiy2lzxwvzajwxgy8b2fyym7qipaj7zibcqalq2"))))
+        (base32 "14wj3k9007fpbxk7593w6gdqrr68yzrsw4a41sj5ji4cv3r8z18b"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
