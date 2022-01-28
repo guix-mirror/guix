@@ -7851,6 +7851,38 @@ bindings for the D-Bus message bus system.")
 deleting secrets from the system keyring.")
     (license license:expat)))
 
+(define-public go-github-com-zclconf-go-cty
+  (package
+    (name "go-github-com-zclconf-go-cty")
+    (version "1.10.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/zclconf/go-cty")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0f9a6vy45gcx5pg5bnfs63manaqw80h7xzvmj3b80af38304zr71"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:unpack-path "github.com/zclconf/go-cty"
+       #:import-path "github.com/zclconf/go-cty/cty"))
+    (native-inputs
+     (list go-github-com-google-go-cmp-cmp))
+    (propagated-inputs
+     (list go-golang-org-x-text
+           go-github-com-vmihailenco-msgpack-v4
+           go-github-com-apparentlymart-go-textseg-v13))
+    (home-page "https://github.com/zclconf/go-cty")
+    (synopsis "Type system for dynamic values in Go applications")
+    (description
+     "@code{cty} (pronounced \"see-tie\") is a dynamic type system for
+applications written in Go that need to represent user-supplied values without
+losing type information.  The primary intended use is for implementing
+configuration languages, but other uses may be possible too.")
+    (license license:expat)))
+
 (define-public go-etcd-io-bbolt
   (package
     (name "go-etcd-io-bbolt")
