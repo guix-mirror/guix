@@ -6599,14 +6599,14 @@ Simple Young tableaux.
              ;; The t1cmr.fd file of texlive-latex-base refers to the ecrm font,
              ;; provided by the jknappen package collection.
              texlive-jknappen
-             texlive-generic-ulem
              texlive-hyperref
              texlive-latex-colortbl
              texlive-latex-fancyhdr
              texlive-latex-graphics ;for color.sty
              texlive-latex-tools ;for array.sty
              texlive-marvosym
-             texlive-tex-ini-files)) ;for pdftexconfig
+             texlive-tex-ini-files ;for pdftexconfig
+             texlive-ulem))
       (home-page "https://www.ctan.org/pkg/jadetex/")
       (synopsis "TeX macros to produce TeX output using OpenJade")
       (description "JadeTeX is a companion package to the OpenJade DSSSL
