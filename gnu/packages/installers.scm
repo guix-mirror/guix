@@ -127,7 +127,7 @@
                         ;; it ourselves
                         (substitute* "Source/build.cpp" (("m_target_type=TARGET_X86ANSI")
                                                          (string-append "m_target_type=" ,nsis-target-type))))))))
-      (home-page "http://nsis.sourceforge.net/")
+      (home-page "https://nsis.sourceforge.io/Main_Page")
       (synopsis "Professional open source system to create Windows installers")
       (description
        "NSIS (Nullsoft Scriptable Install System) is a professional open source
