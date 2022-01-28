@@ -647,6 +647,9 @@ security.") file line column 'zabbix-front-end-configuration))
 // Schema name. Used for IBM DB2 and PostgreSQL.
 $DB['SCHEMA'] = '';
 
+// Use IEEE754 compatible value range for 64-bit Numeric (float) history values.
+$DB['DOUBLE_IEEE754'] = true;
+
 $ZBX_SERVER      = '" zabbix-host "';
 $ZBX_SERVER_PORT = '" (number->string zabbix-port) "';
 $ZBX_SERVER_NAME = '';
