@@ -1140,6 +1140,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/geeqie-clutter.patch			\
   %D%/packages/patches/genimage-mke2fs-test.patch		\
   %D%/packages/patches/geoclue-config.patch			\
+  %D%/packages/patches/ghc-4.patch				\
   %D%/packages/patches/ghc-8.0-fall-back-to-madv_dontneed.patch	\
   %D%/packages/patches/ghc-testsuite-dlopen-pie.patch		\
   %D%/packages/patches/ghc-language-haskell-extract-ghc-8.10.patch	\

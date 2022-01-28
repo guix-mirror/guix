@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2018, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2022 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
@@ -41,10 +41,18 @@
 
 (define-module (gnu packages haskell)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages bootstrap)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages file)
+  #:use-module (gnu packages gawk)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
@@ -98,6 +106,210 @@
       (description "This package provides the Yale Haskell system running on
 top of CLISP.")
       (license license:bsd-4))))
+
+(define-public ghc-4
+  (package
+    (name "ghc")
+    (version "4.08.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.haskell.org/ghc/dist/"
+                           version "/" name "-" version "-src.tar.bz2"))
+       (sha256
+        (base32
+         "0ar4nxy4cr5vwvfj71gmc174vx0n3lg9ka05sa1k60c8z0g3xp1q"))
+       (patches (list (search-patch "ghc-4.patch")))))
+    (build-system gnu-build-system)
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (arguments
+     `(#:system "i686-linux"
+       #:implicit-inputs? #f
+       #:strip-binaries? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'bootstrap
+           (lambda* (#:key inputs #:allow-other-keys)
+             (delete-file "configure")
+             (delete-file "config.sub")
+             (install-file (string-append (assoc-ref inputs "automake")
+                                          "/share/automake-1.16/config.sub")
+                           ".")
+
+             ;; Avoid dependency on "happy"
+             (substitute* "configure.in"
+               (("FPTOOLS_HAPPY") "echo sure\n"))
+
+             ;; Set options suggested in ghc/interpreter/README.BUILDING.HUGS.
+             (with-output-to-file "mk/build.mk"
+               (lambda ()
+                 (display "
+WithGhcHc=ghc-4.06
+GhcLibWays=u
+#HsLibsFor=hugs
+# Setting this leads to building the interpreter.
+GhcHcOpts=-DDEBUG
+GhcRtsHcOpts=-optc-DDEBUG -optc-D__HUGS__ -unreg -optc-g
+GhcRtsCcOpts=-optc-DDEBUG -optc-g -optc-D__HUGS__
+SplitObjs=NO
+")))
+
+             (substitute* "ghc/interpreter/interface.c"
+               ;; interface.c:2702: `stackOverflow' redeclared as different kind of symbol
+               ;; ../includes/Stg.h:188: previous declaration of `stackOverflow'
+               ((".*Sym\\(stackOverflow\\).*") "")
+               ;; interface.c:2713: `stg_error_entry' undeclared here (not in a function)
+               ;; interface.c:2713: initializer element is not constant
+               ;; interface.c:2713: (near initialization for `rtsTab[11].ad')
+               ((".*SymX\\(stg_error_entry\\).*") "")
+               ;; interface.c:2713: `Upd_frame_info' undeclared here (not in a function)
+               ;; interface.c:2713: initializer element is not constant
+               ;; interface.c:2713: (near initialization for `rtsTab[32].ad')
+               ((".*SymX\\(Upd_frame_info\\).*") ""))
+
+             ;; We need to use the absolute file names here or else the linker
+             ;; will complain about missing symbols.  Perhaps this could be
+             ;; avoided by modifying the library search path in a way that
+             ;; this old linker understands.
+             (substitute* "ghc/interpreter/Makefile"
+               (("-lbfd -liberty")
+                (string-append (assoc-ref inputs "binutils") "/lib/libbfd.a "
+                               (assoc-ref inputs "binutils") "/lib/libiberty.a")))
+
+             (let ((bash (which "bash")))
+               (substitute* '("configure.in"
+                              "ghc/configure.in"
+                              "ghc/rts/gmp/mpn/configure.in"
+                              "ghc/rts/gmp/mpz/configure.in"
+                              "ghc/rts/gmp/configure.in"
+                              "distrib/configure-bin.in")
+                 (("`/bin/sh") (string-append "`" bash))
+                 (("SHELL=/bin/sh") (string-append "SHELL=" bash))
+                 (("^#! /bin/sh") (string-append "#! " bash)))
+
+               (substitute* '("mk/config.mk.in"
+                              "ghc/rts/gmp/mpz/Makefile.in"
+                              "ghc/rts/gmp/Makefile.in")
+                 (("^SHELL.*=.*/bin/sh") (string-append "SHELL = " bash)))
+               (substitute* "aclocal.m4"
+                 (("SHELL=/bin/sh") (string-append "SHELL=" bash)))
+
+               (setenv "CONFIG_SHELL" bash)
+               (setenv "SHELL" bash))
+
+             (setenv "CPP" (string-append (assoc-ref inputs "gcc") "/bin/cpp"))
+             (invoke "autoreconf" "--verbose" "--force")))
+         (add-before 'configure 'configure-gmp
+           (lambda* (#:key build inputs outputs #:allow-other-keys)
+             (with-directory-excursion "ghc/rts/gmp"
+               (let ((bash (which "bash"))
+                     (out  (assoc-ref outputs "out")))
+                 (invoke bash "./configure")))))
+         (replace 'configure
+           (lambda* (#:key build inputs outputs #:allow-other-keys)
+             (let ((bash (which "bash"))
+                   (out  (assoc-ref outputs "out")))
+               (invoke bash "./configure"
+                       "--enable-hc-boot"
+                       (string-append "--prefix=" out)
+                       (string-append "--build=" build)
+                       (string-append "--host=" build)))))
+         (add-before 'build 'make-boot
+           (lambda _
+             ;; Only when building with more recent GCC
+             (when #false
+               ;; GCC 2.95 is fine with these comments, but GCC 4.6 is not.
+               (substitute* "ghc/rts/universal_call_c.S"
+                 (("^# .*") ""))
+               ;; CLK_TCK has been removed
+               (substitute* "ghc/interpreter/nHandle.c"
+                 (("CLK_TCK") "sysconf(_SC_CLK_TCK)")))
+
+             ;; Only when using more recent Perl
+             (when #false
+               (substitute* "ghc/driver/ghc-asm.prl"
+                 (("local\\(\\$\\*\\) = 1;") "")
+                 (("endef\\$/") "endef$/s")))
+
+             (setenv "CPATH"
+                     (string-append (getcwd) "/ghc/includes:"
+                                    (getcwd) "/mk:"
+                                    (or (getenv "CPATH") "")))
+             (invoke "make" "boot")))
+         (replace 'build
+           (lambda _
+             ;; TODO: since we don't have a Haskell compiler we cannot build
+             ;; the standard library.  And without the standard library we
+             ;; cannot build a Haskell compiler.
+             ;; make[3]: *** No rule to make target 'Array.o', needed by 'libHSstd.a'.  Stop.
+             ;; make[2]: *** No rule to make target 'utils/Argv.o', needed by 'hsc'.  Stop.
+             (invoke "make" "all")))
+         (add-after 'build 'build-hugs
+           (lambda _
+             (invoke "make" "-C" "ghc/interpreter")
+             (invoke "make" "-C" "ghc/interpreter" "install")))
+         (add-after 'install 'install-sources
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
+               (copy-recursively "hslibs"
+                                 (string-append lib "/hslibs"))
+               (copy-recursively "ghc/lib"
+                                 (string-append lib "/ghc/lib"))
+               (copy-recursively "ghc/compiler"
+                                 (string-append lib "/ghc/compiler"))
+               (copy-recursively "ghc/interpreter/lib" lib)
+               (install-file "ghc/interpreter/nHandle.so" lib)))))))
+    (native-inputs
+     `(("findutils" ,findutils)
+       ("tar" ,tar)
+       ("bzip2" ,bzip2)
+       ("xz" ,xz)
+       ("diffutils" ,diffutils)
+       ("file" ,file)
+       ("gawk" ,gawk)
+       ("autoconf" ,autoconf-2.13)
+       ("automake" ,automake)
+       ("bison" ,bison) ;for parser.y
+
+       ("make" ,gnu-make)
+       ("sed" ,sed)
+       ("grep" ,grep)
+       ("coreutils" ,coreutils)
+       ("bash" ,bash-minimal)
+
+       ("libc" ,glibc-2.2.5)
+       ;; Lazily resolve binutils-mesboot in (gnu packages commencement) to
+       ;; avoid a cycle.
+       ("gcc-wrapper"
+        ,(module-ref (resolve-interface
+                      '(gnu packages commencement))
+                     'gcc-2.95-wrapper))
+       ("gcc"
+        ,(module-ref (resolve-interface
+                      '(gnu packages commencement))
+                     'gcc-mesboot0))
+       ("binutils"
+        ,(module-ref (resolve-interface
+                      '(gnu packages commencement))
+                     'binutils-mesboot))
+       ("kernel-headers" ,linux-libre-headers)
+
+       ;; TODO: Perl used to allow setting $* to enable multi-line
+       ;; matching.  If we want to use a more recent Perl we need to
+       ;; patch all expressions that require multi-line matching.  Hard
+       ;; to tell.
+       ("perl" ,perl-5.14)))
+    (home-page "https://www.haskell.org/ghc")
+    (synopsis "The Glasgow Haskell Compiler")
+    (description
+     "The Glasgow Haskell Compiler (GHC) is a state-of-the-art compiler and
+interactive environment for the functional language Haskell.  The value of
+this package lies in the modified build of Hugs that is linked with GHC's STG
+runtime system, the RTS.  \"STG\" stands for \"spineless, tagless,
+G-machine\"; it is the abstract machine designed to support nonstrict
+higher-order functional languages.  Neither the compiler nor the Haskell
+libraries are included in this package.")
+    (license license:bsd-3)))
 
 (define ghc-bootstrap-x86_64-7.8.4
   (origin
