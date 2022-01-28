@@ -1685,6 +1685,26 @@ described in the TeXbook, together with various supporting files (some also
 discussed in the book).")
     (license license:knuth)))
 
+(define-public texlive-hardwrap
+  (package
+    (inherit (simple-texlive-package
+              "texlive-hardwrap"
+              (list "doc/latex/hardwrap/"
+                    "tex/latex/hardwrap/"
+                    "source/latex/hardwrap/")
+              (base32
+               "0ql3xml1ccll44q945n7w72p6d51y5wcrkawi7cg621gy5d6wzx5")
+              #:trivial? #t))
+    (home-page "https://ctan.org/macros/latex/contrib/hardwrap")
+    (synopsis "Hard wrap text to a certain character length")
+    (description
+     "The package facilitates wrapping text to a specific character width, breaking
+lines by words rather than, as done by TeX, by characters.  The primary use for
+these facilities is to aid the generation of messages sent to the log file or
+console output to display messages to the user.  Package authors may also find
+this useful when writing out arbitary text to an external file.")
+    (license license:lppl1.3+)))
+
 (define-public texlive-helvetic
   (package
     (inherit (simple-texlive-package
