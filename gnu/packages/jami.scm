@@ -410,7 +410,7 @@
       ;; FIXME: Fails to link when building libjami as a shared library:
       ;; bindings.cpp:(.text+0x24): undefined reference to `jami::Logger::log
       ;; [...].
-      #:configure-flags #~(list "--disable-agent")
+      #:configure-flags #~(list "--disable-agent" "--enable-debug")
       #:make-flags #~(list "V=1")       ;build verbosely
       #:phases
       #~(modify-phases %standard-phases
