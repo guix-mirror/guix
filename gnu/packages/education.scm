@@ -869,7 +869,7 @@ stored and user can review his performance in any time.")
        ("python-pyaudio" ,python-pyaudio)
        ;; `python-pyqtwebengine' must precede `python-pyqt' in PYTHONPATH.
        ("python-pyqtwebengine" ,python-pyqtwebengine)
-       ("python-pyqt" ,python-pyqt)
+       ("python-pyqt" ,python-pyqt-without-qtwebkit)
        ("python-requests" ,python-requests)
        ("python-send2trash" ,python-send2trash)
        ("python-sip" ,python-sip)
