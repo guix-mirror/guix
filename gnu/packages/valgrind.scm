@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2022 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2020 Efraim Flashner <efraim@flashner.co.il>
@@ -94,3 +94,18 @@ also use Valgrind to build new tools.")
     ;; GDB is needed to provide a sane default for `--db-command'.
     `(("gdb" ,gdb)))
    (properties '())))
+
+(define-public valgrind-3.18
+  (package
+    (inherit valgrind/interactive)
+    (version "3.18.1")
+    (source (origin
+              (method url-fetch)
+              (uri (list (string-append "https://sourceware.org/pub/valgrind"
+                                        "/valgrind-" version ".tar.bz2")
+                         (string-append "ftp://sourceware.org/pub/valgrind"
+                                        "/valgrind-" version ".tar.bz2")))
+              (sha256
+               (base32
+                "1xgph509i6adv9w2glviw3xrmlz0dssg8992hbvxsbkp7ahrm180"))
+              (patches (search-patches "valgrind-enable-arm.patch"))))))
