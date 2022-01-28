@@ -6924,6 +6924,21 @@ Association for Computing Machinery (ACM).")
 get a narrower “natural” width.")
     (license license:lppl)))
 
+(define-public texlive-varwidth
+  (package
+    (inherit (simple-texlive-package
+              "texlive-varwidth"
+              (list "doc/latex/varwidth/" "tex/latex/varwidth/")
+              (base32 "0jcrv4klcjpl17ml0zyqfvkrq6qwn2imxv8syqs5m6qk0fk7hg6l")
+              #:trivial? #t))
+    (home-page "https://ctan.org/macros/latex/contrib/varwidth")
+    (synopsis "Variable-width minipage LaTeX environment")
+    (description
+     "The varwidth environment is superficially similar to minipage, but the
+specified width is just a maximum value --- the box may get a narrower natural
+width.")
+    (license license:lppl)))
+
 (define-public texlive-wasy
   (package
     (inherit (simple-texlive-package
