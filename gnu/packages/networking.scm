@@ -1606,6 +1606,7 @@ network frames.")
        (sha256
         (base32 "1f2prmii4fyl44cfykp40hp4jjhicrhddh9v3dfs11j6nsww0f7d"))))
     (build-system gnu-build-system)
+    (arguments '(#:configure-flags '("--enable-ipv6")))
     (home-page "https://fping.org/")
     (synopsis "Send ICMP ECHO_REQUEST packets to network hosts")
     (description
