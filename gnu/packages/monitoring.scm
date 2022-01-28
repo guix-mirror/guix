@@ -172,7 +172,14 @@ etc. via a Web interface.  Features include:
              "https://cdn.zabbix.com/zabbix/sources/stable/"
              (version-major+minor version) "/zabbix-" version ".tar.gz"))
        (sha256
-        (base32 "100n1rv7r4pqagxxifzpcza5bhrr2fklzx7gndxwiyq4597p1jvn"))))
+        (base32 "100n1rv7r4pqagxxifzpcza5bhrr2fklzx7gndxwiyq4597p1jvn"))
+       (modules '((guix build utils)))
+       (snippet
+        '(substitute* '("src/zabbix_proxy/proxy.c"
+                        "src/zabbix_server/server.c")
+           ;; 'fping' must be setuid, so look for it in the usual location.
+           (("/usr/sbin/fping[[:digit:]]?")
+            "/run/setuid-programs/fping")))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
