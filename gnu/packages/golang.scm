@@ -899,6 +899,29 @@ network traffic so that it is not identified and subsequently blocked by network
 filtering devices.")
       (license license:bsd-2))))
 
+(define-public go-github-com-agext-levenshtein
+  (package
+    (name "go-github-com-agext-levenshtein")
+    (version "1.2.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/agext/levenshtein")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0a26c8pp9h5w66bhd9vb6lpvmhp30mz46pnh3a8vrjx50givb2lw"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/agext/levenshtein"))
+    (home-page "https://github.com/agext/levenshtein")
+    (synopsis "Calculating the Levenshtein distance between two strings in Go")
+    (description
+     "Package levenshtein implements distance and similarity metrics for
+strings, based on the Levenshtein measure.")
+    (license license:asl2.0)))
+
 (define-public go-github-com-apparentlymart-go-textseg-v13
   (package
     (name "go-github-com-apparentlymart-go-textseg-v13")
