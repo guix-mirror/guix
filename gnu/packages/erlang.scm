@@ -71,9 +71,7 @@
     (inputs
      (list ncurses openssl wxwidgets))
     (propagated-inputs
-     `(("fontconfig" ,fontconfig)
-       ("glu" ,glu)
-       ("mesa" ,mesa)))
+     (list fontconfig glu mesa))
     (arguments
      `(#:test-target "release_tests"
        #:configure-flags
@@ -85,7 +83,7 @@
              "--enable-threads"
              "--enable-wx"
              (string-append "--with-ssl=" (assoc-ref %build-inputs "openssl")))
-       #:modules ((srfi srfi-19) ; make-time, et cetera.
+       #:modules ((srfi srfi-19)        ; make-time, et cetera.
                   (guix build utils)
                   (guix build gnu-build-system))
        #:phases
@@ -127,59 +125,46 @@
                (substitute* "lib/snmp/src/compile/snmpc_mib_to_hrl.erl"
                  (("\\{H,Mi,S\\} = time\\(\\),")
                   (date->string source-date-epoch
-                                "{H,Mi,S} = {~H,~M,~S},")))
-               #t)))
+                                "{H,Mi,S} = {~H,~M,~S},"))))))
          (add-after 'unpack 'patch-/bin/sh
-           (lambda _
-             (substitute* "erts/etc/unix/run_erl.c"
-               (("sh = \"/bin/sh\";")
-                (string-append "sh = \""
-                               (which "sh")
-                               "\";")))
-
-             (substitute* "erts/emulator/sys/unix/sys_drivers.c"
-               (("SHELL \"/bin/sh\"")
-                (string-append "SHELL \""
-                               (which "sh")
-                               "\"")))
-             (substitute* "erts/emulator/sys/unix/erl_child_setup.c"
-               (("SHELL \"/bin/sh\"")
-                (string-append "SHELL \""
-                               (which "sh")
-                               "\"")))
-
-             (substitute* "lib/kernel/src/os.erl"
-               (("/bin/sh") (which "sh")))
-
-             #t))
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((sh (search-input-file inputs "/bin/sh")))
+               (substitute* "erts/etc/unix/run_erl.c"
+                 (("sh = \"/bin/sh\";")
+                  (string-append "sh = \"" sh "\";")))
+               (substitute* "erts/emulator/sys/unix/sys_drivers.c"
+                 (("SHELL \"/bin/sh\"")
+                  (string-append "SHELL \"" sh "\"")))
+               (substitute* "erts/emulator/sys/unix/erl_child_setup.c"
+                 (("SHELL \"/bin/sh\"")
+                  (string-append "SHELL \"" sh "\"")))
+               (substitute* "lib/kernel/src/os.erl"
+                 (("/bin/sh") sh)))))
          (add-after 'patch-source-shebangs 'patch-source-env
            (lambda _
              (let ((escripts
                     (append
-                     (find-files "." "\\.escript")
-                     (find-files "lib/stdlib/test/escript_SUITE_data/")
-                     '("erts/lib_src/utils/make_atomics_api"
-                       "erts/preloaded/src/add_abstract_code"
-                       "lib/diameter/bin/diameterc"
-                       "lib/reltool/examples/display_args"
-                       "lib/reltool/examples/mnesia_core_dump_viewer"
-                       "lib/snmp/src/compile/snmpc.src"
-                       "make/verify_runtime_dependencies"
-                       "make/emd2exml.in"))))
+                        (find-files "." "\\.escript")
+                        (find-files "lib/stdlib/test/escript_SUITE_data/")
+                      '("erts/lib_src/utils/make_atomics_api"
+                        "erts/preloaded/src/add_abstract_code"
+                        "lib/diameter/bin/diameterc"
+                        "lib/reltool/examples/display_args"
+                        "lib/reltool/examples/mnesia_core_dump_viewer"
+                        "lib/snmp/src/compile/snmpc.src"
+                        "make/verify_runtime_dependencies"
+                        "make/emd2exml.in"))))
                (substitute* escripts
-                 (("/usr/bin/env") (which "env")))
-               #t)))
+                 (("/usr/bin/env") (which "env"))))))
          (add-before 'configure 'set-erl-top
            (lambda _
-             (setenv "ERL_TOP" (getcwd))
-             #t))
+             (setenv "ERL_TOP" (getcwd))))
          (add-after 'install 'patch-erl
            ;; This only works after install.
            (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out")))
+             (let ((out (assoc-ref outputs "out")))
                (substitute* (string-append out "/bin/erl")
-                 (("sed") (which "sed")))
-               #t)))
+                 (("sed") (which "sed"))))))
          (add-after 'install 'install-doc
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -187,8 +172,7 @@
                     (share (string-append out "/share/")))
                (mkdir-p share)
                (with-directory-excursion share
-                 (invoke "tar" "xvf" manpages))
-               #t))))))
+                 (invoke "tar" "xvf" manpages))))))))
     (home-page "https://www.erlang.org/")
     (synopsis "The Erlang programming language")
     (description
