@@ -2,6 +2,7 @@
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2018, 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018, 2019, 2020 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2022 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -334,7 +335,6 @@ configuration file."))
     #~(begin
         (use-modules (guix build utils)
                      (ice-9 rdelim))
-
         (let ((user (getpw #$(zabbix-server-configuration-user config))))
           (for-each (lambda (file)
                       (let ((directory (dirname file)))
@@ -345,25 +345,69 @@ configuration file."))
                           #$(zabbix-server-configuration-pid-file config)
                           "/etc/zabbix/maintenance.inc.php"))))))
 
+(define (zabbix-server-runtime-control-procedure zabbix-server config command)
+  ;; XXX: This is duplicated from mcron; factorize.
+  #~(lambda (_ . args)
+      ;; Run 'zabbix_server' in a pipe so we can explicitly redirect its output
+      ;; to 'current-output-port', which at this stage is bound to the client
+      ;; connection.
+      (let ((pipe (apply open-pipe* OPEN_READ #$zabbix-server
+                         "--config" #$config
+                         "-R" #$command args)))
+        (let loop ()
+          (match (read-line pipe 'concat)
+            ((? eof-object?)
+             (catch 'system-error
+               (lambda ()
+                 (zero? (close-pipe pipe)))
+               (lambda args
+                 ;; There's a race with the SIGCHLD handler, which could
+                 ;; call 'waitpid' before 'close-pipe' above does.  If we
+                 ;; get ECHILD, that means we lost the race; in that case, we
+                 ;; cannot tell what the exit code was (FIXME).
+                 (or (= ECHILD (system-error-errno args))
+                     (apply throw args)))))
+            (line
+             (display line)
+             (loop)))))))
+
+;; Provide shepherd actions for common "zabbix_server -R" commands
+;; mainly for a convenient way to use the correct configuration file.
+(define (zabbix-server-actions zabbix-server config)
+  (list (shepherd-action
+         (name 'reload-config-cache)
+         (documentation "Reload the configuration cache.")
+         (procedure (zabbix-server-runtime-control-procedure
+                     zabbix-server config "config_cache_reload")))
+        (shepherd-action
+         (name 'reload-snmp-cache)
+         (documentation "Reload SNMP cache.")
+         (procedure (zabbix-server-runtime-control-procedure
+                     zabbix-server config "snmp_cache_reload")))))
+
 (define (zabbix-server-shepherd-service config)
   "Return a <shepherd-service> for Zabbix server with CONFIG."
-  (list (shepherd-service
-         (provision '(zabbix-server))
-         (documentation "Run Zabbix server daemon.")
-         (start #~(make-forkexec-constructor
-                   (list #$(file-append (zabbix-server-configuration-zabbix-server config)
-                                        "/sbin/zabbix_server")
-                         "--config" #$(zabbix-server-config-file config)
-                         "--foreground")
-                   #:user #$(zabbix-server-configuration-user config)
-                   #:group #$(zabbix-server-configuration-group config)
-                   #:pid-file #$(zabbix-server-configuration-pid-file config)
-                   #:environment-variables
-                   (list "SSL_CERT_DIR=/run/current-system/profile\
+  (let ((zabbix-server
+         (file-append (zabbix-server-configuration-zabbix-server config)
+                      "/sbin/zabbix_server"))
+        (config-file (zabbix-server-config-file config)))
+    (list (shepherd-service
+           (provision '(zabbix-server))
+           (documentation "Run the Zabbix server daemon.")
+           (actions (zabbix-server-actions zabbix-server config-file))
+           (start #~(make-forkexec-constructor
+                     (list #$zabbix-server
+                           "--config" #$config-file
+                           "--foreground")
+                     #:user #$(zabbix-server-configuration-user config)
+                     #:group #$(zabbix-server-configuration-group config)
+                     #:pid-file #$(zabbix-server-configuration-pid-file config)
+                     #:environment-variables
+                     (list "SSL_CERT_DIR=/run/current-system/profile\
 /etc/ssl/certs"
-                         "SSL_CERT_FILE=/run/current-system/profile\
+                           "SSL_CERT_FILE=/run/current-system/profile\
 /etc/ssl/certs/ca-certificates.crt")))
-         (stop #~(make-kill-destructor)))))
+           (stop #~(make-kill-destructor))))))
 
 (define zabbix-server-service-type
   (service-type
