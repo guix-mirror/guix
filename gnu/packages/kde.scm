@@ -264,7 +264,6 @@ browser for easy news reading.")
              qtquickcontrols2
              qtscript
              qtsvg
-             qtwebkit
              shared-mime-info))
       (arguments
        ;; XXX: there is a single test that spawns other tests and
