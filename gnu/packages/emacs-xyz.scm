@@ -660,6 +660,34 @@ expression navigating and manipulating.  It supports many major modes
 out of the box.")
       (license license:gpl3+))))
 
+(define-public emacs-spaceline-all-the-icons
+  (package
+    (name "emacs-spaceline-all-the-icons")
+    (version "1.4.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/domtronn/spaceline-all-the-icons.el")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "186v71d8n1iy73drayyf57pyzlz973q74mazkyvb8w3fj8bb3llm"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     (list emacs-all-the-icons
+           emacs-memoize
+           emacs-spaceline))
+    (home-page "https://github.com/domtronn/spaceline-all-the-icons.el")
+    (synopsis
+     "Theme for @code{emacs-spaceline} using @code{emacs-all-the-icons}")
+    (description
+     "This package is a theme for @code{emacs-spaceline} that recreates most
+of the segments available in that package using icons from
+@code{emacs-all-the-icons}.  Icon fonts allow for more tailored and detailed
+information in the mode line.")
+    (license license:expat)))
+
 (define-public emacs-project
   (package
     (name "emacs-project")
