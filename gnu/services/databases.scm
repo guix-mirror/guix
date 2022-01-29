@@ -55,6 +55,7 @@
             postgresql-configuration-file
             postgresql-configuration-log-directory
             postgresql-configuration-data-directory
+            postgresql-configuration-extension-packages
 
             postgresql-service
             postgresql-service-type
