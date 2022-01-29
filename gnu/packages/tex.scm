@@ -7581,7 +7581,7 @@ PDF documents.")
                        (string-append "METAINFODIR=" out "/share/metainfo")
                        "texmaker.pro")))))))
     (inputs
-     (list poppler-qt5 qtbase-5 qtscript qtwebkit zlib))
+     (list poppler-qt5 qtbase-5 qtscript zlib))
     (native-inputs
      (list pkg-config))
     (home-page "http://www.xm1math.net/texmaker/")
