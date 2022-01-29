@@ -222,7 +222,8 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
       ;; Rendering and JavaScript Engines.
       license:lgpl2.1+
       ;; Others
-      license:bsd-2))))
+      license:bsd-2))
+    (properties '((cpe-name . "wpe_webkit")))))
 
 (define-public webkitgtk
   (package
