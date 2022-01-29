@@ -138,7 +138,7 @@
   (simple-operating-system
    (service postgresql-service-type
             (postgresql-configuration
-             (postgresql postgresql-10)
+             (postgresql postgresql)
              (config-file
               (postgresql-config-file
                (extra-config
