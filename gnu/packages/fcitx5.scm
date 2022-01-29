@@ -284,7 +284,9 @@ for Qt based application.")
         (base32 "11l76gpcfm0x1f6x5m9s37q7ffa7xcsdydlzjdz2s6kk45fvvq89"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       '("-DUSE_WEBKIT=off")
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'split-outputs
            ;; Build with GUI supports requires Qt and increase package closure
@@ -305,7 +307,9 @@ for Qt based application.")
        ("opencc" ,opencc)
        ("qtbase" ,qtbase-5)
        ("fcitx5-qt" ,fcitx5-qt)
-       ("qtwebkit" ,qtwebkit)))
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtwebchannel" ,qtwebchannel)
+       ("qtwebengine" ,qtwebengine)))
     (native-inputs
      (list extra-cmake-modules pkg-config))
     (outputs '("out" "gui"))
