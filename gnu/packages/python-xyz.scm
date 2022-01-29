@@ -5238,6 +5238,8 @@ matching of file paths.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         ;; XXX Remove this when updating this package:
+         ;; https://github.com/psf/black/issues/2703#issuecomment-1004752142
          (add-after 'unpack 'relax-version-requirements
            (lambda _
              (substitute* "setup.py"
