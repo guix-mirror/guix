@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
-;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2020, 2022 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,9 +29,15 @@
   #:use-module (gnu packages databases)
   #:use-module (guix gexp)
   #:use-module (guix store)
+  #:use-module (srfi srfi-1)
   #:export (%test-memcached
             %test-postgresql
+            %test-timescaledb
             %test-mysql))
+
+;;;
+;;; The Memcached service.
+;;;
 
 (define %memcached-os
   (simple-operating-system
@@ -244,6 +250,137 @@
    (name "postgresql")
    (description "Start the PostgreSQL service.")
    (value (run-postgresql-test))))
+
+;; Test TimescaleDB, a PostgreSQL extension.
+(define %timescaledb-os
+  (let* ((postgresql-services (operating-system-services %postgresql-os))
+         (postgresql-service-configuration
+          (service-value (find (lambda (svc)
+                                 (eq? (service-kind svc) postgresql-service-type))
+                               postgresql-services)))
+         (postgresql-role-service-configuration
+          (service-value (find (lambda (svc)
+                                 (eq? (service-kind svc)
+                                      postgresql-role-service-type))
+                               postgresql-services))))
+    (simple-operating-system
+     (service postgresql-service-type
+              (postgresql-configuration
+               (inherit postgresql-service-configuration)
+               (extension-packages (list timescaledb))
+               (config-file
+                (postgresql-config-file
+                 (inherit (postgresql-configuration-file
+                           postgresql-service-configuration))
+                 (extra-config
+                  (append '(("shared_preload_libraries" "timescaledb"))
+                          (postgresql-config-file-extra-config
+                           (postgresql-configuration-file
+                            postgresql-service-configuration))))))))
+     (service postgresql-role-service-type
+              (postgresql-role-configuration
+               (inherit postgresql-role-service-configuration))))))
+
+(define (run-timescaledb-test)
+  "Run tests in %TIMESCALEDB-OS."
+  (define os
+    (marionette-operating-system
+     %timescaledb-os
+     #:imported-modules '((gnu services herd)
+                          (guix combinators))))
+
+  (define vm
+    (virtual-machine
+     (operating-system os)
+     (memory-size 512)))
+
+  (define test
+    (with-imported-modules '((gnu build marionette))
+      #~(begin
+          (use-modules (srfi srfi-64)
+                       (gnu build marionette))
+
+          (define marionette
+            (make-marionette (list #$vm)))
+
+          (test-runner-current (system-test-runner #$output))
+          (test-begin "timescaledb")
+
+          (test-assert "PostgreSQL running"
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
+                (start-service 'postgres))
+             marionette))
+
+          (test-assert "database ready"
+            (begin
+              (marionette-eval
+               '(begin
+                  (let loop ((i 10))
+                    (unless (or (zero? i)
+                                (and (file-exists? #$%role-log-file)
+                                     (string-contains
+                                      (call-with-input-file #$%role-log-file
+                                        get-string-all)
+                                      ";\nCREATE DATABASE")))
+                      (sleep 1)
+                      (loop (- i 1)))))
+               marionette)))
+
+          (test-assert "database creation"
+            (marionette-eval
+             '(begin
+                (current-output-port
+                 (open-file "/dev/console" "w0"))
+                (invoke #$(file-append postgresql "/bin/psql")
+                        "-tA" "-c" "CREATE DATABASE test"))
+             marionette))
+
+          (test-assert "load extension"
+            (marionette-eval
+             '(begin
+                (current-output-port (open-file "/dev/console" "w0"))
+                ;; Capture stderr for the next test.
+                (current-error-port (open-file "timescaledb.stderr" "w0"))
+                (invoke #$(file-append postgresql "/bin/psql")
+                        "-tA" "-c" "CREATE EXTENSION timescaledb"
+                        "test"))
+             marionette))
+
+          (test-assert "telemetry is disabled"
+            (marionette-eval
+             '(begin
+                (string-contains (call-with-input-file "timescaledb.stderr"
+                                   (lambda (port)
+                                     (get-string-all port)))
+                                 "Please enable telemetry"))
+             marionette))
+
+          (test-assert "create hypertable"
+            (marionette-eval
+             '(begin
+                (current-output-port (open-file "/dev/console" "w0"))
+                (invoke #$(file-append postgresql "/bin/psql")
+                        "-tA" "-c" "CREATE TABLE ht (
+time TIMESTAMP NOT NULL,
+data double PRECISION NULL
+)"
+                        "test")
+                (invoke #$(file-append postgresql "/bin/psql")
+                        "-tA" "-c" "SELECT create_hypertable('ht','time')"
+                        "test"))
+             marionette))
+
+          (test-end))))
+
+  (gexp->derivation "timescaledb-test" test))
+
+(define %test-timescaledb
+  (system-test
+   (name "timescaledb")
+   (description "Test the TimescaleDB PostgreSQL extension.")
+   (value (run-timescaledb-test))))
 
 
 ;;;
