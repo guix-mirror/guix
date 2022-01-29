@@ -132,9 +132,7 @@
     (arguments
      `(#:configure-flags
        (list
-        "-DUNIT_TESTING=ON"
-        ;; Upstream Bug: https://github.com/nextcloud/desktop/issues/2885
-        "-DNO_SHIBBOLETH=ON")
+        "-DUNIT_TESTING=ON")
        #:imported-modules
        ((guix build glib-or-gtk-build-system)
         ,@%qt-build-system-modules)
@@ -199,7 +197,6 @@
            qtsvg
            qtwebchannel
            qtwebsockets
-           qtwebkit
            sqlite
            xdg-utils
            zlib))
