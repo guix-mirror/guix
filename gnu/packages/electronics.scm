@@ -4,6 +4,7 @@
 ;;; Copyright © 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2021 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2022 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,11 +22,12 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages electronics)
-  #:use-module (guix utils)
-  #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
@@ -34,11 +36,14 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages c)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages embedded)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gawk)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gtk)
@@ -48,7 +53,10 @@
   #:use-module (gnu packages m4)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages qt))
+  #:use-module (gnu packages qt)
+  #:use-module (gnu packages sdl)
+  #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages stb))
 
 (define-public libserialport
   (package
@@ -239,6 +247,116 @@ supported devices, as well as input/output file format support.")
     (synopsis "Command-line frontend for sigrok")
     (description "Sigrok-cli is a command-line frontend for sigrok.")
     (license license:gpl3+)))
+
+(define-public openboardview
+  (package
+    (name "openboardview")
+    (version "8.95.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/OpenBoardView/OpenBoardView")
+                    (commit version)
+                    (recursive? #t)))   ;for the "src/imgui" submodule
+              (file-name (git-file-name name version))
+              (modules '((ice-9 ftw)
+                         (srfi srfi-26)
+                         (guix build utils)))
+              (snippet
+               '(with-directory-excursion "src"
+                  ;; Keep the bundled ImGui for now, as in the current version
+                  ;; (~1.79), it requires the glad loader generated at build
+                  ;; time as an input.
+                  (define keep (list "." ".." "imgui" "openboardview"))
+                  (for-each (lambda (f)
+                              (when (eq? 'directory (stat:type (lstat f)))
+                                (delete-file-recursively f)))
+                            (scandir "." (negate (cut member <> keep))))))
+              (patches
+               (search-patches "openboardview-use-system-utf8.patch"))
+              (sha256
+               (base32
+                "16mrs7bimwp8a8lb2wqhfisy6j0hl9574l4h9yb66v46aglvmd3h"))))
+    (build-system cmake-build-system)
+    (arguments
+     (list
+      #:tests? #f                       ;no test suite
+      #:imported-modules `((guix build glib-or-gtk-build-system)
+                           ,@%cmake-build-system-modules)
+      #:modules '((guix build cmake-build-system)
+                  (guix build utils)
+                  ((guix build glib-or-gtk-build-system) #:prefix gtk:))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'remove-timestamps
+            (lambda _
+              ;; The __TIMESTAMP__ CPP macro does apparently not honor
+              ;; SOURCE_EPOCH_DATE.  Patch it to use __DATE__ instead, which
+              ;; does (see:
+              ;; https://github.com/OpenBoardView/OpenBoardView/issues/229 and
+              ;; https://issues.guix.gnu.org/53647).
+              (substitute* '("src/openboardview/BoardView.cpp"
+                             "src/openboardview/main_opengl.cpp")
+                (("__TIMESTAMP__")
+                 "__DATE__"))))
+          (add-before 'configure 'configure-glad
+            (lambda* (#:key inputs #:allow-other-keys)
+              (substitute* "src/CMakeLists.txt"
+                (("add_subdirectory\\(glad\\)")
+                 (string-append
+                  ;; Configure Glad to use static Khronos XML specifications
+                  ;; instead of attempting to fetch them from the Internet.
+                  "option(GLAD_REPRODUCIBLE \"Reproducible build\" ON)\n"
+                  ;; Use the CMake files from our glad package.
+                  "add_subdirectory("
+                  (search-input-directory inputs "share/glad") ;source_dir
+                  " src/glad)\n")))))                          ;binary dir
+          (add-before 'configure 'fix-utf8-include-directive
+            ;; Our utf8-h package makes the header available as "utf8.h"
+            ;; directly rather than "utf8/utf8.h".
+            (lambda _
+              (substitute* '("src/openboardview/FileFormats/BRDFile.cpp"
+                             "src/openboardview/BoardView.cpp")
+                (("utf8/utf8.h") "utf8.h"))))
+          (add-before 'configure 'dynamically-load-gtk-via-absolute-path
+            ;; The GTK library is not linked thus not present in the RUNPATH of
+            ;; the produced binary; the absolute path of the libraries must to
+            ;; the dynamic loader otherwise they aren't found.
+            (lambda* (#:key inputs #:allow-other-keys)
+              (substitute* "src/openboardview/unix.cpp"
+                (("libgtk-3.so")
+                 (search-input-file inputs "lib/libgtk-3.so")))))
+          ;; Add the two extra phases from `glib-or-gtk-build-system'.
+          (add-after 'install 'glib-or-gtk-compile-schemas
+            (assoc-ref gtk:%standard-phases 'glib-or-gtk-compile-schemas))
+          (add-after 'install 'glib-or-gtk-wrap
+            (assoc-ref gtk:%standard-phases 'glib-or-gtk-wrap)))))
+    (native-inputs
+     (list pkg-config
+           python
+           glad
+           stb-image
+           utf8-h))
+    (inputs
+     (list fontconfig
+           gtk+
+           sdl2
+           sqlite
+           zlib))
+    (home-page "https://openboardview.org/")
+    (synopsis "Viewer for BoardView files")
+    (description "OpenBoardView is a viewer for BoardView files, which present
+the details of a printed circuit board (PCB).  It comes with features
+such as:
+@itemize
+@item Dynamic part outline rendering, including complex connectors
+@item Annotations, for leaving notes about parts, nets, pins or location
+@item Configurable colour themes
+@item Configurable DPI to facilitate usage on 4K monitors
+@item Configurable for running on slower systems
+@item Reads FZ (with key), BRD, BRD2, BDV and BV* formats.
+@end itemize")
+    (license license:expat)))
 
 (define-public pulseview
   (package

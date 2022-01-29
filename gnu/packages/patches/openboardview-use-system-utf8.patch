@@ -1,0 +1,48 @@
+From 251e23422f37c93a3f460fb660c5e5bfa8200d91 Mon Sep 17 00:00:00 2001
+From: Maxim Cournoyer <maxim.cournoyer@gmail.com>
+Date: Sun, 2 Dec 2018 16:40:39 -0500
+Subject: [PATCH] build system: Allow using utf8.h from the system.
+
+---
+ src/CMakeLists.txt               | 12 ++++++++----
+ src/openboardview/CMakeLists.txt |  1 +
+ 2 files changed, 9 insertions(+), 4 deletions(-)
+
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 90442ed..26d4a69 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -8,10 +8,14 @@ if(NOT WIN32 OR MINGW)
+ endif()
+ 
+ ## utf8.h ##
+-execute_process(
+-	COMMAND git submodule update --init src/utf8
+-	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+-)
++FIND_PATH(UTF8_INCLUDE_DIR utf8.h)
++if(NOT UTF8_INCLUDE_DIR)
++  execute_process(
++    COMMAND git submodule update --init src/utf8
++    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
++    )
++  set(UTF8_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/utf8)
++endif()
+ 
+ ## zlib ##
+ find_package(ZLIB)
+diff --git a/src/openboardview/CMakeLists.txt b/src/openboardview/CMakeLists.txt
+index b0bdbe3..6c4564c 100644
+--- a/src/openboardview/CMakeLists.txt
++++ b/src/openboardview/CMakeLists.txt
+@@ -44,6 +44,7 @@ include_directories(
+ 	${CMAKE_CURRENT_SOURCE_DIR}
+ 	${CMAKE_CURRENT_SOURCE_DIR}/..
+ 	${IMGUI_INCLUDE_DIRS}
++	${UTF8_INCLUDE_DIR}
+ 	${GLAD_INCLUDE_DIRS}
+ 	${GTK_INCLUDE_DIRS}
+ 	${OPENGL_INCLUDE_DIR}
+-- 
+2.34.0
+
