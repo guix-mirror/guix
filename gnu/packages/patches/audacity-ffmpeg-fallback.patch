@@ -1,0 +1,66 @@
+From 3c20057d0cbbbed453a692d4dd4589d865808024 Mon Sep 17 00:00:00 2001
+From: Liliana Marie Prikler <liliana.prikler@gmail.com>
+Date: Sat, 29 Jan 2022 10:44:44 +0100
+Subject: [PATCH] Add pkg-config fallback for locating ffmpeg.
+
+Audacity >=3.1.0 no longer links against ffmpeg, but instead dynamically loads
+it.  This dynamic loading mechanism fails to properly locate libraries outside
+of LD_LIBRARY_PATH.
+
+See <https://issues.guix.gnu.org/53591>.
+---
+ libraries/lib-ffmpeg-support/CMakeLists.txt      |  8 ++++++++
+ libraries/lib-ffmpeg-support/FFmpegFunctions.cpp | 12 ++++++++++++
+ 2 files changed, 20 insertions(+)
+
+diff --git a/libraries/lib-ffmpeg-support/CMakeLists.txt b/libraries/lib-ffmpeg-support/CMakeLists.txt
+index 8c5f06d7c..00810e4d0 100644
+--- a/libraries/lib-ffmpeg-support/CMakeLists.txt
++++ b/libraries/lib-ffmpeg-support/CMakeLists.txt
+@@ -1,5 +1,7 @@
+ 
+ if (${_OPT}use_ffmpeg)
++   pkg_check_modules(FFMPEG libavcodec libavformat libavutil)
++
+    set( SOURCES
+       FFmpegTypes.h
+ 
+@@ -100,6 +102,12 @@ if (${_OPT}use_ffmpeg)
+       list(APPEND DEFINITIONS PRIVATE _DARWIN_C_SOURCE )
+    endif()
+ 
++   if (FFMPEG_FOUND)
++      pkg_get_variable(LIBAVCODEC_LIBDIR libavcodec libdir)
++      list(APPEND DEFINITIONS PRIVATE
++                  "-DFFMPEG_PC_LIBDIR=L\"${LIBAVCODEC_LIBDIR}\"")
++   endif()
++
+    audacity_library( lib-ffmpeg-support "${SOURCES}" "${LIBRARIES}"
+       "${DEFINITIONS}" ""
+    )
+diff --git a/libraries/lib-ffmpeg-support/FFmpegFunctions.cpp b/libraries/lib-ffmpeg-support/FFmpegFunctions.cpp
+index 66d085a0b..4eeb4aed3 100644
+--- a/libraries/lib-ffmpeg-support/FFmpegFunctions.cpp
++++ b/libraries/lib-ffmpeg-support/FFmpegFunctions.cpp
+@@ -238,6 +238,18 @@ struct FFmpegFunctions::Private final
+       if (library->IsLoaded())
+          return library;
+ 
++#if defined(FFMPEG_PC_LIBDIR)
++      {
++         static const wxString libdir{FFMPEG_PC_LIBDIR};
++         const wxString fullName = wxFileName(libdir, libraryName).GetFullPath();
++
++         auto library = std::make_shared<wxDynamicLibrary>(fullName);
++
++         if (library->IsLoaded())
++            return library;
++      }
++#endif
++
+       // Loading has failed.
+       // wxLogSysError doesn't report errors correctly on *NIX
+ #if defined(_WIN32)
+-- 
+2.34.0
+

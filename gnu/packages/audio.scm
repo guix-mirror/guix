@@ -738,6 +738,7 @@ engineers, musicians, soundtrack editors and composers.")
        (sha256
         (base32
          "189agx11361k9j958s6q5bngnnfx0rwaf0dwbjxy6fwvsb1wv3px"))
+       (patches (search-patches "audacity-ffmpeg-fallback.patch"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.
@@ -768,6 +769,7 @@ engineers, musicians, soundtrack editors and composers.")
            lame
            linux-libre-headers
            flac
+           ffmpeg
            libid3tag
            libjpeg-turbo
            libmad
