@@ -565,15 +565,16 @@ and it supports a very flexible form of test discovery.")
 (define-public doctest
   (package
     (name "doctest")
-    (version "2.4.6")
+    (version "2.4.8")
     (home-page "https://github.com/onqtam/doctest")
     (source (origin
               (method git-fetch)
-              (uri (git-reference (url home-page) (commit version)))
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "14m3q6d96zg6d99x1152jkly50gdjrn5ylrbhax53pfgfzzc5yqx"))))
+                "057wdkv3gcz42mh1j284sgvm16i5fk1f9b1plgvavca70q4p52gz"))))
     (build-system cmake-build-system)
     (synopsis "C++ test framework")
     (description
