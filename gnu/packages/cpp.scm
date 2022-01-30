@@ -469,7 +469,7 @@ functions, class methods, and stl containers.
               (file-name (git-file-name name version))
               (modules '((guix build utils)))
               (snippet '(delete-file-recursively "./test/thirdparty"))))
-    (native-inputs
+    (inputs
      (list catch-framework2-1))
     (build-system cmake-build-system)
     (arguments
