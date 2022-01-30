@@ -1038,10 +1038,10 @@ of programming tools as well as libraries with equivalent functionality.")
                    #:patches '("clang-3.5-libc-search-path.patch")))
 
 ;; Default LLVM and Clang version.
-(define-public llvm llvm-9)
-(define-public clang-runtime clang-runtime-9)
-(define-public clang clang-9)
-(define-public clang-toolchain clang-toolchain-9)
+(define-public llvm llvm-13)
+(define-public clang-runtime clang-runtime-13)
+(define-public clang clang-13)
+(define-public clang-toolchain clang-toolchain-13)
 
 (define-public llvm-for-rocm
   (package
@@ -1389,7 +1389,7 @@ standard C++ library.")
          (add-after 'unpack 'chdir
            (lambda _ (chdir "libclc") #t)))))
     (native-inputs
-     (list clang llvm python))
+     (list clang-9 llvm-9 python))
     (home-page "https://libclc.llvm.org")
     (synopsis "Libraries for the OpenCL programming language")
     (description
@@ -1418,7 +1418,7 @@ requirements according to version 1.1 of the OpenCL specification.")
                            "-DOPENMP_TEST_CXX_COMPILER=clang++")
        #:test-target "check-libomp"))
     (native-inputs
-     (list clang llvm perl pkg-config))
+     (list clang-9 llvm-9 perl pkg-config))
     (inputs
      (list `(,hwloc "lib")))
     (home-page "https://openmp.llvm.org")

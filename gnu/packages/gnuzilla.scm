@@ -567,7 +567,8 @@ in C/C++.")
     (native-inputs
      `(("autoconf" ,autoconf-2.13)
        ("automake" ,automake)
-       ("llvm" ,llvm)                   ;for llvm-objdump
+       ;; TODO(staging): Use the default LLVM in the next rebuild cycle.
+       ("llvm" ,llvm-9)                 ;for llvm-objdump
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python" ,python-3)

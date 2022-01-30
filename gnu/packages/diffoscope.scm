@@ -186,7 +186,7 @@
              hdf5
              imagemagick
              libarchive
-             llvm
+             llvm-9
              lz4
              mono
              ocaml

@@ -618,9 +618,9 @@ more.")
                         "|"))))))))
     (native-inputs
      (list bison
-           clang
+           clang-9
            flex
-           llvm
+           llvm-9
            pybind11
            python-wrapper))
     (inputs

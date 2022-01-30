@@ -290,8 +290,7 @@ back-end for the LLVM compiler framework.")
     (native-inputs
      (list libltdl pkg-config))
     (inputs
-     (list clang
-           `(,hwloc-2 "lib") llvm opencl-icd-loader))
+     (list clang-9 llvm-9 `(,hwloc-2 "lib") opencl-icd-loader))
     (arguments
      `(#:configure-flags
        (list "-DENABLE_ICD=ON"

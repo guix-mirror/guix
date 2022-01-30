@@ -8515,7 +8515,7 @@ headers.")
     (native-inputs
      (list bison flex))
     (inputs
-     `(("clang-toolchain" ,clang-toolchain)
+     `(("clang-toolchain" ,clang-toolchain-9)
        ("libbpf" ,(package-source libbpf))
        ;; LibElf required but libelf does not contain
        ;; archives, only object files.
@@ -8595,7 +8595,7 @@ and above.")
     (native-inputs
      (list bison flex))
     (inputs
-     (list bcc clang-toolchain elfutils libbpf))
+     (list bcc clang-toolchain-9 elfutils libbpf))
     (arguments
      `(#:tests? #f ;Tests require googletest sources.
        #:configure-flags

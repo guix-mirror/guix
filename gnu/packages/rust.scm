@@ -165,7 +165,7 @@
     (inputs
      `(("libcurl" ,curl)
        ("libssh2" ,libssh2)
-       ("llvm" ,llvm)
+       ("llvm" ,llvm-9)
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (native-inputs
@@ -493,7 +493,7 @@ ar = \"" binutils "/bin/ar" "\"
        ("which" ,which)))
     (inputs
      `(("jemalloc" ,jemalloc)
-       ("llvm" ,llvm)
+       ("llvm" ,llvm-9)
        ("openssl" ,openssl)
        ("libssh2" ,libssh2)             ; For "cargo"
        ("libcurl" ,curl)))              ; For "cargo"
