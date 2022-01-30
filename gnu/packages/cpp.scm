@@ -452,46 +452,43 @@ functions, class methods, and stl containers.
     (license license:bsd-3)))
 
 (define-public fifo-map
-  (let* ((commit "0dfbf5dacbb15a32c43f912a7e66a54aae39d0f9")
-         (revision "0")
-         (version (git-version "1.1.1" revision commit)))
-    (package
-      (name "fifo-map")
-      (version version)
-      (home-page "https://github.com/nlohmann/fifo_map")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url home-page)
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "0pi77b75kp0l7z454ihcd14nzpi3nc5m4nyjbsgy5f9bw3676196"))
-                (patches (search-patches "fifo-map-remove-catch.hpp.patch"
-                                         "fifo-map-fix-flags-for-gcc.patch"))
-                (file-name (git-file-name name version))
-                (modules '((guix build utils)))
-                (snippet '(delete-file-recursively "./test/thirdparty"))))
-      (native-inputs
-       (list catch-framework2-1))
-      (build-system cmake-build-system)
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (replace 'check
-             (lambda _
-               (invoke "./unit")))
-           (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (inc (string-append out "/include/fifo_map")))
-                 (with-directory-excursion "../source"
-                   (install-file "src/fifo_map.hpp" inc))))))))
-      (synopsis "FIFO-ordered associative container for C++")
-      (description "Fifo_map is a C++ header only library for associative
+  (package
+    (name "fifo-map")
+    (version "1.0.0")
+    (home-page "https://github.com/nlohmann/fifo_map")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "0y59fk6ycrgjln9liwcja3l5j1vxpa5i671bynpbsjlyq5f2560q"))
+              (patches (search-patches "fifo-map-remove-catch.hpp.patch"
+                                       "fifo-map-fix-flags-for-gcc.patch"))
+              (file-name (git-file-name name version))
+              (modules '((guix build utils)))
+              (snippet '(delete-file-recursively "./test/thirdparty"))))
+    (native-inputs
+     (list catch-framework2-1))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests? (invoke "./unit"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (inc (string-append out "/include/fifo_map")))
+               (with-directory-excursion "../source"
+                 (install-file "src/fifo_map.hpp" inc))))))))
+    (synopsis "FIFO-ordered associative container for C++")
+    (description "Fifo_map is a C++ header only library for associative
 container which uses the order in which keys were inserted to the container
 as ordering relation.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public json-modern-cxx
   (package
