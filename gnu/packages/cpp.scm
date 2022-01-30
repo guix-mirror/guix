@@ -534,10 +534,13 @@ as ordering relation.")
                             (assoc-ref %build-inputs "json_test_data")))
        #:phases (modify-phases %standard-phases
                   (replace 'check
-                    (lambda* (#:key tests? #:allow-other-keys)
+                    (lambda* (#:key tests? parallel-tests? #:allow-other-keys)
                       (if tests?
                           ;; Some tests need git and a full checkout, skip those.
-                          (invoke "ctest" "-LE" "git_required")
+                          (invoke "ctest" "-LE" "git_required"
+                                  "-j" (if parallel-tests?
+                                           (number->string (parallel-job-count))
+                                           "1"))
                           (format #t "test suite not run~%")))))))
     (native-inputs
      `(("amalgamate" ,amalgamate)
