@@ -68,6 +68,7 @@
 ;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2021 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2021 Foo Chuan Wei <chuanwei.foo@hotmail.com>
+;;; Copyright © 2022 Yovan Naumovski <yovan@gorski.stream>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4220,14 +4221,14 @@ world}, @uref{http://evolonline.org, Evol Online} and
 (define openttd-engine
   (package
     (name "openttd-engine")
-    (version "12.0")
+    (version "12.1")
     (source
      (origin (method url-fetch)
              (uri (string-append "https://cdn.openttd.org/openttd-releases/"
                                  version "/openttd-" version "-source.tar.xz"))
              (sha256
               (base32
-               "1p1j5cf4ry57dcgm7qx2g2s00z1c6qgjabb4kqjp00yz00wgv85v"))))
+               "1qz7ld55m9cvgr4mkv6c11y0zf2aph3ba605l45qj41hk2wzb2r5"))))
     (build-system cmake-build-system)
     (inputs
      `(("allegro" ,allegro)
