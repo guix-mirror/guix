@@ -1046,7 +1046,7 @@ protocol either in Wayland core, or some other protocol in wayland-protocols.")
 (define-public waylandpp
   (package
     (name "waylandpp")
-    (version "0.2.8")
+    (version "0.2.9")
     (home-page "https://github.com/NilsBrause/waylandpp")
     (source (origin
               (method git-fetch)
@@ -1054,7 +1054,7 @@ protocol either in Wayland core, or some other protocol in wayland-protocols.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1kxiqab48p0n97pwg8c2zx56wqq32m3rcq7qd2pjj33ipcanb3qq"))))
+                "0z4m30r609as3kpcgipivddr98y7h529r7ldn9ba4snhk341mfvk"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ; no tests
