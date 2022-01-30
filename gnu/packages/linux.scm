@@ -1999,8 +1999,8 @@ block devices, UUIDs, TTYs, and many other tools.")
    util-linux
    (name "util-linux-with-udev")
    (inputs
-    `(("udev" ,eudev)
-      ,@(package-inputs util-linux)))))
+    (modify-inputs (package-inputs util-linux)
+      (prepend eudev)))))
 
 ;; This is mostly equivalent to the upstream release version v2.37.3, except
 ;; that the upstream tarball was generated improperly, which breaks the build.
