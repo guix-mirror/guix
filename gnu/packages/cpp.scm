@@ -11,7 +11,7 @@
 ;;; Copyright © 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
-;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2020, 2022 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020, 2021 Greg Hogan <code@greghogan.com>
@@ -496,7 +496,7 @@ as ordering relation.")
 (define-public json-modern-cxx
   (package
     (name "json-modern-cxx")
-    (version "3.9.1")
+    (version "3.10.5")
     (home-page "https://github.com/nlohmann/json")
     (source
      (origin
@@ -504,7 +504,7 @@ as ordering relation.")
        (uri (git-reference (url home-page)
                            (commit (string-append "v" version))))
        (sha256
-        (base32 "0ar4mzp53lskxw3vdzw07f47njcshl3lwid9jfq6l7yx6ds2nyjc"))
+        (base32 "1f9mi45ilwjc2w92grjc53sw038840bjpn8yjf6wc6bxs2nijfqd"))
        (file-name (git-file-name name version))
        (modules '((guix build utils)))
        (snippet
@@ -513,7 +513,7 @@ as ordering relation.")
            ;; is a wrapper library added by this package.
            (install-file "./test/thirdparty/doctest/doctest_compatibility.h" "/tmp")
            (for-each delete-file-recursively
-                     '("./third_party" "./test/thirdparty" "./benchmarks/thirdparty"))
+                     '("./third_party" "./test/thirdparty"))
            (install-file "/tmp/doctest_compatibility.h" "./test/thirdparty/doctest")
 
            ;; Adjust for the unbundled fifo_map and doctest.
@@ -525,8 +525,7 @@ as ordering relation.")
                (substitute* files
                  (("#include ?\"(fifo_map.hpp)\"" all fifo-map-hpp)
                   (string-append
-                   "#include <fifo_map/" fifo-map-hpp ">")))))
-           #t))))
+                   "#include <fifo_map/" fifo-map-hpp ">")))))))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
@@ -534,18 +533,12 @@ as ordering relation.")
              (string-append "-DJSON_TestDataDirectory="
                             (assoc-ref %build-inputs "json_test_data")))
        #:phases (modify-phases %standard-phases
-                  ;; XXX: When tests are enabled, the install phase will cause
-                  ;; a needless rebuild without the given configure flags,
-                  ;; ultimately creating both $out/lib and $out/lib64.  Move
-                  ;; the check phase after install to work around it.
-                  (delete 'check)
-                  (add-after 'install 'check
+                  (replace 'check
                     (lambda* (#:key tests? #:allow-other-keys)
                       (if tests?
                           ;; Some tests need git and a full checkout, skip those.
                           (invoke "ctest" "-LE" "git_required")
-                          (format #t "test suite not run~%"))
-                      #t)))))
+                          (format #t "test suite not run~%")))))))
     (native-inputs
      `(("amalgamate" ,amalgamate)
        ("doctest" ,doctest)
