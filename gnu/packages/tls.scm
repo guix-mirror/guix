@@ -9,7 +9,7 @@
 ;;; Copyright © 2016, 2017, 2018 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017, 2018, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2017-2022 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
@@ -527,6 +527,34 @@ OpenSSL for TARGET."
               (sha256
                (base32
                 "15kcvdi69jka67sk1l3a50c26cb7xv9xiwdrgky4bji3ifz9k4gq"))))))
+
+(define-public openssl-3.0
+  (package
+    (inherit openssl)
+    (version "3.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (list (string-append "https://www.openssl.org/source/openssl-"
+                                        version ".tar.gz")
+                         (string-append "ftp://ftp.openssl.org/source/"
+                                        "openssl-" version ".tar.gz")
+                         (string-append "ftp://ftp.openssl.org/source/old/"
+                                        (string-trim-right version char-set:letter)
+                                        "/openssl-" version ".tar.gz")))
+              (patches (search-patches "openssl-3.0-c-rehash-in.patch"))
+              (sha256
+               (base32
+                "1l86kgn57av5yh711qp7c9zmi2haqmiah0ddxnbfgg2k6f2ss4f3"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments openssl)
+       ((#:phases phases '%standard-phases)
+        #~(modify-phases #$phases
+            (add-before 'configure 'configure-perl
+              (lambda* (#:key native-inputs inputs #:allow-other-keys)
+                (setenv "HASHBANGPERL"
+                        (search-input-file (or native-inputs inputs)
+                                           "/bin/perl"))))))))
+    (license license:asl2.0)))
 
 ;; We will not add any new uses of this package. If you add new code that uses
 ;; this package, your change will be reverted!

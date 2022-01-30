@@ -1,0 +1,18 @@
+This patch removes the explicit reference to the 'perl' binary,
+such that OpenSSL does not retain a reference to Perl.
+
+The 'c_rehash' program is seldom used, but it is used nonetheless
+to create symbolic links to certificates, for instance in the 'nss-certs'
+package.
+
+diff --git a/tools/c_rehash.in b/tools/c_rehash.in
+--- a/tools/c_rehash.in
++++ b/tools/c_rehash.in
+@@ -1,4 +1,6 @@
+-#!{- $config{HASHBANGPERL} -}
++eval '(exit $?0)' && eval 'exec perl -wS "$0" ${1+"$@"}'
++  & eval 'exec perl -wS "$0" $argv:q'
++    if 0;
+ {- use OpenSSL::Util; -}
+ # {- join("\n# ", @autowarntext) -}
+ # Copyright 1999-2021 The OpenSSL Project Authors. All Rights Reserved.
