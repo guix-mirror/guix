@@ -542,7 +542,7 @@ as ordering relation.")
                                            "1"))
                           (format #t "test suite not run~%")))))))
     (native-inputs
-     (list amalgamate doctest
+     (list amalgamate
            (let ((version "3.0.0"))
              (origin
                (method git-fetch)
@@ -554,7 +554,7 @@ as ordering relation.")
                 (base32
                  "0nzsjzlvk14dazwh7k2jb1dinb0pv9jbx5jsyn264wvva0y7daiv"))))))
     (inputs
-     (list fifo-map))
+     (list doctest fifo-map))
     (synopsis "JSON parser and printer library for C++")
     (description "JSON for Modern C++ is a C++ JSON library that provides
 intuitive syntax and trivial integration.")
