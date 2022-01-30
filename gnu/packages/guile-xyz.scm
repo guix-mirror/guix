@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012-2022 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017 Christine Lemmer-Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
@@ -97,6 +97,7 @@
   #:use-module (gnu packages nss)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages password-utils)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -4924,3 +4925,48 @@ features a parser to parse and serialize GraphQL documents, a type system to
 create GraphQL schemas, an execution engine to execute GraphQL queries, and a
 HTTP handler to implement a HTTP GraphQL endpoint.")
     (license license:agpl3+)))
+
+(define-public lokke
+  (let ((commit "92d36370dc6d218ff3bf315e56ebef93808c1b79")
+        (revision "1"))
+    (package
+      (name "lokke")
+      (version (git-version "0.0.0" revision commit))
+      (home-page "https://github.com/lokke-org/lokke")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1c913md4dcfb0x4n26wbx9wdw453wxg3c5rn49k3f6j8zjqv63yv"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-before 'bootstrap 'pre-bootstrap
+             (lambda _
+               (for-each patch-shebang
+                         '("setup" "gen-makefile"
+                           "dev/gen-module-paths"
+                           "dev/refresh"))
+               (invoke "./setup")))
+           (add-before 'build 'set-home
+             (lambda _
+               (setenv "HOME" (getcwd)))))))
+      (native-inputs
+       (list autoconf
+             automake
+             libtool
+             gnu-gettext
+             pkg-config
+             guile-3.0-for-lokke))
+      (inputs
+       (list pcre2))
+      (synopsis "Clojure implementation in Guile")
+      (description
+       "Lokke intends to provide a full dialect of Clojure for Guile.  It also
+consists of a set of Guile modules providing some of Clojure's functionality
+in two different guises.")
+      ;; Dual license: LGPLv2.1+ or EPLv1.0+ at the user's option.
+      (license (list license:lgpl2.1+ license:epl1.0)))))

@@ -391,6 +391,17 @@ without requiring the source code to be rewritten.")
 (define-public guile-3.0-latest
   guile-3.0)
 
+(define-public guile-3.0-for-lokke
+  ;; Work around a bug in 3.0.7 regarding #nil handling by psyntax:
+  ;; <https://bugs.gnu.org/49305>.  TODO: Replace by 3.0.8 when it's out.
+  (hidden-package
+   (package/inherit guile-3.0
+     (version (string-append (package-version guile-3.0) ".1"))
+     (source (origin
+               (inherit (package-source guile-3.0))
+               (patches (cons (search-patch "guile-3.0.7-psyntax-nil.patch")
+                              (origin-patches (package-source guile-3.0)))))))))
+
 (define-public guile-3.0/libgc-7
   ;; Using libgc-7 avoid crashes that can occur, particularly when loading
   ;; data in to the Guix Data Service:

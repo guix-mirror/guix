@@ -1,0 +1,63 @@
+commit d79a226359d28f4a1dc5df136e5544d699903a96
+Author: Rob Browning <rlb@defaultvalue.org>
+Date:   Sat Jul 3 14:01:12 2021 -0500
+
+    Fix crash on #nil in syntaxes
+    
+    In 3.0.7 (after 0cc799185576712d69f11fc794454f2f5447bef7 "Ensure
+    that (syntax ()) results in ("), the use of #nil in syntax-rules
+    expansions like this:
+    
+      (define-syntax foo
+        (syntax-rules ()
+          ((_ x) (eq? #nil x))))
+    
+      (foo #t)
+    
+    could cause a crash that looks like this:
+    
+      ice-9/psyntax.scm:2795:12: In procedure syntax-violation:
+      Syntax error:
+      unknown location: unexpected syntax in form ()
+    
+    To fix it, add another special case (the commit mentioned above
+    special-cased the empty list) to preserve #nil
+    
+    * module/ice-9/psyntax.scm (gen-syntax): Preserve #nil.
+    * test-suite/tests/syntax.test: Test #nil in syntax expansions.
+    
+    Closes: 49305
+
+diff --git a/module/ice-9/psyntax.scm b/module/ice-9/psyntax.scm
+index 663d9275a..bd4bd6723 100644
+--- a/module/ice-9/psyntax.scm
++++ b/module/ice-9/psyntax.scm
+@@ -2157,6 +2157,7 @@
+                       (lambda ()
+                         (gen-syntax src #'(e1 e2 ...) r maps ellipsis? mod))
+                     (lambda (e maps) (values (gen-vector e) maps))))
++                 (x (eq? (syntax->datum #'x) #nil) (values '(quote #nil) maps))
+                  (() (values '(quote ()) maps))
+                  (_ (values `(quote ,e) maps))))))
+ 
+diff --git a/test-suite/tests/syntax.test b/test-suite/tests/syntax.test
+index a2999ac43..510e7104d 100644
+--- a/test-suite/tests/syntax.test
++++ b/test-suite/tests/syntax.test
+@@ -1684,6 +1684,16 @@
+         (hash interpreted most-positive-fixnum)
+       (hash compiled most-positive-fixnum))))
+ 
++(with-test-prefix "#nil in syntaxes"
++  (pass-if-equal "does not crash"
++      42
++    (let ()
++      (define-syntax foo
++        (syntax-rules ()
++          ;; In 3.0.7 this would crash with
++          ;;   unknown location: unexpected syntax in form ()
++          ((_ x) (when (eq? x #nil) 42))))
++      (foo #nil))))
+ 
+ ;;; Local Variables:
+ ;;; eval: (put 'pass-if-syntax-error 'scheme-indent-function 1)
