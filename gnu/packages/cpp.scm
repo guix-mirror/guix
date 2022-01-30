@@ -528,7 +528,9 @@ as ordering relation.")
      '(#:configure-flags
        (list "-DJSON_MultipleHeaders=ON" ; For json_fwd.hpp.
              (string-append "-DJSON_TestDataDirectory="
-                            (assoc-ref %build-inputs "json_test_data")))
+                            (dirname
+                             (search-input-directory %build-inputs
+                                                     "json_nlohmann_tests"))))
        #:phases (modify-phases %standard-phases
                   (replace 'check
                     (lambda* (#:key tests? parallel-tests? #:allow-other-keys)
@@ -540,19 +542,17 @@ as ordering relation.")
                                            "1"))
                           (format #t "test suite not run~%")))))))
     (native-inputs
-     `(("amalgamate" ,amalgamate)
-       ("doctest" ,doctest)
-       ("json_test_data"
-        ,(let ((version "3.0.0"))
-           (origin
-             (method git-fetch)
-             (uri (git-reference
-                   (url "https://github.com/nlohmann/json_test_data")
-                   (commit (string-append "v" version))))
-             (file-name (git-file-name "json_test_data" version))
-             (sha256
-              (base32
-               "0nzsjzlvk14dazwh7k2jb1dinb0pv9jbx5jsyn264wvva0y7daiv")))))))
+     (list amalgamate doctest
+           (let ((version "3.0.0"))
+             (origin
+               (method git-fetch)
+               (uri (git-reference
+                     (url "https://github.com/nlohmann/json_test_data")
+                     (commit (string-append "v" version))))
+               (file-name (git-file-name "json_test_data" version))
+               (sha256
+                (base32
+                 "0nzsjzlvk14dazwh7k2jb1dinb0pv9jbx5jsyn264wvva0y7daiv"))))))
     (inputs
      (list fifo-map))
     (synopsis "JSON parser and printer library for C++")
