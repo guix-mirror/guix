@@ -421,7 +421,6 @@ variety of formats.")
            libvorbis
            oxygen-icons ; default icon set
            qtbase-5
-           qtwebkit
            shared-mime-info
            solid
            sox
