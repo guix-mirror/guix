@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2018, 2019, 2020, 2022 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
@@ -279,13 +279,13 @@ subplots, multiple-axes, polar charts, and bubble charts.")
 (define-public python-louvain
   (package
     (name "python-louvain")
-    (version "0.15")
+    (version "0.16")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-louvain" version))
        (sha256
-        (base32 "1sqp97fwh4asx0jr72x8hil8z8fcg2xq92jklmh2m599pvgnx19a"))))
+        (base32 "0sx53l555rwq0z7if8agirjgw4ddp8r9b949wwz8vlig03sjvfmp"))))
     (build-system python-build-system)
     (native-inputs
      (list python-setuptools))          ;for use_2to3 support
