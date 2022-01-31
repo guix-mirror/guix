@@ -22728,7 +22728,7 @@ N-dimensional arrays for Python.")
 (define-public python-anndata
   (package
     (name "python-anndata")
-    (version "0.7.6")
+    (version "0.7.8")
     (source
      (origin
        ;; The tarball from PyPi doesn't include tests.
@@ -22739,7 +22739,7 @@ N-dimensional arrays for Python.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1q30bsfsq9xfqm8nmabg3bjh9gix3yng0170xiiyw1lin4xncf0q"))))
+         "1rrr9xfdaf00ixj5gyym75bl78gkaj55yfw3wjhvx0pdwqpwp9py"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -22754,6 +22754,9 @@ N-dimensional arrays for Python.")
          (replace 'build
            (lambda _
              (setenv "SETUPTOOLS_SCM_PRETEND_VERSION" ,version)
+             (substitute* "anndata/_metadata.py"
+               (("__version__ =.*")
+                (string-append "__version__ = \"" ,version "\"\n")))
              ;; ZIP does not support timestamps before 1980.
              (setenv "SOURCE_DATE_EPOCH" "315532800")
              (invoke "flit" "build")))
@@ -22765,8 +22768,7 @@ N-dimensional arrays for Python.")
                            (format #true wheel)
                            (invoke "python" "-m" "pip" "install"
                                    wheel (string-append "--prefix=" out)))
-                         (find-files "dist" "\\.whl$")))
-             #t)))))
+                         (find-files "dist" "\\.whl$"))))))))
     (propagated-inputs
      (list python-h5py
            python-importlib-metadata
@@ -22775,6 +22777,7 @@ N-dimensional arrays for Python.")
            python-packaging
            python-pandas
            python-scipy
+           python-xlrd-1
            python-zarr))
     (native-inputs
      (list python-joblib python-pytest python-toml python-flit
