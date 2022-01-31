@@ -9,6 +9,7 @@
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 Foo Chuan Wei <chuanwei.foo@hotmail.com>
+;;; Copyright © 2022 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -615,7 +616,7 @@ error reporting, better tracing, profiling, and a debugger.")
 (define-public rr
   (package
     (name "rr")
-    (version "5.4.0")
+    (version "5.5.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -623,7 +624,7 @@ error reporting, better tracing, profiling, and a debugger.")
                     (commit version)))
               (sha256
                (base32
-                "1sfldgkkmsdyaqa28i5agcykc63gwm3zjihd64g86i852w8al2w6"))
+                "079x891axkiy8qbvjar9vbaldlx7pm9p0i3nq6infdc66nc69635"))
               (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
