@@ -15582,6 +15582,69 @@ aligner.")
     ;; bwa itself is licenced under GNU General Public License v3.0.
     (license license:mpl2.0)))
 
+(define-public scvelo
+  (package
+    (name "scvelo")
+    (version "0.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "scvelo" version))
+       (sha256
+        (base32 "0h5ha1459ljs0qgpnlfsw592i8dxqn6p9bl08l1ikpwk36baxb7z"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Numba needs a writable dir to cache functions.
+         (add-before 'check 'set-numba-cache-dir
+           (lambda _
+             (setenv "NUMBA_CACHE_DIR" "/tmp")))
+         (replace 'check
+           (lambda* (#:key outputs tests? #:allow-other-keys)
+             (when tests?
+               ;; The discovered test file names must match the names of the
+               ;; compiled files, so we cannot run the tests from
+               ;; /tmp/guix-build-*.
+               (with-directory-excursion
+                   (string-append (assoc-ref outputs "out")
+                                  "/lib/python3.9/site-packages/scvelo/core/tests/")
+                 (invoke "pytest" "-v"))))))))
+    (propagated-inputs
+     (list python-anndata
+           python-hnswlib
+           python-isort
+           python-igraph
+           python-loompy
+           python-louvain
+           python-matplotlib
+           python-numba
+           python-numpy
+           python-pandas
+           python-scanpy
+           python-scikit-learn
+           python-scipy
+           python-umap-learn
+           pybind11))
+    (native-inputs
+     (list python-black
+           python-flake8
+           python-hypothesis
+           python-pre-commit
+           python-pytest
+           python-setuptools-scm
+           python-wheel))
+    (home-page "https://scvelo.org")
+    (synopsis "RNA velocity generalized through dynamical modeling")
+    (description "ScVelo is a scalable toolkit for RNA velocity analysis in
+single cells.  RNA velocity enables the recovery of directed dynamic
+information by leveraging splicing kinetics. scVelo generalizes the concept of
+RNA velocity by relaxing previously made assumptions with a stochastic and a
+dynamical model that solves the full transcriptional dynamics.  It thereby
+adapts RNA velocity to widely varying specifications such as non-stationary
+populations.")
+    (license license:bsd-3)))
+
 (define-public scregseg
   (package
     (name "scregseg")
