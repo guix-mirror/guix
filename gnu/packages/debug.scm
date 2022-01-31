@@ -746,13 +746,13 @@ use than similar tools like @command{mtrace}.")
 (define-public cgdb
   (package
     (name "cgdb")
-    (version "0.7.1")
+    (version "0.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://cgdb.me/files/cgdb-" version ".tar.gz"))
        (sha256
-        (base32 "1671gpz5gx5j0zga8xy2x7h33vqh3nij93lbb6dbb366ivjknwmv"))))
+        (base32 "1w8ib2vg3pg68d9hh97fw5042c73i9nqavdddc87n9bpscjbaf0d"))))
     (build-system gnu-build-system)
     (inputs
      (list ncurses readline))
