@@ -375,17 +375,17 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 ;; The "longterm" kernels — the older releases with long-term upstream support.
 ;; Here are the support timelines:
 ;; <https://www.kernel.org/category/releases.html>
-(define-public linux-libre-5.15-version "5.15.17")
+(define-public linux-libre-5.15-version "5.15.18")
 (define-public linux-libre-5.15-gnu-revision "gnu")
 (define deblob-scripts-5.15
   (linux-libre-deblob-scripts
    linux-libre-5.15-version
    linux-libre-5.15-gnu-revision
    (base32 "1rfhwfzifmbpnrhmrn3srm736nkm1v6affw915d0fgqzqgi8qfai")
-   (base32 "15ni12b5nk3ff66i5bh4dzrpgqsgdw8n6v685hi2ps3wgah5mp13")))
+   (base32 "0mxm0wy3fyg7fn2n8k9b4zh62l4q00b4y9zf46im691zscwgikc2")))
 (define-public linux-libre-5.15-pristine-source
   (let ((version linux-libre-5.15-version)
-        (hash (base32 "1pmbf3xin533z4jpqj8p733ii5zk0k36v4cpzl14k62rrk0gb1r7")))
+        (hash (base32 "0pkcg3cns4l1i5r7ab77pksl76h54g2mnhvdhc1k8skp9pl71p91")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.15)))
