@@ -290,22 +290,17 @@ commands would.")
 (define-public i3-wm
   (package
     (name "i3-wm")
-    (version "4.18.3")
+    (version "4.20.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://i3wm.org/downloads/i3-"
-                                  version ".tar.bz2"))
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "03dijnwv2n8ak9jq59fhq0rc80m5wjc9d54fslqaivnnz81pkbjk"))))
-    (build-system gnu-build-system)
+                "1rpwdgykcvmrmdz244f0wm7446ih1dcw8rlc1hm1c7cc42pyrq93"))))
+    (build-system meson-build-system)
     (arguments
-     `(#:configure-flags
-       ;; The build system tries to build in a separate directory, but that
-       ;; seems to be unnecessary.
-       (list "--disable-builddir")
-
-       ;; The test suite requires the unpackaged Xephyr X server.
+     `(;; The test suite requires the unpackaged Xephyr X server.
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
