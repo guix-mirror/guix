@@ -898,6 +898,7 @@ generated list of fallback fonts are checked.")
       ("glib" ,glib "bin")
       ("gobject-introspection" ,gobject-introspection)
       ("pkg-config" ,pkg-config)
+      ("python-wrapper" ,python-wrapper)
       ("vala" ,vala-0.52)
       ("yelp-tools" ,yelp-tools)))
    (inputs
