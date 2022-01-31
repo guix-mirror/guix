@@ -21394,7 +21394,7 @@ Data type representing the configuration for @code{pulseaudio-service}.
 @table @asis
 @item @code{client-conf} (default: @code{'()})
 List of settings to set in @file{client.conf}.
-Accepts a list of strings or a symbol-value pairs.  A string will be
+Accepts a list of strings or symbol-value pairs.  A string will be
 inserted as-is with a newline added.  A pair will be formatted as
 ``key = value'', again with a newline added.
 
