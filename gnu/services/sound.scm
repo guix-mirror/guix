@@ -159,7 +159,8 @@ ctl.!default {
    (extensions
     (list (service-extension session-environment-service-type
                              pulseaudio-environment)
-          (service-extension etc-service-type pulseaudio-etc)))
+          (service-extension etc-service-type pulseaudio-etc)
+          (service-extension udev-service-type (const (list pulseaudio)))))
    (default-value (pulseaudio-configuration))
    (description "Configure PulseAudio sound support.")))
 
