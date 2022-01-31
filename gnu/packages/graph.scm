@@ -55,6 +55,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
@@ -298,10 +299,10 @@ subplots, multiple-axes, polar charts, and bubble charts.")
 algorithm for community detection in large networks.")
     (license license:bsd-3)))
 
-(define-public python-louvain-0.6
+(define-public python-louvain-0.7
   (package
     (name "python-louvain")
-    (version "0.6.1")
+    (version "0.7.1")
     ;; The tarball on Pypi does not include the tests.
     (source (origin
               (method git-fetch)
@@ -311,14 +312,34 @@ algorithm for community detection in large networks.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0w31537sifkf65sck1iaip5i6d8g64pa3wdwad83d6p9jwkck57k"))))
+                "1g6b5c2jgwagnhnqh859g61h7x6a81d8hm3g6mkin6kzwafww3g2"))))
     (build-system python-build-system)
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'build 'pretend-version
+            ;; The version string is usually derived via setuptools-scm, but
+            ;; without the git metadata available this fails.
+            (lambda _
+              (setenv "SETUPTOOLS_SCM_PRETEND_VERSION" #$version)))
+          (add-before 'build 'find-igraph
+            (lambda* (#:key inputs #:allow-other-keys)
+              (setenv "IGRAPH_EXTRA_INCLUDE_PATH"
+                      (string-append (assoc-ref inputs "igraph")
+                                     "/include/igraph:"
+                                     (getenv "C_INCLUDE_PATH")))
+              (setenv "IGRAPH_EXTRA_LIBRARY_PATH"
+                      (getenv "LIBRARY_PATH")))))))
     (propagated-inputs
      (list python-ddt python-igraph))
     (inputs
      (list igraph))
     (native-inputs
-     (list pkg-config python-pytest))
+     (list pkg-config
+           python-pytest
+           python-setuptools-scm
+           python-wheel))
     (home-page "https://github.com/vtraag/louvain-igraph")
     (synopsis "Algorithm for methods of community detection in large networks")
     (description

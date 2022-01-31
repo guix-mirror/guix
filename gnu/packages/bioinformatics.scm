@@ -12027,7 +12027,7 @@ implementation differs in these ways:
            python-igraph
            python-joblib
            python-legacy-api-wrap
-           python-louvain-0.6
+           python-louvain-0.7
            python-matplotlib
            python-natsort
            python-networkx
