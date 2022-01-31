@@ -11419,6 +11419,32 @@ Unicode-aware.  It is not intended as an end-user tool.")
 (define-public python2-xlrd
   (package-with-python2 python-xlrd))
 
+;; We need this for python-anndata
+(define-public python-xlrd-1
+  (package
+    (inherit python-xlrd)
+    (name "python-xlrd")
+    (version "1.2.0")
+    (source (origin
+              ;; The tests are not included in the PyPI archive.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/python-excel/xlrd")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0sm5p0ii5ayh52ak1jpw0n1kgsv72vdwwp8c3z13l8yf4irsb587"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Some tests depend on writing a temporary file to the user's home
+         ;; directory.
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             (setenv "HOME" "/tmp"))))))))
+
 ;;; Note: this package is unmaintained since 2018 (archived on GitHub).
 (define-public python-xlwt
   (package
