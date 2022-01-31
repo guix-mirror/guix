@@ -2218,7 +2218,7 @@ well as many of the command line options.")
 (define-public bwa-meth
   (package
     (name "bwa-meth")
-    (version "0.2.2")
+    (version "0.2.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2227,7 +2227,7 @@ well as many of the command line options.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "17j31i7zws5j7mhsq9x3qgkxly6mlmrgwhfq0qbflgxrmx04yaiz"))))
+                "0c695lkrr0996zwkibl7324wg2vxmn6522sz30xv4a9gaf0lnbh3"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
