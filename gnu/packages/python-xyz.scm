@@ -9615,11 +9615,28 @@ SVG, EPS, PNG and terminal output.")
        (uri (pypi-uri "seaborn" version))
        (sha256
         (base32 "1xpl3zb945sihsiwm9q1yyx84sakk1phcg0fprj6i0j0dllfjifg"))
-       (patches (search-patches "python-seaborn-kde-test.patch"))))
+       (patches (search-patches "python-seaborn-kde-test.patch"
+                                "python-seaborn-2690.patch"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-more-tests
+           (lambda _
+             (substitute* "seaborn/tests/test_distributions.py"
+               (("get_contour_color\\(ax\\.collections\\[0\\]\\)")
+                "get_contour_color(ax.collections[0])")
+               (("c\\.get_color\\(\\)") "get_contour_color(c)")
+
+               ;; These three are borked and have been fixed upstream, but
+               ;; there's no simple patch we could apply here, so we just
+               ;; disable them.
+               (("def test_hue_ignores_cmap")
+                "def skip_test_hue_ignores_cmap")
+               (("def test_fill_artists")
+                "def skip_test_fill_artists")
+               (("def test_with_rug")
+                "def skip_test_with_rug"))))
          (add-before 'check 'start-xserver
            (lambda _
              ;; There must be a running X server and make check doesn't

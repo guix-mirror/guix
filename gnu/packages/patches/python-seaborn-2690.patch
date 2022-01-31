@@ -1,0 +1,268 @@
+This patch was adapted from the upstream pull request 2690.
+
+From ebd6812d48f5b8ed1ebb7d79bda0b2a7b9ae2812 Mon Sep 17 00:00:00 2001
+From: Michael Waskom <mwaskom@gmail.com>
+Date: Sun, 31 Oct 2021 15:09:27 -0400
+Subject: [PATCH 1/4] Update boxplot tests for mpl3.5 compatability
+
+---
+ seaborn/tests/test_categorical.py | 30 +++++++++++++++++++-----------
+ 1 file changed, 19 insertions(+), 11 deletions(-)
+
+diff --git a/seaborn/tests/test_categorical.py b/seaborn/tests/test_categorical.py
+index d4e09b703..488fad2d6 100644
+--- a/seaborn/tests/test_categorical.py
++++ b/seaborn/tests/test_categorical.py
+@@ -110,6 +110,11 @@ class CategoricalFixture:
+     df = pd.DataFrame(dict(y=y, g=g, h=h, u=u))
+     x_df["W"] = g
+ 
++    def get_box_artists(self, ax):
++
++        # Exclude labeled patches, which are for the legend
++        return [p for p in ax.patches if not p.get_label()]
++
+ 
+ class TestCategoricalPlotter(CategoricalFixture):
+ 
+@@ -855,12 +863,12 @@ def test_hue_offsets(self):
+     def test_axes_data(self):
+ 
+         ax = cat.boxplot(x="g", y="y", data=self.df)
+-        assert len(ax.artists) == 3
++        assert len(self.get_box_artists(ax)) == 3
+ 
+         plt.close("all")
+ 
+         ax = cat.boxplot(x="g", y="y", hue="h", data=self.df)
+-        assert len(ax.artists) == 6
++        assert len(self.get_box_artists(ax)) == 6
+ 
+         plt.close("all")
+ 
+@@ -868,14 +876,14 @@ def test_box_colors(self):
+ 
+         ax = cat.boxplot(x="g", y="y", data=self.df, saturation=1)
+         pal = palettes.color_palette(n_colors=3)
+-        for patch, color in zip(ax.artists, pal):
++        for patch, color in zip(self.get_box_artists(ax), pal):
+             assert patch.get_facecolor()[:3] == color
+ 
+         plt.close("all")
+ 
+         ax = cat.boxplot(x="g", y="y", hue="h", data=self.df, saturation=1)
+         pal = palettes.color_palette(n_colors=2)
+-        for patch, color in zip(ax.artists, pal * 2):
++        for patch, color in zip(self.get_box_artists(ax), pal * 2):
+             assert patch.get_facecolor()[:3] == color
+ 
+         plt.close("all")
+@@ -884,7 +892,7 @@ def test_draw_missing_boxes(self):
+ 
+         ax = cat.boxplot(x="g", y="y", data=self.df,
+                          order=["a", "b", "c", "d"])
+-        assert len(ax.artists) == 3
++        assert len(self.get_box_artists(ax)) == 3
+ 
+     def test_missing_data(self):
+ 
+@@ -894,13 +902,13 @@ def test_missing_data(self):
+         y[-2:] = np.nan
+ 
+         ax = cat.boxplot(x=x, y=y)
+-        assert len(ax.artists) == 3
++        assert len(self.get_box_artists(ax)) == 3
+ 
+         plt.close("all")
+ 
+         y[-1] = 0
+         ax = cat.boxplot(x=x, y=y, hue=h)
+-        assert len(ax.artists) == 7
++        assert len(self.get_box_artists(ax)) == 7
+ 
+         plt.close("all")
+ 
+@@ -2766,11 +2774,11 @@ def test_plot_elements(self):
+ 
+         g = cat.catplot(x="g", y="y", data=self.df, kind="box")
+         want_artists = self.g.unique().size
+-        assert len(g.ax.artists) == want_artists
++        assert len(self.get_box_artists(g.ax)) == want_artists
+ 
+         g = cat.catplot(x="g", y="y", hue="h", data=self.df, kind="box")
+         want_artists = self.g.unique().size * self.h.unique().size
+-        assert len(g.ax.artists) == want_artists
++        assert len(self.get_box_artists(g.ax)) == want_artists
+ 
+         g = cat.catplot(x="g", y="y", data=self.df,
+                         kind="violin", inner=None)
+@@ -3137,14 +3145,14 @@ def test_box_colors(self):
+ 
+         ax = cat.boxenplot(x="g", y="y", data=self.df, saturation=1)
+         pal = palettes.color_palette(n_colors=3)
+-        for patch, color in zip(ax.artists, pal):
++        for patch, color in zip(self.get_box_artists(ax), pal):
+             assert patch.get_facecolor()[:3] == color
+ 
+         plt.close("all")
+ 
+         ax = cat.boxenplot(x="g", y="y", hue="h", data=self.df, saturation=1)
+         pal = palettes.color_palette(n_colors=2)
+-        for patch, color in zip(ax.artists, pal * 2):
++        for patch, color in zip(self.get_box_artists(ax), pal * 2):
+             assert patch.get_facecolor()[:3] == color
+ 
+         plt.close("all")
+
+From ff78ed38817a346e760194ab3b03b28d7ea3ba1b Mon Sep 17 00:00:00 2001
+From: Michael Waskom <mwaskom@gmail.com>
+Date: Sun, 31 Oct 2021 15:50:54 -0400
+Subject: [PATCH 2/4] Update kdeplot tests for mpl3.5 compatability
+
+---
+ seaborn/tests/test_distributions.py | 53 ++++++++++++++++++++---------
+ 1 file changed, 37 insertions(+), 16 deletions(-)
+
+diff --git a/seaborn/tests/test_distributions.py b/seaborn/tests/test_distributions.py
+index d241fd978..466efb69e 100644
+--- a/seaborn/tests/test_distributions.py
++++ b/seaborn/tests/test_distributions.py
+@@ -39,6 +39,27 @@
+ )
+ 
+ 
++def get_contour_coords(c):
++    """Provide compatability for change in contour artist type in mpl3.5."""
++    # See https://github.com/matplotlib/matplotlib/issues/20906
++    if isinstance(c, mpl.collections.LineCollection):
++        return c.get_segments()
++    elif isinstance(c, mpl.collections.PathCollection):
++        return [p.vertices[:np.argmax(p.codes) + 1] for p in c.get_paths()]
++
++
++def get_contour_color(c):
++    """Provide compatability for change in contour artist type in mpl3.5."""
++    # See https://github.com/matplotlib/matplotlib/issues/20906
++    if isinstance(c, mpl.collections.LineCollection):
++        return c.get_color()
++    elif isinstance(c, mpl.collections.PathCollection):
++        if c.get_facecolor().size:
++            return c.get_facecolor()
++        else:
++            return c.get_edgecolor()
++
++
+ class TestDistPlot(object):
+ 
+     rs = np.random.RandomState(0)
+@@ -902,7 +923,7 @@ def test_fill_artists(self, long_df):
+             f, ax = plt.subplots()
+             kdeplot(data=long_df, x="x", y="y", hue="c", fill=fill)
+             for c in ax.collections:
+-                if fill:
++                if fill or Version(mpl.__version__) >= Version("3.5.0b0"):
+                     assert isinstance(c, mpl.collections.PathCollection)
+                 else:
+                     assert isinstance(c, mpl.collections.LineCollection)
+@@ -918,8 +939,8 @@ def test_common_norm(self, rng):
+         kdeplot(x=x, y=y, hue=hue, common_norm=True, ax=ax1)
+         kdeplot(x=x, y=y, hue=hue, common_norm=False, ax=ax2)
+ 
+-        n_seg_1 = sum([len(c.get_segments()) > 0 for c in ax1.collections])
+-        n_seg_2 = sum([len(c.get_segments()) > 0 for c in ax2.collections])
++        n_seg_1 = sum([len(get_contour_coords(c)) > 0 for c in ax1.collections])
++        n_seg_2 = sum([len(get_contour_coords(c)) > 0 for c in ax2.collections])
+         assert n_seg_2 > n_seg_1
+ 
+     def test_log_scale(self, rng):
+@@ -946,7 +967,7 @@ def test_log_scale(self, rng):
+         ax2.contour(10 ** xx, yy, density, levels=levels)
+ 
+         for c1, c2 in zip(ax1.collections, ax2.collections):
+-            assert_array_equal(c1.get_segments(), c2.get_segments())
++            assert_array_equal(get_contour_coords(c1), get_contour_coords(c2))
+ 
+     def test_bandwidth(self, rng):
+ 
+@@ -959,7 +980,7 @@ def test_bandwidth(self, rng):
+         kdeplot(x=x, y=y, bw_adjust=2, ax=ax2)
+ 
+         for c1, c2 in zip(ax1.collections, ax2.collections):
+-            seg1, seg2 = c1.get_segments(), c2.get_segments()
++            seg1, seg2 = get_contour_coords(c1), get_contour_coords(c2)
+             if seg1 + seg2:
+                 x1 = seg1[0][:, 0]
+                 x2 = seg2[0][:, 0]
+@@ -980,9 +1001,9 @@ def test_weights(self, rng):
+         kdeplot(x=x, y=y, hue=hue, weights=weights, ax=ax2)
+ 
+         for c1, c2 in zip(ax1.collections, ax2.collections):
+-            if c1.get_segments() and c2.get_segments():
+-                seg1 = np.concatenate(c1.get_segments(), axis=0)
+-                seg2 = np.concatenate(c2.get_segments(), axis=0)
++            if get_contour_coords(c1) and get_contour_coords(c2):
++                seg1 = np.concatenate(get_contour_coords(c1), axis=0)
++                seg2 = np.concatenate(get_contour_coords(c2), axis=0)
+                 assert not np.array_equal(seg1, seg2)
+ 
+     def test_hue_ignores_cmap(self, long_df):
+@@ -1030,7 +1051,7 @@ def test_levels_and_thresh(self, long_df):
+         kdeplot(**plot_kws, levels=np.linspace(thresh, 1, n), ax=ax2)
+ 
+         for c1, c2 in zip(ax1.collections, ax2.collections):
+-            assert_array_equal(c1.get_segments(), c2.get_segments())
++            assert_array_equal(get_contour_coords(c1), get_contour_coords(c2))
+ 
+         with pytest.raises(ValueError):
+             kdeplot(**plot_kws, levels=[0, 1, 2])
+@@ -1042,7 +1063,7 @@ def test_levels_and_thresh(self, long_df):
+         kdeplot(**plot_kws, levels=n, thresh=0, ax=ax2)
+ 
+         for c1, c2 in zip(ax1.collections, ax2.collections):
+-            assert_array_equal(c1.get_segments(), c2.get_segments())
++            assert_array_equal(get_contour_coords(c1), get_contour_coords(c2))
+         for c1, c2 in zip(ax1.collections, ax2.collections):
+             assert_array_equal(c1.get_facecolors(), c2.get_facecolors())
+ 
+@@ -2322,13 +2343,13 @@ def test_bivariate_kde_norm(self, rng):
+         z = [0] * 80 + [1] * 20
+ 
+         g = displot(x=x, y=y, col=z, kind="kde", levels=10)
+-        l1 = sum(bool(c.get_segments()) for c in g.axes.flat[0].collections)
+-        l2 = sum(bool(c.get_segments()) for c in g.axes.flat[1].collections)
++        l1 = sum(bool(get_contour_coords(c)) for c in g.axes.flat[0].collections)
++        l2 = sum(bool(get_contour_coords(c)) for c in g.axes.flat[1].collections)
+         assert l1 > l2
+ 
+         g = displot(x=x, y=y, col=z, kind="kde", levels=10, common_norm=False)
+-        l1 = sum(bool(c.get_segments()) for c in g.axes.flat[0].collections)
+-        l2 = sum(bool(c.get_segments()) for c in g.axes.flat[1].collections)
++        l1 = sum(bool(get_contour_coords(c)) for c in g.axes.flat[0].collections)
++        l2 = sum(bool(get_contour_coords(c)) for c in g.axes.flat[1].collections)
+         assert l1 == l2
+ 
+     def test_bivariate_hist_norm(self, rng):
+
+From a20ce3fabeb23c97b5827d9fb0c6a96ac109ea64 Mon Sep 17 00:00:00 2001
+From: Michael Waskom <mwaskom@gmail.com>
+Date: Sun, 31 Oct 2021 16:10:47 -0400
+Subject: [PATCH 3/4] Update legend tests for mpl3.5 compatability
+
+---
+ seaborn/tests/test_distributions.py | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/seaborn/tests/test_distributions.py b/seaborn/tests/test_distributions.py
+index 466efb69e..024fe7541 100644
+--- a/seaborn/tests/test_distributions.py
++++ b/seaborn/tests/test_distributions.py
+@@ -872,7 +872,7 @@ def test_legend(self, long_df):
+         for label, level in zip(legend_labels, order):
+             assert label.get_text() == level
+ 
+-        legend_artists = ax.legend_.findobj(mpl.lines.Line2D)[::2]
++        legend_artists = ax.legend_.findobj(mpl.lines.Line2D)
+         palette = color_palette()
+         for artist, color in zip(legend_artists, palette):
+             assert_colors_equal(artist.get_color(), color)
+
