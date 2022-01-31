@@ -35811,8 +35811,20 @@ bootloader boot menu:
 @table @code
 
 @item describe
-Describe the current system generation: its file name, the kernel and
+Describe the running system generation: its file name, the kernel and
 bootloader used, etc., as well as provenance information when available.
+
+@quotation Note
+The @emph{running} system generation---referred to by
+@file{/run/current-system}---is not necessarily the @emph{current}
+system generation---referred to by @file{/var/guix/profiles/system}: it
+differs when, for instance, you chose from the bootloader menu to boot
+an older generation.
+
+It can also differ from the @emph{booted} system generation---referred
+to by @file{/run/booted-system}---for instance because you reconfigured
+the system in the meantime.
+@end quotation
 
 @item list-generations
 List a summary of each generation of the operating system available on

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014-2022 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -1328,7 +1328,7 @@ argument list and OPTS is the option alist."
                       (x (leave (G_ "wrong number of arguments~%"))))))
        (list-generations pattern)))
     ((describe)
-     (match (generation-number %system-profile)
+     (match (generation-number "/run/current-system" %system-profile)
        (0
         (leave (G_ "no system generation, nothing to describe~%")))
        (generation

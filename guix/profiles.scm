@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013-2022 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
@@ -2037,9 +2037,14 @@ paths."
   (make-regexp (string-append "^" (regexp-quote (basename profile))
                               "-([0-9]+)")))
 
-(define (generation-number profile)
-  "Return PROFILE's number or 0.  An absolute file name must be used."
-  (or (and=> (false-if-exception (regexp-exec (profile-regexp profile)
+(define* (generation-number profile
+                            #:optional (base-profile profile))
+  "Return PROFILE's number or 0.  An absolute file name must be used.
+
+Optionally, if BASE-PROFILE is provided, use it instead of PROFILE to
+construct the regexp matching generations.  This is useful in special cases
+like: (generation-number \"/run/current-system\" %system-profile)."
+  (or (and=> (false-if-exception (regexp-exec (profile-regexp base-profile)
                                               (basename (readlink profile))))
              (compose string->number (cut match:substring <> 1)))
       0))
