@@ -11386,7 +11386,16 @@ serves JavaScript, CoffeeScript, CSS, LESS, Sass, and SCSS.")
         (base32 "1l0p4wx15mi3wnamfv92ipkia4nsx8qi132c6g51jfdma3fiz2ch"))))
     (build-system ruby-build-system)
     (native-inputs
-     (list ruby-simplecov))
+     `(("ruby-simplecov" ,ruby-simplecov)
+       ("test-patch"
+        ,(search-patch "ruby-mustache-1.1.1-fix-race-condition-tests.patch"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-tests
+           (lambda* (#:key inputs #:allow-other-keys)
+             (invoke "patch" "-p1" "--batch" "-i"
+                     (assoc-ref inputs "test-patch")))))))
     (synopsis "framework-agnostic way to render logic-free views")
     (description
      "Mustache is a framework-agnostic way to render logic-free views.
