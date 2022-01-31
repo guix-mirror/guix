@@ -335,7 +335,6 @@ selected keymap."
                        ntfs-3g ;mkfs.ntfs
                        xfsprogs ;mkfs.xfs
                        kbd ;chvt
-                       guix ;guix system init call
                        util-linux ;mkwap
                        nano
                        shadow

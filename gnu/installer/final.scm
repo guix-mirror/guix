@@ -170,8 +170,7 @@ or #f.  Return #t on success and #f on failure."
          (database-dir    "/var/guix/db")
          (database-file   (string-append database-dir "/db.sqlite"))
          (saved-database  (string-append database-dir "/db.save"))
-         (ret             #f)
-         (path (getenv "PATH")))
+         (ret             #f))
     (mkdir-p (%installer-target-dir))
 
     ;; We want to initialize user passwords but we don't want to store them in
@@ -210,7 +209,7 @@ or #f.  Return #t on success and #f on failure."
              (setvbuf (current-output-port) 'none)
              (setvbuf (current-error-port) 'none)
 
-             (setenv "PATH" path)
+             (setenv "PATH" "/run/current-system/profile/bin/")
 
              (set! ret (run-command install-command)))
            (lambda ()
