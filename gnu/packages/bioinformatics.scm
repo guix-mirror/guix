@@ -2238,8 +2238,7 @@ well as many of the command line options.")
                (("bwa (mem|index)" _ command)
                 (string-append (which "bwa") " " command))
                ;; There's an ill-advised check for "samtools" on PATH.
-               (("^checkX.*") ""))
-             #t)))))
+               (("^checkX.*") "")))))))
     (inputs
      (list bwa))
     (native-inputs
