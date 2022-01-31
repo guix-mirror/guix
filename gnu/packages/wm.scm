@@ -350,6 +350,9 @@ resized.
 
 i3 uses a plain-text configuration file, and can be extended and controlled from
 many programming languages.")
+    (properties
+     `((upstream-name . "i3")
+       (release-monitoring-url . "https://i3wm.org/downloads")))
     (license license:bsd-3)))
 
 (define-public i3-gaps
