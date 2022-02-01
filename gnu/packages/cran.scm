@@ -16523,13 +16523,13 @@ datum transformations.")
 (define-public r-spdep
   (package
     (name "r-spdep")
-    (version "1.2-1")
+    (version "1.2-2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "spdep" version))
               (sha256
                (base32
-                "1ya39bgmzagrk4k51zd96l4xvnbc2vzmvd0z9qprdfvg9s6pik78"))
+                "08sya6vy7s87h337g2fanncw6xx9y9z8nxpqalbdxv9vpsc6zx4l"))
               (snippet
                '(for-each delete-file '("inst/doc/CO69.html"
                                         "inst/doc/CO69.R"
