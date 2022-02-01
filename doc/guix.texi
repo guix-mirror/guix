@@ -47,7 +47,7 @@ Copyright @copyright{} 2017, 2018 Carlo Zancanaro@*
 Copyright @copyright{} 2017 Thomas Danckaert@*
 Copyright @copyright{} 2017 humanitiesNerd@*
 Copyright @copyright{} 2017, 2021 Christine Lemmer-Webber@*
-Copyright @copyright{} 2017, 2018, 2019, 2020, 2021 Marius Bakke@*
+Copyright @copyright{} 2017, 2018, 2019, 2020, 2021, 2022 Marius Bakke@*
 Copyright @copyright{} 2017, 2019, 2020 Hartmut Goebel@*
 Copyright @copyright{} 2017, 2019, 2020, 2021 Maxim Cournoyer@*
 Copyright @copyright{} 2017–2022 Tobias Geerinckx-Rice@*
@@ -25797,71 +25797,46 @@ This service provides a WEB interface to Zabbix server.
 
 @c %start of fragment
 
+@deftp {Data Type} zabbix-front-end-configuration
 Available @code{zabbix-front-end-configuration} fields are:
 
-@deftypevr {@code{zabbix-front-end-configuration} parameter} nginx-server-configuration-list nginx
-NGINX configuration.
+@table @asis
+@item @code{zabbix-server} (default: @code{zabbix-server}) (type: file-like)
+The Zabbix server package to use.
 
-@end deftypevr
+@item @code{fastcgi-params} (type: list)
+List of FastCGI parameter pairs that will be included in the NGINX
+configuration.
 
-@deftypevr {@code{zabbix-front-end-configuration} parameter} string db-host
+@item @code{db-host} (default: @code{\"localhost\"}) (type: string)
 Database host name.
 
-Defaults to @samp{"localhost"}.
-
-@end deftypevr
-
-@deftypevr {@code{zabbix-front-end-configuration} parameter} number db-port
+@item @code{db-port} (default: @code{5432}) (type: number)
 Database port.
 
-Defaults to @samp{5432}.
-
-@end deftypevr
-
-@deftypevr {@code{zabbix-front-end-configuration} parameter} string db-name
+@item @code{db-name} (default: @code{\"zabbix\"}) (type: string)
 Database name.
 
-Defaults to @samp{"zabbix"}.
-
-@end deftypevr
-
-@deftypevr {@code{zabbix-front-end-configuration} parameter} string db-user
+@item @code{db-user} (default: @code{\"zabbix\"}) (type: string)
 Database user.
 
-Defaults to @samp{"zabbix"}.
-
-@end deftypevr
-
-@deftypevr {@code{zabbix-front-end-configuration} parameter} string db-password
+@item @code{db-password} (default: @code{\"\"}) (type: string)
 Database password.  Please, use @code{db-secret-file} instead.
 
-Defaults to @samp{""}.
+@item @code{db-secret-file} (default: @code{\"\"}) (type: string)
+Secret file which will be appended to @file{zabbix.conf.php} file.  This
+file contains credentials for use by Zabbix front-end.  You are expected
+to create it manually.
 
-@end deftypevr
-
-@deftypevr {@code{zabbix-front-end-configuration} parameter} string db-secret-file
-Secret file containing the credentials for the Zabbix front-end.  The value
-must be a local file name, not a G-expression.  You are expected to create
-this file manually.  Its contents will be copied into @file{zabbix.conf.php}
-as the value of @code{$DB['PASSWORD']}.
-
-Defaults to @samp{""}.
-
-@end deftypevr
-
-@deftypevr {@code{zabbix-front-end-configuration} parameter} string zabbix-host
+@item @code{zabbix-host} (default: @code{\"localhost\"}) (type: string)
 Zabbix server hostname.
 
-Defaults to @samp{"localhost"}.
-
-@end deftypevr
-
-@deftypevr {@code{zabbix-front-end-configuration} parameter} number zabbix-port
+@item @code{zabbix-port} (default: @code{10051}) (type: number)
 Zabbix server port.
 
-Defaults to @samp{10051}.
+@end table
 
-@end deftypevr
+@end deftp
 
 
 @c %end of fragment
