@@ -717,14 +717,14 @@ single hidden layer, and for multinomial log-linear models.")
 (define-public r-rpart
   (package
     (name "r-rpart")
-    (version "4.1-15")
+    (version "4.1.16")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rpart" version))
        (sha256
         (base32
-         "0p5frya963ppn476p5dxs2mnarsalksr6gw9zzmjsn8ikq7bx3ib"))))
+         "0p22657j6ps6z1dn0ja2fhq4k5xd1rv3cpwzk6nmjd2si8jpbv17"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/rpart")
     (synopsis "Recursive partitioning and regression trees")
