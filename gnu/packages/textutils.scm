@@ -1377,7 +1377,7 @@ around it also has a list of style guides implemented with Vale in
 (define-public utf-8-lineseparator
   (package
     (name "utf-8-lineseparator")
-    (version "7")
+    (version "8")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1386,7 +1386,7 @@ around it also has a list of style guides implemented with Vale in
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0lqwfrwq28246lja2gawf5jllh4smddswkpd5lscvc2ynylcmmzx"))))
+                "0rw34r0aiab55mqks9sjzjyskfwgn7mfhy65px1lljyrs2xvvzp5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
