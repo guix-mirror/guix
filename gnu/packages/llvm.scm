@@ -1401,13 +1401,13 @@ requirements according to version 1.1 of the OpenCL specification.")
 (define-public libomp
   (package
     (name "libomp")
-    (version "9.0.1")
+    (version "13.0.0")
     (source (origin
               (method url-fetch)
               (uri (llvm-uri "openmp" version))
               (sha256
                (base32
-                "1knafnpp0f7hylx8q20lkd6g1sf0flly572dayc5d5kghh7hd52w"))
+                "0g29bq6kqyaqwi7c2l3lndjc6z4pxsvcdhjmh9lkp99931xawc29"))
               (file-name (string-append "libomp-" version ".tar.xz"))))
     (build-system cmake-build-system)
     ;; XXX: Note this gets built with GCC because building with Clang itself
@@ -1415,10 +1415,14 @@ requirements according to version 1.1 of the OpenCL specification.")
     (arguments
      '(#:configure-flags '("-DLIBOMP_USE_HWLOC=ON"
                            "-DOPENMP_TEST_C_COMPILER=clang"
-                           "-DOPENMP_TEST_CXX_COMPILER=clang++")
+                           "-DOPENMP_TEST_CXX_COMPILER=clang++"
+
+                           ;; Work around faulty target detection, fixed in 14:
+                           ;; https://github.com/llvm/llvm-project/issues/52910
+                           "-DLIBOMPTARGET_BUILD_AMDGCN_BCLIB=OFF")
        #:test-target "check-libomp"))
     (native-inputs
-     (list clang-9 llvm-9 perl pkg-config))
+     (list clang llvm perl pkg-config python))
     (inputs
      (list `(,hwloc "lib")))
     (home-page "https://openmp.llvm.org")
