@@ -1031,15 +1031,16 @@ Munsell colour system.")
 (define-public r-permute
   (package
    (name "r-permute")
-   (version "0.9-5")
+   (version "0.9-7")
    (source
     (origin
      (method url-fetch)
      (uri (cran-uri "permute" version))
      (sha256
       (base32
-       "0ra8p5mf2590azrkas8z2ry7mif77xqxd29n4zgyi5vll225726j"))))
+       "1h4dyhcsv8p3h3qxsy98pib9v79dddvrnq7qx6abkblsazxqzy7g"))))
    (build-system r-build-system)
+   (native-inputs (list r-knitr))
    ;; Tests do not run correctly, but running them properly would entail a
    ;; circular dependency with vegan.
    (home-page "https://github.com/gavinsimpson/permute")
