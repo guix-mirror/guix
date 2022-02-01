@@ -601,9 +601,55 @@ Unix-style DSV format and RFC 4180 format.")
     (inputs (list guile-2.2))
     (propagated-inputs `(("guile-lib" ,guile2.2-lib)))))
 
-(define-public guile-fibers
+(define-public guile-fibers-1.1
   (package
     (name "guile-fibers")
+    (version "1.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/wingo/fibers/releases/download/v"
+                    version "/fibers-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1lqz39shlhif5fhpyv2wili0yzb0nhf5ciiv7mdqsq0vljirhrm0"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'install 'mode-guile-objects
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; .go files are installed to "lib/guile/X.Y/cache".
+                      ;; This phase moves them to "…/site-ccache".
+                      (let* ((out (assoc-ref outputs "out"))
+                             (lib (string-append out "/lib/guile"))
+                             (old (car (find-files lib "^ccache$"
+                                                   #:directories? #t)))
+                             (new (string-append (dirname old)
+                                                 "/site-ccache")))
+                        (rename-file old new)
+                        #t))))))
+    (native-inputs
+     (list texinfo pkg-config))
+    (inputs
+     (list guile-3.0))
+    (synopsis "Lightweight concurrency facility for Guile")
+    (description
+     "Fibers is a Guile library that implements a a lightweight concurrency
+facility, inspired by systems like Concurrent ML, Go, and Erlang.  A fiber is
+like a \"goroutine\" from the Go language: a lightweight thread-like
+abstraction.  Systems built with Fibers can scale up to millions of concurrent
+fibers, tens of thousands of concurrent socket connections, and many parallel
+cores.  The Fibers library also provides Concurrent ML-like channels for
+communication between fibers.
+
+Note that Fibers makes use of some Guile 2.1/2.2-specific features and
+is not available for Guile 2.0.")
+    (home-page "https://github.com/wingo/fibers")
+    (license license:lgpl3+)))
+
+(define-public guile-fibers
+  (package
+    (inherit guile-fibers-1.1)
     (version "1.0.0")
     (source (origin
               (method url-fetch)
@@ -637,7 +683,6 @@ Unix-style DSV format and RFC 4180 format.")
               (patches
                ;; fixes a resource leak that causes crashes in the tests
                (search-patches "guile-fibers-destroy-peer-schedulers.patch"))))
-    (build-system gnu-build-system)
     (arguments
      '(;; The code uses 'scm_t_uint64' et al., which are deprecated in 3.0.
        #:configure-flags '("CFLAGS=-Wno-error=deprecated-declarations")
@@ -653,29 +698,11 @@ Unix-style DSV format and RFC 4180 format.")
                              (new (string-append (dirname old)
                                                  "/site-ccache")))
                         (rename-file old new)
-                        #t))))))
-    (native-inputs
-     (list texinfo pkg-config))
-    (inputs
-     (list guile-3.0))
-    (synopsis "Lightweight concurrency facility for Guile")
-    (description
-     "Fibers is a Guile library that implements a a lightweight concurrency
-facility, inspired by systems like Concurrent ML, Go, and Erlang.  A fiber is
-like a \"goroutine\" from the Go language: a lightweight thread-like
-abstraction.  Systems built with Fibers can scale up to millions of concurrent
-fibers, tens of thousands of concurrent socket connections, and many parallel
-cores.  The Fibers library also provides Concurrent ML-like channels for
-communication between fibers.
+                        #t))))))))
 
-Note that Fibers makes use of some Guile 2.1/2.2-specific features and
-is not available for Guile 2.0.")
-    (home-page "https://github.com/wingo/fibers")
-    (license license:lgpl3+)))
-
-(define-public guile2.0-fibers
+(define-public guile2.2-fibers
   (package
-    (inherit guile-fibers)
+    (inherit guile-fibers-1.1)
     (name "guile2.2-fibers")
     (inputs (list guile-2.2))))
 
