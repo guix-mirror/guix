@@ -28799,13 +28799,13 @@ performing ordinal regression.")
 (define-public r-paradox
   (package
     (name "r-paradox")
-    (version "0.7.1")
+    (version "0.8.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "paradox" version))
               (sha256
                (base32
-                "1difp0bzsfxcmbm1snahh3i6417k1a2w4mnjx65p20n2yiclmrgs"))))
+                "1jfzbpqi1rp3r8hnk37dqwggp48ha5bnilmdz7dwzfdaskssycxa"))))
     (build-system r-build-system)
     (propagated-inputs
      (list r-backports r-checkmate r-data-table r-mlr3misc r-r6))
