@@ -7067,14 +7067,14 @@ environment within Shiny.")
 (define-public r-randomizr
   (package
     (name "r-randomizr")
-    (version "0.20.0")
+    (version "0.22.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "randomizr" version))
        (sha256
         (base32
-         "0dljyfldnardaps3fq6vi5wcs9x6qfaq5apapa78c51lnaa6fn9h"))))
+         "1grm0h3xkb0pdbbv0gd531g1kn6njp0gcy5fh153rrmajxgd8hhw"))))
     (properties `((upstream-name . "randomizr")))
     (build-system r-build-system)
     (native-inputs
