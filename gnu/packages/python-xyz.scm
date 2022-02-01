@@ -8872,6 +8872,7 @@ callback signature using a prototype function.")
 Powerful interactive shells, a browser-based notebook, support for interactive
 data visualization, embeddable interpreters and tools for parallel
 computing.")
+    (properties '((cpe-name . "ipython")))
     (license license:bsd-3)))
 
 (define-public python-ipython-documentation
