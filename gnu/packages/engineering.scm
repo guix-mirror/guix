@@ -27,6 +27,7 @@
 ;;; Copyright © 2021 Ivan Gankevich <i.gankevich@spbu.ru>
 ;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
 ;;; Copyright © 2021 Foo Chuan Wei <chuanwei.foo@hotmail.com>
+;;; Copyright © 2022 Evgeny Pisemsky <evgeny@pisemsky.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3272,3 +3273,24 @@ G-code instructions for FFF printers or PNG layers for mSLA 3D printers.")
 
     ;; Mark as tunable to take advantage of SIMD code in Eigen and in libigl.
     (properties '((tunable? . #t)))))
+
+(define-public wireviz
+  (package
+    (name "wireviz")
+    (version "0.3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "wireviz" version))
+              (sha256
+               (base32
+                "1dgnlxxlna2m1fh0ybivw0psym0sa5cqsl72mjl79bwfspnif61h"))))
+    (build-system python-build-system)
+    (propagated-inputs (list python-graphviz python-pillow python-pyyaml))
+    (home-page "https://github.com/formatc1702/WireViz")
+    (synopsis "Easily document cables and wiring harnesses")
+    (description
+     "WireViz is a tool for easily documenting cables, wiring harnesses and
+connector pinouts.  It takes plain text, YAML-formatted files as input and
+produces beautiful graphical output thanks to GraphViz.  It handles automatic
+BOM creation and has a lot of extra features.")
+    (license license:gpl3)))
