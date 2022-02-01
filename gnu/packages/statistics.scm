@@ -5498,18 +5498,18 @@ using modular prediction and response module classes.")
 (define-public r-quantreg
   (package
     (name "r-quantreg")
-    (version "5.86")
+    (version "5.87")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "quantreg" version))
        (sha256
-        (base32 "01fnp6ndh7npxj76xlynndacsgmcfr9kgh2waw0clx3mmwlwilbi"))))
+        (base32 "13m3znkrrkf19s3lz6984lzrznng4nma38yy17pqjfzmwl4yzmws"))))
     (build-system r-build-system)
     (native-inputs
      (list gfortran))
     (propagated-inputs
-     (list r-conquer r-matrix r-matrixmodels r-sparsem))
+     (list r-matrix r-matrixmodels r-sparsem))
     (home-page "https://www.r-project.org")
     (synopsis "Quantile regression")
     (description
