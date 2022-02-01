@@ -107,6 +107,7 @@
 ;;; Copyright © 2021 Brian Kubisiak <brian@kubisiak.com>
 ;;; Copyright © 2021, 2022 Taiju HIGASHI <higashi@taiju.info>
 ;;; Copyright © 2022 Brandon Lucas <br@ndon.dk>
+;;; Copyright © 2022 Jai Vetrivelan <jaivetrivelan@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5934,6 +5935,36 @@ Gnus, e.g., for applying patches received by email.")
      "This package allows editing files as another user, including the root
 user.")
     (license license:gpl3+)))
+
+(define-public emacs-subed
+  ;; XXX: Upstream does not tag releases.  Commit below matches version bump.
+  (let ((commit "9a660ed88600e9aff741051c28a9e638cd5df5f5"))
+    (package
+      (name "emacs-subed")
+      (version "1.0.2")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/sachac/subed")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1biczfg8cl9sy02yx7nmf5ma7mdjsmi27v93x1gaw4zjwj8fmlkg"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'chdir-subed
+                      (lambda _
+                        (chdir "subed"))))))
+      (home-page "https://elpa.nongnu.org/nongnu/subed.html")
+      (synopsis "Major mode for editing subtitles")
+      (description
+       "@code{subed} is an Emacs major mode for editing subtitles while
+playing the corresponding video with mpv.  At the moment, the only supported
+formats are SubRip (@file{.srt}), WebVTT (@file{.vtt}), and Advanced
+SubStation Alpha (@file{.ass}).")
+      (license license:gpl3+))))
 
 (define-public emacs-miniedit
   (package
