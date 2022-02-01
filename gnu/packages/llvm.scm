@@ -102,6 +102,9 @@ as \"x86_64-linux\"."
   (string-append "https://github.com/llvm/llvm-project/releases/download"
                  "/llvmorg-" version "/" component "-" version ".src.tar.xz"))
 
+(define %llvm-release-monitoring-url
+  "https://github.com/llvm/llvm-project/releases")
+
 (define* (clang-runtime-from-llvm llvm hash
                                   #:optional (patches '()))
   (package
@@ -150,6 +153,8 @@ functions for C and C++ programs.  It also provides header files that allow C
 and C++ source code to interface with the \"sanitization\" passes of the clang
 compiler.  In LLVM this library is called \"compiler-rt\".")
     (license (package-license llvm))
+    (properties `((release-monitoring-url . ,%llvm-release-monitoring-url)
+                  (upstream-name . "compiler-rt")))
 
     ;; <https://compiler-rt.llvm.org/> doesn't list MIPS as supported.
     (supported-systems (delete "mips64el-linux" %supported-systems))))
@@ -157,7 +162,9 @@ compiler.  In LLVM this library is called \"compiler-rt\".")
 (define* (clang-from-llvm llvm clang-runtime hash
                           #:key (patches '()) tools-extra
                           (properties
-                           (clang-properties (package-version llvm))))
+                           (append `((release-monitoring-url
+                                      . ,%llvm-release-monitoring-url))
+                                   (clang-properties (package-version llvm)))))
   "Produce Clang with dependencies on LLVM and CLANG-RUNTIME, and applying the
 given PATCHES.  When TOOLS-EXTRA is given, it must point to the
 'clang-tools-extra' tarball, which contains code for 'clang-tidy', 'pp-trace',
@@ -621,7 +628,8 @@ languages.  It currently supports compilation of C and C++ programs, using
 front-ends derived from GCC 4.0.1.  A new front-end for the C family of
 languages is in development.  The compiler infrastructure includes mirror sets
 of programming tools as well as libraries with equivalent functionality.")
-    (license license:asl2.0)))
+    (license license:asl2.0)
+    (properties `((release-monitoring-url . ,%llvm-release-monitoring-url)))))
 
 (define-public clang-runtime-13
   (clang-runtime-from-llvm
@@ -1106,6 +1114,7 @@ of programming tools as well as libraries with equivalent functionality.")
     (synopsis "LLVM libunwind header files")
     (description
      "This package contains header files for the LLVM C++ unwinding library.")
+    (properties `((release-monitoring-url . ,%llvm-release-monitoring-url)))
     (license license:asl2.0)))          ;with LLVM exceptions
 
 (define-public lld
@@ -1134,6 +1143,7 @@ of programming tools as well as libraries with equivalent functionality.")
     (synopsis "Linker from the LLVM project")
     (description "LLD is a high-performance linker, built as a set of reusable
 components which highly leverage existing libraries in the larger LLVM Project.")
+    (properties `((release-monitoring-url . ,%llvm-release-monitoring-url)))
     (license license:asl2.0))) ; With LLVM exception
 
 (define-public lld-12
@@ -1219,6 +1229,7 @@ misuse of libraries outside of the store.")
     (description
      "LLDB is a high performance debugger built as a set of reusable components
 which highly leverage existing libraries in the larger LLVM project.")
+    (properties `((release-monitoring-url . ,%llvm-release-monitoring-url)))
     (license license:asl2.0))) ;with LLVM exceptions
 
 (define-public libcxx
@@ -1257,6 +1268,7 @@ which highly leverage existing libraries in the larger LLVM project.")
     (description
      "This package provides an implementation of the C++ standard library for
 use with Clang, targeting C++11, C++14 and above.")
+    (properties `((release-monitoring-url . ,%llvm-release-monitoring-url)))
     (license license:expat)))
 
 ;; Libcxx files specifically used by PySide2.
@@ -1432,6 +1444,8 @@ requirements according to version 1.1 of the OpenCL specification.")
 project for the OpenMP multi-theaded programming extension.  This package
 notably provides @file{libgomp.so}, which is has a binary interface compatible
 with that of libgomp, the GNU Offloading and Multi Processing Library.")
+    (properties `((release-monitoring-url . ,%llvm-release-monitoring-url)
+                  (upstream-name . "openmp")))
     (license license:expat)))
 
 (define-public python-llvmlite
