@@ -30,6 +30,7 @@
   #:use-module (guix discovery)
   #:use-module (guix diagnostics)
   #:use-module (guix i18n)
+  #:use-module (guix modules)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
 
@@ -282,13 +283,13 @@ will be put in @file{~/.guix-home/files}.")))
   #~(begin
       (bindtextdomain %gettext-domain
                       (string-append #$guix "/share/locale"))
-      (textdomain %gettext-domain)
-      (setlocale LC_ALL "")))
+      (textdomain %gettext-domain)))
 
 (define (compute-on-first-login-script _ gexps)
   (program-file
    "on-first-login"
-   #~(begin
+   (with-imported-modules (source-module-closure '((guix i18n)))
+     #~(begin
        (use-modules (guix i18n))
        #$%initialize-gettext
 
@@ -309,7 +310,7 @@ will be put in @file{~/.guix-home/files}.")))
              (display (G_ "XDG_RUNTIME_DIR doesn't exists, on-first-login script
 won't execute anything.  You can check if xdg runtime directory exists,
 XDG_RUNTIME_DIR variable is set to appropriate value and manually execute the
-script by running '$HOME/.guix-home/on-first-login'")))))))
+script by running '$HOME/.guix-home/on-first-login'"))))))))
 
 (define (on-first-login-script-entry on-first-login)
   "Return, as a monadic value, an entry for the on-first-login script
@@ -401,7 +402,8 @@ with one gexp, but many times, and all gexps must be idempotent.")))
 ;;;
 
 (define (compute-on-change-gexp eval-gexps? pattern-gexp-tuples)
-  #~(begin
+  (with-imported-modules (source-module-closure '((guix i18n)))
+    #~(begin
       (use-modules (guix i18n))
 
       #$%initialize-gettext
@@ -486,7 +488,7 @@ with one gexp, but many times, and all gexps must be idempotent.")))
             (display (G_ "On-change gexps evaluation finished.\n\n")))
           (display "\
 On-change gexps won't be evaluated; evaluation has been disabled in the
-service configuration"))))
+service configuration")))))
 
 (define home-run-on-change-service-type
   (service-type (name 'home-run-on-change)
