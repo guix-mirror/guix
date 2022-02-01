@@ -24991,13 +24991,13 @@ appropriate dog and cat images for many status codes.")
 (define-public r-latex2exp
   (package
     (name "r-latex2exp")
-    (version "0.5.0")
+    (version "0.9.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "latex2exp" version))
               (sha256
                (base32
-                "0qknpw7zwwbzsbry94j8fn48mq7kq5rc5448g9hybbisain3wfvg"))))
+                "0hfixybyds1jxhyiy3p6256z0fxzc65r654jhc62q9cd3v86a5z6"))))
     (build-system r-build-system)
     (propagated-inputs
      (list r-stringr r-magrittr))
