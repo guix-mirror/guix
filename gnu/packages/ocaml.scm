@@ -17,7 +17,7 @@
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020, 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2020 divoplade <d@divoplade.fr>
-;;; Copyright © 2020, 2021 pukkamustard <pukkamustard@posteo.net>
+;;; Copyright © 2020, 2021, 2022 pukkamustard <pukkamustard@posteo.net>
 ;;; Copyright © 2021 aecepoglu <aecepoglu@fastmail.fm>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
@@ -7639,7 +7639,7 @@ libraries.")
 (define-public js-of-ocaml
   (package
     (name "js-of-ocaml")
-    (version "3.11.0")
+    (version "4.0.0")
     (source
      (origin
        (method git-fetch)
@@ -7648,20 +7648,9 @@ libraries.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1x5f1ph9wgx0mgyibssssnrcwp69ihw66gzhsnz9h79czgzyjpp2"))))
+        (base32 "0iyhl9z57j53j2jvyqcwmxhbvy23l6g80aa0abmlgwam14yskspf"))))
     (build-system dune-build-system)
-    (arguments
-     `(#:test-target "."
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'fix-failing-test
-           (lambda _
-             ;; Formating difference
-             (with-output-to-file "compiler/tests-jsoo/bin/error2.expected"
-               (lambda _
-                 (format #t
-                         "Fatal error: exception Match_failure(\
-\"compiler/tests-jsoo/bin/error2.ml\", 11, 2)\n\n"))))))))
+    (arguments `(#:test-target "."))
     (propagated-inputs
      (list ocaml-ppxlib
            ocaml-uchar
