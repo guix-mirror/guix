@@ -12913,6 +12913,27 @@ been adapted to work with mu4e.")
      "Emacs minor mode for redisplaying parts of the buffer as pretty symbols.")
     (license license:gpl3+)))
 
+(define-public emacs-tempel
+  (package
+    (name "emacs-tempel")
+    (version "0.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/minad/tempel")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "16972j2qq03q65qszgjjkzl52f79hk007kyi249wg1bqhvfa59b6"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/minad/tempel")
+    (synopsis "Simple templates for Emacs")
+    (description
+     "Tempel is a tiny template package for Emacs, which uses the syntax of
+the Emacs Tempo library.  You may also write your templates in Lisp.")
+    (license license:gpl3+)))
+
 (define-public emacs-yasnippet
   (package
     (name "emacs-yasnippet")
