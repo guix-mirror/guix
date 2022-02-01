@@ -147,7 +147,9 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "08cl4935c9vznz9qdw1zgd86rn7hl64zpfayxl07x21bhf53pn24"))))
+                "08cl4935c9vznz9qdw1zgd86rn7hl64zpfayxl07x21bhf53pn24"))
+              (patches
+               (search-patches "librecad-support-for-boost-1.76.patch"))))
     (build-system qt-build-system)
     (arguments
      '(#:test-target "check"

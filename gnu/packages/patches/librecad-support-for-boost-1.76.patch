@@ -1,0 +1,17 @@
+Upstream commit e02f3580311d50b617427652ff77988f6bd62d9d adding Boost 1.76
+compatibility.
+
+diff --git a/librecad/src/lib/engine/rs_ellipse.cpp b/librecad/src/lib/engine/rs_ellipse.cpp
+index 291f734ea..d47bf6ca4 100644
+--- a/librecad/src/lib/engine/rs_ellipse.cpp
++++ b/librecad/src/lib/engine/rs_ellipse.cpp
+@@ -48,6 +48,9 @@
+ #include <boost/version.hpp>
+ #include <boost/math/tools/roots.hpp>
+ #include <boost/math/special_functions/ellint_2.hpp>
++#if BOOST_VERSION > 104500
++#include <boost/math/tools/tuple.hpp>
++#endif
+ #endif
+ 
+ namespace{
