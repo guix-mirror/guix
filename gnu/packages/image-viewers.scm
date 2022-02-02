@@ -604,25 +604,25 @@ It supports JPEG, PNG and GIF formats.")
     (native-inputs
      (list pkg-config qttools))
     (inputs
-     `(("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtsvg" ,qtsvg)
-       ("boost" ,boost)
-       ("eigen" ,eigen)
-       ;; ("gtest" ,gtest)
-       ("libraw" ,libraw)
-       ("zlib" ,zlib)
-       ("exiv2" ,exiv2)
-       ("libpng" ,libpng)
-       ("libjpeg" ,libjpeg-turbo)
-       ("lcms" ,lcms)
-       ("openexr" ,openexr-2)
-       ("qtwebengine" ,qtwebengine)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtwebchannel" ,qtwebchannel)
-       ("fftw" ,fftwf)
-       ("gsl" ,gsl)
-       ("libtiff" ,libtiff)))
+     (list qtbase-5
+           qtdeclarative
+           qtsvg
+           boost
+           eigen
+           ;; gtest
+           libraw
+           zlib
+           exiv2
+           libpng
+           libjpeg-turbo
+           lcms
+           openexr-2
+           qtwebengine
+           qtdeclarative
+           qtwebchannel
+           fftwf
+           gsl
+           libtiff))
     (arguments
      '(#:tests? #f  ;XXX: some tests fail to compile
        #:phases
