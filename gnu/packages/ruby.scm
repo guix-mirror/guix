@@ -7,7 +7,7 @@
 ;;; Copyright © 2015, 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
-;;; Copyright © 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2019, 2020, 2021, 2022 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017, 2018, 2019 Christopher Baines <mail@cbaines.net>
@@ -7476,11 +7476,15 @@ navigation capabilities to @code{pry}, using @code{byebug}.")
      `(#:phases
        (modify-phases %standard-phases
          (add-before 'check 'skip-dubious-test
-           ;; This unreliable test can fail with "Expected 0 to be >= 1."
            (lambda _
-             (substitute* "test/test_stackprof.rb"
-               (("def test_(cputime)" _ name)
-                (string-append "def skip_" name)))))
+             ,@(if (target-riscv64?)
+                 ;; This unreliable test can fail with "Expected 32 to be <= 25."
+                 '((substitute* "test/test_stackprof.rb"
+                     ((".*assert_operator profile\\[:missed_samples.*") "")))
+                 ;; This unreliable test can fail with "Expected 0 to be >= 1."
+                 '((substitute* "test/test_stackprof.rb"
+                     (("def test_(cputime)" _ name)
+                      (string-append "def skip_" name)))))))
          (add-before 'check 'build-tests
            (lambda _
              (invoke "rake" "compile"))))))
