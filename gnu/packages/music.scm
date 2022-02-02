@@ -34,7 +34,7 @@
 ;;; Copyright © 2019 Riku Viitanen <riku.viitanen0@gmail.com>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2021 Liliana Marie Prikler <liliana.prikler@gmail.com>
-;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2021, 2022 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
 ;;; Copyright © 2021 Frank Pursel <frank.pursel@gmail.com>
@@ -2176,7 +2176,7 @@ users to select LV2 plugins and run them with jalv.")
 (define-public mixxx
   (package
     (name "mixxx")
-    (version "2.3.1")
+    (version "2.3.2")
     (source
      (origin
        (method git-fetch)
@@ -2188,7 +2188,7 @@ users to select LV2 plugins and run them with jalv.")
         (search-patches "mixxx-link-qtscriptbytearray-qtscript.patch"
                         "mixxx-system-googletest-benchmark.patch"))
        (sha256
-        (base32 "04781s4ajdlwgvf12v2mvh6ia5grhc5pn9d75b468qci3ilnmkg8"))
+        (base32 "1h26vpf60rk56fsw1nvmxihg7ammlj8q4zgim49q4s4ww7j8wwqj"))
        (modules '((guix build utils)))
        (snippet
         ;; Delete libraries that we already have or don't need.
@@ -2210,11 +2210,6 @@ users to select LV2 plugins and run them with jalv.")
            (lambda _
              (system "Xvfb &")
              (setenv "DISPLAY" ":0")))
-         (replace 'check
-           (lambda* (#:key tests? #:allow-other-keys)
-             (when tests?
-               ;; This test fails.  I don't know why.
-               (invoke "ctest" "-E" "TagLibTest.WriteID3v2Tag"))))
          (add-after 'install 'wrap-executable
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -2223,56 +2218,56 @@ users to select LV2 plugins and run them with jalv.")
                  `("LD_LIBRARY_PATH" ":" prefix
                    ,(list (string-append faad2 "/lib"))))))))))
     (native-inputs
-     `(("benchmark" ,benchmark)
-       ("googletest" ,googletest)
-       ("python" ,python-wrapper)
-       ("qttools" ,qttools)
-       ("xorg-server" ,xorg-server-for-tests)))
+     (list benchmark
+           googletest
+           python-wrapper
+           qttools
+           xorg-server-for-tests))
     (inputs
-     `(("bash" ,bash-minimal)
-       ("chromaprint" ,chromaprint)
-       ("faad2" ,faad2)
-       ("ffmpeg" ,ffmpeg)
-       ("fftw" ,fftw)
-       ("flac" ,flac)
-       ("glu" ,glu)
-       ("hidapi" ,hidapi)
-       ("jack" ,jack-1)
-       ("lame" ,lame)
-       ("libdjinterop" ,libdjinterop)
-       ("libebur128" ,libebur128)
-       ("libid3tag" ,libid3tag)
-       ("libkeyfinder" ,libkeyfinder)
-       ("libmad" ,libmad)
-       ("libmp4v2" ,libmp4v2)
-       ("libmodplug" ,libmodplug)
-       ("libsndfile" ,libsndfile)
-       ("libshout" ,libshout)
-       ;; XXX: Mixxx complains the libshout-idjc package suffers from bug
-       ;; lp1833225 and refuses to use it.  Use the bundle for now.
-       ;; ("libshout-idjc" ,libshout-idjc)
-       ("libusb" ,libusb)
-       ("libvorbis" ,libvorbis)
-       ("lilv" ,lilv)
-       ("mp3guessenc" ,mp3guessenc)
-       ("openssl" ,openssl)
-       ("opusfile" ,opusfile)
-       ("portaudio" ,portaudio)
-       ("portmidi" ,portmidi)
-       ("protobuf" ,protobuf)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtkeychain" ,qtkeychain)
-       ("qtscript" ,qtscript)
-       ("qtsvg" ,qtsvg)
-       ("qtx11extras" ,qtx11extras)
-       ("rubberband" ,rubberband)
-       ("soundtouch" ,soundtouch)
-       ("sqlite" ,sqlite)
-       ("taglib" ,taglib)
-       ("upower" ,upower)
-       ("vamp" ,vamp)
-       ("wavpack" ,wavpack)))
+     (list bash-minimal
+           chromaprint
+           faad2
+           ffmpeg
+           fftw
+           flac
+           glu
+           hidapi
+           jack-1
+           lame
+           libdjinterop
+           libebur128
+           libid3tag
+           libkeyfinder
+           libmad
+           libmp4v2
+           libmodplug
+           libsndfile
+           libshout
+           ;; XXX: Mixxx complains the libshout-idjc package suffers from bug
+           ;; lp1833225 and refuses to use it.  Use the bundle for now.
+           ;; libshout-idjc
+           libusb
+           libvorbis
+           lilv
+           mp3guessenc
+           openssl
+           opusfile
+           portaudio
+           portmidi
+           protobuf
+           qtbase-5
+           qtdeclarative
+           qtkeychain
+           qtscript
+           qtsvg
+           qtx11extras
+           rubberband
+           soundtouch
+           sqlite
+           taglib
+           upower
+           vamp
+           wavpack))
     (home-page "https://mixxx.org/")
     (synopsis "DJ software to perform live mixes")
     (description "Mixxx is a DJ software.  It integrates the tools DJs need to
