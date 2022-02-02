@@ -31,7 +31,7 @@
 (define-public tbb
   (package
     (name "tbb")
-    (version "2021.4.0")
+    (version "2021.5.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -40,7 +40,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0ih727g802j9lvwkqhw021bk1wb7xlvfgd0vl1i6jng4am1wv7vq"))))
+                "1z0pqzfx63zrmyqdvvkk8vl5dc0i0n5cimdkrypd50ig4d4yi7sc"))
               (patches (list
                         ;; Backport an upstream commit that prevents the
                         ;; "test_eh_thread" test failing on AArch64.
