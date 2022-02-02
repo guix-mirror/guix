@@ -998,6 +998,31 @@ Alternatively the menu can be bound globally, for example:
 @code{(global-set-key [S-down-mouse-3] 'minions-minor-modes-menu)}.")
     (license license:gpl3+)))
 
+(define-public emacs-nano-modeline
+  ;; No tagged release upstream, this commit is a couple of commits newer than
+  ;; 0.5 because of an error related to make-obsolete-variable
+  (let ((commit "c5bf2a977f1a06936ceb7a1805d1e2cf1f92f616")
+        (revision "0"))
+    (package
+      (name "emacs-nano-modeline")
+      (version (git-version "0.5" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/rougier/nano-modeline")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "02c38v9a71wc9p10pjnqymyaqk4sf3nc5i7df1j9qr5qrqwniq89"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/rougier/nano-modeline")
+      (synopsis "Emacs minor mode controlling mode line")
+      (description "Nano modeline is a minor mode for Emacs that modifies the
+mode line as @samp{[ status | name (primary) secondary ]}.  It can be
+displayed at the bottom or at the top.")
+      (license license:gpl3+))))
+
 (define-public emacs-moody
   (package
     (name "emacs-moody")
