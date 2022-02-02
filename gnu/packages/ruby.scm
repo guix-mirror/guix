@@ -7139,7 +7139,9 @@ run.")
          "0wjw9vpzr4f3nf1zf010bag71w4hdi0haybdn7r5rlmw45pmim29"))))
     (build-system ruby-build-system)
     (arguments
-     '(#:test-target "default"
+     `(#:test-target "default"
+       ;; TODO: Figure out why test hangs.
+       #:tests? ,(not (target-riscv64?))
        #:phases
        (modify-phases %standard-phases
          (add-before 'check 'set-home
