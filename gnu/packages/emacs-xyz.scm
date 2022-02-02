@@ -4529,6 +4529,29 @@ Emacs Lisp.  It generates a sparkline string given a list of numbers.  It is a
 port of @code{cl-spark} to Emacs Lisp.")
       (license license:expat))))
 
+(define-public emacs-spray
+  (let ((version "0.0.2") (revision "0")
+        (commit "74d9dcfa2e8b38f96a43de9ab0eb13364300cb46"))
+    (package
+      (name "emacs-spray")
+      (version (git-version version revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.sr.ht/~iank/spray")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1avbfr32dvff26kgvd5vgan99nb5c6al9kv5xbmy2rcls17py7r2"))))
+      (build-system emacs-build-system)
+      (home-page "https://git.sr.ht/~iank/spray")
+      (synopsis "Speed reading mode for Emacs")
+      (description
+       "For speed reading, or just more enjoyable reading.  Narrows
+the buffer to show one word at a time.  Adjust speed / pause as needed.")
+      (license license:gpl3+))))
+
 (define-public emacs-es-mode
   (package
     (name "emacs-es-mode")
