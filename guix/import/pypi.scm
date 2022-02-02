@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2015, 2016, 2017, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015-2017, 2019-2022 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -499,8 +499,20 @@ VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
        (and project
             (guard (c ((missing-source-error? c)
                        (let ((package (missing-source-error-package c)))
-                         (leave (G_ "no source release for pypi package ~a ~a~%")
-                                (project-info-name info) version))))
+                         (raise
+                          (make-compound-condition
+                           (formatted-message
+                            (G_ "no source release for pypi package ~a ~a~%")
+                            (project-info-name info) version)
+                           (condition
+                            (&fix-hint
+                             (hint (format #f (G_ "This indicates that the
+package is available on PyPI, but only as a \"wheel\" containing binaries, not
+source.  To build it from source, refer to the upstream repository at
+@uref{~a}.")
+                                           (or (project-info-home-page info)
+                                               (project-info-url info)
+                                               "?"))))))))))
               (make-pypi-sexp (project-info-name info) version
                               (and=> (source-release project version)
                                      distribution-url)
