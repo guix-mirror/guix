@@ -1914,8 +1914,8 @@ and system administrators.")
   ;; recent versions of the build tools.  The latest activity on the
   ;; pre-GNOME version has been in 2014, while GNOME has continued applying
   ;; fixes since.
-  (let ((commit "3cf7ec4c2e5bca139a7f3e17f9fc9009c237fcc5")
-        (revision "2"))
+  (let ((commit "0997887d97f01be28bf3886dfd3e2002de437930")
+        (revision "3"))
     (package
       (name "dia")
       (version (git-version "0.97.3" revision commit))
@@ -1927,9 +1927,11 @@ and system administrators.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "04r8dspa6nmicrifhi3sh46hqvyy88hzq37xx99q3q1mwsrpmwy8"))))
+                  "199b4n1jydg1g9lnz0r8xx67h7s2ac2lfj89zp015lbs0qqfkmsh"))))
       (build-system meson-build-system)
-      (arguments `(#:meson ,meson-0.59))
+      ;; XXX: Parallel builds may cause: [74/566] [...]
+      ;; fatal error: dia-lib-enums.h: No such file or directory
+      (arguments '(#:parallel-build? #f))
       (inputs
        (list graphene
              gtk+-2
@@ -1939,12 +1941,10 @@ and system administrators.")
              ;; XXX: PDF plugin fails to build with poppler 21.07.0.
              ;; poppler
 
-             ;; Without Python 2, build fails: plug-ins/python/meson.build:4:0:
-             ;; ERROR: Unknown method "dependency" in object.
-             python-2))
+             python))
       (native-inputs
        (list appstream-glib docbook-xsl
-             `(,glib "bin") intltool pkg-config))
+             `(,glib "bin") gettext-minimal pkg-config))
       (home-page "https://wiki.gnome.org/Apps/Dia")
       (synopsis "Diagram creation for GNOME")
       (description "Dia can be used to draw different types of diagrams, and
