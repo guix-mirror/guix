@@ -25,6 +25,33 @@
 (channel-news
  (version 0)
 
+ (entry (commit "5c13484646069064c834bbd3cd02c3bc80d94cb6")
+        (title
+         (en "New @option{--execute} option to @command{guix deploy}")
+         (fr "Nouvelle option @option{--execute} pour @command{guix deploy}"))
+        (body
+         (en "The @command{guix deploy} command has a new @option{--execute}
+or @option{-x} option, which allows you to execute a command on all the
+machines that your configuration file specifies, as in this example:
+
+@example
+guix deploy deploy.scm -x -- herd restart guix-daemon
+@end example
+
+This is no substitute for full-featured tools such as pdsh but it is a useful
+helper.")
+         (fr "La commande @command{guix deploy} a une nouvelle option
+@option{--execute} ou @option{-x} qui permet d'exécuter une commande sur
+toutes les machines spécifiées dans son fichier de configuration, comme dans
+cet exemple :
+
+@example
+guix deploy deploy.scm -x -- herd restart guix-daemon
+@end example
+
+Ça ne remplace pas les outils sophistiqués comme pdsh mais c'est bien
+pratique.")))
+
  (entry (commit "c4fe13c294cc1e31dd8a49ce3981f603fb169e0a")
         (title
          (en "@command{guix style} can format package definitions")
