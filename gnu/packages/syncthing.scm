@@ -137,6 +137,9 @@
 supports a wide variety of computing platforms.  It uses the Block Exchange
 Protocol.")
     (home-page "https://github.com/syncthing/syncthing")
+    (properties
+     '((release-monitoring-url . "https://github.com/syncthing/syncthing/releases")
+       (upstream-name . "syncthing-source")))
     (license mpl2.0)))
 
 (define-public syncthing-gtk
