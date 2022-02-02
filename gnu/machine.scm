@@ -51,7 +51,7 @@
 ;;; Commentary:
 ;;;
 ;;; This module provides the types used to declare individual machines in a
-;;; heterogeneous Guix deployment. The interface allows users of specify system
+;;; heterogeneous Guix deployment. The interface allows users to specify system
 ;;; configurations and the means by which resources should be provisioned on a
 ;;; per-host basis.
 ;;;
