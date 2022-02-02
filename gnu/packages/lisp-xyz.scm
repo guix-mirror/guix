@@ -20069,6 +20069,42 @@ parsers.")
 (define-public ecl-maxpc
   (sbcl-package->ecl-package sbcl-maxpc))
 
+(define-public sbcl-snakes
+  (let ((commit "8c7eae579bb24539dbd584a81a1049f3d3ff8bf8")
+        (revision "0"))
+    (package
+      (name "sbcl-snakes")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                (url "https://github.com/BnMcGn/snakes")
+                (commit commit)))
+          (sha256
+           (base32 "1ibp919qcpm6kg67b507kpjzdlhpdjr7vkh9vabln3a75k8lnlsg"))
+          (file-name (git-file-name "cl-snakes" commit))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+        (list sbcl-alexandria
+              sbcl-cl-cont
+              sbcl-cl-utilities
+              sbcl-closer-mop
+              sbcl-fiveam
+              sbcl-iterate))
+      (home-page "https://github.com/BnMcGn/snakes")
+      (synopsis "Python-like generators for Common Lisp")
+      (description
+       "This package provides Python style generators for Common Lisp.
+It also includes a port of itertools.")
+      (license license:asl2.0))))
+
+(define-public cl-snakes
+  (sbcl-package->cl-source-package sbcl-snakes))
+
+(define-public ecl-snakes
+  (sbcl-package->ecl-package sbcl-snakes))
+
 (define-public sbcl-random-state
   (let ((commit "c270d4f15e0b66ba9680ca8734a5de56959cb118")
         (revision "1"))
