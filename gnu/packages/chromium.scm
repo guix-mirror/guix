@@ -82,9 +82,6 @@
     "base/third_party/symbolize" ;BSD-3
     "base/third_party/xdg_mime" ;LGPL2.0+ or Academic 2.0
     "base/third_party/xdg_user_dirs" ;Expat
-    ;; XXX: Chromium requires a newer C++ standard library.  Remove this when
-    ;; the default GCC is 9 or later.
-    "buildtools/third_party/libc++" ;ASL2.0, with LLVM exceptions
     "chrome/third_party/mozilla_security_manager" ;MPL-1.1/GPL2+/LGPL2.1+
     "courgette/third_party/bsdiff" ;BSD-2, BSD protection license
     "courgette/third_party/divsufsort" ;Expat
@@ -170,8 +167,6 @@
     "third_party/iccjpeg" ;IJG
     "third_party/inspector_protocol" ;BSD-3
     "third_party/jinja2" ;BSD-3
-    ;; XXX: Unbundle this when switching back to libstdc++.
-    "third_party/jsoncpp" ;Public Domain or Expat
     "third_party/jstemplate" ;ASL2.0
     "third_party/khronos" ;Expat, SGI
     "third_party/leveldatabase" ;BSD-3
@@ -237,9 +232,6 @@
     "third_party/protobuf/third_party/six" ;Expat
     "third_party/pyjson5" ;ASL2.0
     "third_party/qcms" ;Expat
-    ;; XXX: System re2 cannot be used when Chromium uses libc++ because the re2
-    ;; ABI relies on libstdc++ internals.  See build/linux/unbundle/re2.gn.
-    "third_party/re2" ;BSD-3
     "third_party/rnnoise" ;BSD-3
     "third_party/ruy" ;ASL2.0
     "third_party/s2cellid" ;ASL2.0
@@ -348,6 +340,8 @@
 (define %debian-patches
   (list (debian-patch "fixes/nomerge.patch"
                       "0lybs2b5gk08j8cr6vjrs9d3drd7qfw013z2r0y00by8dnpm74i3")
+        (debian-patch "system/jsoncpp.patch"
+                      "16lvhci10hz0q9axc6p921b95a76kbzcla5cl81czxzfwnynr1w5")
         (debian-patch "system/zlib.patch"
                       "0j313bd3q8qc065j60x97dckrfgbwl4qxc8jhz33iihvv4lwziwv")
         (debian-patch "system/openjpeg.patch"
@@ -449,7 +443,7 @@
                   "--system-libraries" "ffmpeg" "flac" "fontconfig"
                   "freetype" "harfbuzz-ng" "icu" "libdrm" "libevent"
                   "libjpeg" "libpng" "libwebp" "libxml" "libxslt"
-                  "openh264" "opus" "zlib")))))
+                  "openh264" "opus" "re2" "zlib")))))
 
 (define opus+custom
   (package/inherit opus
@@ -503,6 +497,7 @@
               "clang_use_chrome_plugins=false"
               "is_cfi=false"            ;requires ThinLTO
               "use_thin_lto=false"      ;XXX lld segfaults
+              "use_custom_libcxx=false"
               "chrome_pgo_phase=0"
               "use_sysroot=false"
               "goma_dir=\"\""
@@ -577,7 +572,11 @@
               "rtc_use_pipewire=true"
               "rtc_link_pipewire=true"
               ;; Don't use bundled sources.
-              "rtc_build_json=true"  ;FIXME: libc++ std::string ABI difference
+              "rtc_build_json=false"
+              (string-append "rtc_jsoncpp_root=\""
+                             (search-input-directory %build-inputs
+                                                     "include/json")
+                             "\"")
               "rtc_build_libevent=false"
               ;; XXX: Use the bundled libvpx for WebRTC because unbundling
               ;; currently fails (see above), and the versions must match.
@@ -622,6 +621,10 @@
                                "#include \"opus/opus_types.h\"")))
                           (find-files (string-append "third_party/webrtc/modules"
                                                      "/audio_coding/codecs/opus")))
+
+                (substitute* "third_party/webrtc/rtc_base/strings/json.h"
+                  (("#include \"third_party/jsoncpp/")
+                   "#include \"json/"))
 
                 ;; Many files try to include ICU headers from "third_party/icu/...".
                 ;; Remove the "third_party/" prefix to use system headers instead.
@@ -683,18 +686,6 @@
                                                  "include/c++"))
                     (node (search-input-file (or native-inputs inputs)
                                              "/bin/node")))
-                ;; Remove the default compiler from CPLUS_INCLUDE_PATH to
-                ;; prevent header conflict with the bundled libcxx.
-                (setenv "CPLUS_INCLUDE_PATH"
-                        (string-join
-                         (delete c++
-                                 (string-split (getenv "CPLUS_INCLUDE_PATH")
-                                               #\:))
-                         ":"))
-                (format #t
-                        "environment variable `CPLUS_INCLUDE_PATH' changed to ~a~%"
-                        (getenv "CPLUS_INCLUDE_PATH"))
-
                 ;; Define the GN toolchain.
                 (setenv "AR" "llvm-ar") (setenv "NM" "llvm-nm")
                 (setenv "CC" "clang") (setenv "CXX" "clang++")
@@ -846,6 +837,7 @@
            gtk+
            harfbuzz-3.0
            icu4c
+           jsoncpp
            lcms
            libevent
            libffi
@@ -879,6 +871,7 @@
            pciutils
            pipewire-0.3
            pulseaudio
+           re2
            snappy
            speech-dispatcher
            eudev
