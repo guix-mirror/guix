@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012-2021, 2021-2022 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Mark H Weaver <mhw@netris.org>
@@ -4555,7 +4555,15 @@ in a digital read-out.")
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "SHELL_PATH" (which "bash"))
              (chdir "tools/perf")
-             #t)))
+
+             ;; This file hard-codes file system layouts for specific distros
+             ;; but not for ours; address that.  With this change, one can run
+             ;; "perf report --symfs=$HOME/.guix-profile" (without
+             ;; "/lib/debug") and 'perf' should be able to find separate debug
+             ;; info files.
+             (substitute* "util/dso.c"
+               (("/usr/lib/debug")
+                "/lib/debug")))))
        #:make-flags (list (string-append "prefix="
                                          (assoc-ref %outputs "out"))
                           "CC=gcc"
