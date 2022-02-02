@@ -7096,6 +7096,29 @@ This provides a basic API and common UI widgets such as popup tooltips
 and popup menus.")
     (license license:gpl3+)))
 
+(define-public emacs-popup-kill-ring
+  (let ((commit "a45c9cf79c4e1207fdbdd662e161154ef224ad61")
+        (revision "0"))
+    (package
+      (name "emacs-popup-kill-ring")
+      (version (git-version "0.2.8" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/waymondo/popup-kill-ring")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0bpnsc4agy6mcnc79d9a6gi79jiiqrhf3a55pw0p4z16m86vwyqr"))))
+      (build-system emacs-build-system)
+      (propagated-inputs (list emacs-pos-tip emacs-popup))
+      (home-page "https://github.com/waymondo/popup-kill-ring")
+      (synopsis "Interactively insert item from kill-ring")
+      (description "This Emacs packages manages your Emacs kill-ring in an
+autocomplete style popup menu.")
+      (license license:gpl3+))))
+
 (define-public emacs-python-black
   (package
     (name "emacs-python-black")
