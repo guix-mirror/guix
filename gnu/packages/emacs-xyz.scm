@@ -29992,6 +29992,31 @@ extended by the user via @code{setup-define}.  A list of currently known
 local macros are documented in the docstring for @code{setup}.")
     (license license:gpl3+)))
 
+(define-public emacs-ed-mode
+  ;; XXX: Upstream did not tag any commits yet.
+  (let ((commit "69f4fb34eca8df6a3bfe24bd8d8075551f0264ac")
+        (revision "0"))
+    (package
+      (name "emacs-ed-mode")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/ryanprior/ed-mode")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "058siccx6znw1bcp820bll0jg300xz8w1wf97zr1fa6jwfxyhhvi"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/ryanprior/ed-mode")
+      (synopsis "Emacs ed emulation")
+      (description
+"@code{ed-mode} lets you interact with Emacs buffers like you would do
+with the ed editor.")
+      (license license:gpl3+))))
+
 (define-public emacs-alsamixer-el
   (package
     (name "emacs-alsamixer-el")
