@@ -79,27 +79,28 @@ Import and convert the PyPI package for PACKAGE-NAME.\n"))
 
   (let* ((opts (parse-options))
          (args (filter-map (match-lambda
-                            (('argument . value)
-                             value)
-                            (_ #f))
+                             (('argument . value)
+                              value)
+                             (_ #f))
                            (reverse opts))))
     (match args
       ((spec)
-       (let ((name version (package-name->name+version spec)))
-         (if (assoc-ref opts 'recursive)
-             ;; Recursive import
-             (map (match-lambda
-                    ((and ('package ('name name) . rest) pkg)
-                     `(define-public ,(string->symbol name)
-                        ,pkg))
-                    (_ #f))
-                  (pypi-recursive-import name version))
-             ;; Single import
-             (let ((sexp (pypi->guix-package name #:version version)))
-               (unless sexp
-                 (leave (G_ "failed to download meta-data for package '~a'~%")
-                        name))
-               sexp))))
+       (with-error-handling
+         (let ((name version (package-name->name+version spec)))
+           (if (assoc-ref opts 'recursive)
+               ;; Recursive import
+               (map (match-lambda
+                      ((and ('package ('name name) . rest) pkg)
+                       `(define-public ,(string->symbol name)
+                          ,pkg))
+                      (_ #f))
+                    (pypi-recursive-import name version))
+               ;; Single import
+               (let ((sexp (pypi->guix-package name #:version version)))
+                 (unless sexp
+                   (leave (G_ "failed to download meta-data for package '~a'~%")
+                          name))
+                 sexp)))))
       (()
        (leave (G_ "too few arguments~%")))
       ((many ...)
