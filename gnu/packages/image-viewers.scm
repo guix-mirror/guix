@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2017-2022 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
@@ -631,11 +631,12 @@ It supports JPEG, PNG and GIF formats.")
            (lambda* (#:key inputs #:allow-other-keys)
              ;; 'OpenEXR.pc' has a -I for IlmBase but 'FindOpenEXR.cmake' does
              ;; not use 'OpenEXR.pc'.  Thus, we need to add
-             ;; "$ilmbase/include/OpenEXR/" to the CPATH.
-             (setenv "CPATH"
+             ;; "$ilmbase/include/OpenEXR/" to the CPLUS_INCLUDE_PATH.
+             (setenv "CPLUS_INCLUDE_PATH"
                      (string-append
-                      (search-input-directory inputs "include/OpenEXR")
-                      ":" (or (getenv "CPATH") ""))))))))
+                      (dirname
+                       (search-input-file inputs "include/OpenEXR/ImathInt64.h"))
+                      ":" (or (getenv "CPLUS_INCLUDE_PATH") ""))))))))
     (home-page "http://qtpfsgui.sourceforge.net")
     (synopsis "High dynamic range (HDR) imaging application")
     (description
