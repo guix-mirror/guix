@@ -1519,6 +1519,8 @@ ALLOWED_HOSTS = [
           allowed-hosts))
 "]
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 DEFAULT_FROM_EMAIL = '" #$default-from-email "'
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 NOTIFICATION_FROM_EMAIL = DEFAULT_FROM_EMAIL
