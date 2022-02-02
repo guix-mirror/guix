@@ -4574,28 +4574,26 @@ in a digital read-out.")
                           "lib=lib")
        #:tests? #f))                              ;no tests
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("bison" ,bison)
-       ("flex" ,flex)
-
-       ;; There are build scripts written in these languages.
-       ("perl" ,perl)
-       ("python2" ,python-2)
-       ("python3" ,python-3)))
+     (list pkg-config
+           bison
+           flex
+           ;; There are build scripts written in these languages.
+           perl
+           python-2
+           python-3))
     (inputs
-     `(("slang" ,slang)                        ;for the interactive TUI
-       ;; ("newt" ,newt)
-       ("python" ,python-2)                    ;'perf' links against libpython
-       ("elfutils" ,elfutils)
-       ("libiberty" ,libiberty)      ;used alongside BDF for symbol demangling
-       ("libunwind" ,libunwind)      ;better stack walking
-       ("numactl" ,numactl)          ;for 'perf bench numa mem'
-
-       ;; Documentation.
-       ("libxml2" ,libxml2)                       ;for $XML_CATALOG_FILES
-       ("docbook-xsl" ,docbook-xsl)
-       ("xmlto" ,xmlto)
-       ("asciidoc" ,asciidoc)))
+     (list slang ;for the interactive TUI
+           ;; newt
+           python-2                            ;'perf' links against libpython
+           elfutils
+           libiberty                 ;used alongside BDF for symbol demangling
+           libunwind                 ;better stack walking
+           numactl                   ;for 'perf bench numa mem'
+           ;; Documentation.
+           libxml2                                ;for $XML_CATALOG_FILES
+           docbook-xsl
+           xmlto
+           asciidoc))
     (home-page "https://perf.wiki.kernel.org/")
     (synopsis "Linux profiling with performance counters")
     (description
