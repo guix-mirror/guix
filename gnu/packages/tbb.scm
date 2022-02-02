@@ -41,6 +41,10 @@
               (sha256
                (base32
                 "0ih727g802j9lvwkqhw021bk1wb7xlvfgd0vl1i6jng4am1wv7vq"))))
+              (patches (list
+                        ;; Backport an upstream commit that prevents the
+                        ;; "test_eh_thread" test failing on AArch64.
+                        (search-patch "tbb-fix-test-on-aarch64.patch")))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DTBB_STRICT=OFF"))) ;; Don't fail on warnings
