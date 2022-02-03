@@ -15,7 +15,7 @@
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017, 2020 EuAndreh <eu@euandre.org>
-;;; Copyright © 2017, 2018, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018, 2020, 2022 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
@@ -63,6 +63,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
   #:use-module (guix packages)
+  #:use-module (guix gexp)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix hg-download)
@@ -2572,7 +2573,14 @@ based on a manifest file published by servers.")
              (("~=") ">="))
            #t))))
     (build-system python-build-system)
-    (arguments '(#:tests? #f))          ; No tests.
+    (arguments
+     (list #:tests? #f                  ;no tests
+           #:phases
+           #~(modify-phases %standard-phases
+               ;; XXX: dnspython attempts to read /etc/resolv.conf when loading
+               ;; resolver.py, which breaks the sanity check in dependent
+               ;; packages.  This should rather be fixed in dnspython.
+               (delete 'sanity-check))))
     (inputs
      (list python-dkimpy python-dnspython python-requests))
     (home-page "https://git.kernel.org/pub/scm/utils/b4/b4.git")
