@@ -12083,9 +12083,21 @@ specification.")
              (setenv "SYSTEM_SASS" (assoc-ref %build-inputs "libsass"))
              #t))
          (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "sasstests.py"))))
+         (add-after 'install 'delete-test
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (invoke "pytest" "sasstests.py"))))))
+             ;; Delete sasstests.py because it attempts to open a file
+             ;; that is not installed when loaded, which breaks the sanity
+             ;; check.
+             (delete-file (string-append
+                           (assoc-ref outputs "out")
+                           "/lib/python"
+                           (python-version
+                            (dirname (dirname
+                                      (search-input-file inputs "bin/python"))))
+                           "/site-packages/sasstests.py")))))))
     (native-inputs
      (list python-pytest python-werkzeug))
     (inputs
