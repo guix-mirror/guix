@@ -19251,7 +19251,12 @@ multitouch applications.")
      ;; TypeError: parse() missing 2 required positional arguments: 'tree' and
      ;; 'parse_funcs'
      ;; during test setup.
-     `(#:tests? #f))
+     (list #:tests? #f
+           #:phases
+           #~(modify-phases %standard-phases
+               ;; translate-toolkit has many optional dependencies (see
+               ;; optional.txt), which the sanity check does not understand.
+               (delete 'sanity-check))))
     (home-page "https://toolkit.translatehouse.org")
     (synopsis "Tools and API for translation and localization engineering")
     (description
