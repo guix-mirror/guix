@@ -2006,14 +2006,14 @@ creation and publication procedures.")
 (define-public ocaml-rresult
   (package
     (name "ocaml-rresult")
-    (version "0.5.0")
+    (version "0.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://erratique.ch/software/rresult/releases/"
                                   "rresult-" version ".tbz"))
               (sha256
                (base32
-                "1xxycxhdhaq8p9vhwi93s2mlxjwgm44fcxybx5vghzgbankz9yhm"))))
+                "0h2mjyzhay1p4k7n0mzaa7hlc7875kiy6m1i3r1n03j6hddpzahi"))))
     (build-system ocaml-build-system)
     (native-inputs
      (list opam ocamlbuild))
