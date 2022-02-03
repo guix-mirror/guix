@@ -40,6 +40,7 @@
 ;;; Copyright © 2021 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2021, 2022 Artyom V. Poptsov <poptsov.artyom@gmail.com>
 ;;; Copyright © 2022 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2022 Zhu Zihao <all_but_last@163.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -118,6 +119,7 @@
   #:use-module (gnu packages xorg)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix hg-download)
   #:use-module (guix build-system cmake)
@@ -1979,8 +1981,8 @@ capabilities.")
     (license license:gpl3+)))
 
 (define-public g-golf
-  (let ((commit   "ef830107b9765bd6a2da848d0cbe45e11374c0b5")
-        (revision "839"))
+  (let ((commit   "1824633d37da3794f349d6829e9dac2cf89adaa8")
+        (revision "1010"))
     (package
       (name "g-golf")
       (version (git-version "0.1.0" revision commit))
@@ -1992,69 +1994,69 @@ capabilities.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0r472hvmf447kqvkahp1wy4irb5gy8y793hm8r9rc511smdx66cw"))))
+          (base32 "0ncpqv6pbsx9fjmdzvzbjljnhqgw9pynqy9vr9aq35nb7rzrhfdf"))))
       (build-system gnu-build-system)
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("texinfo" ,texinfo)
-         ("gettext" ,gettext-minimal)
-         ("libtool" ,libtool)
-         ("pkg-config" ,pkg-config)
-         ("xorg-server" ,xorg-server)))
+      (arguments
+       (list
+        #:configure-flags
+        #~(list "--with-guile-site=no")
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-after 'unpack 'fix-guile-site-directory
+              (lambda _
+                (substitute* "configure.ac"
+                  (("SITEDIR=.*$")
+                   "SITEDIR=\"$datadir/guile/site/$GUILE_EFFECTIVE_VERSION\";\n")
+                  (("SITECCACHEDIR=\"\\$libdir/g-golf/")
+                   "SITECCACHEDIR=\"$libdir/"))))
+            (add-before 'configure 'tests-work-arounds
+              (lambda* (#:key inputs #:allow-other-keys)
+                ;; In build environment, There is no /dev/tty
+                (substitute* "test-suite/tests/gobject.scm"
+                  (("/dev/tty") "/dev/null"))))
+            (add-before 'configure 'substitute-libs
+              (lambda* (#:key inputs outputs #:allow-other-keys)
+                (define (get lib)
+                  (search-input-file inputs (string-append "lib/" lib ".so")))
+
+                (let* ((libgi      (get "libgirepository-1.0"))
+                       (libglib    (get "libglib-2.0"))
+                       (libgobject (get "libgobject-2.0"))
+                       (libg-golf (string-append #$output "/lib/libg-golf")))
+                  (substitute* "g-golf/init.scm"
+                    (("libgirepository-1.0") libgi)
+                    (("libglib-2.0") libglib)
+                    (("libgobject-2.0") libgobject)
+                    (("\\(dynamic-link \"libg-golf\"\\)")
+                     (format #f "~s"
+                             `(catch #t
+                                (lambda ()
+                                  (dynamic-link "libg-golf"))
+                                (lambda _
+                                  (dynamic-link ,libg-golf))))))
+                  (setenv "GUILE_AUTO_COMPILE" "0")
+                  #t)))
+            (add-before 'check 'start-xorg-server
+              (lambda* (#:key inputs #:allow-other-keys)
+                ;; The test suite requires a running X server.
+                (system "Xvfb :1 &")
+                (setenv "DISPLAY" ":1")
+                #t)))))
       (inputs
-       `(("guile" ,guile-2.2)
-         ("guile-lib" ,guile2.2-lib)
-         ("clutter" ,clutter)
-         ("gtk" ,gtk+)
-         ("glib" ,glib)))
+       (list guile-3.0 guile-lib glib))
+      (native-inputs
+       (list autoconf
+             automake
+             texinfo
+             gettext-minimal
+             libtool
+             pkg-config
+             ;; required for tests
+             gtk+
+             clutter
+             xorg-server-for-tests))
       (propagated-inputs
        (list gobject-introspection))
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-before 'configure 'tests-work-arounds
-             (lambda* (#:key inputs #:allow-other-keys)
-               ;; In build environment, There is no /dev/tty
-               (substitute*
-                   "test-suite/tests/gobject.scm"
-                 (("/dev/tty") "/dev/null"))))
-           (add-before 'configure 'substitute-libs
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let* ((get (lambda (key lib)
-                             (string-append (assoc-ref inputs key) "/lib/" lib)))
-                      (libgi      (get "gobject-introspection" "libgirepository-1.0"))
-                      (libglib    (get "glib" "libglib-2.0"))
-                      (libgobject (get "glib" "libgobject-2.0"))
-                      (libgdk     (get "gtk" "libgdk-3")))
-                 (substitute* "configure"
-                   (("SITEDIR=\"\\$datadir/g-golf\"")
-                    "SITEDIR=\"$datadir/guile/site/$GUILE_EFFECTIVE_VERSION\"")
-                   (("SITECCACHEDIR=\"\\$libdir/g-golf/")
-                    "SITECCACHEDIR=\"$libdir/"))
-                 (substitute* "g-golf/init.scm"
-                   (("libgirepository-1.0") libgi)
-                   (("libglib-2.0") libglib)
-                   (("libgdk-3") libgdk)
-                   (("libgobject-2.0") libgobject)
-                   (("\\(dynamic-link \"libg-golf\"\\)")
-                    (format #f "~s"
-                            `(dynamic-link
-                              (format #f "~alibg-golf"
-                                      (if (getenv "GUILE_GGOLF_UNINSTALLED")
-                                          ""
-                                          ,(format #f "~a/lib/"
-                                                   (assoc-ref outputs "out"))))))))
-                 (setenv "GUILE_AUTO_COMPILE" "0")
-                 (setenv "GUILE_GGOLF_UNINSTALLED" "1")
-                 #t)))
-           (add-before 'check 'start-xorg-server
-             (lambda* (#:key inputs #:allow-other-keys)
-               ;; The test suite requires a running X server.
-               (system (format #f "~a/bin/Xvfb :1 &"
-                               (assoc-ref inputs "xorg-server")))
-               (setenv "DISPLAY" ":1")
-               #t)))))
       (home-page "https://www.gnu.org/software/g-golf/")
       (synopsis "Guile bindings for GObject Introspection")
       (description
