@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Raoul J.P. Bonnal <ilpuccio.febo@gmail.com>
-;;; Copyright © 2017, 2018, 2020, 2021 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2017, 2018, 2020-2022 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017, 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
@@ -2957,6 +2957,28 @@ Date::Calc.")
 operations, such as comparing two times, determining a date a given amount of
 time from another, or parsing international times.")
     (license (package-license perl))))
+
+(define-public perl-date-range
+  (package
+    (name "perl-date-range")
+    (version "1.41")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/T/TM/TMTM/"
+                           "Date-Range-" version ".tar.gz"))
+       (sha256
+        (base32 "1fa8v75pbplmkb3ff6k0hd1m80p9xgksf54xhw1ha70h5d4rg65z"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     (list perl-date-simple))
+    (home-page "https://metacpan.org/dist/Date-Range")
+    (synopsis "Work with a range of dates")
+    (description
+     "@code{Date::Range} is a library to work with date ranges.  It can
+be used to determine whether a given date is in a particular range, or what
+the overlap between two ranges are.")
+    (license license:gpl2+)))
 
 (define-public perl-date-simple
   (package
