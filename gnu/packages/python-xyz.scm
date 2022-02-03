@@ -2014,14 +2014,14 @@ class.")
 (define-public python-can
   (package
     (name "python-can")
-    (version "3.3.3")
+    (version "3.3.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-can" version))
        (sha256
         (base32
-         "123lz1bl6xf3d0fvxzr4bg4884yg4m9s21z6xd2m68zhnbv9rmpc"))))
+         "0jclrvyxasaaxr0albq0kqrnrfqdgqxs7m2qw9nd8kfwg8xj4g1d"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -2030,7 +2030,8 @@ class.")
                       (substitute* "setup.py"
                         (("mock~=2\\.0") "mock")
                         (("coverage<5") "coverage")
-                        (("pytest~=4\\.3") "pytest")
+                        (("pytest~=4\\.6") "pytest")
+                        (("pytest-timeout~=1\\.3") "pytest-timeout")
                         (("hypothesis~=4\\.56") "hypothesis"))
                       #t))
                   (add-after 'unpack 'fix-broken-tests
