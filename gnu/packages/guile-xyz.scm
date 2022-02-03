@@ -3467,7 +3467,7 @@ perform geometrical transforms on JPEG images.")
        ("guile-readline" ,guile2.2-readline)
        ("guile-gcrypt" ,guile2.2-gcrypt)
        ("gnutls" ,gnutls)
-       ("g-golf" ,g-golf)
+       ("g-golf" ,guile2.2-g-golf)
        ("shroud" ,shroud)
        ("emacsy" ,emacsy-minimal)
        ;; Gtk
