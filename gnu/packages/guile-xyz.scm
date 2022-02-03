@@ -1980,11 +1980,11 @@ capabilities.")
     (home-page "https://dthompson.us/projects/sly.html")
     (license license:gpl3+)))
 
-(define-public g-golf
+(define-public guile-g-golf
   (let ((commit   "1824633d37da3794f349d6829e9dac2cf89adaa8")
         (revision "1010"))
     (package
-      (name "g-golf")
+      (name "guile-g-golf")
       (version (git-version "0.1.0" revision commit))
       (source
        (origin
@@ -2066,6 +2066,9 @@ GObject Introspection API and higher-level functionality for importing Gnome
 libraries and making GObject classes (and methods) available in Guile's
 object-oriented programming system, GOOPS.")
       (license license:lgpl3+))))
+
+(define-public g-golf
+  (deprecated-package "g-golf" guile-g-golf))
 
 (define-public g-wrap
   (package
