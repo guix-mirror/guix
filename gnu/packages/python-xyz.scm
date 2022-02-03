@@ -12075,13 +12075,11 @@ specification.")
         (base32 "1r0kgl7i6nnhgjl44sjw57k08gh2qr7l8slqih550dyxbf1akbxh"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     '(#:phases
        (modify-phases %standard-phases
          ;; Use Guix package of libsass instead of compiling from a checkout.
          (add-before 'build 'set-libsass
-           (lambda _
-             (setenv "SYSTEM_SASS" (assoc-ref %build-inputs "libsass"))
-             #t))
+           (lambda _ (setenv "SYSTEM_SASS" "indeed")))
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
