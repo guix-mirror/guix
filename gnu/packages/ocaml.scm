@@ -6703,7 +6703,7 @@ combinators.")
 (define-public ocaml-bisect-ppx
   (package
     (name "ocaml-bisect-ppx")
-    (version "2.6.1")
+    (version "2.7.1")
     (source
      (origin
        (method git-fetch)
@@ -6713,7 +6713,7 @@ combinators.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1knglw1b2kjr9jnd8cpfzmm581abxxdcx9l3cd2balg6gnac7qk1"))))
+         "02sn1a9anyksd2lpd9xryrxsx76xg99c7mx1mq6b5q09r9b060d4"))))
     (build-system dune-build-system)
     (propagated-inputs
      (list ocaml-ppxlib ocaml-cmdliner))
