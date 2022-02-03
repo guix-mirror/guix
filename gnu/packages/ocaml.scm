@@ -4209,7 +4209,7 @@ long and size_t whose sizes depend on the host platform.")
 (define-public ocaml-ctypes
   (package
    (name "ocaml-ctypes")
-   (version "0.19.1")
+   (version "0.20.0")
    (home-page "https://github.com/ocamllabs/ocaml-ctypes")
    (source (origin
              (method git-fetch)
@@ -4219,7 +4219,7 @@ long and size_t whose sizes depend on the host platform.")
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "1xi1a486gssrb23zln3sf7zn0rmyl1k684bdf9iqkhgpz607fq6s"))))
+               "13mq6i08f217fj2lq55psji453nmqp136sjxhg25hjb2z0gv9gky"))))
    (build-system ocaml-build-system)
    (arguments
     `(#:make-flags
