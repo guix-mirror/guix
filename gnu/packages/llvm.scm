@@ -567,14 +567,14 @@ output), and Binutils.")
 (define-public llvm-13
   (package
     (name "llvm")
-    (version "13.0.0")
+    (version "13.0.1")
     (source
      (origin
       (method url-fetch)
       (uri (llvm-uri "llvm" version))
       (sha256
        (base32
-        "081h2vw757j5xjg2441539j2vhfzzihrgxwza5pq5sj3hrq133a0"))))
+        "0d681xiixmx9inwvz14vi3xsznrcryk06a8rvk9cljiq5kc80szc"))))
     (build-system cmake-build-system)
     (outputs '("out" "opt-viewer"))
     (native-inputs
@@ -634,11 +634,11 @@ of programming tools as well as libraries with equivalent functionality.")
 (define-public clang-runtime-13
   (clang-runtime-from-llvm
    llvm-13
-   "0gyvfhnypfmlf7hdgkiz2wh2lgk4nz26aqf361msjs3qdkbh4djc"))
+   "1z2xr9nn4mgc3hn9ark2k5y4wznpk47xppkp63bcbagr6589acvv"))
 
 (define-public clang-13
   (clang-from-llvm llvm-13 clang-runtime-13
-                   "0zp1p6syii5iajm8v2c207s80arv00yz5ckfwimn5dng0sxiqqax"
+                   "1j8pr5kk8iqyb4jds3yl7c6x672617h4ngkpl4575j7mk4nrwykq"
                    #:patches '("clang-13.0-libc-search-path.patch")
                    #:tools-extra
                    (origin
@@ -647,7 +647,7 @@ of programming tools as well as libraries with equivalent functionality.")
                                     (package-version llvm-13)))
                      (sha256
                       (base32
-                       "1mgalgdgxlxi08yxw7k6yh4iia1bpjmjgn7mrpqas8lbl9h612s2")))))
+                       "1l4jjdqfl9hrh0fwzv27hc263zc6x61h09vs4ni3yla8i1cwhayc")))))
 
 (define-public clang-toolchain-13
   (make-clang-toolchain clang-13))
@@ -1120,13 +1120,13 @@ of programming tools as well as libraries with equivalent functionality.")
 (define-public lld
   (package
     (name "lld")
-    (version "13.0.0")
+    (version "13.0.1")
     (source (origin
               (method url-fetch)
               (uri (llvm-uri "lld" version))
               (sha256
                (base32
-                "11lkwv4jy35z2f3zcpv7hbbk9v9gpavfvxlif8265zv4rl5r1l90"))))
+                "1yscckcszfr234k4svhybdbsnz6w65x8pldl6c2nhyxzx12zfsk6"))))
     (build-system cmake-build-system)
     (native-inputs
      ;; Note: check <https://bugs.llvm.org/show_bug.cgi?id=49228> to see
@@ -1413,13 +1413,13 @@ requirements according to version 1.1 of the OpenCL specification.")
 (define-public libomp
   (package
     (name "libomp")
-    (version "13.0.0")
+    (version "13.0.1")
     (source (origin
               (method url-fetch)
               (uri (llvm-uri "openmp" version))
               (sha256
                (base32
-                "0g29bq6kqyaqwi7c2l3lndjc6z4pxsvcdhjmh9lkp99931xawc29"))
+                "0kvbr4j6ldpssiv7chgqra5y77n7jwbyxlwcl7z32v31f49jcybb"))
               (file-name (string-append "libomp-" version ".tar.xz"))))
     (build-system cmake-build-system)
     ;; XXX: Note this gets built with GCC because building with Clang itself
