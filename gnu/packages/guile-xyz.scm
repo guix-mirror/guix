@@ -2070,6 +2070,15 @@ object-oriented programming system, GOOPS.")
 (define-public g-golf
   (deprecated-package "g-golf" guile-g-golf))
 
+(define-public guile2.2-g-golf
+  (package
+    (inherit guile-g-golf)
+    (name "guile2.2-g-golf")
+    (inputs
+     (modify-inputs (package-inputs guile-g-golf)
+       (replace "guile" guile-2.2)
+       (replace "guile-lib" guile2.2-lib)))))
+
 (define-public g-wrap
   (package
     (name "g-wrap")
