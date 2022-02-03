@@ -7289,7 +7289,7 @@ representation.")
 (define-public ocaml-fix
   (package
     (name "ocaml-fix")
-    (version "20211125")
+    (version "20220121")
     (source
       (origin
         (method git-fetch)
@@ -7299,7 +7299,7 @@ representation.")
         (file-name (git-file-name name version))
         (sha256
           (base32
-            "00vq2das1l8xca013z7z7jy5622fsy3jha2cj72psp22wx9199l1"))))
+            "15785v43jcbqsw1y653cnb89alrcnbdri1h0w6zl6p7769ja9rdj"))))
     (build-system dune-build-system)
     (arguments
      ;; No tests.
