@@ -49,6 +49,7 @@
 ;;; Copyright © 2021 jgart <jgart@dismail.de>
 ;;; Copyright © 2021 Disseminate Dissent <disseminatedissent@protonmail.com>
 ;;; Copyright © 2022 John Kehayias <john.kehayias@protonmail.com>
+;;; Copyright © 2022 Gabriel Wicki <gabriel@erlikon.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -356,20 +357,22 @@ many programming languages.")
     (license license:bsd-3)))
 
 (define-public i3-gaps
-  (package (inherit i3-wm)
-           (name "i3-gaps")
-           (version "4.18.3")
-           (source (origin
-                     (method url-fetch)
-                     (uri (string-append
-                           "https://github.com/Airblader/i3/releases/download/"
-                           version "/i3-" version ".tar.bz2"))
-                     (sha256
-                      (base32
-                       "1hcakwyz78lgp8mhqv7pw86jlb3m415pfql1q19rkijnhm3fn3ci"))))
-           (home-page "https://github.com/Airblader/i3")
-           (synopsis "Tiling window manager with gaps")
-           (description "i3-gaps is a fork of i3wm, a tiling window manager
+  (package
+    (inherit i3-wm)
+    (name "i3-gaps")
+    (version "4.20.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Airblader/i3")
+                    (commit version)))
+              (sha256
+               (base32
+                "0g0qmv2gpv9qbhj9h5f4c4vfs6ndzq2rblgx9md85iharwp5sbb9"))))
+    (home-page "https://github.com/Airblader/i3")
+    (synopsis "Tiling window manager with gaps")
+    (description
+     "i3-gaps is a fork of i3wm, a tiling window manager
 for X11.  It is kept up to date with upstream, adding a few additional
 features such as gaps between windows.
 
@@ -382,7 +385,7 @@ and optionally resized.
 
 i3 uses a plain-text configuration file, and can be extended and controlled
 from many programming languages.")
-           (license license:bsd-3)))
+    (license license:bsd-3)))
 
 (define-public i3lock
   (package
