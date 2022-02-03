@@ -382,7 +382,7 @@ endpoints.")
            gmp
            libcap
            libgcrypt
-           libsoup
+           libsoup-minimal-2
            linux-pam
            openssl))
     (native-inputs
