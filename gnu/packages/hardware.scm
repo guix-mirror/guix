@@ -11,6 +11,7 @@
 ;;; Copyright © 2021, 2022 John Kehayias <john.kehayias@protonmail.com>
 ;;; Copyright © 2022 Zhu Zihao <all_but_last@163.com>
 ;;; Copyright © 2022 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2022 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -823,20 +824,28 @@ applications.")
 (define-public usbguard
   (package
     (name "usbguard")
-    (version "0.7.8")
+    ;; Note: Use a recent snapshot to get compatibility with newer system
+    ;; libraries.
+    (version "1.0.0-55-g466f1f0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/USBGuard/usbguard/releases/download/usbguard-"
-                    version "/usbguard-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/USBGuard/usbguard")
+                    (commit (string-append "usbguard-" version))))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "1il5immqfxh2cj8wn1bfk7l42inflzgjf07yqprpz7r3lalbxc25"))))
+               (base32 "0rc0213qsfap3sgx9m3m1kppxbjl2fdwmzlbn5rbmn1i33125dfi"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-build-scripts
+         (add-after 'unpack 'patch-bootstrap-script
+           (lambda _
+             ;; Don't attempt to fetch git submodules.
+             (substitute* "autogen.sh"
+               (("^git submodule.*")
+                ""))))
+         (add-after 'bootstrap 'patch-build-scripts
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "configure"
                (("/usr/include/catch")
@@ -887,6 +896,9 @@ applications.")
        ("libqb" ,libqb)))
     (native-inputs
      `(("asciidoc" ,asciidoc)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
        ("bash-completion" ,bash-completion)
        ("gdbus-codegen" ,glib "bin")
        ("umockdev" ,umockdev)
