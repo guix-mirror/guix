@@ -955,7 +955,7 @@ Google's C++ code base.")
 (define-public pegtl
   (package
     (name "pegtl")
-    (version "2.8.3")
+    (version "3.2.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -964,7 +964,7 @@ Google's C++ code base.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "17crgjfdx55imi2dqnz6xpvsxq07390yfgkz5nd2g77ydkvq9db3"))))
+                "1viwrlsw5nwvbv8d88mf5r77syapgxx3xm1kv5kmn6drw8jgsmzf"))))
     (build-system cmake-build-system)
     (home-page "https://github.com/taocpp/PEGTL")
     (synopsis "Parsing Expression Grammar template library")
