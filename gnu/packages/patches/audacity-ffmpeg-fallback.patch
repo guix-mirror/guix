@@ -32,7 +32,7 @@ index 8c5f06d7c..00810e4d0 100644
 +   if (FFMPEG_FOUND)
 +      pkg_get_variable(LIBAVCODEC_LIBDIR libavcodec libdir)
 +      list(APPEND DEFINITIONS PRIVATE
-+                  "-DFFMPEG_PC_LIBDIR=L\"${LIBAVCODEC_LIBDIR}\"")
++                  "-DFFMPEG_PC_LIBDIR=\"${LIBAVCODEC_LIBDIR}\"")
 +   endif()
 +
     audacity_library( lib-ffmpeg-support "${SOURCES}" "${LIBRARIES}"
