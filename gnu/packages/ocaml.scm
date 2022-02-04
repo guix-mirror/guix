@@ -3266,7 +3266,7 @@ hierarchy of modules.")
 (define-public ocaml-pcre
   (package
     (name "ocaml-pcre")
-    (version "7.4.6")
+    (version "7.5.0")
     (source
       (origin
         (method git-fetch)
@@ -3276,7 +3276,7 @@ hierarchy of modules.")
         (file-name (git-file-name name version))
         (sha256
           (base32
-            "11mck879p5zvkghps4ky8yslm0isgz52d84adl0dmcfxv2ibvcym"))))
+            "048k1rl17fcml000yh8fnghk1a06h14lbyrnk9nbigxsymrz6cq2"))))
     (build-system dune-build-system)
     (arguments
      ;; No tests.
