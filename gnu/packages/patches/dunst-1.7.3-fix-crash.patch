@@ -1,0 +1,21 @@
+Author: Danny Milosavljevic <dannym@scratchpost.org>
+Date: 2022-02-04 21:52:05 CET
+
+Fix crash if notification contains invalid pixbuf data.
+
+diff -ru /gnu/store/5885czxhmhkckjqj939b0hd6b6czizwb-dunst-1.7.3-checkout/src/notification.c 5885czxhmhkckjqj939b0hd6b6czizwb-dunst-1.7.3-checkout/src/notification.c
+--- /gnu/store/5885czxhmhkckjqj939b0hd6b6czizwb-dunst-1.7.3-checkout/src/notification.c	1970-01-01 01:00:01.000000000 +0100
++++ 5885czxhmhkckjqj939b0hd6b6czizwb-dunst-1.7.3-checkout/src/notification.c	2022-02-04 19:05:57.534906600 +0100
+@@ -359,8 +359,10 @@
+         g_clear_pointer(&n->icon_id, g_free);
+ 
+         GdkPixbuf *icon = icon_get_for_data(new_icon, &n->icon_id, draw_get_scale());
+-        n->icon = gdk_pixbuf_to_cairo_surface(icon);
+-        g_object_unref(icon);
++        if (icon) {
++	        n->icon = gdk_pixbuf_to_cairo_surface(icon);
++	        g_object_unref(icon);
++        }
+ }
+ 
+ /* see notification.h */

@@ -27,6 +27,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
@@ -48,7 +49,8 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ra0ii805w3rrs0qqbjxzl6i79ksz42lnvbglw18h4igkza21kzj"))))
+                "1ra0ii805w3rrs0qqbjxzl6i79ksz42lnvbglw18h4igkza21kzj"))
+              (patches (search-patches "dunst-1.7.3-fix-crash.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
