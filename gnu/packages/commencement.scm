@@ -12,6 +12,7 @@
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2021 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2022 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1401,6 +1402,63 @@ ac_cv_c_float_format='IEEE (little-endian)'
             `("RANLIB=true"
               ,(string-append "LIBGCC2_INCLUDES=-I " gcc "/include")
               "LANGUAGES=c")))))))
+
+(define-public gcc-2.95-wrapper
+  ;; We need this so gcc-mesboot0 can be used to create shared binaries that
+  ;; have the correct interpreter, otherwise configuring gcc-mesboot using
+  ;; --enable-shared will fail.
+  (package
+    (inherit gcc-mesboot0)
+    (name "gcc-wrapper")
+    (source #f)
+    (inputs '())
+    (native-inputs
+     `(("bash" ,bash-minimal)
+       ("coreutils" ,coreutils)
+       ("libc" ,glibc-2.2.5)
+       ("gcc" ,gcc-mesboot0)))
+    (arguments
+     `(#:implicit-inputs? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'unpack)
+         (delete 'configure)
+         (delete 'install)
+         (replace 'build
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bash (assoc-ref inputs "bash"))
+                    (libc (assoc-ref inputs "libc"))
+                    (gcc (assoc-ref inputs "gcc"))
+                    (bin (string-append out "/bin")))
+               (mkdir-p bin)
+               (for-each
+                (lambda (program)
+                  (let ((wrapper (string-append bin "/" program)))
+                    (with-output-to-file wrapper
+                      (lambda _
+                        (display (string-append "#! " bash "/bin/bash
+exec " gcc "/bin/" program
+" -Wl,--dynamic-linker"
+;; also for x86_64-linux, we are still on i686-linux
+" -Wl," libc ,(glibc-dynamic-linker "i686-linux")
+" -Wl,--rpath"
+" -Wl," libc "/lib"
+" \"$@\"
+"))
+                        (chmod wrapper #o555)))))
+                '("cpp"
+                  "gcc"
+                  "g++"
+                  "i686-unknown-linux-gnu-cpp"
+                  "i686-unknown-linux-gnu-gcc"
+                  "i686-unknown-linux-gnu-g++")))))
+         (replace 'check
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (program (string-append bin "/gcc")))
+               (invoke program "--help")))))))))
 
 (define (%boot-mesboot0-inputs)
   `(("gcc" ,gcc-mesboot0)
