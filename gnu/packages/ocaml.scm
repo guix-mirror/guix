@@ -7603,7 +7603,7 @@ up to OCaml 4.08.")
 (define-public ocaml-cohttp
   (package
     (name "ocaml-cohttp")
-    (version "4.0.0")
+    (version "5.0.0")
     (source
       (origin
         (method git-fetch)
@@ -7613,7 +7613,7 @@ up to OCaml 4.08.")
         (file-name (git-file-name name version))
         (sha256
           (base32
-            "02d7417yy1i62by368w3wyw3756047pbrw69spcvz3cd1z7vqaci"))))
+            "074xis3wmr76gadh1ffmfzjfx13mw4kr2s6rkwqwzcl6l85n9x2z"))))
     (build-system dune-build-system)
     (arguments
      '(#:package "cohttp"
