@@ -21816,7 +21816,12 @@ working with iterables.")
     (inputs
      (list python-latexcodec python-pyyaml python-six))
     (arguments
-     `(#:test-target "nosetests"))
+     (list
+      #:phases #~(modify-phases %standard-phases
+                   (replace 'check
+                     (lambda* (#:key tests? #:allow-other-keys)
+                       (when tests?
+                         (invoke "nosetests")))))))
     (home-page "https://pybtex.org/")
     (synopsis "BibTeX-compatible bibliography processor")
     (description "Pybtex is a BibTeX-compatible bibliography processor written
