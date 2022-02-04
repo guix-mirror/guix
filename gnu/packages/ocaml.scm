@@ -2692,7 +2692,7 @@ and consumable.")
 (define-public ocaml-sedlex
   (package
     (name "ocaml-sedlex")
-    (version "2.4")
+    (version "2.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2701,7 +2701,7 @@ and consumable.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "13g8az4zqg6hrnxmy3qrasslppzlag13dd1dsr8vlpg2vpfmfv6i"))))
+                "062a5dvrzvb81l3a9phljrhxfw9nlb61q341q0a6xn65hll3z2wy"))))
     (build-system dune-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
