@@ -10,6 +10,7 @@
 ;;; Copyright © 2021 Zhu Zihao <all_but_last@163.com>
 ;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
 ;;; Copyright © 2022 jgart <jgart@dismail.de>
+;;; Copyright © 2022 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -448,6 +449,13 @@ with a few extensions.")
        (sha256
         (base32 "0h8ydzxlfzmspiz8lcm13qp720kfsxiky0qqnc2mxf4qzm16m326"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "python" "-m" "unittest" "discover" "test")))))))
     (home-page "https://github.com/miyuchina/mistletoe")
     (synopsis "Extensible Markdown parser in pure Python")
     (description
