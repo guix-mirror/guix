@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE
 # Copyright (C) 2021 the authors of Guix (msgids) and the following authors (msgstr)
 # This file is distributed under the same license as the guix manual package.
-# Julien Lepiller <fedora-account@lepiller.eu>, 2021.
+# Julien Lepiller <fedora-account@lepiller.eu>, 2021, 2022.
 # Francois Polito <francois@polito.se>, 2021.
 # tisse vert <tissevert+fedora@marvid.fr>, 2021.
 msgid ""
@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: guix manual checkout\n"
 "Report-Msgid-Bugs-To: bug-guix@gnu.org\n"
 "POT-Creation-Date: 2021-12-31 15:18+0000\n"
-"PO-Revision-Date: 2021-12-25 14:16+0000\n"
+"PO-Revision-Date: 2022-01-30 10:16+0000\n"
 "Last-Translator: Julien Lepiller <fedora-account@lepiller.eu>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/guix/documentation-cookbook/fr/>\n"
 "Language: fr\n"
@@ -1976,7 +1976,7 @@ msgstr "La procédure doit renvoyer @code{#true} si elle réussit. S'appuyer sur
 #: guix-git/doc/guix-cookbook.texi:1101
 #, no-wrap
 msgid "Code staging"
-msgstr "Échelonnage de code"
+msgstr "Échelonnage du code"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:1107
@@ -2617,18 +2617,7 @@ msgstr "Le paquet du noyau @code{linux-libre} est en fait une procédure qui cr�
 
 #. type: lisp
 #: guix-git/doc/guix-cookbook.texi:1442
-#, fuzzy, no-wrap
-#| msgid ""
-#| "(define* (make-linux-libre version hash supported-systems\n"
-#| "                           #:key\n"
-#| "                           ;; A function that takes an arch and a variant.\n"
-#| "                           ;; See kernel-config for an example.\n"
-#| "                           (extra-version #false)\n"
-#| "                           (configuration-file #false)\n"
-#| "                           (defconfig \"defconfig\")\n"
-#| "                           (extra-options %default-extra-linux-options)\n"
-#| "                           (patches (list %boot-logo-patch)))\n"
-#| "  ...)\n"
+#, no-wrap
 msgid ""
 "(define* (make-linux-libre* version gnu-revision source supported-systems\n"
 "                            #:key\n"
@@ -2640,34 +2629,24 @@ msgid ""
 "                            (extra-options %default-extra-linux-options))\n"
 "  ...)\n"
 msgstr ""
-"(define* (make-linux-libre version hash supported-systems\n"
-"                           #:key\n"
-"                           ;; A function that takes an arch and a variant.\n"
-"                           ;; See kernel-config for an example.\n"
-"                           (extra-version #false)\n"
-"                           (configuration-file #false)\n"
-"                           (defconfig \"defconfig\")\n"
-"                           (extra-options %default-extra-linux-options)\n"
-"                           (patches (list %boot-logo-patch)))\n"
+"(define* (make-linux-libre* version gnu-revision source supported-systems\n"
+"                            #:key\n"
+"                            (extra-version #f)\n"
+"                            ;; Un fonction qui prend une architecture et une variante\n"
+"                            ;; Voir kernel-config si vous voulez un exemple.\n"
+"                            (configuration-file #f)\n"
+"                            (defconfig \"defconfig\")\n"
+"                            (extra-options %default-extra-linux-options))\n"
 "  ...)\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:1446
-#, fuzzy
-#| msgid "The current @code{linux-libre} package is for the 5.1.x series, and is declared like this:"
 msgid "The current @code{linux-libre} package is for the 5.15.x series, and is declared like this:"
-msgstr "Le paquet @code{linux-libre} actuel pour la série 5.1.x, est déclaré comme ceci :"
+msgstr "Le paquet @code{linux-libre} actuel pour la série 5.15.x, est déclaré comme ceci :"
 
 #. type: lisp
 #: guix-git/doc/guix-cookbook.texi:1454
-#, fuzzy, no-wrap
-#| msgid ""
-#| "(define-public linux-libre\n"
-#| "  (make-linux-libre %linux-libre-version\n"
-#| "                    %linux-libre-hash\n"
-#| "                    '(\"x86_64-linux\" \"i686-linux\" \"armhf-linux\" \"aarch64-linux\")\n"
-#| "                    #:patches %linux-libre-5.1-patches\n"
-#| "                    #:configuration-file kernel-config))\n"
+#, no-wrap
 msgid ""
 "(define-public linux-libre-5.15\n"
 "  (make-linux-libre* linux-libre-5.15-version\n"
@@ -2676,19 +2655,17 @@ msgid ""
 "                     '(\"x86_64-linux\" \"i686-linux\" \"armhf-linux\" \"aarch64-linux\" \"riscv64-linux\")\n"
 "                     #:configuration-file kernel-config))\n"
 msgstr ""
-"(define-public linux-libre\n"
-"  (make-linux-libre %linux-libre-version\n"
-"                    %linux-libre-hash\n"
-"                    '(\"x86_64-linux\" \"i686-linux\" \"armhf-linux\" \"aarch64-linux\")\n"
-"                    #:patches %linux-libre-5.1-patches\n"
-"                    #:configuration-file kernel-config))\n"
+"(define-public linux-libre-5.15\n"
+"  (make-linux-libre* linux-libre-5.15-version\n"
+"                     linux-libre-5.15-gnu-revision\n"
+"                     linux-libre-5.15-source\n"
+"                     '(\"x86_64-linux\" \"i686-linux\" \"armhf-linux\" \"aarch64-linux\" \"riscv64-linux\")\n"
+"                     #:configuration-file kernel-config))\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:1461
-#, fuzzy
-#| msgid "Any keys which are not assigned values inherit their default value from the @code{make-linux-libre} definition.  When comparing the two snippets above, you may notice that the code comment in the first doesn't actually refer to the @code{#:extra-version} keyword; it is actually for @code{#:configuration-file}.  Because of this, it is not actually easy to include a custom kernel configuration from the definition, but don't worry, there are other ways to work with what we do have."
 msgid "Any keys which are not assigned values inherit their default value from the @code{make-linux-libre} definition.  When comparing the two snippets above, notice the code comment that refers to @code{#:configuration-file}.  Because of this, it is not actually easy to include a custom kernel configuration from the definition, but don't worry, there are other ways to work with what we do have."
-msgstr "Les clés qui n'ont pas de valeur associée prennent leur valeur par défaut dans la définition de @code{make-linux-libre}. Lorsque vous comparez les deux bouts de code ci-dessus, vous aurez remarqué que le commentaire du premier ne correspond pas au mot-clé @code{#:extra-version}, mais à @code{#:configuration-file}. À cause de cela, il n'est pas facile d'inclure une configuration personnalisée du noyau à partir de la définition, mais ne vous inquiétez pas, il y a d'autres moyens de travailler avec ce qu'on a."
+msgstr "Les clés qui n'ont pas de valeur associée prennent leur valeur par défaut dans la définition de @code{make-linux-libre}. Lorsque vous comparez les deux bouts de code ci-dessus, remarquez le commentaire qui correspond à @code{#:configuration-file}. À cause de cela, il n'est pas facile d'inclure une configuration personnalisée du noyau à partir de la définition, mais ne vous inquiétez pas, il y a d'autres moyens de travailler avec ce qu'on a."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:1467
@@ -2882,17 +2859,7 @@ msgstr ""
 
 #. type: lisp
 #: guix-git/doc/guix-cookbook.texi:1569
-#, fuzzy, no-wrap
-#| msgid ""
-#| "(define-public linux-libre-macbook41\n"
-#| "  ;; XXX: Access the internal 'make-linux-libre' procedure, which is\n"
-#| "  ;; private and unexported, and is liable to change in the future.\n"
-#| "  ((@@@@ (gnu packages linux) make-linux-libre) (@@@@ (gnu packages linux) %linux-libre-version)\n"
-#| "                      (@@@@ (gnu packages linux) %linux-libre-hash)\n"
-#| "                      '(\"x86_64-linux\")\n"
-#| "                      #:extra-version \"macbook41\"\n"
-#| "                      #:patches (@@@@ (gnu packages linux) %linux-libre-5.1-patches)\n"
-#| "                      #:extra-options %macbook41-config-options))\n"
+#, no-wrap
 msgid ""
 "(define-public linux-libre-macbook41\n"
 "  ;; XXX: Access the internal 'make-linux-libre*' procedure, which is\n"
@@ -2906,14 +2873,15 @@ msgid ""
 "   #:extra-options %macbook41-config-options))\n"
 msgstr ""
 "(define-public linux-libre-macbook41\n"
-"  ;; XXX: Access the internal 'make-linux-libre' procedure, which is\n"
-"  ;; private and unexported, and is liable to change in the future.\n"
-"  ((@@@@ (gnu packages linux) make-linux-libre) (@@@@ (gnu packages linux) %linux-libre-version)\n"
-"                      (@@@@ (gnu packages linux) %linux-libre-hash)\n"
-"                      '(\"x86_64-linux\")\n"
-"                      #:extra-version \"macbook41\"\n"
-"                      #:patches (@@@@ (gnu packages linux) %linux-libre-5.1-patches)\n"
-"                      #:extra-options %macbook41-config-options))\n"
+"  ;; XXX: Accède à la procédure interne « make-linux-libre* », qui est privée\n"
+"  ;; et n'est pas exportée, et pourrait changer dans le futur.\n"
+"  ((@@@@ (gnu packages linux) make-linux-libre*)\n"
+"   (@@@@ (gnu packages linux) linux-libre-version)\n"
+"   (@@@@ (gnu packages linux) linux-libre-gnu-revision)\n"
+"   (@@@@ (gnu packages linux) linux-libre-source)\n"
+"   '(\"x86_64-linux\")\n"
+"   #:extra-version \"macbook41\"\n"
+"   #:extra-options %macbook41-config-options))\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:1576

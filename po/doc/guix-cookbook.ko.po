@@ -1,13 +1,13 @@
 # SOME DESCRIPTIVE TITLE
 # Copyright (C) 2021 the authors of Guix (msgids) and the following authors (msgstr)
 # This file is distributed under the same license as the guix manual package.
-# simmon <simmon@nplob.com>, 2021.
+# simmon <simmon@nplob.com>, 2021, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: guix manual checkout\n"
 "Report-Msgid-Bugs-To: bug-guix@gnu.org\n"
 "POT-Creation-Date: 2021-12-31 15:18+0000\n"
-"PO-Revision-Date: 2021-12-19 16:16+0000\n"
+"PO-Revision-Date: 2022-02-01 06:16+0000\n"
 "Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/guix/documentation-cookbook/ko/>\n"
 "Language: ko\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.10\n"
+"X-Generator: Weblate 4.10.1\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:7
@@ -2237,22 +2237,7 @@ msgstr ""
 
 #. type: lisp
 #: guix-git/doc/guix-cookbook.texi:1285
-#, fuzzy, no-wrap
-#| msgid ""
-#| "(define-public adwaita-icon-theme\n"
-#| "  (package (inherit gnome-icon-theme)\n"
-#| "    (name \"adwaita-icon-theme\")\n"
-#| "    (version \"3.26.1\")\n"
-#| "    (source (origin\n"
-#| "              (method url-fetch)\n"
-#| "              (uri (string-append \"mirror://gnome/sources/\" name \"/\"\n"
-#| "                                  (version-major+minor version) \"/\"\n"
-#| "                                  name \"-\" version \".tar.xz\"))\n"
-#| "              (sha256\n"
-#| "               (base32\n"
-#| "                \"17fpahgh5dyckgz7rwqvzgnhx53cx9kr2xw0szprc6bnqy977fi8\"))))\n"
-#| "    (native-inputs\n"
-#| "     `((\"gtk-encode-symbolic-svg\" ,gtk+ \"bin\")))))\n"
+#, no-wrap
 msgid ""
 "(define-public adwaita-icon-theme\n"
 "  (package (inherit gnome-icon-theme)\n"
@@ -2269,19 +2254,18 @@ msgid ""
 "    (native-inputs (list `(,gtk+ \"bin\")))))\n"
 msgstr ""
 "(define-public adwaita-icon-theme\n"
-" (package (inherit gnome-icon-theme)\n"
-" (name \"adwaita-icon-theme\")\n"
-" (version \"3.26.1\")\n"
-" (source (origin\n"
-" (method url-fetch)\n"
-" (uri (string-append \"mirror://gnome/sources/\" name \"/\"\n"
-" (version-major+minor version) \"/\"\n"
-" name \"-\" version \".tar.xz\"))\n"
-" (sha256\n"
-" (base32\n"
-" \"17fpahgh5dyckgz7rwqvzgnhx53cx9kr2xw0szprc6bnqy977fi8\"))))\n"
-" (native-inputs\n"
-" `((\"gtk-encode-symbolic-svg\" ,gtk+ \"bin\")))))\n"
+"  (package (inherit gnome-icon-theme)\n"
+"    (name \"adwaita-icon-theme\")\n"
+"    (version \"3.26.1\")\n"
+"    (source (origin\n"
+"              (method url-fetch)\n"
+"              (uri (string-append \"mirror://gnome/sources/\" name \"/\"\n"
+"                                  (version-major+minor version) \"/\"\n"
+"                                  name \"-\" version \".tar.xz\"))\n"
+"              (sha256\n"
+"               (base32\n"
+"                \"17fpahgh5dyckgz7rwqvzgnhx53cx9kr2xw0szprc6bnqy977fi8\"))))\n"
+"    (native-inputs (list `(,gtk+ \"bin\")))))\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:1290

@@ -3,20 +3,21 @@
 # This file is distributed under the same license as the guix manual package.
 # Reynaldo Cordero <reynaldo.cordero@gmail.com>, 2021.
 # Emilio Herrera <ehespinosa57@gmail.com>, 2021.
+# Julien Lepiller <fedora-account@lepiller.eu>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: guix manual checkout\n"
 "Report-Msgid-Bugs-To: bug-guix@gnu.org\n"
 "POT-Creation-Date: 2021-12-31 15:18+0000\n"
-"PO-Revision-Date: 2021-10-31 16:05+0000\n"
-"Last-Translator: Emilio Herrera <ehespinosa57@gmail.com>\n"
+"PO-Revision-Date: 2022-01-10 11:16+0000\n"
+"Last-Translator: Julien Lepiller <fedora-account@lepiller.eu>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/guix/documentation-cookbook/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.8\n"
+"X-Generator: Weblate 4.10.1\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:7
@@ -72,7 +73,7 @@ msgstr "Los desarrolladores de GNU Guix"
 #: guix-git/doc/guix-cookbook.texi:49
 #, no-wrap
 msgid "Top"
-msgstr "Arriba"
+msgstr "Top"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:56
