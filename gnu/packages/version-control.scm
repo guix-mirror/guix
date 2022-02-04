@@ -2011,15 +2011,14 @@ projects, from individuals to large-scale enterprise operations.")
 (define-public rcs
   (package
     (name "rcs")
-    (version "5.10.0")
+    (version "5.10.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/rcs/rcs-"
-                                 version ".tar.xz"))
+                                 version ".tar.lz"))
              (sha256
               (base32
-               "1if5pa4iip2p70gljm54nggfdnsfjxa4cqz8fpj07lvsijary39s"))
-             (patches (search-patches "rcs-5.10.0-no-stdin.patch"))))
+               "1iac4d1dhsfy5zb0n3p605pihdq702v06r4g8vi8b2saf88gxpa3"))))
     (build-system gnu-build-system)
     (arguments `(#:phases
                  (modify-phases %standard-phases
@@ -2031,7 +2030,7 @@ projects, from individuals to large-scale enterprise operations.")
                          (chmod "src/rcsfreeze" #o755)
                          (install-file "src/rcsfreeze" bin)
                          (install-file "man/rcsfreeze.1" man1)))))))
-    (native-inputs (list ed))
+    (native-inputs (list ed lzip))
     (home-page "https://www.gnu.org/software/rcs/")
     (synopsis "Per-file local revision control system")
     (description
