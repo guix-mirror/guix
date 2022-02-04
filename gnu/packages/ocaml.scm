@@ -1092,7 +1092,7 @@ Knuth’s LR(1) parser construction technique.")
 (define-public ocaml-bigarray-compat
   (package
     (name "ocaml-bigarray-compat")
-    (version "1.0.0")
+    (version "1.1.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1101,7 +1101,7 @@ Knuth’s LR(1) parser construction technique.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "06j1dwlpisxshdd0nab4n4x266gg1s1n8na16lpgw3fvcznwnimz"))))
+                "0hif5baiwswdblymyfbxh9066pfqynlz5vj3b2brpn0a12k6i5fq"))))
     (build-system dune-build-system)
     (arguments
      `(#:tests? #f)); no tests
