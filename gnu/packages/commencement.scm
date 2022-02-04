@@ -1264,7 +1264,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
                (install-file "gawk" bin)
                (symlink "gawk" (string-append bin "/awk"))))))))))
 
-(define glibc-mesboot0
+(define-public glibc-mesboot0
   ;; GNU C Library 2.2.5 is the most recent glibc that we managed to build
   ;; using gcc-2.95.3.  Newer versions (2.3.x, 2.6, 2.1x) seem to need a newer
   ;; gcc.
@@ -1358,7 +1358,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
                                      "SHELL = " shell "
          BASH = ")))))))))))
 
-(define gcc-mesboot0
+(define-public gcc-mesboot0
   (package
     (inherit gcc-core-mesboot0)
     (name "gcc-mesboot0")
@@ -1992,7 +1992,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
            (lambda _
              (invoke "./hello"))))))))
 
-(define binutils-mesboot
+(define-public binutils-mesboot
   (package
     (inherit binutils)
     (name "binutils-mesboot")
