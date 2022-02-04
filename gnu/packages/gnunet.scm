@@ -11,6 +11,7 @@
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2022 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,6 +43,7 @@
   #:use-module (gnu packages groff)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages linux)
@@ -58,10 +60,12 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages text-editors)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages upnp)
   #:use-module (gnu packages video)
   #:use-module (gnu packages vim)
+  #:use-module (gnu packages xorg)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages backup)
@@ -367,6 +371,60 @@ GNUnet services, including the @dfn{identity} and @dfn{file sharing}
 services.")
       (home-page "https://gnu.org/software/guix")
       (license license:gpl3+))))
+
+(define-public gnunet-scheme
+  (package
+    (name "gnunet-scheme")
+    (version "0.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.gnunet.org/git/gnunet-scheme.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0a11n58m346vs2khns2hfnxv8lbscf8aaqzhmq0d7nwdpn808nrp"))
+              (modules '((guix build utils)))
+              ;; XXX: Work-around
+              ;; <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=49623>,
+              ;; this can be removed once Guile > 3.0.7 is released.
+              (snippet '(substitute* '("gnu/gnunet/config/parser.scm"
+                                       "tests/config-parser.scm")
+                          (("#\\{\\$\\{\\}\\}#") "#{${;};}#")
+                          (("#\\{\\$\\{:-\\}\\}#") "#{${;:-};}#")
+                          (("#\\{\\$\\{\\}\\}# #\\{\\$\\{:-\\}\\}#")
+                           "#{$\\x7b;\\x7d;}# #{$\\x7b;:-\\x7d;}#")
+                          (("'#\\{\\$\\{\\}\\}# '#\\{\\$\\{:-\\}\\}#")
+                           "'#{$\\x7b;\\x7d;}# '#{$\\x7b;:-\\x7d;}#")))))
+    (build-system gnu-build-system)
+    (inputs (list guile-3.0)) ;for pkg-config
+    (propagated-inputs (list guile-bytestructures guile-gcrypt guile-pfds
+                             guile-fibers-1.1))
+    (native-inputs (list guile-3.0 ;as a compiler
+                         ;; for cross-compilation, the guile inputs need to be
+                         ;; native-inputs as well.
+                         guile-bytestructures
+                         guile-gcrypt
+                         guile-pfds
+                         guile-fibers-1.1
+                         automake
+                         autoconf
+                         pkg-config
+                         texmacs
+                         xvfb-run ;for documentation
+                         guile-quickcheck)) ;for tests
+    (synopsis "Guile implementation of GNUnet client libraries")
+    (description
+     "This package provides Guile modules for connecting to the NSE (network
+size estimation) and DHT (distributed hash table) services of GNUnet.  It also
+has infrastructure for writing new GNUnet services and connecting to them and
+can be used from multi-threaded environments.  It is not to be confused with
+@code{guile-gnunet} -- @code{guile-gnunet} supports a different set of services.")
+    ;; Most code is licensed as AGPL and a few modules are licensed as LGPL
+    ;; or GPL.  Documentation is licensed as GFDL.
+    (license (list license:agpl3+ license:gpl3+ license:fdl1.3+ license:lgpl3+))
+    (home-page "https://git.gnunet.org/gnunet-scheme.git")))
 
 ;; FIXME: "gnunet-setup" segfaults under certain conditions and "gnunet-gtk"
 ;; does not seem to be fully functional.  This has been reported upstream:
