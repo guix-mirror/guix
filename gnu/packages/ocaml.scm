@@ -1976,14 +1976,14 @@ defined in this library.")
 (define-public ocaml-topkg
   (package
     (name "ocaml-topkg")
-    (version "1.0.4")
+    (version "1.0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://erratique.ch/software/topkg/releases/"
                                   "topkg-" version ".tbz"))
               (sha256
                (base32
-                "1kzw5cxkizcvh4rgzwgpjlj9hfxfk6yr686bxx6wrbsfs8as371k"))))
+                "1iyinmcfqpprk7k4cc51nqgypayprbj4larwcfqw86k5dri84825"))))
     (build-system ocaml-build-system)
     (native-inputs
      (list opam ocamlbuild))
