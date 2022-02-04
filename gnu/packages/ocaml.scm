@@ -2665,22 +2665,22 @@ representation of the data.")
 (define-public ocaml-gen
   (package
     (name "ocaml-gen")
-    (version "0.5.3")
+    (version "1.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                      (url "https://github.com/c-cube/gen")
-                     (commit version)))
+                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1jzrs0nsdk55annkd2zrk5svi61i3b1nk6qyqdc2y26vnzqvzfg8"))))
+                "1z5nw5wljvcqp8q07h336bbvf9paynia0jsdh4486hlkbmr1ask1"))))
     (build-system dune-build-system)
     (arguments
      `(#:package "gen"
        #:test-target "."))
     (propagated-inputs
-     (list ocaml-odoc))
+     (list ocaml-odoc ocaml-seq))
     (native-inputs
      (list ocaml-qtest ocaml-qcheck))
     (home-page "https://github.com/c-cube/gen/")
