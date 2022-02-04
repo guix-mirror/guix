@@ -33721,6 +33721,20 @@ Each criteria is specified by a string, then an equals sign, then
 another string. Currently, only one criteria is supported, checking if a
 nar is stored on another Nar Herder instance.
 
+@item @code{ttl} (default: @code{#f})
+Produce @code{Cache-Control} HTTP headers that advertise a time-to-live
+(TTL) of @var{ttl}.  @var{ttl} must denote a duration: @code{5d} means 5
+days, @code{1m} means 1 month, and so on.
+
+This allows the user's Guix to keep substitute information in cache for
+@var{ttl}.
+
+@item @code{negative-ttl} (default: @code{#f})
+Similarly produce @code{Cache-Control} HTTP headers to advertise the
+time-to-live (TTL) of @emph{negative} lookups---missing store items, for
+which the HTTP 404 code is returned.  By default, no negative TTL is
+advertised.
+
 @end table
 @end deftp
 

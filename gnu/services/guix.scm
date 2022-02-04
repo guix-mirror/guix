@@ -774,7 +774,12 @@ ca-certificates.crt file in the system profile."
                  (default "none"))
   (storage-nar-removal-criteria
    nar-herder-configuration-storage-nar-removal-criteria
-   (default '())))
+   (default '()))
+  (ttl           nar-herder-configuration-ttl
+                 (default #f))
+  (negative-ttl  nar-herder-configuration-negative-ttl
+                 (default #f)))
+
 
 (define (nar-herder-shepherd-services config)
   (match-record config <nar-herder-configuration>
@@ -782,7 +787,8 @@ ca-certificates.crt file in the system profile."
              mirror
              database database-dump
              host port
-             storage storage-limit storage-nar-removal-criteria)
+             storage storage-limit storage-nar-removal-criteria
+             ttl negative-ttl)
 
     (unless (or mirror storage)
       (error "nar-herder: mirror or storage must be set"))
@@ -817,7 +823,13 @@ ca-certificates.crt file in the system profile."
                                  (match criteria
                                    ((k . v) (simple-format #f "~A=~A" k v))
                                    (str str))))
-                              storage-nar-removal-criteria))
+                              storage-nar-removal-criteria)
+                      #$@(if ttl
+                             (list (string-append "--ttl=" ttl))
+                             '())
+                      #$@(if negative-ttl
+                             (list (string-append "--negative-ttl=" negative-ttl))
+                             '()))
                 #:user #$user
                 #:group #$group
                 #:pid-file "/var/run/nar-herder/pid"
