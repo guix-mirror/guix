@@ -4135,7 +4135,7 @@ instead of bindings to a C library.")
 (define-public ocaml-utop
   (package
     (name "ocaml-utop")
-    (version "2.8.0")
+    (version "2.9.0")
     (source
      (origin
        (method git-fetch)
@@ -4144,7 +4144,7 @@ instead of bindings to a C library.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1zf4hg33sblzh2f65vk0292jg4jlwa8702kfwpsg1kcg4w6nsfdp"))))
+        (base32 "1mdpqc1b67p5rm2jsbwy0gjjgdlfqcakjyh1cwdj959ykz4zy9ld"))))
     (build-system dune-build-system)
     (arguments
      `(#:test-target "."))
