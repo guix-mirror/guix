@@ -7008,7 +7008,7 @@ variants.")
 (define-public ocaml-mdx
   (package
     (name "ocaml-mdx")
-    (version "1.11.0")
+    (version "2.1.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -7017,7 +7017,7 @@ variants.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1w2vx4my9z6n57vjvsa3b9vwkbdzs1kq0cc58rf088qrh2lrx2ba"))))
+                "1w1givvhwv9jzj9zbg4mmlpb35sqi75w83r99p2z50bdr69fdf57"))))
     (build-system dune-build-system)
     (inputs
      (list ocaml-fmt
