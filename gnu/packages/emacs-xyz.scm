@@ -29822,6 +29822,39 @@ dict.org) from within Emacs.")
 to the @url{https://multitran.com} online dictionary.")
     (license license:gpl3+)))
 
+(define-public emacs-blacken
+  (package
+    (name "emacs-blacken")
+    (version "0.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/pythonic-emacs/blacken")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0pf9yllx0h78m925sdrg6hbv54ky2pi7cpkdsnx891qjsahvjnpy"))))
+    (build-system emacs-build-system)
+    (inputs
+      (list python-black))
+    (arguments
+      `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-python-black
+             (lambda* (#:key inputs #:allow-other-keys)
+               (make-file-writable "blacken.el")
+               (emacs-substitute-variables "blacken.el"
+                 ("blacken-executable"
+                   (search-input-file inputs "/bin/black"))))))))
+    (home-page "https://github.com/pythonic-emacs/blacken")
+    (synopsis "Python Black for Emacs")
+    (description
+"Use the @command{python} @command{black} package to reformat
+@command{python} buffers.")
+    (license license:gpl3)))
+
 (define-public emacs-kibit-helper
   (package
     (name "emacs-kibit-helper")
