@@ -4039,7 +4039,7 @@ with a number of bugfixes and changes to improve IT playback.")
        ("liblo" ,liblo)
        ("rubberband" ,rubberband)
        ("libxml2" ,libxml2)
-       ("libsigc++" ,libsigc++)
+       ("libsigc++" ,libsigc++-2)
        ("ncurses" ,ncurses)))
     (native-inputs
      (list pkg-config))
