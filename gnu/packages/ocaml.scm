@@ -2036,7 +2036,7 @@ library.")
 (define-public ocaml-sqlite3
   (package
     (name "ocaml-sqlite3")
-    (version "5.0.2")
+    (version "5.1.0")
     (source
      (origin
        (method git-fetch)
@@ -2046,7 +2046,7 @@ library.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "15mmq7ak5facpfawfrc6hjz211gli7jab52iqdsihfvh790xm55f"))))
+         "1ksm0a490315sf0yy8lmva5f3bgr0jnllffanyq89431grpj6x15"))))
     (build-system dune-build-system)
     (properties `((ocaml4.07-variant . ,(delay ocaml4.07-sqlite3))))
     (propagated-inputs
@@ -2068,6 +2068,17 @@ coexistence with the old (version 2) SQLite and its OCaml wrapper
   (package-with-ocaml4.07
    (package
      (inherit ocaml-sqlite3)
+     (version "5.0.2")
+     (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/mmottl/sqlite3-ocaml")
+               (commit version)))
+        (file-name (git-file-name "ocaml-sqlite3" version))
+        (sha256
+         (base32
+          "15mmq7ak5facpfawfrc6hjz211gli7jab52iqdsihfvh790xm55f"))))
      (arguments
       `(#:phases
         (modify-phases %standard-phases
