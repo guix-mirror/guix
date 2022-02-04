@@ -3000,14 +3000,14 @@ and command-line tool.")
 (define-public ocaml-ocurl
   (package
     (name "ocaml-ocurl")
-    (version "0.9.1")
+    (version "0.9.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://ygrek.org.ua/p/release/ocurl/ocurl-"
                                   version ".tar.gz"))
               (sha256
                 (base32
-                  "0n621cxb9012pj280c7821qqsdhypj8qy9qgrah79dkh6a8h2py6"))))
+                  "0qvpsqbq4qbd397n0nlv9cwlqfyjw7gfb5mmq1awvnklr0c9fdg0"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:phases
