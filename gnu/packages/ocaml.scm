@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016-2021 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2016-2022 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Peter Kreye <kreyepr@gmail.com>
@@ -620,7 +620,7 @@ Software distribution.")
 (define-public ocaml-mccs
   (package
     (name "ocaml-mccs")
-    (version "1.1+11")
+    (version "1.1+13")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -629,7 +629,7 @@ Software distribution.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1gsad5cj03256i36wdjqk5pg51pyd48rpjazf0gfaakrn8lk438g"))))
+                "15slv97jlvbaxj221wp4sjxk4lbdfyj9vcig0jwd4n54v89ksvib"))))
     (build-system dune-build-system)
     (propagated-inputs (list ocaml-cudf))
     (home-page "https://www.i3s.unice.fr/~cpjm/misc/")
