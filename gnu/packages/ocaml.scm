@@ -5051,7 +5051,7 @@ functionality for parsing and pretty-printing s-expressions.")
 (define-public ocaml-base
   (package
     (name "ocaml-base")
-    (version "0.14.1")
+    (version "0.14.3")
     (home-page "https://github.com/janestreet/base")
     (source
       (origin
@@ -5062,7 +5062,7 @@ functionality for parsing and pretty-printing s-expressions.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "1hizjxmiqlj2zzkwplzjamw9rbnl0kh44sxgjpzdij99qnfkzylf"))))
+          "1cqpdpvhr4zns1lpdm2w0p6q400mc1z91hd716mb062ng83n2nsf"))))
     (build-system dune-build-system)
     (propagated-inputs
      (list ocaml-sexplib0))
