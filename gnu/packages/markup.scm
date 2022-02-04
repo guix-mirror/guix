@@ -9,6 +9,7 @@
 ;;; Copyright © 2021 Noisytoot <noisytoot@disroot.org>
 ;;; Copyright © 2021 Zhu Zihao <all_but_last@163.com>
 ;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
+;;; Copyright © 2022 jgart <jgart@dismail.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -439,13 +440,13 @@ with a few extensions.")
 (define-public python-mistletoe
   (package
     (name "python-mistletoe")
-    (version "0.7.2")
+    (version "0.8.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "mistletoe" version))
        (sha256
-        (base32 "18z6hqfnfjqnrcgfgl5pkj9ggf9yx0yyy94azcn1qf7hqn6g3l14"))))
+        (base32 "0h8ydzxlfzmspiz8lcm13qp720kfsxiky0qqnc2mxf4qzm16m326"))))
     (build-system python-build-system)
     (home-page "https://github.com/miyuchina/mistletoe")
     (synopsis "Extensible Markdown parser in pure Python")
