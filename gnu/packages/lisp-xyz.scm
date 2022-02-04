@@ -20287,6 +20287,34 @@ rendering of the XML Infoset.")
 (define-public ecl-cl-sxml
   (sbcl-package->ecl-package sbcl-cl-sxml))
 
+(define-public sbcl-lorem-ipsum
+  (let ((commit "04a1839a03b53c954e799b9cf570ac915b032ce8")
+        (revision "0"))
+    (package
+      (name "sbcl-lorem-ipsum")
+      (version (git-version "1.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                (url "https://github.com/phoe/lorem-ipsum")
+                (commit commit)))
+          (sha256
+           (base32 "1530qq0bk3xr25m77q96pbi1idnxdkax8cwmvq4ch03rfjy34j7n"))
+          (file-name (git-file-name "cl-lorem-ipsum" commit))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/phoe/lorem-ipsum")
+      (synopsis "Lorem ipsum generator in portable Common Lisp")
+      (description
+       "This package provides functions for generating lorem ipsum text.")
+      (license license:expat))))
+
+(define-public cl-lorem-ipsum
+  (sbcl-package->cl-source-package sbcl-lorem-ipsum))
+
+(define-public ecl-lorem-ipsum
+  (sbcl-package->ecl-package sbcl-lorem-ipsum))
+
 (define-public sbcl-cl-gopher
   (let ((commit "62cfd180378f56e7e8b57e4302b183810c86e337")
         (revision "2"))
