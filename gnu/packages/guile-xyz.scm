@@ -39,6 +39,7 @@
 ;;; Copyright © 2021 Zelphir Kaltstahl <zelphirkaltstahl@posteo.de>
 ;;; Copyright © 2021 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2021, 2022 Artyom V. Poptsov <poptsov.artyom@gmail.com>
+;;; Copyright © 2022 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -612,10 +613,17 @@ Unix-style DSV format and RFC 4180 format.")
                     version "/fibers-" version ".tar.gz"))
               (sha256
                (base32
-                "1lqz39shlhif5fhpyv2wili0yzb0nhf5ciiv7mdqsq0vljirhrm0"))))
+                "1lqz39shlhif5fhpyv2wili0yzb0nhf5ciiv7mdqsq0vljirhrm0"))
+              (patches
+               (search-patches "guile-fibers-wait-for-io-readiness.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
+                  ;; This is required to make
+                  ;; "guile-fibers-wait-for-io-readiness.patch" work.
+                  (add-after 'unpack 'regenerate-autotools
+                    (lambda _
+                      (delete-file "configure")))
                   (add-after 'install 'mode-guile-objects
                     (lambda* (#:key outputs #:allow-other-keys)
                       ;; .go files are installed to "lib/guile/X.Y/cache".
@@ -629,7 +637,9 @@ Unix-style DSV format and RFC 4180 format.")
                         (rename-file old new)
                         #t))))))
     (native-inputs
-     (list texinfo pkg-config))
+     (list texinfo pkg-config autoconf automake libtool
+           ;; Gettext brings 'AC_LIB_LINKFLAGS_FROM_LIBS'
+           gettext-minimal))
     (inputs
      (list guile-3.0))
     (synopsis "Lightweight concurrency facility for Guile")
