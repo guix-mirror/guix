@@ -465,21 +465,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.302")
-(define-public linux-libre-4.4-gnu-revision "gnu1")
-(define deblob-scripts-4.4
-  (linux-libre-deblob-scripts
-   linux-libre-4.4-version
-   linux-libre-4.4-gnu-revision
-   (base32 "1mmnv77432la5dkhpy1n8w59c0v6l08fyf2ggh294gyrx8nbci11")
-   (base32 "0wdaj40pcq9wg5xnz2zj3jj8bawhfgqxcwp6dnavbf9lq0gca48p")))
-(define-public linux-libre-4.4-pristine-source
-  (let ((version linux-libre-4.4-version)
-        (hash (base32 "1cvnydc7y5xrb1c4yfmsl846dd1jfrr7xf62gxbhnkk01fs7n09m")))
-    (make-linux-libre-source version
-                             (%upstream-linux-source version hash)
-                             deblob-scripts-4.4)))
-
 (define %boot-logo-patch
   ;; Linux-Libre boot logo featuring Freedo and a gnu.
   (origin
@@ -543,10 +528,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 (define-public linux-libre-4.9-source
   (source-with-patches linux-libre-4.9-pristine-source
-                       (list %boot-logo-patch)))
-
-(define-public linux-libre-4.4-source
-  (source-with-patches linux-libre-4.4-pristine-source
                        (list %boot-logo-patch)))
 
 
@@ -659,11 +640,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
   (make-linux-libre-headers* linux-libre-4.9-version
                              linux-libre-4.9-gnu-revision
                              linux-libre-4.9-source))
-
-(define-public linux-libre-headers-4.4
-  (make-linux-libre-headers* linux-libre-4.4-version
-                             linux-libre-4.4-gnu-revision
-                             linux-libre-4.4-source))
 
 ;; The following package is used in the early bootstrap, and thus must be kept
 ;; stable and with minimal build requirements.
@@ -999,19 +975,6 @@ It has been modified to remove all non-free binary blobs.")
                      linux-libre-4.9-source
                      '("x86_64-linux" "i686-linux")
                      #:configuration-file kernel-config))
-
-(define-public linux-libre-4.4
-  (make-linux-libre* linux-libre-4.4-version
-                     linux-libre-4.4-gnu-revision
-                     linux-libre-4.4-source
-                     '("x86_64-linux" "i686-linux")
-                     #:configuration-file kernel-config
-                     #:extra-options
-                     (append
-                      `(;; https://lists.gnu.org/archive/html/guix-devel/2014-04/msg00039.html
-                        ;; This option was removed upstream in version 4.7.
-                        ("CONFIG_DEVPTS_MULTIPLE_INSTANCES" . #t))
-                      %default-extra-linux-options)))
 
 ;; Linux-Libre-LTS points to the *newest* released long-term support version of
 ;; Linux-Libre.
