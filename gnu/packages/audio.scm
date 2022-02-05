@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
@@ -4095,6 +4095,40 @@ use them split WAVE data into multiple files.")
 with support for HD extensions.")
     (home-page "https://github.com/foo86/dcadec")
     (license license:lgpl2.1+)))
+
+(define-public drc
+  (package
+    (name "drc")
+    (version "3.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/drc-fir/drc-fir/"
+                           version "/drc-" version ".tar.gz"))
+       (sha256
+        (base32
+         "08ljj4776pjx119zjmfqa8w56bf7x0m7spmi27yk1m455bmiglrj"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list
+      #:tests? #false ;there are none
+      #:make-flags
+      #~(list (string-append "INSTALL_PREFIX=" #$output)
+              "-C" "source")
+      #:phases
+      '(modify-phases %standard-phases
+         (delete 'configure))))
+    (inputs (list fftw))
+    (home-page "http://drc-fir.sourceforge.net/")
+    (synopsis "Digital room correction")
+    (description
+     "DRC is a program used to generate correction filters for acoustic
+compensation of HiFi and audio systems in general, including listening room
+compensation.  DRC generates just the FIR correction filters, which can be
+used with a real time or offline convolver to provide real time or offline
+correction.  DRC doesn't provide convolution features, and provides only some
+simplified, although really accurate, measuring tools.")
+    (license license:gpl2+)))
 
 (define-public bs1770gain
   (package
