@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021, 2022 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
@@ -254,6 +254,19 @@ softsynth library that can be use with other applications.")
        (sha256
         (base32 "1gsx7k77blfy171b6g3m0k0s0072v6jcawhmx1kjs9w5zlwdkzd0"))))
     (build-system gnu-build-system)
+    (arguments
+     ;; TODO: Move this to a snippet or remove with the upgrade to 1.0.
+     (if (target-riscv64?)
+       (list
+         #:phases
+         #~(modify-phases %standard-phases
+             (add-after 'unpack 'patch-source
+               (lambda _
+                 (substitute* "webrtc/typedefs.h"
+                   (("defined\\(__aarch64__\\)" all)
+                    (string-append
+                      all " || (defined(__riscv) && __riscv_xlen == 64)")))))))
+       '()))
     (synopsis "WebRTC's Audio Processing Library")
     (description "WebRTC-Audio-Processing library based on Google's
 implementation of WebRTC.")
