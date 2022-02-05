@@ -1053,6 +1053,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/fasthenry-spSolve.patch			\
   %D%/packages/patches/fasthenry-spFactor.patch			\
   %D%/packages/patches/fbreader-curl-7.62.patch		\
+  %D%/packages/patches/fenics-dolfin-algorithm.patch		\
+  %D%/packages/patches/fenics-dolfin-demo-init.patch		\
+  %D%/packages/patches/fenics-dolfin-boost.patch		\
+  %D%/packages/patches/fenics-dolfin-config-slepc.patch		\
   %D%/packages/patches/fifengine-boost-compat.patch		\
   %D%/packages/patches/fifengine-swig-compat.patch		\
   %D%/packages/patches/fifo-map-fix-flags-for-gcc.patch		\

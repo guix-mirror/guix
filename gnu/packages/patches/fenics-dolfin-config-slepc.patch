@@ -1,0 +1,48 @@
+From https://bitbucket.org/fenics-project/dolfin/issues/1120
+
+From f627a442350560e50dbbb11f7828b6d807369533 Mon Sep 17 00:00:00 2001
+From: Alexei Colin <acolin@isi.edu>
+Date: Sun, 11 Apr 2021 20:40:00 -0400
+Subject: [PATCH] cmake: PETSc,SLEPc: match lowercase .pc pkg-config files
+
+Upstream has moved to lowercase. PETSc has kept the mixed-case file for
+compatibility, but SLEPc hasn't.
+
+pkg_search_module takes multiple patterns and succeeds on first match,
+so this commit is backward-compatible with older installations of PETSc,
+SLEPc.
+
+---
+ cmake/modules/FindPETSc.cmake | 2 +-
+ cmake/modules/FindSLEPc.cmake | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/cmake/modules/FindPETSc.cmake b/cmake/modules/FindPETSc.cmake
+index 80faffdad..728a6ec30 100644
+--- a/cmake/modules/FindPETSc.cmake
++++ b/cmake/modules/FindPETSc.cmake
+@@ -51,7 +51,7 @@ find_package(PkgConfig REQUIRED)
+ 
+ # Find PETSc pkg-config file. Note: craypetsc_real is on Cray systems
+ set(ENV{PKG_CONFIG_PATH} "$ENV{CRAY_PETSC_PREFIX_DIR}/lib/pkgconfig:$ENV{PETSC_DIR}/$ENV{PETSC_ARCH}/lib/pkgconfig:$ENV{PETSC_DIR}/lib/pkgconfig:$ENV{PKG_CONFIG_PATH}")
+-pkg_search_module(PETSC craypetsc_real PETSc)
++pkg_search_module(PETSC craypetsc_real petsc PETSc)
+ 
+ # Extract major, minor, etc from version string
+ if (PETSC_VERSION)
+diff --git a/cmake/modules/FindSLEPc.cmake b/cmake/modules/FindSLEPc.cmake
+index 327cffc23..dec26fcc4 100644
+--- a/cmake/modules/FindSLEPc.cmake
++++ b/cmake/modules/FindSLEPc.cmake
+@@ -48,7 +48,7 @@ find_package(PkgConfig REQUIRED)
+ set(ENV{PKG_CONFIG_PATH} "$ENV{SLEPC_DIR}/$ENV{PETSC_ARCH}/lib/pkgconfig:$ENV{SLEPC_DIR}/lib/pkgconfig:$ENV{PKG_CONFIG_PATH}")
+ set(ENV{PKG_CONFIG_PATH} "$ENV{PETSC_DIR}/$ENV{PETSC_ARCH}/lib/pkgconfig:$ENV{PETSC_DIR}/lib/pkgconfig:$ENV{PKG_CONFIG_PATH}")
+ set(ENV{PKG_CONFIG_PATH} "$ENV{PETSC_DIR}/$ENV{PETSC_ARCH}:$ENV{PETSC_DIR}:$ENV{PKG_CONFIG_PATH}")
+-pkg_search_module(SLEPC crayslepc_real SLEPc)
++pkg_search_module(SLEPC crayslepc_real slepc SLEPc)
+ 
+ # Extract major, minor, etc from version string
+ if (SLEPC_VERSION)
+-- 
+2.30.0
+

@@ -1,0 +1,39 @@
+Ensure MPI is initialized before getting rank, which may be called early by
+Logger::write() via dolfin::info().
+
+Fixes "MPI_Comm_rank called before MPI_INIT" error from
+`demo_stokes-iterative_serial` and `demo_waveguide_serial` tests.
+
+Submitted upstream at https://bitbucket.org/fenics-project/dolfin/issues/1127
+
+--- a/dolfin/common/MPI.cpp
++++ b/dolfin/common/MPI.cpp
+@@ -143,6 +143,7 @@ MPI_Info& dolfin::MPIInfo::operator*()
+ unsigned int dolfin::MPI::rank(const MPI_Comm comm)
+ {
+ #ifdef HAS_MPI
++  SubSystemsManager::init_mpi();
+   int rank;
+   MPI_Comm_rank(comm, &rank);
+   return rank;
+diff --git a/dolfin/common/MPI.h b/dolfin/common/MPI.h
+index b93f6df30..854114a3f 100644
+--- a/dolfin/common/MPI.h
++++ b/dolfin/common/MPI.h
+@@ -102,12 +102,13 @@ namespace dolfin
+       /// communicator
+       void reset(MPI_Comm comm);
+ 
+-      /// Return process rank for the communicator
++      /// Return process rank for the communicator. This function will
++      /// also initialize MPI if it hasn't already been initialised.
+       unsigned int rank() const;
+ 
+       /// Return size of the group (number of processes) associated
+-      /// with the communicator. This function will also intialise MPI
+-      /// if it hasn't already been intialised.
++      /// with the communicator. This function will also initialise MPI
++      /// if it hasn't already been initialised.
+       unsigned int size() const;
+ 
+       /// Set a barrier (synchronization point)

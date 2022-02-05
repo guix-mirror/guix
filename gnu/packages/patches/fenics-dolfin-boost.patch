@@ -1,0 +1,45 @@
+The `BOOST_LITTLE_ENDIAN` and `BOOST_BIG_ENDIAN` macros, along with the
+"boost/detail/endian.hpp" header, were deprecated in boost 1.69.0 and finally
+removed in boost 1.73.0.  They are superseded by the BOOST_ENDIAN_LITTLE_BYTE
+and BOOST_ENDIAN_BIG_BYTE macros and "boost/predef/other/endian.h" header.
+
+Deprecated: https://github.com/boostorg/predef/commit/32d4581c1689370444f2e565cfbb8421d5071807
+Removed:    https://github.com/boostorg/predef/commit/aa6e232bf170ad8b856aff9e7c70334f77441c7f
+
+Adaptation of patch from https://bitbucket.org/fenics-project/dolfin/issues/1116
+
+--- a/dolfin/io/VTKFile.cpp
++++ b/dolfin/io/VTKFile.cpp
+@@ -20,7 +20,7 @@
+ #include <vector>
+ #include <iomanip>
+ #include <boost/cstdint.hpp>
+-#include <boost/detail/endian.hpp>
++#include <boost/predef/other/endian.h>
+ 
+ #include "pugixml.hpp"
+ 
+@@ -614,9 +614,9 @@
+   std::string endianness = "";
+   if (encode_string == "binary")
+   {
+-    #if defined BOOST_LITTLE_ENDIAN
++    #if defined BOOST_ENDIAN_LITTLE_BYTE
+     endianness = "byte_order=\"LittleEndian\"";
+-    #elif defined BOOST_BIG_ENDIAN
++    #elif defined BOOST_ENDIAN_BIG_BYTE
+     endianness = "byte_order=\"BigEndian\"";;
+     #else
+     dolfin_error("VTKFile.cpp",
+
+--- a/dolfin/io/VTKWriter.cpp
++++ b/dolfin/io/VTKWriter.cpp
+@@ -24,7 +24,6 @@
+ #include <sstream>
+ #include <vector>
+ #include <iomanip>
+-#include <boost/detail/endian.hpp>
+
+ #include <dolfin/fem/GenericDofMap.h>
+ #include <dolfin/fem/FiniteElement.h>
+  

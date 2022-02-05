@@ -1,0 +1,37 @@
+Fix compilation errors:
+
+  dolfin/geometry/IntersectionConstruction.cpp: In static member function ‘static std::vector<dolfin::Point> dolfin::IntersectionConstruction::intersection_segment_segment_2d(const dolfin::Point&, const dolfin::Point&, const dolfin::Point&, const dolfin::Point&)’:
+  dolfin/geometry/IntersectionConstruction.cpp:442:24: error: ‘min_element’ is not a member of ‘std’; did you mean ‘tuple_element’?
+    442 |   const auto it = std::min_element(oo.begin(), oo.end());
+        |                        ^~~~~~~~~~~
+        |                        tuple_element
+
+  dolfin/mesh/MeshFunction.h: In member function ‘std::vector<long unsigned int> dolfin::MeshFunction<T>::where_equal(T)’:
+  dolfin/mesh/MeshFunction.h:652:26: error: ‘count’ is not a member of ‘std’; did you mean ‘cout’?
+    652 |     std::size_t n = std::count(_values.get(), _values.get() + _size, value);
+        |                          ^~~~~
+        |                          cout
+
+Submitted upstream at https://bitbucket.org/fenics-project/dolfin/issues/1128
+
+--- a/dolfin/geometry/IntersectionConstruction.cpp
++++ b/dolfin/geometry/IntersectionConstruction.cpp
+@@ -18,7 +18,8 @@
+ // First added:  2014-02-03
+ // Last changed: 2017-12-12
+ 
++#include <algorithm>
+ #include <iomanip>
+ #include <dolfin/mesh/MeshEntity.h>
+ #include "predicates.h"
+
+--- a/dolfin/mesh/MeshFunction.h
++++ b/dolfin/mesh/MeshFunction.h
+@@ -24,6 +24,7 @@
+ #ifndef __MESH_FUNCTION_H
+ #define __MESH_FUNCTION_H
+ 
++#include <algorithm>
+ #include <map>
+ #include <vector>
+ 

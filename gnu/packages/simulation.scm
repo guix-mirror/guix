@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018, 2019, 2020, 2021 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2022 Eric Bavier <bavier@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -430,6 +431,10 @@ FFC is part of the FEniCS Project.")
         (sha256
           (base32
            "1m91hwcq5gfj4qqswp8l8kj58nia48f0n4kq13w0xqj4biq7rla0"))
+        (patches (search-patches "fenics-dolfin-algorithm.patch"
+                                 "fenics-dolfin-demo-init.patch"
+                                 "fenics-dolfin-boost.patch"
+                                 "fenics-dolfin-config-slepc.patch"))
         (modules '((guix build utils)))
         (snippet
          '(begin
@@ -498,11 +503,8 @@ FFC is part of the FEniCS Project.")
              ;; git-lfs, so only the links are downloaded.  The tests that
              ;; require the absent meshes cannot run and are skipped.
              ;;
-             ;; Two other serial tests fail and are skipped.
-             ;; i) demo_stokes-iterative_serial,
-             ;;   The MPI_Comm_rank() function was called before MPI_INIT was
-             ;;   invoked
-             ;; ii) demo_multimesh-stokes_serial:
+             ;; One serial test fails and is skipped.
+             ;; i) demo_multimesh-stokes_serial:
              ;;   Warning: Found no facets matching domain for boundary
              ;;   condition.
              ;;
@@ -544,8 +546,6 @@ FFC is part of the FEniCS Project.")
                     "demo_mesh-quality_serial "
                     "demo_mesh-quality_mpi "
                     "demo_multimesh-stokes_serial "
-                    "demo_stokes-iterative_serial "
-                    "demo_stokes-iterative_mpi "
                     ")\n") port)))
              #t))
          (replace 'check
