@@ -50,6 +50,7 @@
   #:use-module (gnu packages elf)
   #:use-module (gnu packages file)
   #:use-module (gnu packages gawk)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux)
@@ -62,6 +63,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix gexp)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -106,6 +108,108 @@
       (description "This package provides the Yale Haskell system running on
 top of CLISP.")
       (license license:bsd-4))))
+
+;; This package contains lots of generated .hc files containing C code to
+;; bootstrap the compiler without a Haskell compiler.  The included .hc files
+;; cover not just the compiler sources but also all Haskell libraries.
+(define-public nhc98
+  (package
+    (name "nhc98")
+    (version "1.22")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.haskell.org/nhc98/nhc98src-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0fkgxgsd2iqxvwcgnad1702kradwlbcal6rxdrgb22vd6dnc3i8l"))))
+    (build-system gnu-build-system)
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (arguments
+     (list
+      #:tests? #false                   ;there is no test target
+      #:system "i686-linux"
+      #:implicit-inputs? #false
+      #:parallel-build? #false          ;not supported
+      #:strip-binaries? #false          ;doesn't work
+      #:make-flags '(list "all-gcc")
+      #:phases
+      #~(modify-phases %standard-phases
+          (replace 'configure
+            (lambda _
+              (setenv "SHELL" (which "sh"))
+              (setenv "CPATH" (string-append
+                               (getcwd) "/src/runtime/Kernel:"
+                               (or (getenv "C_INCLUDE_PATH") "")))
+              (substitute* "configure"
+                (("echo '#!/bin/sh'")
+                 (string-append "echo '#!" (which "sh") "'")))
+              (with-fluids ((%default-port-encoding #f))
+                (substitute* '("script/greencard.inst"
+                               "script/harch.inst"
+                               "script/hi.inst"
+                               "script/hmake-config.inst"
+                               ;; TODO: can't fix this with substitute*
+                                        ;"script/hmake.inst"
+                               "script/hood.inst"
+                               "script/hsc2hs.inst"
+                               "script/nhc98-pkg.inst"
+                               "script/nhc98.inst")
+                  (("^MACHINE=.*") "MACHINE=ix86-Linux\n")))
+              (invoke "sh" "configure"
+                      (string-append "--prefix=" #$output)
+                      ;; Remove -m32 from compiler/linker invocation
+                      "--ccoption="
+                      "--ldoption=")))
+          (replace 'install
+            (lambda _
+              (invoke "sh" "configure"
+                      (string-append "--prefix=" #$output)
+                      ;; Remove -m32 from compiler/linker invocation
+                      "--ccoption="
+                      "--ldoption="
+                      "--install"))))))
+    (native-inputs
+     `(("findutils" ,findutils)
+       ("tar" ,tar)
+       ("bzip2" ,bzip2)
+       ("gzip" ,gzip)
+       ("xz" ,xz)
+       ("diffutils" ,diffutils)
+       ("file" ,file)
+       ("gawk" ,gawk)
+
+       ("make" ,gnu-make)
+       ("sed" ,sed)
+       ("grep" ,grep)
+       ("coreutils" ,coreutils)
+       ("bash" ,bash-minimal)
+
+       ("libc" ,glibc-2.2.5)
+       ("gcc-wrapper"
+        ,(module-ref (resolve-interface
+                      '(gnu packages commencement))
+                     'gcc-2.95-wrapper))
+       ("gcc"
+        ,(module-ref (resolve-interface
+                      '(gnu packages commencement))
+                     'gcc-mesboot0))
+       ("binutils"
+        ,(module-ref (resolve-interface
+                      '(gnu packages commencement))
+                     'binutils-mesboot))
+       ("kernel-headers" ,linux-libre-headers)))
+    (home-page "https://www.haskell.org/nhc98")
+    (synopsis "Nearly a Haskell Compiler")
+    (description
+     "nhc98 is a small, standards-compliant compiler for Haskell 98, the lazy
+functional programming language.  It aims to produce small executables that
+run in small amounts of memory.  It produces medium-fast code, and compilation
+is itself quite fast.")
+    (license
+     (license:non-copyleft
+      "https://www.haskell.org/nhc98/copyright.html"))))
 
 (define-public ghc-4
   (package
