@@ -2809,14 +2809,14 @@ and consumable.")
 (define-public ocaml-uutf
   (package
     (name "ocaml-uutf")
-    (version "1.0.1")
+    (version "1.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://erratique.ch/software/uutf/releases/"
                                   "uutf-" version ".tbz"))
               (sha256
                 (base32
-                  "1gp96dcggq7s84934vimxh89caaxa77lqiff1yywbwkilkkjcfqj"))))
+                  "0s05r8ggp1g97zq4rnvbxzj22pv8ld0k5wsdw662jw0y7mhsawl7"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:tests? #f
