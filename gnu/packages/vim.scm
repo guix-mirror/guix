@@ -76,7 +76,7 @@
 (define-public vim
   (package
     (name "vim")
-    (version "8.2.3995")
+    (version "8.2.4306")
     (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -85,7 +85,7 @@
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "1aqrywyry4vxf1x7mk5g1k5k6md38bnjb6f778hmk8ahx26mpqpb"))))
+               "1jppzgmngcdd7jfb5rnkkvf5d47svnjbn7qj4mvjacd9az3c7s9r"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
