@@ -2420,6 +2420,28 @@ like.  It can be linked with various Emacs mail clients (Message and Mail
 mode, Rmail, Gnus, MH-E, and VM).  BBDB is fully customizable.")
     (license license:gpl3+)))
 
+(define-public emacs-beacon
+  (package
+    (name "emacs-beacon")
+    (version "1.3.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Malabarba/beacon")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0mypzfasclq7bmw0i8hfyp8c1ycd3kdgd5h1faygzh9r0phh7ciy"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/Malabarba/beacon")
+    (synopsis "Emacs minor mode creating a light that follows your cursor around")
+    (description
+     "Beacon is an Emacs minor-mode.  Whenever the window scrolls a light will
+shine on top of your cursor so you know where it is.")
+    (license license:gpl3+)))
+
 (define-public emacs-counsel-bbdb
   (package
     (name "emacs-counsel-bbdb")
