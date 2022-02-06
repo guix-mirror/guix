@@ -4189,7 +4189,7 @@ sensitive completion, colors, and more.")
 (define-public ocaml-integers
   (package
     (name "ocaml-integers")
-    (version "0.5.1")
+    (version "0.6.0")
     (home-page "https://github.com/ocamllabs/ocaml-integers")
     (source (origin
               (method git-fetch)
@@ -4199,10 +4199,12 @@ sensitive completion, colors, and more.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0by5pc851fk7ccxqy1w2qc5jwn9z8whyqhs5gxlm5986vr9msnyi"))))
+                "07qk7dgxykn528qvhfwa0j402yr58y1y84ivpi1ji1lvk0qddxcs"))))
     (build-system dune-build-system)
     (arguments
      `(#:tests? #f)) ; no tests
+    (propagated-inputs
+     (list ocaml-stdlib-shims))
     (synopsis "Various signed and unsigned integer types for OCaml")
     (description "The ocaml-integers library provides a number of 8-, 16-, 32-
 and 64-bit signed and unsigned integer types, together with aliases such as
