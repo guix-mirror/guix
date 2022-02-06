@@ -8577,30 +8577,27 @@ and present results either as single emails or full trees.")
     (license license:gpl3+)))
 
 (define-public emacs-marginalia
-  ;; Upstream did not tag latest release.  The commit below matches version
-  ;; bump.
-  (let ((commit "9229d88ae4757f3439e81f51799758c009838cb4"))
-    (package
-      (name "emacs-marginalia")
-      (version "0.11")
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/minad/marginalia")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "0gaqybj52skqcmxcx6k3zmw6lznzlr1fjvlaraic9m6n85xkvzki"))))
-      (build-system emacs-build-system)
-      (home-page "https://github.com/minad/marginalia")
-      (synopsis "Marginalia in the minibuffer completions")
-      (description
-       "This package provides Marginalia mode which adds marginalia to the
+  (package
+    (name "emacs-marginalia")
+    (version "0.12")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/minad/marginalia")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1a4k00g2pp7mk0x5zhqbxvv2igfjdz6bfy2g3hps2ygf4h12wbhg"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/minad/marginalia")
+    (synopsis "Marginalia in the minibuffer completions")
+    (description
+     "This package provides Marginalia mode which adds marginalia to the
 minibuffer completions.  Marginalia are marks or annotations placed at the
 margin of the page of a book or in this case helpful colorful annotations
 placed at the margin of the minibuffer for your completion candidates.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-smartparens
   (package
