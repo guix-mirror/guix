@@ -24960,6 +24960,30 @@ based on diff output.")
 be used in @code{dired-mode}.")
       (license license:gpl3+))))
 
+(define-public emacs-all-the-icons-ibuffer
+  (package
+    (name "emacs-all-the-icons-ibuffer")
+    (version "1.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/seagle0128/all-the-icons-ibuffer")
+             (commit (string-append"v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1c1fkkwzxxa90fd5q5x6xlj48p8rhj4bs7h8wxx41w6wsggk2fm2"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     (list emacs-all-the-icons))
+    (home-page "https://github.com/seagle0128/all-the-icons-ibuffer")
+    (synopsis "Display icons for all buffers in ibuffer")
+    (description
+     "This package uses @code{emacs-all-the-icons} to display icons in Ibuffer
+buffers.")
+    (license license:gpl3+)))
+
 (define-public emacs-exwm-edit
   (let ((commit "e1291e311840f1049106fe98cec032a1c75efd2b")
         (version "0.0.1")
