@@ -15944,38 +15944,37 @@ Slack client.")
   (let ((commit "c5eaeed156ab906190c662d491269230967104b1")
         (revision "0"))
     (package
-     (name "emacs-bash-completion")
-     (version (git-version "3.1.0" revision commit))
-     (source
-      (origin
-        (method git-fetch)
-        (uri (git-reference
-              (url "https://github.com/szermatt/emacs-bash-completion")
-              (commit commit)))
-        (file-name (git-file-name name version))
-        (sha256
-         (base32 "0r221iirqsbz13s76r68i496izbirrvcw8ql3wsh205zmxa3jqg1"))))
-     (inputs (list bash))
-     (build-system emacs-build-system)
-     (arguments
-      `(#:phases
-        (modify-phases %standard-phases
-          (add-after 'unpack 'make-git-checkout-writable
-            (λ _
-              (for-each make-file-writable (find-files "."))
-              #t))
-          (add-before 'install 'configure
-            (lambda* (#:key inputs #:allow-other-keys)
-              (let ((bash (assoc-ref inputs "bash")))
+      (name "emacs-bash-completion")
+      (version (git-version "3.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/szermatt/emacs-bash-completion")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0r221iirqsbz13s76r68i496izbirrvcw8ql3wsh205zmxa3jqg1"))))
+      (inputs (list bash))
+      (build-system emacs-build-system)
+      (arguments
+       (list
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-after 'unpack 'make-git-checkout-writable
+              (λ _
+                (for-each make-file-writable (find-files "."))))
+            (add-before 'install 'configure
+              (lambda* (#:key inputs #:allow-other-keys)
                 (emacs-substitute-variables "bash-completion.el"
-                  ("bash-completion-prog" (string-append bash "/bin/bash"))))
-              #t)))))
-     (home-page "https://github.com/szermatt/emacs-bash-completion")
-     (synopsis "Bash completion for the shell buffer")
-     (description
-      "@code{bash-completion} defines dynamic completion hooks for shell-mode
+                  ("bash-completion-prog"
+                   (search-input-file inputs "/bin/bash"))))))))
+      (home-page "https://github.com/szermatt/emacs-bash-completion")
+      (synopsis "Bash completion for the shell buffer")
+      (description
+       "@code{bash-completion} defines dynamic completion hooks for shell-mode
   and shell-command prompts that are based on Bash completion.")
-     (license license:gpl2+))))
+      (license license:gpl2+))))
 
 (define-public emacs-easy-kill
   (package
