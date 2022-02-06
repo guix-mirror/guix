@@ -15492,6 +15492,28 @@ query them from the comfort of your editor.")
 buffer's environment.")
     (license license:gpl3+)))
 
+(define-public emacs-enlive
+  (package
+    (name "emacs-enlive")
+    (version "0.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/zweifisch/enlive")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "08j6b79vy8ry4ad1abk3hvxjbb4ylrhkvrbrnq1gcikl4h1p2v63"))))
+    (build-system emacs-build-system)
+    (home-page "http://github.com/zweifisch/enlive")
+    (synopsis "Query HTML document with CSS selectors in Emacs")
+    (description
+     "Enlive is an Emacs library that allows the user to query HTML documents
+from within Elisp using a DSL similar to CSS selectors.")
+    (license license:gpl3+)))
+
 (define-public emacs-envrc
   (package
     (name "emacs-envrc")
