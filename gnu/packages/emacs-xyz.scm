@@ -5082,6 +5082,34 @@ strike through completed TODO headings, changes Org blocks, changes Org check
 boxes, and more.")
       (license license:gpl3+))))
 
+(define-public emacs-org-books
+  (package
+    (name "emacs-org-books")
+    (version "0.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/lepisma/org-books")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1sgckvpjdaig9r2clcvs6ckgf2kx7amikkpq26y30jbnfnbskf0v"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     (list emacs-dash
+           emacs-enlive
+           emacs-helm
+           emacs-helm-org
+           emacs-org
+           emacs-s))
+    (home-page "https://github.com/lepisma/org-books")
+    (synopsis "Reading list management with Org mode and Helm")
+    (description
+     "Org Books is a tool for managing reading lists in an Org mode file.")
+    (license license:gpl3+)))
+
 (define-public emacs-org-inline-pdf
   (package
     (name "emacs-org-inline-pdf")
