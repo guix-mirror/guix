@@ -5403,6 +5403,26 @@ features such as syntax highlighting, comments, finding keywords, completing
 keywords and smart indentation.")
     (license license:gpl3+)))
 
+(define-public emacs-robots-txt-mode
+  (package
+    (name "emacs-robots-txt-mode")
+    (version "0.0.9")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/emacs-php/robots-txt-mode")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "07255pn80w4742sz2h9vbmfxxd8ps2kcn73p7m2bgy02kgbzw42b"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/emacs-php/robots-txt-mode")
+    (synopsis "Syntax highlighting for @file{robots.txt} files")
+    (description "This package provides an Emacs major mode for editing
+@file{robots.txt} files.")
+    (license license:gpl3+)))
+
 (define-public emacs-roguel-ike
   (package
     (name "emacs-roguel-ike")
