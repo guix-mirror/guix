@@ -26376,20 +26376,22 @@ it forcibly
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "git://thelambdalab.xyz/elpher.git")
+             (url "git://thelambdalab.xyz/elpher")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
         (base32 "121hkssy6c15gdr76k3fmdpk82354hk597gvkap6dc9y5j5968mk"))))
     (build-system emacs-build-system)
+    (arguments
+     (list
+      #:emacs emacs-no-x                ;need libxml support
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'install 'build-doc
+            (lambda _
+              (invoke "makeinfo" "elpher.texi"))))))
     (native-inputs
      (list texinfo))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'build-doc
-           (lambda _
-             (invoke "makeinfo" "elpher.texi"))))))
     (home-page "gopher://thelambdalab.xyz/1/projects/elpher/")
     (synopsis "Gopher and gemini client for Emacs")
     (description "Elpher is a full-featured gopher and gemini client for
