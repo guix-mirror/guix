@@ -4263,6 +4263,29 @@ at the current line number or active region.  @code{git-link-commit} returns
 the URL for a commit.  URLs are added to the kill ring.")
     (license license:gpl3+)))
 
+(define-public emacs-apache-mode
+  (package
+    (name "emacs-apache-mode")
+    (version "2.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/emacs-php/apache-mode")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1grs2x51k8pa6sgfa82s5pwwdfv7zw46ccw0zvd2rvzbhpq21p2z"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/emacs-php/apache-mode")
+    (synopsis
+     "Syntax highlighting and indentation support for Apache config files")
+    (description
+     "This package provides @code{apache-mode}, an Emacs major mode for Apache
+configuration files which provides syntax highlighting and indentation rules.
+This mode supports Apache HTTP Server 2.4 and major modules.")
+    (license license:gpl2+)))
+
 (define-public emacs-apheleia
   (package
     (name "emacs-apheleia")
