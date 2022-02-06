@@ -26511,6 +26511,33 @@ format.")
 files to numerous other formats via Pandoc.")
     (license license:gpl3+)))
 
+(define-public emacs-ox-reveal
+  (let ((commit "07900f29fada581d0e1b0f1e2057cea5e1ba8ce1")
+        (revision "0"))
+    (package
+      (name "emacs-ox-reveal")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/hexmode/ox-reveal")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "132b0llxda8jivabvm2ssbrdny7q2q1c0z4ikb12k4kia3fvg6cg"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       (list emacs-org))
+      (home-page "https://github.com/hexmode/ox-reveal")
+      (synopsis "reveal.js Presentation Back-End for Org export engine")
+      (description
+       "Org Reveal exports your Org documents to @code{reveal.js} presentations.
+With org-reveal, you can create beautiful presentations with 3D effects from
+simple but powerful Org contents.")
+      (license license:gpl3+))))
+
 (define-public emacs-wc-mode
   (package
     (name "emacs-wc-mode")
