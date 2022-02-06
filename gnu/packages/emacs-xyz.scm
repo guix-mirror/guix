@@ -5110,6 +5110,32 @@ boxes, and more.")
      "Org Books is a tool for managing reading lists in an Org mode file.")
     (license license:gpl3+)))
 
+(define-public emacs-org-chef
+  ;; Upstream does not tag version bumps.  Version is extracted from "Version"
+  ;; keyword in main file.
+  (let ((commit "87e9a6c4844ff32f47c8d1108ec0f087a3148a8e")
+        (revision "0"))
+    (package
+      (name "emacs-org-chef")
+      (version (git-version "0.1.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Chobbes/org-chef")
+               (commit commit)))
+         (sha256
+          (base32 "0xdfaf3shl3iij7nnshb5ryccqq70rpk0zm0d3fdwdbfa8rf7fkp"))))
+      (build-system emacs-build-system)
+      (propagated-inputs (list emacs-org))
+      (home-page "https://github.com/Chobbes/org-chef")
+      (synopsis "Cookbook and recipe management with Emacs Org mode")
+      (description
+       "Org Chef is a package for managing recipes in Org mode.  One of the
+main features is that it can automatically extract recipes from websites like
+allrecipes.com.")
+      (license license:expat))))
+
 (define-public emacs-org-inline-pdf
   (package
     (name "emacs-org-inline-pdf")
