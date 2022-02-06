@@ -25780,19 +25780,18 @@ well as an option for visually flashing evaluated s-expressions.")
         (base32 "1101nb0raiivrv1z4w442688cxj5mpf4h4zxzy6mhirgsbayk91p"))))
     (build-system emacs-build-system)
     (arguments
-     `(#:emacs ,emacs                   ;need D-Bus
-       #:phases
-       (modify-phases %standard-phases
-         ;; All but one "/bin/" directory refer to remote
-         ;; environments, which may not be Guix.  Do not patch them
-         ;; blindly.  However, local encoding shell has to be patched.
-         (replace 'patch-el-files
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((sh (assoc-ref inputs "bash"))
-                   (file "tramp.el"))
-               (emacs-substitute-variables file
-                 ("tramp-encoding-shell" (string-append sh "/bin/sh"))))
-             #t)))))
+     (list
+      #:emacs emacs                     ;need D-Bus
+      #:phases
+      #~(modify-phases %standard-phases
+          ;; All but one "/bin/" directory refer to remote
+          ;; environments, which may not be Guix.  Do not patch them
+          ;; blindly.  However, local encoding shell has to be patched.
+          (replace 'patch-el-files
+            (lambda* (#:key inputs #:allow-other-keys)
+              (emacs-substitute-variables "tramp.el"
+                ("tramp-encoding-shell"
+                 (search-input-file inputs "/bin/sh"))))))))
     (inputs
      (list bash))
     (home-page "https://savannah.gnu.org/projects/tramp")
