@@ -140,7 +140,7 @@ It is meant as an internal format."
                      refs)))))))
 
 (define (file-size file)
-  "Return the size of bytes of FILE, entering it if FILE is a directory."
+  "Return the size in bytes of FILE, entering it if FILE is a directory."
   (file-system-fold (const #t)
                     (lambda (file stat result)    ;leaf
                       (+ (stat:size stat) result))
