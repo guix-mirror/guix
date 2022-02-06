@@ -1548,7 +1548,7 @@ archive(native) = \"frontc.cmxa\""))))
 (define-public ocaml-qcheck
   (package
     (name "ocaml-qcheck")
-    (version "0.18")
+    (version "0.18.1")
     (source
      (origin
        (method git-fetch)
@@ -1556,19 +1556,11 @@ archive(native) = \"frontc.cmxa\""))))
              (url "https://github.com/c-cube/qcheck")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
-       (patches (search-patches "ocaml-qcheck-fix-test-whitespace.patch"))
        (sha256
-        (base32 "1s652hrj2sxqj30dfl300zjvvqk3r62a1bnzqw1hqyf6pi88qn8x"))))
+        (base32 "0g3r8lrw6fsdphgpnp08saxyxk1vd3chpmb564ir2qnsp716vz6z"))))
     (build-system dune-build-system)
     (arguments
-     `(#:test-target "."
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'build 'fix-deprecated
-           (lambda _
-             (substitute* "src/core/QCheck.ml"
-               (("Pervasives.compare") "compare"))
-             #t)))))
+     `(#:test-target "."))
     (propagated-inputs
      (list ocaml-alcotest ocaml-ounit))
     (native-inputs
