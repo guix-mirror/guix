@@ -1335,14 +1335,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.34.3")
+    (version "0.35")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                            version ".tar.xz"))
        (sha256
-        (base32 "1278r8x8l2hsxg8plbfk7w2md0fagdm243lm7df5m0gx7d411s9z"))))
+        (base32 "0fdc81m24xrbhfrhw00g12ak4b8hap4961sq7ap6q2pjqhac8cd8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -1357,12 +1357,6 @@ invoking @command{notifymuch} from the post-new hook.")
                         (invoke "./configure"
                                 (string-append "--prefix=" out)
                                 "--without-emacs"))))
-                  (add-before 'check 'disable-failing-tests
-                    ;; FIXME: Investigate why these tests are failing,
-                    ;; and try removing this for notmuch versions > 0.31.
-                    (lambda _
-                      (substitute* "test/T356-protected-headers.sh"
-                        (("\\$NOTMUCH_GMIME_X509_CERT_VALIDITY") "0"))))
                   (add-before 'check 'prepare-test-environment
                     (lambda _
                       (setenv "TEST_CC" ,(cc-for-target))
@@ -1377,7 +1371,7 @@ invoking @command{notifymuch} from the post-new hook.")
            python-sphinx
            texinfo
            ;; The following are required for tests only.
-           emacs-no-x ; -minimal lacks libxml, needed for some tests
+           emacs-no-x           ; -minimal lacks libxml, needed for some tests
            which
            dtach
            gnupg
