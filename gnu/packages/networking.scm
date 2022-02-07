@@ -3577,10 +3577,7 @@ powerful route filtering syntax and an easy-to-use configuration interface.")
     (inputs
      (list dbus ell readline))
     (native-inputs
-     `(("pkgconfig" ,pkg-config)
-       ("python" ,python)
-       ("rst2man" ,python-docutils)
-       ("openssl" ,openssl)))
+     (list pkg-config python python-docutils openssl))
     (arguments
      `(#:configure-flags
        (let ((dbus (assoc-ref %outputs "out")))
