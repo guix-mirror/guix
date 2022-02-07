@@ -30336,6 +30336,30 @@ which sends the current buffer to the World Wide Web Consortium’s HTML
 Validator service and displays the results in a buffer in Compilation mode.")
       (license license:gpl3+))))
 
+(define-public emacs-volatile-highlights
+  ;; XXX: Upstream does not tag releases.  Commit below matches version bump.
+  (let ((commit "9a20091f0ce7fc0a6b3e641a6a46d5f3ac4d8392"))
+    (package
+    (name "emacs-volatile-highlights")
+    (version "1.15")
+    (source (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "http://github.com/k-talo/volatile-highlights.el")
+                   (commit commit)))
+             (file-name (git-file-name name version))
+             (sha256
+              (base32
+               "1dsa6769lphyyv7yg92vkkpk395w52q4m7hdn8xy7s6lh5c6a955"))))
+    (build-system emacs-build-system)
+    (home-page "http://github.com/k-talo/volatile-highlights.el")
+    (synopsis "Emacs minor mode for visual feedback on some operations")
+    (description "@code{volatile-highlights-mode} brings visual feedback to
+some operations by highlighting portions relating to the operations.  All of
+highlights made by this library will be removed when any new operation is
+executed.")
+    (license license:gpl3+))))
+
 (define-public emacs-global-tags
   (let ((commit "06db25d91cc8bfb5e24e02adc04de1226c7e742d")
         (revision "0"))
