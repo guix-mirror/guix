@@ -25,6 +25,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
@@ -154,8 +155,9 @@ monospaced or proportional.")
         (base32 "09glxh7b4ivrd4samm67b8k2p0aljiagr83wb8nvy5ps2a9gwp5m"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f                      ;no test
-       #:configure-flags (list "-DENABLE_VERSIONCHECK=0")))
+     (list
+      #:tests? #f                       ;no test
+      #:configure-flags #~(list "-DENABLE_VERSIONCHECK=0")))
     (native-inputs
      (list gettext-minimal intltool pkg-config))
     (inputs
