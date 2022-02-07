@@ -4478,20 +4478,21 @@ create a firmware image suitable for the Linux kernel, and more.")
 (define-public i2c-tools
   (package
     (name "i2c-tools")
-    (version "3.1.1")
+    (version "4.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "http://jdelvare.nerim.net/mirror/i2c-tools/i2c-tools-"
-                    version ".tar.bz2"))
+                    version ".tar.xz"))
               (sha256
                (base32
-                "000pvg995qy1b15ks59gd0klri55hb33kqpg5czy84hw1pbdgm0l"))))
+                "1y0fphjd5ah2j886x8i175r7viq0hmx666hyca0wi4dzrm290qxk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no 'check' target
        #:make-flags
-       ,#~(list (string-append "prefix=" #$output)
+       ,#~(list (string-append "PREFIX=" #$output)
+                (string-append "LDFLAGS+=-Wl,-rpath=" #$output "/lib")
                 (string-append "CC=" #$(cc-for-target)))
        ;; No configure script.
        #:phases (modify-phases %standard-phases (delete 'configure))))
