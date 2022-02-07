@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2022 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Marius Bakke <marius@gnu.org>
@@ -208,5 +208,7 @@ computers over a network.")
 and server for the Network Time Protocol.  Its design goals include being
 secure, easy to configure, and accurate enough for most purposes, so it's more
 minimalist than ntpd.")
+    (properties
+     '((release-monitoring-url . "https://cdn.openbsd.org/pub/OpenBSD/OpenNTPD")))
     ;; A few of the source files are under bsd-3.
     (license (list l:isc l:bsd-3))))
