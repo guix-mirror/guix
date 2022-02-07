@@ -2376,82 +2376,83 @@ can be explored and changed freely.")
                   (srfi srfi-1)))
        ;; Remove non-free (non-commercial) font.
        (snippet
-        `(begin
-           (for-each delete-file (find-files "data/fonts" "."))))))
+        #~(begin
+            (for-each delete-file (find-files "data/fonts" "."))))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f                      ;no test
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'build)                ;pure Python
-         (replace 'install              ;no install script
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (bin (string-append out "/bin"))
-                    (share (string-append out "/share"))
-                    (applications (string-append share "/applications"))
-                    (data (string-append share "/seahorse-adventures")))
-               ;; Install data.
-               (for-each (lambda (f)
-                           (chmod f #o555)
-                           (install-file f data))
-                         '("leveledit.py" "run_game.py" "tileedit.py"))
-               (for-each (lambda (dir)
-                           (let ((target (string-append data "/" dir)))
-                             (mkdir-p target)
-                             (copy-recursively dir target)))
-                         '("data" "lib"))
-               ;; Create executable.
-               (mkdir-p bin)
-               (let ((executable (string-append bin "/seahorse-adventures")))
-                 (call-with-output-file executable
-                   (lambda (p)
-                     (format p
-                             "#!~a~@
+     (list
+      #:tests? #f                       ;no test
+      #:phases
+      #~(modify-phases %standard-phases
+          (delete 'build)               ;pure Python
+          (replace 'install             ;no install script
+            (lambda* (#:key inputs #:allow-other-keys)
+              (let* ((bin (string-append #$output "/bin"))
+                     (share (string-append #$output "/share"))
+                     (applications (string-append share "/applications"))
+                     (data (string-append share "/seahorse-adventures")))
+                ;; Install data.
+                (for-each (lambda (f)
+                            (chmod f #o555)
+                            (install-file f data))
+                          '("leveledit.py" "run_game.py" "tileedit.py"))
+                (for-each (lambda (dir)
+                            (let ((target (string-append data "/" dir)))
+                              (mkdir-p target)
+                              (copy-recursively dir target)))
+                          '("data" "lib"))
+                ;; Create executable.
+                (mkdir-p bin)
+                (let ((executable (string-append bin "/seahorse-adventures")))
+                  (call-with-output-file executable
+                    (lambda (p)
+                      (format p
+                              "#!~a~@
                               export GUIX_PYTHONPATH=~a:~a~@
                               exec -a \"~a\" ~a \"$@\"~%"
-                             (which "bash") data (getenv "GUIX_PYTHONPATH")
-                             (which "python3")
-                             (string-append data "/run_game.py"))))
-                 (chmod executable #o555))
-               ;; Add desktop file.
-               (mkdir-p applications)
-               (make-desktop-entry-file
-                (string-append applications "/seahorse-adventures.desktop")
-                #:name "Seahorse Adventures"
-                #:comment
-                '((#f "Help Barbie the seahorse float on bubbles to the moon"))
-                #:exec ,name
-                #:icon ,name
-                #:categories '("Game" "ActionGame")
-                #:keywords '("game" "retro" "platform"))
-               ;; Add icons.
-               (for-each
-                (lambda (size)
-                  (let ((dir (string-append share "/icons/hicolor/"
-                                            size "x" size "/apps")))
-                    (mkdir-p dir)
-                    (copy-file
-                     (string-append "icon" size ".png")
-                     (string-append dir "/searhorse-adventures.png"))))
-                '("32" "64" "128")))))
-         (add-after 'install 'unbundle-fonts
-           ;; Unbundle Bitstream Vera font and replace deleted one.
-           (lambda* (#:key outputs inputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (data (string-append out "/share/seahorse-adventures"))
+                              (search-input-file inputs "/bin/bash")
+                              data
+                              (getenv "GUIX_PYTHONPATH")
+                              (search-input-file inputs "/bin/python3")
+                              (string-append data "/run_game.py"))))
+                  (chmod executable #o555))
+                ;; Add desktop file.
+                (mkdir-p applications)
+                (make-desktop-entry-file
+                 (string-append applications "/seahorse-adventures.desktop")
+                 #:name "Seahorse Adventures"
+                 #:comment
+                 '((#f "Help Barbie the seahorse float on bubbles to the moon"))
+                 #:exec #$name
+                 #:icon #$name
+                 #:categories '("Game" "ActionGame")
+                 #:keywords '("game" "retro" "platform"))
+                ;; Add icons.
+                (for-each
+                 (lambda (size)
+                   (let ((dir (string-append share "/icons/hicolor/"
+                                             size "x" size "/apps")))
+                     (mkdir-p dir)
+                     (copy-file
+                      (string-append "icon" size ".png")
+                      (string-append dir "/searhorse-adventures.png"))))
+                 '("32" "64" "128")))))
+          (add-after 'install 'unbundle-fonts
+            ;; Unbundle Bitstream Vera font and replace deleted one.
+            (lambda* (#:key inputs #:allow-other-keys)
+              (let ((data (string-append #$output "/share/seahorse-adventures"))
                     (vera (search-input-file
                            inputs "/share/fonts/truetype/Vera.ttf")))
-               (let ((themes-dir (string-append data "/data/themes/")))
-                 (for-each
-                  (lambda (theme)
-                    (let ((target (string-append themes-dir theme "/Vera.ttf")))
-                      (delete-file target)
-                      (symlink vera target)))
-                  '("default" "gray")))
-               (symlink vera (string-append data "/data/fonts/04B_20__.TTF"))
-               (substitute* (string-append data "/lib/main.py")
-                 (("f_scale = 0.35") "f_scale = 0.47"))))))))
+                (let ((themes-dir (string-append data "/data/themes/")))
+                  (for-each
+                   (lambda (theme)
+                     (let ((target (string-append themes-dir theme "/Vera.ttf")))
+                       (delete-file target)
+                       (symlink vera target)))
+                   '("default" "gray")))
+                (symlink vera (string-append data "/data/fonts/04B_20__.TTF"))
+                (substitute* (string-append data "/lib/main.py")
+                  (("f_scale = 0.35") "f_scale = 0.47"))))))))
     (inputs
      (list font-bitstream-vera python-pygame))
     (home-page "http://www.imitationpickles.org/barbie/")
