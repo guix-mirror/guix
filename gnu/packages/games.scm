@@ -8922,12 +8922,13 @@ fight each other on an arena-like map.")
                 "1daqx12w1gk9cf393zw89fy42lx4arjycm417380gqi775vbmamc"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f                      ;no test
-       #:configure-flags '("-DBINDIR=bin" "-DDATADIR=share/flare")))
+     (list
+      #:tests? #f                       ;no test
+      #:configure-flags #~(list "-DBINDIR=bin" "-DDATADIR=share/flare")))
     (inputs
-     `(("hicolor-icon-theme" ,hicolor-icon-theme)
-       ("python" ,python-wrapper)
-       ("sdl" ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))))
+     (list hicolor-icon-theme
+           python-wrapper
+           (sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf))))
     (home-page "http://www.flarerpg.org/")
     (synopsis "Action Roleplaying Engine")
     (description "Flare (Free Libre Action Roleplaying Engine) is a simple
