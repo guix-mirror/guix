@@ -885,7 +885,7 @@ commodity hardware.")
 (define-public ganeti-instance-guix
   (package
     (name "ganeti-instance-guix")
-    (version "0.6")
+    (version "0.6.1")
     (home-page "https://github.com/mbakke/ganeti-instance-guix")
     (source (origin
               (method git-fetch)
@@ -893,15 +893,14 @@ commodity hardware.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0aa08irpcpns6mhjgsplc5f0p8ab1qcr9ah1gj5z66kxgqyflzrp"))))
+                "18h8hdd38h1l89si8122v3ylzvvirs8hiypayklk1nr2wnfgbvff"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--sysconfdir=/etc" "--localstatedir=/var")))
     (native-inputs
      (list autoconf automake))
     (inputs
-     `(("util-linux" ,util-linux)
-       ("qemu-img" ,qemu-minimal)))
+     (list util-linux qemu-minimal))
     (synopsis "Guix OS integration for Ganeti")
     (description
      "This package provides a guest OS definition for Ganeti that uses
