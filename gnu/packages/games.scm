@@ -8939,7 +8939,7 @@ action RPGs.")
 (define-public flare-game
   (package
     (name "flare-game")
-    (version "1.12")
+    (version "1.13")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -8948,7 +8948,7 @@ action RPGs.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0h9i128kq6disppbrplkf13zdmsg4cq23nim53mgwpawc4mqz7ga"))))
+                "0l0d4j2l1szdwrk8casaiskdk16wkbmms7cid4y751d42czg4ffw"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no test
@@ -8966,7 +8966,10 @@ action RPGs.")
                (with-directory-excursion mods
                  (symlink (string-append (assoc-ref inputs "flare-engine")
                                          "/share/flare/mods/default")
-                          "default")))
+                          "default")
+                 (symlink (string-append (assoc-ref inputs "flare-engine")
+                                         "/share/flare/mods/mods.txt")
+                          "mods.txt")))
              #t))
          (add-after 'install 'install-executable
            ;; The package only provides assets for the game, the
