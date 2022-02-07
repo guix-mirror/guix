@@ -18607,7 +18607,7 @@ continue.")
 (define-public emacs-elisp-refs
   (package
     (name "emacs-elisp-refs")
-    (version "1.3")
+    (version "1.4")
     (source
      (origin
        (method git-fetch)
@@ -18616,7 +18616,7 @@ continue.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0w7k91xf69zc0zkjrw8h8sjdjf9xq9qs5zhvajhd718lzf93564b"))))
+        (base32 "03p95kwvwb3apb3lhhdlaxs952x7sdlxa2qc1c77cjwrm5xzdg9z"))))
     (build-system emacs-build-system)
     (propagated-inputs
      (list emacs-dash
@@ -18628,18 +18628,9 @@ continue.")
     (native-inputs
      (list emacs-ert-runner emacs-undercover))
     (arguments
-     `(#:tests? #t
-       #:test-command '("ert-runner")
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'disable-refs-next-match-test
-           ;; Hack to disable the failing test for emacs27
-           ;; https://github.com/Wilfred/elisp-refs/issues/29
-           (lambda _
-             (substitute* "test/unit-test.el"
-               (("ert-deftest elisp-refs-next-match")
-                "defun elisp-refs-next-match"))
-             #t)))))
+     (list
+      #:tests? #t
+      #:test-command #~(list "ert-runner")))
     (home-page "https://github.com/Wilfred/elisp-refs")
     (synopsis "Find callers of elisp functions or macros")
     (description "Find references to functions, macros or variables.  Unlike a
