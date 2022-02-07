@@ -220,30 +220,31 @@ source code editors and IDEs.")
                 "1p745mxiq3hgi3ywfljs5sa1psi06awwjxzw0j9c2xx1b09yqv4a"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; This package is distributed as a single shell script and comes
-         ;; without a proper build system.
-         (delete 'configure)
-         (delete 'build)
-         (replace 'check
-           (lambda _
-             (substitute* "test.md"
-               ;; One test looks for an error from grep in the form "grep: foo",
-               ;; but our grep returns the absolute file name on errors.  Adjust
-               ;; the test to cope with that.
-               (("sed 's/\\^e\\*grep: \\.\\*/")
-                "sed 's/.*e*grep: .*/"))
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          ;; This package is distributed as a single shell script and comes
+          ;; without a proper build system.
+          (delete 'configure)
+          (delete 'build)
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (substitute* "test.md"
+                  ;; One test looks for an error from grep in the form "grep: foo",
+                  ;; but our grep returns the absolute file name on errors.  Adjust
+                  ;; the test to cope with that.
+                  (("sed 's/\\^e\\*grep: \\.\\*/")
+                   "sed 's/.*e*grep: .*/"))
 
-             (setenv "HOME" "/tmp")
-             (invoke "./clitest" "test.md")))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (install-file "clitest" (string-append out "/bin"))
-               (install-file "README.md"
-                             (string-append out "/share/doc/clitest-"
-                                            ,version))))))))
+                (setenv "HOME" "/tmp")
+                (invoke "./clitest" "test.md"))))
+          (replace 'install
+            (lambda _
+              (install-file "clitest" (string-append #$output "/bin"))
+              (install-file "README.md"
+                            (string-append #$output "/share/doc/clitest-"
+                                           #$(package-version this-package))))))))
     (native-inputs
      (list perl))                 ;for tests
     (inputs
