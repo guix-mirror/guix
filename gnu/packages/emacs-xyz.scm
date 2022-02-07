@@ -23780,7 +23780,7 @@ according to their use.")
 (define-public emacs-dtache
   (package
     (name "emacs-dtache")
-    (version "0.4")
+    (version "0.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -23789,7 +23789,7 @@ according to their use.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1hndv0qzibkc4177lkam30j8cgvzxd8r60v3dnqn2bmrgxw04j6b"))))
+                "05gm5l533y8xr00w3c3i4fbhzhib6i7q2bbnpkm08w1n8a08iaj5"))))
     (arguments
      (list
       #:tests? #t
@@ -23803,14 +23803,12 @@ according to their use.")
             (lambda* (#:key inputs #:allow-other-keys)
               (make-file-writable "dtache.el")
               (emacs-substitute-variables "dtache.el"
-                ("dtache-env" (string-append #$output
-                                             "/bin/dtache-env"))
-                ("dtache-dtach-program" (search-input-file
-                                         inputs
-                                         "/bin/dtach"))
-                ("dtache-shell-program" (search-input-file
-                                         inputs
-                                         "/bin/bash"))))))))
+                ("dtache-env"
+                 (string-append #$output "/bin/dtache-env"))
+                ("dtache-dtach-program"
+                 (search-input-file inputs "/bin/dtach"))
+                ("dtache-shell-program"
+                 (search-input-file inputs "/bin/bash"))))))))
     (build-system emacs-build-system)
     (native-inputs (list emacs-ert-runner))
     (inputs (list dtach))
