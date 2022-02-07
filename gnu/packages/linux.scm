@@ -5909,34 +5909,32 @@ feature, and a laptop with an accelerometer.  It has no effect on SSDs.")
         (base32 "07l7cxbsyvy7awa1zk0zxng60749idvsx3535iginhkqxfzij4b9"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:modules ((guix build cmake-build-system)
+     (list
+      #:modules '((guix build cmake-build-system)
                   (guix build utils)
                   (srfi srfi-26))
-       #:tests? #f                      ; no test target
-       #:configure-flags
-       ;; Enable reading temperatures from hard disks via S.M.A.R.T.
-       ;; Upstream ‘defaults to OFF because libatasmart seems to be horribly
-       ;; inefficient’.
-       `("-DUSE_ATASMART:BOOL=ON")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'create-init-scripts
-           ;; CMakeLists.txt relies on build-time symptoms of OpenRC and
-           ;; systemd to patch and install their service files.  Fake their
-           ;; presence rather than duplicating the build system below.  Leave
-           ;; things like ‘/bin/kill’ because they're not worth a dependency.
-           ;; The sysvinit needs manual patching, but since upstream doesn't
-           ;; even provide the option to install it: don't.
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out   (assoc-ref outputs "out"))
-                    (share (string-append out "/share/" ,name)))
-               (substitute* "CMakeLists.txt"
-                 (("pkg_check_modules\\((OPENRC|SYSTEMD) .*" _ package)
-                  (format #f "option(~a_FOUND \"Faked\" ON)\n" package))
-                 ;; That was easy!  Now we just need to fix the destinations.
-                 (("/etc" directory)
-                  (string-append out directory)))
-               #t))))))
+      #:tests? #f                       ; no test target
+      #:configure-flags
+      ;; Enable reading temperatures from hard disks via S.M.A.R.T.
+      ;; Upstream ‘defaults to OFF because libatasmart seems to be horribly
+      ;; inefficient’.
+      #~(list "-DUSE_ATASMART:BOOL=ON")
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'create-init-scripts
+            ;; CMakeLists.txt relies on build-time symptoms of OpenRC and
+            ;; systemd to patch and install their service files.  Fake their
+            ;; presence rather than duplicating the build system below.  Leave
+            ;; things like ‘/bin/kill’ because they're not worth a dependency.
+            ;; The sysvinit needs manual patching, but since upstream doesn't
+            ;; even provide the option to install it: don't.
+            (lambda _
+              (substitute* "CMakeLists.txt"
+                (("pkg_check_modules\\((OPENRC|SYSTEMD) .*" _ package)
+                 (format #f "option(~a_FOUND \"Faked\" ON)\n" package))
+                ;; That was easy!  Now we just need to fix the destinations.
+                (("/etc" directory)
+                 (string-append #$output directory))))))))
     (native-inputs
      (list pkg-config))
     (inputs
