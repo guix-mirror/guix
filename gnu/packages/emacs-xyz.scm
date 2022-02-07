@@ -4263,7 +4263,7 @@ window.")
 (define-public emacs-git-link
   (package
     (name "emacs-git-link")
-    (version "0.8.3")
+    (version "0.8.5")
     (source
      (origin
        (method git-fetch)
@@ -4272,11 +4272,12 @@ window.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0l7xmvmj5s93hc39wjjv75f22zbhahnmcxpmvx3dfvsbig9pmk75"))))
+        (base32 "0payj5hwqkzdrxx5vfzaaalmzfkdmdqhqki193a6cbf0k3c03zh3"))))
     (build-system emacs-build-system)
     (arguments
-     `(#:tests? #t
-       #:test-command '("make" "test")))
+     (list
+      #:tests? #t
+      #:test-command #~(list "make" "test")))
     (home-page "https://github.com/sshaw/git-link")
     (synopsis "Create links for files and commits in GitHub/GitLab/etc. repos")
     (description
