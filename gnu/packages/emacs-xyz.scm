@@ -10429,7 +10429,7 @@ with Elfeed.")
 (define-public emacs-elfeed-score
   (package
     (name "emacs-elfeed-score")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
      (origin
        (method git-fetch)
@@ -10438,7 +10438,7 @@ with Elfeed.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "10wsjq2zd6kz9182gnkjzlzywx16j29dgm1gzwynr79xmvgs4r2b"))))
+        (base32 "0rkm3vyyklpcyaz7zs2a5azyf20bnbj9nd8ik3jgcg2lsd6jgj5m"))))
     (build-system emacs-build-system)
     (propagated-inputs
      (list emacs-elfeed))
