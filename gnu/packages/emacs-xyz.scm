@@ -7292,6 +7292,30 @@ and popup menus.")
 autocomplete style popup menu.")
       (license license:gpl3+))))
 
+(define-public emacs-popper
+  ;; No tagged release upstream for version 0.45.  The commit below matches
+  ;; version bump.
+  (let ((commit "851d83882192ac9599ac5b053614a42d683b3fab"))
+    (package
+      (name "emacs-popper")
+      (version "0.45")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/karthink/popper")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0pk5wzqlz7n6v8rb1957i3ql0wjx578l68a3rp2m9pxr7a8a03h4"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/karthink/popper")
+      (synopsis "Emacs minor-mode to summon and dismiss buffers easily")
+      (description
+       "Popper is a minor-mode to tame the flood of ephemeral
+windows Emacs produces, while still keeping them within arm’s reach.")
+      (license license:gpl3+))))
+
 (define-public emacs-python-black
   (package
     (name "emacs-python-black")
