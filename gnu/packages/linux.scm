@@ -8408,10 +8408,7 @@ tools for managing PipeWire.")
     (inputs
      (list dbus))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("libtool" ,libtool)
-       ("pkgconfig" ,pkg-config)
-       ("automake" ,automake)))
+     (list autoconf automake libtool pkg-config))
     (home-page "https://01.org/ell")
     (synopsis "Embedded Linux Library")
     (description "The Embedded Linux* Library (ELL) provides core, low-level
