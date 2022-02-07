@@ -183,20 +183,22 @@ support.")
 (define-public ddcutil
   (package
     (name "ddcutil")
-    (version "1.1.0")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.ddcutil.com/tarballs/"
                            "ddcutil-" version ".tar.gz"))
        (sha256
-        (base32 "19kkwb9ijzn6ya3mvjanggh1c96fcc0lkbk7xnyi2qp6wsr4nhxp"))))
+        (base32 "0fp7ffjn21p0bsc5b1ipf3dbpzwn9g6j5dpnwdnca052ifzk2w7i"))))
     (build-system gnu-build-system)
     (native-inputs
      (list pkg-config))
     (inputs
      (list eudev
            glib
+           kmod
+           i2c-tools
            libdrm ; enhanced diagnostics
            libusb ; support USB monitors
            libx11 ; enhanced diagnostics
