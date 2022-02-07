@@ -20133,7 +20133,7 @@ perform regression test for packages that provide font-lock rules.")
 @item Follow DrRacket concepts where applicable.
 @item Thorough font-lock and indent.
 @end itemize\n")
-      (license license:gpl3+))))
+      (license license:gpl2+))))
 
 (define-public emacs-grep-context
   (let ((commit "5a4e3efdf775755c1bbefcfe4b461c1166d81d7d")
