@@ -27,7 +27,7 @@
 ;;; Copyright © 2018, 2019, 2020, 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
-;;; Copyright © 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018, 2019, 2020, 2021, 2022 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019, 2020, 2021 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Justus Winter <justus@sequoia-pgp.org>
@@ -3900,8 +3900,8 @@ It is a replacement for the @command{urlview} program.")
     (license license:gpl2+)))
 
 (define-public mumi
-  (let ((commit "8a45281801ade7524dbdee423c28b326051719de")
-        (revision "6"))
+  (let ((commit "f5232c49fe8a3b127c96f7b502775f16aebf3033")
+        (revision "7"))
     (package
       (name "mumi")
       (version (git-version "0.0.1" revision commit))
@@ -3913,7 +3913,7 @@ It is a replacement for the @command{urlview} program.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0p1i66j721y5hwbdy97kv4gw892nx7xrdfjrs12fn90cwkl611mp"))))
+                  "1dc4m7l9mmi7lm0cfmyf5yg6bkpirsvmfq347sf1ch1svg5r7y9n"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules ((guix build gnu-build-system)
@@ -3941,16 +3941,17 @@ It is a replacement for the @command{urlview} program.")
                    `("GUILE_LOAD_COMPILED_PATH" ":" prefix
                      (,go ,(getenv "GUILE_LOAD_COMPILED_PATH"))))))))))
       (inputs
-       `(("guile-email" ,guile-email-latest)
-         ("guile-fibers" ,guile-fibers)
-         ("guile-gcrypt" ,guile-gcrypt)
-         ("guile-json" ,guile-json-3)
-         ("guile-redis" ,guile-redis)
-         ("guile-syntax-highlight" ,guile-syntax-highlight)
-         ("guile-webutils" ,guile-webutils)
-         ("guile-xapian" ,guile-xapian)
-         ("guile" ,guile-3.0)
-         ("mailutils" ,mailutils)))
+       (list guile-email-latest
+             guile-fibers
+             guile-gcrypt
+             guile-json-3
+             guile-kolam
+             guile-redis
+             guile-syntax-highlight
+             guile-webutils
+             guile-xapian
+             guile-3.0
+             mailutils))
       (native-inputs
        (list autoconf automake pkg-config))
       (home-page "https://git.elephly.net/software/mumi.git")
