@@ -1345,24 +1345,26 @@ invoking @command{notifymuch} from the post-new hook.")
         (base32 "0fdc81m24xrbhfrhw00g12ak4b8hap4961sq7ap6q2pjqhac8cd8"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags
-       (list "V=1"                      ; verbose test output
-             "NOTMUCH_TEST_TIMEOUT=1h") ; don't fail on slow machines
-       #:phases (modify-phases %standard-phases
-                  (replace 'configure
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (setenv "CC" ,(cc-for-target))
-                      (setenv "CONFIG_SHELL" (which "sh"))
-                      (let* ((out (assoc-ref outputs "out")))
-                        (invoke "./configure"
-                                (string-append "--prefix=" out)
-                                "--without-emacs"))))
-                  (add-before 'check 'prepare-test-environment
-                    (lambda _
-                      (setenv "TEST_CC" ,(cc-for-target))
-                      ;; Patch various inline shell invocations.
-                      (substitute* (find-files "test" "\\.sh$")
-                        (("/bin/sh") (which "sh"))))))))
+     (list
+      #:make-flags
+      #~(list "V=1"                      ; verbose test output
+              "NOTMUCH_TEST_TIMEOUT=1h") ; don't fail on slow machines
+      #:phases
+      #~(modify-phases %standard-phases
+          (replace 'configure
+            (lambda* (#:key inputs #:allow-other-keys)
+              (setenv "CC" #$(cc-for-target))
+              (setenv "CONFIG_SHELL" (search-input-file inputs "/bin/sh"))
+              (invoke "./configure"
+                      (string-append "--prefix=" #$output)
+                      "--without-emacs")))
+          (add-before 'check 'prepare-test-environment
+            (lambda* (#:key inputs #:allow-other-keys)
+              (setenv "TEST_CC" #$(cc-for-target))
+              ;; Patch various inline shell invocations.
+              (let ((sh (search-input-file inputs "/bin/sh")))
+                (substitute* (find-files "test" "\\.sh$")
+                  (("/bin/sh") sh))))))))
     (native-inputs
      (list bash-completion
            pkg-config
