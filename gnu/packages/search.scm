@@ -243,16 +243,15 @@ command line tool for interacting with libtocc.")
        (modify-phases %standard-phases
          (add-after 'unpack 'relax-requirements
            (lambda _
-             ;; These packages are outdated in Guix at the time of packaging.
-             ;; When they are updated, remove corresponding substitutions.
              ;; Tests can run after build with 'searx-checker' tool in /bin.
+             ;; allow using a higher dependency version
              (substitute* "requirements.txt"
-               (("flask-babel==2.0.0") "flask-babel>=1.0.0")
-               (("jinja2==2.11.3") "jinja2>=2.11.2")
-               (("lxml==4.6.3") "lxml>=4.4.2")
-               (("pygments==2.8.0") "pygments>=2.7.3")
-               (("requests\\[socks\\]==2.25.1") "requests>=2.25")
-               (("==") ">=")))))))
+               (("==") ">="))))
+         (add-before 'sanity-check 'set-debug
+           (lambda _
+             ;; the user will need to change the secret key
+             ;; https://github.com/searx/searx/issues/2278
+             (setenv "SEARX_DEBUG" "1"))))))
     (propagated-inputs
      (list python-babel
            python-certifi
