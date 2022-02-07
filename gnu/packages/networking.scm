@@ -3580,16 +3580,15 @@ powerful route filtering syntax and an easy-to-use configuration interface.")
      (list pkg-config python python-docutils openssl))
     (arguments
      `(#:configure-flags
-       (let ((dbus (assoc-ref %outputs "out")))
-         (list "--disable-systemd-service"
-               "--enable-external-ell"
-               "--enable-hwsim"
-               "--enable-tools"
-               "--enable-wired"
-               "--localstatedir=/var"
-               (string-append "--with-dbus-datadir=" dbus "/share/")
-               (string-append "--with-dbus-busdir="
-                              dbus "/share/dbus-1/system-services")))
+       ,#~(list "--disable-systemd-service"
+                "--enable-external-ell"
+                "--enable-hwsim"
+                "--enable-tools"
+                "--enable-wired"
+                "--localstatedir=/var"
+                (string-append "--with-dbus-datadir=" #$output "/share/")
+                (string-append "--with-dbus-busdir="
+                               #$output "/share/dbus-1/system-services"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'configure 'patch-Makefile
