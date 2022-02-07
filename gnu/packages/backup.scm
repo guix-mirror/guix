@@ -1276,13 +1276,13 @@ borgmatic is powered by borg.")
 (define-public vorta
   (package
     (name "vorta")
-    (version "0.8.2")
+    (version "0.8.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "vorta" version))
               (sha256
                (base32
-                "1cl7kyh14h38xavbq23b8ifvk8abkiqdkpgaxfxvd223fm02zz26"))))
+                "0674crxsmf1gwiacpi9ixypgz685fyzr5y3f9sd768b0bmh7ilsn"))))
     (build-system python-build-system)
     (arguments
      (list
