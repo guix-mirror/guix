@@ -47,6 +47,7 @@
 ;;; Copyright © 2021 Milkey Mouse <milkeymouse@meme.institute>
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2022 Simon South <simon@simonsouth.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3564,20 +3565,25 @@ powerful route filtering syntax and an easy-to-use configuration interface.")
     (name "iwd")
     (version "1.20")
     (source (origin
-              ;; FIXME: We're using the bootstrapped sources because
-              ;; otherwise using an external ell library is impossible.
-              ;; How to bootstrap with Guix?
-              (method url-fetch)
-              (uri (string-append "https://www.kernel.org/pub/linux/network"
-                                  "/wireless/iwd-" version ".tar.xz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.kernel.org/pub/scm/network/wireless/iwd.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "03q5scahyg86h4bdxqxm32shyssgpmfp5b3183j01ig7mg6f4lbx"))))
+                "0xlbnsgw9giakfj0xr526i7mcwyaryb18g66mv90njnrm8radjhr"))))
     (build-system gnu-build-system)
     (inputs
-     (list dbus ell readline))
+     (list dbus ell (package-source ell) readline))
     (native-inputs
-     (list pkg-config python python-docutils openssl))
+     (list autoconf
+           automake
+           libtool
+           pkg-config
+           python
+           python-docutils
+           openssl))
     (arguments
      `(#:configure-flags
        ,#~(list "--disable-systemd-service"
@@ -3591,6 +3597,20 @@ powerful route filtering syntax and an easy-to-use configuration interface.")
                                #$output "/share/dbus-1/system-services"))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'copy-ell-header-files
+           ;; Copy into the source tree two of ell's private header files that
+           ;; it shares with iwd, as is required to build with the
+           ;; "--enable-external-ell" configure option.
+           ;; See the definition of "ell_shared" in iwd's Makefile.am.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((ell-header-dir (search-input-directory inputs "/ell"))
+                   (target-dir "ell"))
+               (mkdir target-dir)
+               (for-each
+                (lambda (file-name)
+                  (copy-file (string-append ell-header-dir "/" file-name)
+                             (string-append target-dir "/" file-name)))
+                '("asn1-private.h" "useful.h")))))
          (add-after 'configure 'patch-Makefile
            (lambda _
              (substitute* "Makefile"
