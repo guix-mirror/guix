@@ -2138,6 +2138,7 @@ parameters.")
 that give information about processes using the Linux /proc file system.
 The package includes the programs free, pgrep, pidof, pkill, pmap, ps, pwdx,
 slabtop, tload, top, vmstat, w, watch and sysctl.")
+    (properties '((upstream-name . "procps-ng")))
     (license license:gpl2)))
 
 (define-public usbutils
