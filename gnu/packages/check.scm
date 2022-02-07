@@ -209,17 +209,15 @@ source code editors and IDEs.")
 (define-public clitest
   (package
     (name "clitest")
-    (version "0.3.0")
+    (version "0.4.0")
     (home-page "https://github.com/aureliojargas/clitest")
     (source (origin
               (method git-fetch)
-              (uri (git-reference
-                    (url home-page)
-                    (commit (string-append "v" version))))
+              (uri (git-reference (url home-page) (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0zw5wra9hc717srmcar1wm4i34kyj8c49ny4bb7y3nrvkjp2pdb5"))))
+                "1p745mxiq3hgi3ywfljs5sa1psi06awwjxzw0j9c2xx1b09yqv4a"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -244,10 +242,12 @@ source code editors and IDEs.")
              (let ((out (assoc-ref outputs "out")))
                (install-file "clitest" (string-append out "/bin"))
                (install-file "README.md"
-                             (string-append out "/share/doc/clitest-" ,version))
-               #t))))))
+                             (string-append out "/share/doc/clitest-"
+                                            ,version))))))))
     (native-inputs
      (list perl))                 ;for tests
+    (inputs
+     (list bash-minimal))
     (synopsis "Command line test tool")
     (description
      "@command{clitest} is a portable shell script that performs automatic
