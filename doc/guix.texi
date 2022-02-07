@@ -25564,125 +25564,72 @@ and disk space consumption:
 
 @c %start of fragment
 
+@deftp {Data Type} zabbix-server-configuration
 Available @code{zabbix-server-configuration} fields are:
 
-@deftypevr {@code{zabbix-server-configuration} parameter} package zabbix-server
+@table @asis
+@item @code{zabbix-server} (default: @code{zabbix-server}) (type: file-like)
 The zabbix-server package.
 
-@end deftypevr
-
-@deftypevr {@code{zabbix-server-configuration} parameter} string user
+@item @code{user} (default: @code{"zabbix"}) (type: string)
 User who will run the Zabbix server.
 
-Defaults to @samp{"zabbix"}.
-
-@end deftypevr
-
-@deftypevr {@code{zabbix-server-configuration} parameter} group group
+@item @code{group} (default: @code{"zabbix"}) (type: group)
 Group who will run the Zabbix server.
 
-Defaults to @samp{"zabbix"}.
-
-@end deftypevr
-
-@deftypevr {@code{zabbix-server-configuration} parameter} string db-host
+@item @code{db-host} (default: @code{"127.0.0.1"}) (type: string)
 Database host name.
 
-Defaults to @samp{"127.0.0.1"}.
-
-@end deftypevr
-
-@deftypevr {@code{zabbix-server-configuration} parameter} string db-name
+@item @code{db-name} (default: @code{"zabbix"}) (type: string)
 Database name.
 
-Defaults to @samp{"zabbix"}.
-
-@end deftypevr
-
-@deftypevr {@code{zabbix-server-configuration} parameter} string db-user
+@item @code{db-user} (default: @code{"zabbix"}) (type: string)
 Database user.
 
-Defaults to @samp{"zabbix"}.
-
-@end deftypevr
-
-@deftypevr {@code{zabbix-server-configuration} parameter} string db-password
+@item @code{db-password} (default: @code{""}) (type: string)
 Database password.  Please, use @code{include-files} with
 @code{DBPassword=SECRET} inside a specified file instead.
 
-Defaults to @samp{""}.
-
-@end deftypevr
-
-@deftypevr {@code{zabbix-server-configuration} parameter} number db-port
+@item @code{db-port} (default: @code{5432}) (type: number)
 Database port.
 
-Defaults to @samp{5432}.
-
-@end deftypevr
-
-@deftypevr {@code{zabbix-server-configuration} parameter} string log-type
+@item @code{log-type} (default: @code{""}) (type: string)
 Specifies where log messages are written to:
 
 @itemize @bullet
-@item
-@code{system} - syslog.
 
-@item
-@code{file} - file specified with @code{log-file} parameter.
+@item @code{system} - syslog.
 
-@item
-@code{console} - standard output.
+@item @code{file} - file specified with @code{log-file} parameter.
+
+@item @code{console} - standard output.
 
 @end itemize
 
-Defaults to @samp{""}.
-
-@end deftypevr
-
-@deftypevr {@code{zabbix-server-configuration} parameter} string log-file
+@item @code{log-file} (default: @code{"/var/log/zabbix/server.log"}) (type: string)
 Log file name for @code{log-type} @code{file} parameter.
 
-Defaults to @samp{"/var/log/zabbix/server.log"}.
-
-@end deftypevr
-
-@deftypevr {@code{zabbix-server-configuration} parameter} string pid-file
+@item @code{pid-file} (default: @code{"/var/run/zabbix/zabbix_server.pid"}) (type: string)
 Name of PID file.
 
-Defaults to @samp{"/var/run/zabbix/zabbix_server.pid"}.
-
-@end deftypevr
-
-@deftypevr {@code{zabbix-server-configuration} parameter} string ssl-ca-location
+@item @code{ssl-ca-location} (default: @code{"/etc/ssl/certs/ca-certificates.crt"}) (type: string)
 The location of certificate authority (CA) files for SSL server
 certificate verification.
 
-Defaults to @samp{"/etc/ssl/certs/ca-certificates.crt"}.
-
-@end deftypevr
-
-@deftypevr {@code{zabbix-server-configuration} parameter} string ssl-cert-location
+@item @code{ssl-cert-location} (default: @code{"/etc/ssl/certs"}) (type: string)
 Location of SSL client certificates.
 
-Defaults to @samp{"/etc/ssl/certs"}.
-
-@end deftypevr
-
-@deftypevr {@code{zabbix-server-configuration} parameter} string extra-options
+@item @code{extra-options} (default: @code{""}) (type: extra-options)
 Extra options will be appended to Zabbix server configuration file.
 
-Defaults to @samp{""}.
-
-@end deftypevr
-
-@deftypevr {@code{zabbix-server-configuration} parameter} include-files include-files
+@item @code{include-files} (default: @code{()}) (type: include-files)
 You may include individual files or all files in a directory in the
 configuration file.
 
-Defaults to @samp{()}.
+@end table
 
-@end deftypevr
+@end deftp
+
 
 @c %end of fragment
 
@@ -25693,100 +25640,64 @@ Zabbix agent gathers information for Zabbix server.
 
 @c %start of fragment
 
+@deftp {Data Type} zabbix-agent-configuration
 Available @code{zabbix-agent-configuration} fields are:
 
-@deftypevr {@code{zabbix-agent-configuration} parameter} package zabbix-agent
+@table @asis
+@item @code{zabbix-agent} (default: @code{zabbix-agentd}) (type: file-like)
 The zabbix-agent package.
 
-@end deftypevr
-
-@deftypevr {@code{zabbix-agent-configuration} parameter} string user
+@item @code{user} (default: @code{"zabbix"}) (type: string)
 User who will run the Zabbix agent.
 
-Defaults to @samp{"zabbix"}.
-
-@end deftypevr
-
-@deftypevr {@code{zabbix-agent-configuration} parameter} group group
+@item @code{group} (default: @code{"zabbix"}) (type: group)
 Group who will run the Zabbix agent.
 
-Defaults to @samp{"zabbix"}.
-
-@end deftypevr
-
-@deftypevr {@code{zabbix-agent-configuration} parameter} string hostname
+@item @code{hostname} (default: @code{""}) (type: string)
 Unique, case sensitive hostname which is required for active checks and
 must match hostname as configured on the server.
 
-Defaults to @samp{""}.
-
-@end deftypevr
-
-@deftypevr {@code{zabbix-agent-configuration} parameter} string log-type
+@item @code{log-type} (default: @code{""}) (type: string)
 Specifies where log messages are written to:
 
 @itemize @bullet
 @item
 @code{system} - syslog.
 
-@item
-@code{file} - file specified with @code{log-file} parameter.
+@item @code{file} - file specified with
+@code{log-file} parameter.
 
-@item
-@code{console} - standard output.
+@item @code{console} - standard output.
 
 @end itemize
 
-Defaults to @samp{""}.
-
-@end deftypevr
-
-@deftypevr {@code{zabbix-agent-configuration} parameter} string log-file
+@item @code{log-file} (default: @code{"/var/log/zabbix/agent.log"}) (type: string)
 Log file name for @code{log-type} @code{file} parameter.
 
-Defaults to @samp{"/var/log/zabbix/agent.log"}.
-
-@end deftypevr
-
-@deftypevr {@code{zabbix-agent-configuration} parameter} string pid-file
+@item @code{pid-file} (default: @code{"/var/run/zabbix/zabbix_agent.pid"}) (type: string)
 Name of PID file.
 
-Defaults to @samp{"/var/run/zabbix/zabbix_agent.pid"}.
-
-@end deftypevr
-
-@deftypevr {@code{zabbix-agent-configuration} parameter} list server
+@item @code{server} (default: @code{("127.0.0.1")}) (type: list)
 List of IP addresses, optionally in CIDR notation, or hostnames of
 Zabbix servers and Zabbix proxies.  Incoming connections will be
 accepted only from the hosts listed here.
 
-Defaults to @samp{("127.0.0.1")}.
-
-@end deftypevr
-
-@deftypevr {@code{zabbix-agent-configuration} parameter} list server-active
+@item @code{server-active} (default: @code{("127.0.0.1")}) (type: list)
 List of IP:port (or hostname:port) pairs of Zabbix servers and Zabbix
 proxies for active checks.  If port is not specified, default port is
 used.  If this parameter is not specified, active checks are disabled.
 
-Defaults to @samp{("127.0.0.1")}.
-
-@end deftypevr
-
-@deftypevr {@code{zabbix-agent-configuration} parameter} string extra-options
+@item @code{extra-options} (default: @code{""}) (type: extra-options)
 Extra options will be appended to Zabbix server configuration file.
 
-Defaults to @samp{""}.
-
-@end deftypevr
-
-@deftypevr {@code{zabbix-agent-configuration} parameter} include-files include-files
+@item @code{include-files} (default: @code{()}) (type: include-files)
 You may include individual files or all files in a directory in the
 configuration file.
 
-Defaults to @samp{()}.
+@end table
 
-@end deftypevr
+@end deftp
+
 
 @c %end of fragment
 
