@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019, 2021, 2022 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
@@ -45,19 +45,20 @@
 (define-public connman
   (package
     (name "connman")
-    (version "1.40")
+    (version "1.41")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "mirror://kernel.org/linux/network/connman/"
                             "connman-" version ".tar.xz"))
         (sha256
-         (base32 "04nbxpaxykncp65fyh4lk778vn9145fbxhxa8hbkmailw9yawmqs"))))
+         (base32 "12g5ilcnymx6i45z3359yds3cgd2dfqjyncfm92hqlymzps41yvr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
        (list "--enable-nmcompat"
              "--enable-polkit" ; Polkit doesn't need to be present at build time.
+             "--enable-iwd"
              "--enable-openconnect"
              "--enable-openvpn"
              "--enable-vpnc"
@@ -68,8 +69,8 @@
              (string-append
               "--with-dbusdatadir=" (assoc-ref %outputs "out") "/share"))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python" ,python-wrapper)))
+     (list pkg-config
+           python-wrapper))
     (inputs
      (list dbus
            glib
