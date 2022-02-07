@@ -3,6 +3,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Alexandru-Sergiu Marton <brown121407@member.fsf.org>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2022 Jai Vetrivelan <jaivetrivelan@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -110,7 +111,7 @@ performance).
 (define-public picom
   (package
     (name "picom")
-    (version "8.2")
+    (version "9")
     (source
      (origin
        (method git-fetch)
@@ -119,7 +120,7 @@ performance).
              (commit (string-append "v" version))))
        (sha256
         (base32
-         "0gjksayz2xpmgglvw17ppsan2imrd1fijs579kbf27xwp503xgfl"))
+         "0s3rf0lmkhhprx6vd5wsz1n0n55nprq6l1245pj525hrwxc1yvna"))
        (file-name (string-append "picom-" version))))
     (build-system meson-build-system)
     (inputs
