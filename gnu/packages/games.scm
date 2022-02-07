@@ -8992,7 +8992,7 @@ exec ~a --data-path=~a/share/flare --mods=empyrean_campaign~%"
                 (chmod script #o755)))))))
     (inputs
      (list flare-engine))
-    (home-page "http://www.flarerpg.org/")
+    (home-page "https://flarerpg.org/")
     (synopsis "Fantasy action RPG using the FLARE engine")
     (description "Flare is a single-player 2D action RPG with
 fast-paced action and a dark fantasy style.")
