@@ -994,6 +994,29 @@ process, passing on the arguments as command line arguments.")
      "Magit-annex adds a few git-annex operations to the Magit interface.")
     (license license:gpl3+)))
 
+(define-public emacs-mct
+  (package
+    (name "emacs-mct")
+    (version "0.4.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.com/protesilaos/mct")
+                    (commit version)))
+              (sha256
+               (base32 "0sj9hyxpighspwrm2yimqkdxlhw2yiznaj69ysn2sjd6jn2aqpc6"))
+              (file-name (git-file-name name version))))
+    (build-system emacs-build-system)
+    (home-page "https://protesilaos.com/emacs/mct")
+    (synopsis "Enhancement of the default Emacs minibuffer completion UI")
+    (description "Minibuffer and Completions in Tandem, also known as MCT, or
+mct.el, is an Emacs package that enhances the default minibuffer and
+@samp{*Completions*} buffer so that they work together as part of a unified
+framework.  The idea is to make the presentation and overall functionality be
+consistent with other popular, vertically aligned completion UIs while
+leveraging built-in functionality.")
+    (license license:gpl3+)))
+
 (define-public emacs-minions
   (package
     (name "emacs-minions")
