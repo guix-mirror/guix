@@ -552,7 +552,7 @@ configuration file."))
       ,zabbix-agent-configuration-fields))
    'zabbix-agent-configuration))
 
-(define %zabbix-front-end-nginx-configuration
+(define %zabbix-front-end-configuration-nginx
   (nginx-server-configuration
    (root #~(string-append #$zabbix-server:front-end "/share/zabbix/php"))
    (index '("index.php"))
@@ -573,7 +573,7 @@ fastcgi_param PHP_VALUE \"post_max_size = 16M
      (if (null? nginx)
          (list
           (nginx-server-configuration
-           (inherit %zabbix-front-end-nginx-configuration)
+           (inherit %zabbix-front-end-configuration-nginx)
            (root #~(string-append #$server:front-end "/share/zabbix/php"))))
          nginx))))
 
