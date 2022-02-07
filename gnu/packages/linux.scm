@@ -4507,6 +4507,24 @@ EEPROM decoding scripts, EEPROM programming tools, and a python module for
 SMBus access.")
     (license license:gpl2+)))
 
+(define-public i2c-tools-3
+  (package
+    (inherit i2c-tools)
+    (name "i2c-tools")
+    (version "3.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://jdelvare.nerim.net/mirror/i2c-tools/i2c-tools-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32 "0hd4c1w8lnwc3j95h3vpd125170l1d4myspyrlpamqx6wbr6jpnv"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments i2c-tools)
+       ((#:make-flags _)
+        #~(list (string-append "prefix=" #$output)
+                (string-append "CC=" #$(cc-for-target))))))))
+
 (define-public xsensors
   (package
     (name "xsensors")

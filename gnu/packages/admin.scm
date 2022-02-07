@@ -4770,7 +4770,7 @@ disk utilization, priority, username, state, and exit code.")
                (install-file "novena-eeprom" out-bin)
                (install-file "novena-eeprom.8" out-share-man)))))))
     (inputs
-     (list i2c-tools))
+     (list i2c-tools-3))
     (synopsis "Novena EEPROM editor")
     (description "This package provides an editor for the Novena EEPROM.
 Novena boards contain a device-dependent descriptive EEPROM that defines
