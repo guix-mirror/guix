@@ -2377,8 +2377,7 @@ can be explored and changed freely.")
        ;; Remove non-free (non-commercial) font.
        (snippet
         `(begin
-           (for-each delete-file (find-files "data/fonts" "."))
-           #t))))
+           (for-each delete-file (find-files "data/fonts" "."))))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f                      ;no test
@@ -2435,8 +2434,7 @@ can be explored and changed freely.")
                     (copy-file
                      (string-append "icon" size ".png")
                      (string-append dir "/searhorse-adventures.png"))))
-                '("32" "64" "128")))
-             #t))
+                '("32" "64" "128")))))
          (add-after 'install 'unbundle-fonts
            ;; Unbundle Bitstream Vera font and replace deleted one.
            (lambda* (#:key outputs inputs #:allow-other-keys)
@@ -2453,8 +2451,7 @@ can be explored and changed freely.")
                   '("default" "gray")))
                (symlink vera (string-append data "/data/fonts/04B_20__.TTF"))
                (substitute* (string-append data "/lib/main.py")
-                 (("f_scale = 0.35") "f_scale = 0.47")))
-             #t)))))
+                 (("f_scale = 0.35") "f_scale = 0.47"))))))))
     (inputs
      (list font-bitstream-vera python-pygame))
     (home-page "http://www.imitationpickles.org/barbie/")
