@@ -11107,18 +11107,18 @@ third-party code.")
 (define-public python-llfuse
   (package
     (name "python-llfuse")
-    (version "1.3.8")
+    (version "1.4.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "llfuse" version))
               (sha256
                (base32
-                "1g2cdhdqrb6m7655qp61pn61pwj1ql61cdzhr2jvl3w4i8877ddr"))))
+                "1jaf790rsxvz3hs9fbr3hrnmg0xzl6a2bqfa10bbbsjsdbcpk762"))))
     (build-system python-build-system)
     (inputs
      (list fuse attr))
     (native-inputs
-     (list pkg-config))
+     (list pkg-config python-pytest))
     (synopsis "Python bindings for FUSE")
     (description
      "Python-LLFUSE is a set of Python bindings for the low level FUSE API.")
