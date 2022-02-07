@@ -8384,7 +8384,7 @@ tools for managing PipeWire.")
 (define-public ell
   (package
     (name "ell")
-    (version "0.46")
+    (version "0.48")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -8393,18 +8393,8 @@ tools for managing PipeWire.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "15hwqicmll23cbrj13h3wd4lgrby416ap7l6w0434jsza4s4yv82"))))
+                "0lxjizby3zdyhzad5a0gbz4m2pp44jf1j4l1pn18d04rw9mr2gqy"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-dbus-tests
-           (lambda _
-             (substitute* '("unit/test-dbus-message-fds.c"
-                            "unit/test-dbus-properties.c"
-                            "unit/test-dbus.c")
-               (("/usr/bin/dbus-daemon") (which "dbus-daemon")))
-             #t)))))
     (inputs
      (list dbus))
     (native-inputs
