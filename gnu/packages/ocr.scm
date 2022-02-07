@@ -157,20 +157,18 @@ monospaced or proportional.")
      `(#:tests? #f                      ;no test
        #:configure-flags (list "-DENABLE_VERSIONCHECK=0")))
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list gettext-minimal intltool pkg-config))
     (inputs
-     `(("enchant" ,enchant)
-       ("djvulibre" ,djvulibre)
-       ("leptonica" ,leptonica)
-       ("podofo" ,podofo)
-       ("poppler-qt5" ,poppler-qt5)
-       ("sane-backends" ,sane-backends)
-       ("qtbase" ,qtbase-5)
-       ("qtspell" ,qtspell)
-       ("quazip" ,quazip-0)
-       ("tesseract" ,tesseract-ocr)))
+     (list enchant
+           djvulibre
+           leptonica
+           podofo
+           poppler-qt5
+           sane-backends
+           qtbase-5
+           qtspell
+           quazip-0
+           tesseract-ocr))
     (home-page "https://github.com/manisandro/gImageReader")
     (synopsis "Qt front-end to tesseract-ocr")
     (description
