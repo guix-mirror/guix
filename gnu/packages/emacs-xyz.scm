@@ -20126,13 +20126,8 @@ perform regression test for packages that provide font-lock rules.")
        (list emacs-faceup emacs-paredit emacs-pos-tip emacs-s))
       (home-page "https://www.racket-mode.com/")
       (synopsis "Major mode for the Racket language")
-      (description "@code{racket-mode} provides:
-
-@itemize
-@item Focus on Racket (not various Schemes).
-@item Follow DrRacket concepts where applicable.
-@item Thorough font-lock and indent.
-@end itemize\n")
+      (description "Racket mode provides thorough font-lock and indentation.
+It follows DrRacket concepts where applicable.")
       (license license:gpl2+))))
 
 (define-public emacs-grep-context
