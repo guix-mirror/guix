@@ -255,17 +255,43 @@ softsynth library that can be use with other applications.")
         (base32 "1gsx7k77blfy171b6g3m0k0s0072v6jcawhmx1kjs9w5zlwdkzd0"))))
     (build-system gnu-build-system)
     (arguments
-     ;; TODO: Move this to a snippet or remove with the upgrade to 1.0.
-     (if (target-riscv64?)
+     ;; TODO: Move this to a snippet/patch or remove with the upgrade to 1.0.
+     (if (or (target-riscv64?)
+             (target-powerpc?))
        (list
          #:phases
          #~(modify-phases %standard-phases
              (add-after 'unpack 'patch-source
-               (lambda _
-                 (substitute* "webrtc/typedefs.h"
-                   (("defined\\(__aarch64__\\)" all)
-                    (string-append
-                      all " || (defined(__riscv) && __riscv_xlen == 64)")))))))
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (let ((patch-file
+                        #$(local-file
+                           (search-patch
+                             "webrtc-audio-processing-big-endian.patch"))))
+                   (invoke "patch" "--force" "-p1" "-i" patch-file)
+                   (substitute* "webrtc/typedefs.h"
+                     (("defined\\(__aarch64__\\)" all)
+                      (string-append
+                        ;; powerpc-linux
+                        "(defined(__PPC__) && __SIZEOF_SIZE_T__ == 4)\n"
+                        "#define WEBRTC_ARCH_32_BITS\n"
+                        "#define WEBRTC_ARCH_BIG_ENDIAN\n"
+                        ;; powerpc64-linux
+                        "#elif (defined(__PPC64__) && defined(_BIG_ENDIAN))\n"
+                        "#define WEBRTC_ARCH_64_BITS\n"
+                        "#define WEBRTC_ARCH_BIG_ENDIAN\n"
+                        ;; aarch64-linux
+                        "#elif " all
+                        ;; riscv64-linux
+                        " || (defined(__riscv) && __riscv_xlen == 64)"
+                        ;; powerpc64le-linux
+                        " || (defined(__PPC64__) && defined(_LITTLE_ENDIAN))"))))))))
+       '()))
+    (native-inputs
+     (if (or (target-riscv64?)
+             (target-powerpc?))
+       (list
+         (local-file (search-patch "webrtc-audio-processing-big-endian.patch"))
+         patch)
        '()))
     (synopsis "WebRTC's Audio Processing Library")
     (description "WebRTC-Audio-Processing library based on Google's
