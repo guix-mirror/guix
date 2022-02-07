@@ -8951,48 +8951,45 @@ action RPGs.")
                 "0l0d4j2l1szdwrk8casaiskdk16wkbmms7cid4y751d42czg4ffw"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f                      ;no test
-       #:configure-flags '("-DDATADIR=share/flare")
-       #:phases
-       (modify-phases %standard-phases
-         ;; Flare expects the mods to be located in the same folder.
-         ;; Yet, "default" mod is in the engine, whereas the others
-         ;; are in the current package.  Merge everything here with
-         ;; a symlink.
-         (add-after 'install 'add-default-mod
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (mods (string-append out "/share/flare/mods")))
-               (with-directory-excursion mods
-                 (symlink (string-append (assoc-ref inputs "flare-engine")
-                                         "/share/flare/mods/default")
-                          "default")
-                 (symlink (string-append (assoc-ref inputs "flare-engine")
-                                         "/share/flare/mods/mods.txt")
-                          "mods.txt")))
-             #t))
-         (add-after 'install 'install-executable
-           ;; The package only provides assets for the game, the
-           ;; executable coming from "flare-engine".  Since more than
-           ;; one game may use the engine, we create a new executable,
-           ;; "flare-game", which launches the engine with appropriate
-           ;; parameters.
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (bash (search-input-file inputs "/bin/bash"))
+     (list
+      #:tests? #f                       ;no test
+      #:configure-flags #~(list "-DDATADIR=share/flare")
+      #:phases
+      #~(modify-phases %standard-phases
+          ;; Flare expects the mods to be located in the same folder.
+          ;; Yet, "default" mod is in the engine, whereas the others
+          ;; are in the current package.  Merge everything here with
+          ;; a symlink.
+          (add-after 'install 'add-default-mod
+            (lambda* (#:key inputs #:allow-other-keys)
+              (let ((mods (string-append #$output "/share/flare/mods")))
+                (with-directory-excursion mods
+                  (symlink (search-input-directory inputs
+                                                   "/share/flare/mods/default")
+                           "default")
+                  (symlink (search-input-file inputs
+                                              "/share/flare/mods/mods.txt")
+                           "mods.txt")))))
+          (add-after 'install 'install-executable
+            ;; The package only provides assets for the game, the
+            ;; executable coming from "flare-engine".  Since more than
+            ;; one game may use the engine, we create a new executable,
+            ;; "flare-game", which launches the engine with appropriate
+            ;; parameters.
+            (lambda* (#:key inputs #:allow-other-keys)
+              (let ((bash (search-input-file inputs "/bin/bash"))
                     (flare (search-input-file inputs "/bin/flare"))
-                    (script (string-append out "/bin/flare-game")))
-               (mkdir-p (dirname script))
-               (call-with-output-file script
-                 (lambda (port)
-                   (format port
-                           "#!~a
+                    (script (string-append #$output "/bin/flare-game")))
+                (mkdir-p (dirname script))
+                (call-with-output-file script
+                  (lambda (port)
+                    (format port
+                            "#!~a
 exec ~a --data-path=~a/share/flare --mods=empyrean_campaign~%"
-                           bash
-                           flare
-                           out)))
-               (chmod script #o755))
-             #t)))))
+                            bash
+                            flare
+                            #$output)))
+                (chmod script #o755)))))))
     (inputs
      (list flare-engine))
     (home-page "http://www.flarerpg.org/")
