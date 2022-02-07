@@ -552,29 +552,6 @@ configuration file."))
       ,zabbix-agent-configuration-fields))
    'zabbix-agent-configuration))
 
-(define zabbix-front-end-nginx-configuration
-  (match-lambda
-    (($ <zabbix-front-end-configuration> _ package fastcgi-params)
-     (list
-      (nginx-server-configuration
-       (root #~(string-append #$package:front-end "/share/zabbix/php"))
-       (index '("index.php"))
-       (locations
-        (let ((php-location (nginx-php-location)))
-          (list (nginx-location-configuration
-                 (inherit php-location)
-                 (body
-                  (append (nginx-location-configuration-body php-location)
-                          (list
-                           (format #f "fastcgi_param PHP_VALUE \"~a\";"
-                                   (string-join
-                                    (map (match-lambda
-                                           ((key . value)
-                                            (format #f "~a = ~a~%"
-                                                    key value)))
-                                         fastcgi-params))))))))))
-       (listen '("80")))))))
-
 (define %zabbix-front-end-nginx-configuration
   (nginx-server-configuration
    (root #~(string-append #$zabbix-server:front-end "/share/zabbix/php"))
