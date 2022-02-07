@@ -1112,21 +1112,15 @@ support for merging, minifying and compiling CSS and Javascript files.")
 (define-public python-flask-babel
   (package
     (name "python-flask-babel")
-    (version "1.0.0")
+    (version "2.0.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "Flask-Babel" version))
         (sha256
           (base32
-            "0gmb165vkwv5v7dxsxa2i3zhafns0fh938m2zdcrv4d8z5l099yn"))))
+            "0z95v77vib5il8hphyh16n7i15a2gmc06i615vm346ifvdfg9ypr"))))
     (build-system python-build-system)
-    (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (replace 'check
-                    (lambda _
-                      (with-directory-excursion "tests"
-                        (invoke "python" "tests.py")))))))
     (propagated-inputs
      (list python-flask python-babel python-jinja2 python-pytz))
     (home-page "https://github.com/python-babel/flask-babel")
