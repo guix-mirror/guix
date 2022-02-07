@@ -1397,18 +1397,19 @@ ing, and tagging large collections of email messages.")
     (inputs
      (list notmuch))
     (arguments
-     `(#:exclude (cons* "make-deps.el" "rstdoc.el" %default-exclude)
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'chdir
-           (lambda _
-             (chdir "emacs")))
-         (add-after 'chdir 'patch-paths
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((notmuch (assoc-ref inputs "notmuch")))
-               (substitute* "notmuch-lib.el"
-                 (("\"notmuch\"")
-                  (string-append "\"" notmuch "/bin/notmuch\"")))))))))
+     (list
+      #:exclude #~(cons* "make-deps.el" "rstdoc.el" %default-exclude)
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'chdir
+            (lambda _
+              (chdir "emacs")))
+          (add-after 'chdir 'patch-paths
+            (lambda* (#:key inputs #:allow-other-keys)
+              (let ((notmuch (search-input-file inputs "/bin/notmuch")))
+                (substitute* "notmuch-lib.el"
+                  (("\"notmuch\"")
+                   (string-append "\"" notmuch "\"")))))))))
     (synopsis "Run Notmuch within Emacs")
     (description
      "This package provides an Emacs-based interface to the Notmuch mail
