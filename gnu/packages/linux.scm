@@ -1985,6 +1985,7 @@ providing the system administrator with some help in common tasks.")
 utilities.  It provides dmesg and includes tools for working with file systems,
 block devices, UUIDs, TTYs, and many other tools.")
 
+    (properties '((upstream-name . "util-linux")))
     ;; Note that util-linux doesn't use the same license for all the
     ;; code.  GPLv2+ is the default license for a code without an
     ;; explicitly defined license.
