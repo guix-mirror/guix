@@ -2361,16 +2361,16 @@ can be explored and changed freely.")
 (define-public seahorse-adventures
   (package
     (name "seahorse-adventures")
-    (version "1.3")
+    (version "1.4")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/dulsi/seahorse-adventures")
-             (commit (string-append "release-" version))))
+             (commit (string-append "Release-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0m53jh2gchzr7rs35hml6lbvc5kb5hp229wlfqa09098b7hhl15a"))
+        (base32 "1dxysa79cz5mflr2953fyk838h1jwvi1ngn8wlpms0ag35yv21s8"))
        (modules '((guix build utils)
                   (ice-9 ftw)
                   (srfi srfi-1)))
