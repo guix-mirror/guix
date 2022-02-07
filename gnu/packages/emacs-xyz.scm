@@ -20100,8 +20100,11 @@ perform regression test for packages that provide font-lock rules.")
       (license license:gpl3+))))
 
 (define-public emacs-racket-mode
-  (let ((commit "5eb31a284c8db5102bc71b1e2c6ce3a095ae085b")
-        (revision "6"))
+  ;; XXX: Upstream does not tag releases, nor does it bump versions.  The
+  ;; "0.0.2" version below does not exist.  It might change, tho.  See
+  ;; <https://github.com/greghendershott/racket-mode/issues/389>.
+  (let ((commit "cef5a55d2b766973db92f9d9ab2210c03fa8ba02")
+        (revision "7"))
     (package
       (name "emacs-racket-mode")
       (version (git-version "0.0.2" revision commit))
@@ -20114,12 +20117,13 @@ perform regression test for packages that provide font-lock rules.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "081h6rd0gv88m0wvnmghi242kl39x1sz34qr4cq9vz04iwvnmgrm"))))
+           "0zzk0s4akx6ffsbhylgfflcypkkg36a3accxhmmdd11yn5rckv7f"))))
       (build-system emacs-build-system)
       (arguments
-       `(#:include '("\\.el$" "\\.rkt$")))
+       (list
+        #:include #~(list "\\.el$" "\\.rkt$")))
       (propagated-inputs
-       (list emacs-faceup emacs-pos-tip emacs-s))
+       (list emacs-faceup emacs-paredit emacs-pos-tip emacs-s))
       (home-page "https://www.racket-mode.com/")
       (synopsis "Major mode for the Racket language")
       (description "@code{racket-mode} provides:
