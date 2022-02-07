@@ -50,7 +50,8 @@
             zabbix-agent-configuration
             zabbix-agent-service-type
             zabbix-front-end-configuration
-            zabbix-front-end-service-type))
+            zabbix-front-end-service-type
+            %zabbix-front-end-configuration-nginx))
 
 
 ;;;
@@ -574,14 +575,39 @@ configuration file."))
                                          fastcgi-params))))))))))
        (listen '("80")))))))
 
+(define %zabbix-front-end-nginx-configuration
+  (nginx-server-configuration
+   (root #~(string-append #$zabbix-server:front-end "/share/zabbix/php"))
+   (index '("index.php"))
+   (locations
+    (let ((php-location (nginx-php-location)))
+      (list (nginx-location-configuration
+             (inherit php-location)
+             (body (append (nginx-location-configuration-body php-location)
+                           (list "
+fastcgi_param PHP_VALUE \"post_max_size = 16M
+                          max_execution_time = 300\";
+")))))))
+   (listen '("80"))))
+
+(define (zabbix-front-end-nginx-extension config)
+  (match config
+    (($ <zabbix-front-end-configuration> _ server nginx)
+     (if (null? nginx)
+         (list
+          (nginx-server-configuration
+           (inherit %zabbix-front-end-nginx-configuration)
+           (root #~(string-append #$server:front-end "/share/zabbix/php"))))
+         nginx))))
+
 (define-configuration zabbix-front-end-configuration
   (zabbix-server
     (file-like zabbix-server)
     "The Zabbix server package to use.")
-  (fastcgi-params
-   (list '(("post_max_size" . "16M")
-           ("max_execution_time" . "300")))
-   "List of FastCGI parameter pairs that will be included in the NGINX configuration.")
+  (nginx
+    (list '())
+   "List of @pxref{NGINX, @code{nginx-server-configuration}} blocks for the
+Zabbix front-end.  When empty, a default that listens on port 80 is used.")
   (db-host
    (string "localhost")
    "Database host name.")
@@ -686,7 +712,7 @@ $IMAGE_FORMAT_DEFAULT = IMAGE_FORMAT_PNG;
     (list (service-extension activation-service-type
                              zabbix-front-end-activation)
           (service-extension nginx-service-type
-                             zabbix-front-end-nginx-configuration)
+                             zabbix-front-end-nginx-extension)
           ;; Make sure php-fpm is instantiated.
           (service-extension php-fpm-service-type
                              (const #t))))

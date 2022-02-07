@@ -25804,31 +25804,32 @@ Available @code{zabbix-front-end-configuration} fields are:
 @item @code{zabbix-server} (default: @code{zabbix-server}) (type: file-like)
 The Zabbix server package to use.
 
-@item @code{fastcgi-params} (type: list)
-List of FastCGI parameter pairs that will be included in the NGINX
-configuration.
+@item @code{nginx} (default: @code{()}) (type: list)
+List of @pxref{NGINX,@code{nginx-server-configuration}} blocks for the
+Zabbix front-end.  When empty, a default that listens on port 80 is
+used.
 
-@item @code{db-host} (default: @code{\"localhost\"}) (type: string)
+@item @code{db-host} (default: @code{"localhost"}) (type: string)
 Database host name.
 
 @item @code{db-port} (default: @code{5432}) (type: number)
 Database port.
 
-@item @code{db-name} (default: @code{\"zabbix\"}) (type: string)
+@item @code{db-name} (default: @code{"zabbix"}) (type: string)
 Database name.
 
-@item @code{db-user} (default: @code{\"zabbix\"}) (type: string)
+@item @code{db-user} (default: @code{"zabbix"}) (type: string)
 Database user.
 
-@item @code{db-password} (default: @code{\"\"}) (type: string)
+@item @code{db-password} (default: @code{""}) (type: string)
 Database password.  Please, use @code{db-secret-file} instead.
 
-@item @code{db-secret-file} (default: @code{\"\"}) (type: string)
+@item @code{db-secret-file} (default: @code{""}) (type: string)
 Secret file which will be appended to @file{zabbix.conf.php} file.  This
 file contains credentials for use by Zabbix front-end.  You are expected
 to create it manually.
 
-@item @code{zabbix-host} (default: @code{\"localhost\"}) (type: string)
+@item @code{zabbix-host} (default: @code{"localhost"}) (type: string)
 Zabbix server hostname.
 
 @item @code{zabbix-port} (default: @code{10051}) (type: number)
