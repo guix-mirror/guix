@@ -18633,9 +18633,9 @@ continue.")
       #:test-command #~(list "ert-runner")))
     (home-page "https://github.com/Wilfred/elisp-refs")
     (synopsis "Find callers of elisp functions or macros")
-    (description "Find references to functions, macros or variables.  Unlike a
-dumb text search, @code{elisp-refs} actually parses the code, so it's never
-confused by comments or @code{foo-bar} matching @code{foo}.")
+    (description "@code{elisp-refs} finds references to functions, macros or
+variables.  Unlike a dumb text search, it actually parses the code, so it's
+never confused by comments or @code{foo-bar} matching @code{foo}.")
     (license license:gpl3+)))
 
 (define-public emacs-crdt
