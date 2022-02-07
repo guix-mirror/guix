@@ -22120,7 +22120,7 @@ source code.")
 (define-public emacs-rustic
   (package
     (name "emacs-rustic")
-    (version "2.5")
+    (version "2.6")
     (source
      (origin
        (method git-fetch)
@@ -22129,7 +22129,7 @@ source code.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1jx8gzcm9ka2chpq51jx4mfa12wqrj2dsrpxwylfcb9qkqjncbn5"))))
+        (base32 "0lnymi6nxn5dafm8q0av07dcjwrqxd3gm4hj1pi26kw62aw0ws24"))))
     (build-system emacs-build-system)
     (propagated-inputs
      (list emacs-dash
