@@ -1903,51 +1903,45 @@ functions.  The source code to MAME serves as this documentation.")
          "1qc01a62p65qb6mwjfmxqsd6n3rglsfwrjhsp25nr7q54107n55l"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f                      ; No tests.
-       #:configure-flags (list
-                          (string-append "-DMAME_BIN=\""
-                                         (assoc-ref %build-inputs "mame")
-                                         "/bin/mame\"")
-                          (string-append "-DAPP_RES=\""
-                                         (assoc-ref %outputs "out")
-                                         "/share/gnome-arcade/\""))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'build 'fix-paths
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (pk 'cwd (getcwd))
-               (substitute* "../source/src/config.c"
-                 (("/usr/share") (string-append out "/share"))))
-             #t))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (bin (string-append out "/bin"))
-                    (rom (string-append out "/share/gnome-arcade/data/rom"))
-                    (tile (string-append out "/share/gnome-arcade/data/tile")))
-               (mkdir-p bin)
-               (install-file "../gnome-arcade" bin)
-               (copy-recursively "../source/res"
-                                 (string-append out "/share/gnome-arcade/res"))
-               (mkdir-p rom)
-               (install-file "../source/data/rom/ROM.TXT" rom)
-               (mkdir-p tile)
-               (install-file "../source/data/tile/TILE.TXT" tile))
-             #t)))))
+     (list
+      #:tests? #f                       ; No tests.
+      #:configure-flags
+      #~(list
+         (string-append "-DMAME_BIN=\""
+                        #$(this-package-input "mame")
+                        "/bin/mame\"")
+         (string-append "-DAPP_RES=\"" #$output "/share/gnome-arcade/\""))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'build 'fix-paths
+            (lambda _
+              (substitute* "../source/src/config.c"
+                (("/usr/share") (string-append #$output "/share")))))
+          (replace 'install
+            (lambda _
+              (let ((bin (string-append #$output "/bin"))
+                    (rom (string-append #$output
+                                        "/share/gnome-arcade/data/rom"))
+                    (tile (string-append #$output
+                                         "/share/gnome-arcade/data/tile")))
+                (mkdir-p bin)
+                (install-file "../gnome-arcade" bin)
+                (copy-recursively "../source/res"
+                                  (string-append #$output
+                                                 "/share/gnome-arcade/res"))
+                (mkdir-p rom)
+                (install-file "../source/data/rom/ROM.TXT" rom)
+                (mkdir-p tile)
+                (install-file "../source/data/tile/TILE.TXT" tile)))))))
     (native-inputs
      (list pkg-config))
     (inputs
-     `(("mame" ,mame)
-       ("gtk" ,gtk+)
-       ("libevdev" ,libevdev)
-       ("libvlc" ,vlc)
-       ("libarchive" ,libarchive)))
+     (list gtk+ libarchive libevdev mame vlc))
     (home-page "https://github.com/strippato/gnome-arcade")
     (synopsis "Minimal MAME frontend")
     (description
-     "A minimal GTK+ frontend for MAME, the multi-purpose arcade and console
-emulator.")
+     "Gnome Arcade is a minimal GTK+ frontend for MAME, the multi-purpose
+arcade and console emulator.")
     (license license:gpl3+)))
 
 (define-public pcsxr
