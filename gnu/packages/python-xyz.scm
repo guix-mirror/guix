@@ -11123,14 +11123,7 @@ third-party code.")
     (description
      "Python-LLFUSE is a set of Python bindings for the low level FUSE API.")
     (home-page "https://bitbucket.org/nikratio/python-llfuse/")
-    (license license:lgpl2.0+)
-    (properties `((python2-variant . ,(delay python2-llfuse))))))
-
-(define-public python2-llfuse
-  (let ((base (package-with-python2
-               (strip-python2-variant python-llfuse))))
-    (package/inherit base
-      (propagated-inputs `(("python2-contextlib2" ,python2-contextlib2))))))
+    (license license:lgpl2.0+)))
 
 (define-public python-msgpack
   (package
