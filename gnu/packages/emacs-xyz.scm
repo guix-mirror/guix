@@ -19088,6 +19088,34 @@ until the top-level form is no longer a macro call.")
     (description "Execute menu items as commands, with completion.")
     (license license:gpl3)))
 
+(define-public emacs-latex-preview-pane
+  (let ((commit "5297668a89996b50b2b62f99cba01cc544dbed2e")
+        (revision "0"))
+    (package
+      (name "emacs-latex-preview-pane")
+      (version (git-version "20151021" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/jsinglet/latex-preview-pane")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1m4f5p53275k8i9p0y105kkrp9nx1bwn6726my9s5dwnjhr5dnp2"))))
+      (build-system emacs-build-system)
+      (arguments
+       (list
+        ;; The welcome and error message templates are in .txt format.
+        #:include #~(cons "\\.txt$" %default-include)))
+      (home-page "https://github.com/jsinglet/latex-preview-pane")
+      (synopsis "Preview pane to ease LaTeX editing in Emacs")
+      (description "@code{latex-preview-pane} is a minor mode for previewing
+LaTeX files directly in Emacs.  It supports PDF previews, with either
+@command{pdflatex} or @command{xelatex}, and highlights errors in the LaTeX
+buffer.")
+      (license license:gpl3+))))
+
 (define-public emacs-isearch-prop
   (let ((commit "4a2765f835dd115d472142da05215c4c748809f4")
         (revision "2"))
