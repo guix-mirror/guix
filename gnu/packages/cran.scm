@@ -22881,6 +22881,30 @@ finding peaks in spectra, converting humidity measures.")
 from PLINK results.")
     (license license:gpl3)))
 
+(define-public r-gghighlight
+  (package
+    (name "r-gghighlight")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gghighlight" version))
+       (sha256
+        (base32 "0bxgn4srxz1qhawqa8ck57p8hg5ikwfa9ll03zmnn8fb19akwm2v"))))
+    (properties `((upstream-name . "gghighlight")))
+    (build-system r-build-system)
+    (propagated-inputs
+     (list r-dplyr r-ggplot2 r-ggrepel r-lifecycle r-purrr r-rlang r-tibble))
+    (native-inputs (list r-knitr))
+    (home-page "https://github.com/yutannihilation/gghighlight/")
+    (synopsis "Highlight lines and points in ggplot2")
+    (description "Suppose we have data that has so many series that it is hard
+to identify them by their colors as the differences are so subtle.  With
+gghighlight we can highlight those lines that match certain criteria.  The
+result is a usual @code{ggplot} object, so it is fully customizable and can be
+used with custom themes and facets.")
+    (license license:expat)))
+
 (define-public r-ggplot-multistats
   (package
     (name "r-ggplot-multistats")
