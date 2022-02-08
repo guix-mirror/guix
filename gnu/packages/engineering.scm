@@ -2814,13 +2814,13 @@ GUI.")
 (define-public poke
   (package
     (name "poke")
-    (version "2.0")
+    (version "2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/poke/poke-" version
                                   ".tar.gz"))
               (sha256
-               (base32 "0n4sdfi0lwmva9h47xz32r6mwpaslhq2mcls1ifgpj8jw7rjp0jv"))
+               (base32 "0w168jcjahl3jawkhnh0dc10mcw4nwv4yawwc8xhqm5w3dn8wlnd"))
               (modules '((guix build utils)))
               (snippet
                '(begin
