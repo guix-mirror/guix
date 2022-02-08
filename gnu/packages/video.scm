@@ -59,6 +59,7 @@
 ;;; Copyright © 2021 Pradana Aumars <paumars@courrier.dev>
 ;;; Copyright © 2022 Denis 'GNUtoo' Carikli <GNUtoo@cyberdimension.org>
 ;;; Copyright © 2022 Bird <birdsite@airmail.cc>
+;;; Copyright © 2022 Jai Vetrivelan <jaivetrivelan@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2263,7 +2264,7 @@ the last played position, etc.")
 (define-public gallery-dl
   (package
     (name "gallery-dl")
-    (version "1.20.1")
+    (version "1.20.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mikf/gallery-dl"
@@ -2271,7 +2272,7 @@ the last played position, etc.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0qkz8aznvybdqrjxsl6ir319ras05mi8l0sal4mgi18l70jndh51"))))
+                "0mh57fbq9xkkhqiy7cq5ahwjp464hgxmkrvq0pxxr85212yrf7bd"))))
     (build-system python-build-system)
     (inputs (list python-requests ffmpeg))
     (home-page "https://github.com/mikf/gallery-dl")
