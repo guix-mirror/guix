@@ -6887,7 +6887,7 @@ language understood by ocamldoc.")
 (define-public ocaml-fftw3
   (package
     (name "ocaml-fftw3")
-    (version "0.8.4")
+    (version "0.8.5")
     (source
      (origin
        (method git-fetch)
@@ -6897,7 +6897,7 @@ language understood by ocamldoc.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0l66yagjkwdcib6q55wd8wiap50vi23qiahkghlvm28z7nvbclfk"))))
+         "07ljbin9dsclsqh24p7haqjccz1w828sf5xfwlzl298d4a6zsbhs"))))
     (build-system dune-build-system)
     (arguments
      `(#:test-target "tests"))
