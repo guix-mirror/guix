@@ -93,11 +93,7 @@
        ("ibus" ,ibus)
        ("mesa" ,mesa)
        ("libraw" ,libraw)
-       ;; Only enable the optional SVG support on x86_64, as this is the only
-       ;; architecture where librsvg can be built.
-       ,@(if (target-x86-64?)
-             `(("librsvg" ,librsvg))
-             '())
+       ("librsvg" ,(librsvg-for-system))
        ("libspectre" ,libspectre)
        ("libtiff" ,libtiff)
        ("libxau" ,libxau)
@@ -151,11 +147,6 @@
          "-Dmount-path=/run/setuid-programs/mount"
          "-Dunmount-path=/run/setuid-programs/umount"
          "-Dnetwork-backend=connman"
-         ;; Add 'rsvg' to the default list (json, avif, heif) of disabled loaders
-         ;; unless librsvg is available.
-         ,,@(if (target-x86-64?)
-                '()
-                (list "-Devas-loaders-disabler=json,avif,heif,rsvg"))
          ;; For Wayland.
          "-Dwl=true"
          "-Ddrm=true")
