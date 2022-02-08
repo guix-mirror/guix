@@ -5037,6 +5037,25 @@ algorithm.  The interface of @code{ucminf} is designed for easy interchange
 with the package @code{optim}.")
     (license license:gpl2+)))
 
+(define-public r-usedist
+  (package
+    (name "r-usedist")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "usedist" version))
+       (sha256
+        (base32 "0ddf1zcalbrn293qmr9kdzz3x16fzc4k1bwb1pjmwnspisqfi8kj"))))
+    (properties `((upstream-name . "usedist")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/package=usedist")
+    (synopsis "Distance matrix utilities")
+    (description
+     "This package provides functions to re-arrange, extract, and work with
+distances.")
+    (license license:gpl3)))
+
 (define-public r-useful
   (package
    (name "r-useful")
