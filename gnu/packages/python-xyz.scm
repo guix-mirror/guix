@@ -15488,9 +15488,8 @@ CloudFront content delivery network.")
             ;; Hard-code the path to pkg-config.
             (lambda _
               (substitute* "pkgconfig/pkgconfig.py"
-                (("cmd = 'pkg-config")
-                 (string-append "cmd = '" (which "pkg-config"))))
-              #t))
+                (("'pkg-config'")
+                 (string-append "'" (which "pkg-config") "'")))))
           (replace 'check
             (lambda _
               (invoke "nosetests" "test.py"))))))
