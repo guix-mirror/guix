@@ -6075,6 +6075,37 @@ table made by the command @code{show256Colors()}.  You can also set the colors
 to any arbitrary string.  In this case, it is up to you to set valid values.")
     (license license:gpl3+)))
 
+(define-public r-nnlm
+  (let ((commit "4574bca9456fe2285b668b4c22a908cffbad10a0")
+        (revision "1"))
+    (package
+      (name "r-nnlm")
+      (version (git-version "0.4.4" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/linxihui/NNLM")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1qzvav4ch0j1k7jcqzk9cvl8dx79fapmvdzmzzyl8smscybhfgba"))))
+      (properties `((upstream-name . "NNLM")))
+      (build-system r-build-system)
+      (propagated-inputs (list r-rcpp r-rcpparmadillo r-rcppprogress))
+      (native-inputs (list r-knitr))
+      (home-page "https://github.com/linxihui/NNLM")
+      (synopsis "Fast and versatile non-negative matrix factorization")
+      (description
+       "This is a package for @dfn{Non-Negative Linear Models} (NNLM).  It
+implements fast sequential coordinate descent algorithms for non-negative
+linear regression and @dfn{non-negative matrix factorization} (NMF).  It
+supports mean square error and Kullback-Leibler divergence loss.  Many other
+features are also implemented, including missing value imputation, domain
+knowledge integration, designable W and H matrices and multiple forms of
+regularizations.")
+      (license license:bsd-2))))
+
 (define-public python-rpy2
   (package
     (name "python-rpy2")
