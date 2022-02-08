@@ -48,6 +48,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages hardware)
   #:use-module (gnu packages ibus)
   #:use-module (gnu packages image)
   #:use-module (gnu packages libunwind)
@@ -313,6 +314,7 @@ Libraries with some extra bells and whistles.")
                    (setxkbmap (assoc-ref inputs "setxkbmap"))
                    (libc      (assoc-ref inputs "libc"))
                    (bc        (assoc-ref inputs "bc"))
+                   (ddcutil   (assoc-ref inputs "ddcutil"))
                    (efl       (assoc-ref inputs "efl")))
                ;; We need to patch the path to 'base.lst' to be able
                ;; to switch the keyboard layout in E.
@@ -338,6 +340,9 @@ Libraries with some extra bells and whistles.")
                                  "/run/current-system/profile/sbin")))
                (substitute* "src/modules/everything/evry_plug_calc.c"
                  (("bc -l") (string-append bc "/bin/bc -l")))
+               (substitute* "src/bin/system/e_system_ddc.c"
+                 (("libddcutil\\.so\\.?" libddcutil)
+                  (string-append ddcutil "/lib/" libddcutil)))
                (substitute* "data/etc/meson.build"
                  (("/bin/mount") "/run/setuid-programs/mount")
                  (("/bin/umount") "/run/setuid-programs/umount")
@@ -352,6 +357,7 @@ Libraries with some extra bells and whistles.")
        ("bc" ,bc)
        ("bluez" ,bluez)
        ("dbus" ,dbus)
+       ("ddcutil" ,ddcutil)
        ("freetype" ,freetype)
        ("libdrm" ,libdrm)
        ("libexif" ,libexif)
