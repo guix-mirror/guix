@@ -1000,7 +1000,7 @@ files and text.")
            openssl
            zlib))
     (home-page "https://www.nushell.sh")
-    (synopsis "Shell that understands the structure of the data")
+    (synopsis "Shell with a structured approach to the command line")
     (description
      "Nu draws inspiration from projects like PowerShell, functional
 programming languages, and modern CLI tools.  Rather than thinking of files
