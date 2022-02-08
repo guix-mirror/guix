@@ -997,14 +997,14 @@ process, passing on the arguments as command line arguments.")
 (define-public emacs-mct
   (package
     (name "emacs-mct")
-    (version "0.4.2")
+    (version "0.5.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://gitlab.com/protesilaos/mct")
                     (commit version)))
               (sha256
-               (base32 "0sj9hyxpighspwrm2yimqkdxlhw2yiznaj69ysn2sjd6jn2aqpc6"))
+               (base32 "0714n5nim0hyd5jywvvddka2gi2bhi1vkrbhx75mdn8h50r688kq"))
               (file-name (git-file-name name version))))
     (build-system emacs-build-system)
     (home-page "https://protesilaos.com/emacs/mct")
