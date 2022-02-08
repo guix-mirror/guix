@@ -1746,7 +1746,7 @@ by name.")
 (define-public rofi-calc
   (package
     (name "rofi-calc")
-    (version "2.0.0")
+    (version "2.1.0")
     (source
      (origin
        (method git-fetch)
@@ -1756,7 +1756,7 @@ by name.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1j23xwa6s27wyx6r0yb85cby6dggrcb103nqcfxr5li1mcqrgd9m"))))
+         "021z7hwvdcs3g7icyp6xhry0xlq29gg1288hg2kzyzqq4l2irxdi"))))
     (build-system gnu-build-system)
     (arguments
      (list
