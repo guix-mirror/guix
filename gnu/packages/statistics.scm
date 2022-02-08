@@ -6106,6 +6106,60 @@ knowledge integration, designable W and H matrices and multiple forms of
 regularizations.")
       (license license:bsd-2))))
 
+(define-public r-swne
+  (let ((commit "05fc3ee4e09b2c34d99c69d3b97cece4c1c34143")
+        (revision "1"))
+    (package
+      (name "r-swne")
+      (version (git-version "0.6.20" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/yanwu2014/swne")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0crlpg9kclbv4v8250p3086a3lk6f2hcq79psqkdylc1qnrx3kfx"))))
+      (properties `((upstream-name . "swne")))
+      (build-system r-build-system)
+      (propagated-inputs
+       (list r-fnn
+             r-ggplot2
+             r-ggrepel
+             r-hash
+             r-ica
+             r-igraph
+             r-irlba
+             r-jsonlite
+             r-liger
+             r-mass
+             r-matrix
+             r-mgcv
+             r-nnlm ;not listed but required at install time
+             r-plyr
+             r-proxy
+             r-rcolorbrewer
+             r-rcpp
+             r-rcpparmadillo
+             r-rcppeigen
+             r-reshape
+             r-reshape2
+             r-snow
+             r-umap
+             r-usedist))
+      (home-page "https://github.com/yanwu2014/swne")
+      (synopsis "Visualize high dimensional datasets")
+      (description
+       "@dfn{Similarity Weighted Nonnegative Embedding} (SWNE) is a method for
+visualizing high dimensional datasets.  SWNE uses Nonnegative Matrix
+Factorization to decompose datasets into latent factors, projects those
+factors onto 2 dimensions, and embeds samples and key features in 2 dimensions
+relative to the factors.  SWNE can capture both the local and global dataset
+structure, and allows relevant features to be embedded directly onto the
+visualization, facilitating interpretation of the data.")
+      (license license:gpl2))))
+
 (define-public python-rpy2
   (package
     (name "python-rpy2")
