@@ -332,8 +332,14 @@ is on par with Java implementations, e.g., Apache commons-codec.")
     (build-system clojure-build-system)
     (arguments
      '(#:source-dirs '("src/main/clojure")
-       #:test-dirs '("src/test/clojure")
-       #:doc-dirs '()))
+       #:test-dirs '("src/test/clojure" "src/test/resources")
+       #:doc-dirs '()
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'delete-cljs-tests
+                     (lambda _
+                       (delete-file "src/test/resources/clojure/data/xml/cljs_testsuite.clj")
+                       (delete-file "src/test/clojure/clojure/data/xml/test_cljs.clj"))))))
     (propagated-inputs (list clojure-data-codec))
     (synopsis "Clojure library for reading and writing XML data")
     (description "@code{data.xml} is a Clojure library for reading and writing
