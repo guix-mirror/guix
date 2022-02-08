@@ -1442,6 +1442,8 @@ When a handler is installed with 'with-build-handler', it is called any time
                              things)))
             (parameterize ((current-store-protocol-version
                             (store-connection-version store)))
+              (when (< (current-store-protocol-version) 355) ;0x163
+                (warn-about-old-daemon))
               (if (>= (store-connection-minor-version store) 15)
                   (build store things mode)
                   (if (= mode (build-mode normal))

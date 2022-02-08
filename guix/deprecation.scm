@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2021 Mathieu Othacehe <othacehe@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,8 @@
 
             define-deprecated/public
             define-deprecated/alias
+
+            warn-about-old-daemon
             warn-about-deprecation))
 
 ;;; Commentary:
@@ -31,6 +34,10 @@
 ;;; Provide a mechanism to mark bindings as deprecated.
 ;;;
 ;;; Code:
+
+(define (warn-about-old-daemon)
+  (warning (G_ "Your Guix daemon is seriously outdated, please consider
+ updating it by following the 'Upgrading Guix' documentation section.~%")))
 
 (define* (warn-about-deprecation variable properties
                                  #:key replacement)
