@@ -99,9 +99,7 @@
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/Microsoft/pict")
-             ;; The tag name for v3.7.2 is odd ("release"); use the
-             ;; corresponding commit for now.
-             (commit "b10237099713ef0e45f222042cef01dc3507a611")))
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
         (base32
@@ -115,7 +113,10 @@
           (delete 'configure)
           (replace 'install
             (lambda _
-              (install-file "pict" (string-append #$output "/bin")))))))
+              (install-file "pict" (string-append #$output "/bin"))
+              (install-file "doc/pict.md"
+                            (string-append #$output
+                                           "/share/doc/pict-" #$version)))))))
     (native-inputs (list perl))
     (home-page "https://www.pairwise.org/")
     (synopsis "Pairwise Independent Combinatorial Tool")
