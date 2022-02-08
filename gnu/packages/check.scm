@@ -35,7 +35,7 @@
 ;;; Copyright © 2020 Josh Marshall <joshua.r.marshall.1991@gmail.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
-;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020, 2021, 2022 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Hugo Lecomte <hugo.lecomte@inria.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -89,6 +89,44 @@
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (srfi srfi-1))
+
+(define-public pict
+  (package
+    (name "pict")
+    (version "3.7.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Microsoft/pict")
+             ;; The tag name for v3.7.2 is odd ("release"); use the
+             ;; corresponding commit for now.
+             (commit "b10237099713ef0e45f222042cef01dc3507a611")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1hpff8x49ixlh71sbyhj1rircf0mg95v5q9y0ys52rhiph99wy3n"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list
+      #:test-target "test"
+      #:phases
+      #~(modify-phases %standard-phases
+          (delete 'configure)
+          (replace 'install
+            (lambda _
+              (install-file "pict" (string-append #$output "/bin")))))))
+    (native-inputs (list perl))
+    (home-page "https://www.pairwise.org/")
+    (synopsis "Pairwise Independent Combinatorial Tool")
+    (description "PICT is a pairwise testing tool that generates test cases
+and test configurations.  With PICT, you can generate tests that are more
+effective than manually generated tests and in a fraction of the time required
+by hands-on test case design.  PICT runs as a command line tool.  It takes a
+model file detailing the parameters of the interface as an input and generates
+a compact set of parameter value choices that represent the test cases you
+should use to get comprehensive combinatorial coverage of your parameters.")
+    (license license:expat)))
 
 (define-public pedansee
   (package
