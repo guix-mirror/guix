@@ -8243,6 +8243,15 @@ need to use the older and less efficient @code{pkg_resources} package.")
         (base32
          "1n7qxa1snj06aw45mcfz7bxc46zp7fxj687140g2k6jcnyjmfxrz"))))
     (build-system python-build-system)
+    (arguments
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (replace 'check
+                 (lambda* (#:key tests? #:allow-other-keys)
+                   (when tests?
+                     (invoke "pytest" "-v")))))))
+    (native-inputs
+     (list python-pytest))
     (home-page "https://github.com/alecthomas/importmagic")
     (synopsis "Library for adding, removing and managing Python imports")
     (description
