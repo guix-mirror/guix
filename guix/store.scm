@@ -1442,7 +1442,11 @@ When a handler is installed with 'with-build-handler', it is called any time
                              things)))
             (parameterize ((current-store-protocol-version
                             (store-connection-version store)))
-              (when (< (current-store-protocol-version) 355) ;0x163
+              (when (< (current-store-protocol-version) #x163)
+                ;; This corresponds to the first version bump of the daemon
+                ;; since the introduction of lzip compression support.  The
+                ;; version change happened with commit 6ef61cc4c30 on the
+                ;; 2018/10/15).
                 (warn-about-old-daemon))
               (if (>= (store-connection-minor-version store) 15)
                   (build store things mode)

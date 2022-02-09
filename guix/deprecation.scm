@@ -36,8 +36,9 @@
 ;;; Code:
 
 (define (warn-about-old-daemon)
-  (warning (G_ "Your Guix daemon is seriously outdated, please consider
- updating it by following the 'Upgrading Guix' documentation section.~%")))
+  (warning (G_ "Your Guix daemon is severely outdated, and will soon cease to
+be able to download binary substitutes.  To upgrade it, refer to the
+'Upgrading Guix' section in the manual.~%")))
 
 (define* (warn-about-deprecation variable properties
                                  #:key replacement)
