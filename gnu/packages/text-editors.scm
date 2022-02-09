@@ -323,56 +323,56 @@ bindings and many of the powerful features of GNU Emacs.")
                (base32 "0xyf1fa7jvxzvg1dxh5vc50fbwjjsar4fmlvbfhicdd1f8bhz1ii"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags '("-DBUILD_TESTING=ON")
-       #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'patch-tiny-process-library
-                    (lambda* (#:key native-inputs inputs #:allow-other-keys)
-                      (with-directory-excursion "lib/tiny-process-library"
-                        (substitute* '("process_unix.cpp"
-                                       "tests/io_test.cpp")
-                          (("/bin/sh") (search-input-file (or native-inputs inputs)
-                                                          "bin/sh"))))))
-                  (add-after 'unpack 'disable-git-test
-                    (lambda _
-                      (substitute* "tests/CMakeLists.txt"
-                        ;; Disable the CMake build test, as it does not test
-                        ;; functionality of the package, and requires doing
-                        ;; an "in-source" build.
-                        (("add_test\\(cmake_build_test.*\\)")
-                         "")
-                        ;; Disable the git test, as it requires the full checkout.
-                        (("add_test\\(git_test.*\\)")
-                         ""))))
-                  (add-before 'check 'pre-check
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      ;; Tests do not expect HOME to be empty.
-                      (setenv "HOME" "/etc")
+     (list #:configure-flags #~(list "-DBUILD_TESTING=ON")
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'patch-tiny-process-library
+                 (lambda* (#:key native-inputs inputs #:allow-other-keys)
+                   (with-directory-excursion "lib/tiny-process-library"
+                     (substitute* '("process_unix.cpp"
+                                    "tests/io_test.cpp")
+                       (("/bin/sh") (search-input-file (or native-inputs inputs)
+                                                       "bin/sh"))))))
+               (add-after 'unpack 'disable-some-tests
+                 (lambda _
+                   (substitute* "tests/CMakeLists.txt"
+                     ;; Disable the CMake build test, as it does not test
+                     ;; functionality of the package, and requires doing
+                     ;; an "in-source" build.
+                     (("add_test\\(cmake_build_test.*\\)")
+                      "")
+                     ;; Disable the git test, as it requires the full checkout.
+                     (("add_test\\(git_test.*\\)")
+                      ""))))
+               (add-before 'check 'pre-check
+                 (lambda* (#:key native-inputs inputs #:allow-other-keys)
+                   ;; Tests do not expect HOME to be empty.
+                   (setenv "HOME" "/etc")
 
-                      ;; Most tests require an X server.
-                      (let ((xvfb (search-input-file inputs "bin/Xvfb"))
-                            (display ":1"))
-                        (setenv "DISPLAY" display)
-                        (system (string-append xvfb " " display " &")))))
-                  (add-after 'install 'wrap
-                    (lambda* (#:key inputs outputs #:allow-other-keys)
-                      ;; The package needs GTK+ and GtkSourceView on XDG_DATA_DIRS
-                      ;; for syntax highlighting to work.  shared-mime-info is
-                      ;; necessary for MIME handling.
-                      ;; XXX: Ideally we'd reuse glib-or-gtk-wrap here, but it
-                      ;; does not pick up $gtksourceview/share/gtksourceview-3.0.
-                      (let ((out (assoc-ref outputs "out"))
-                            (gtk+ (dirname (search-input-file inputs
-                                                              "share/gtk-3.0")))
-                            (gtksourceview (dirname (search-input-directory
-                                                     inputs
-                                                     "share/gtksourceview-3.0")))
-                            (shared-mime-info (dirname (search-input-directory
-                                                        inputs "share/mime"))))
-                        (wrap-program (string-append out "/bin/juci")
-                          `("XDG_DATA_DIRS" ":" prefix
-                            (,(string-join
-                               (list out gtk+ gtksourceview shared-mime-info)
-                               ":"))))))))))
+                   ;; Most tests require an X server.
+                   (let ((xvfb (search-input-file (or native-inputs inputs)
+                                                  "bin/Xvfb"))
+                         (display ":1"))
+                     (setenv "DISPLAY" display)
+                     (system (string-append xvfb " " display " &")))))
+               (add-after 'install 'wrap
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   ;; The package needs GTK+ and GtkSourceView on XDG_DATA_DIRS
+                   ;; for syntax highlighting to work.  shared-mime-info is
+                   ;; necessary for MIME handling.
+                   ;; XXX: Ideally we'd reuse glib-or-gtk-wrap here, but it
+                   ;; does not pick up "share/gtksourceview-3.0".
+                   (wrap-program (string-append #$output "/bin/juci")
+                     `("XDG_DATA_DIRS" ":" prefix
+                       (,(string-join
+                          (cons (string-append #$output "/share")
+                                (map (lambda (directory)
+                                       (dirname (search-input-directory
+                                                 inputs
+                                                 (string-append "share/"
+                                                                directory))))
+                                     '("gtk-3.0" "gtksourceview-3.0" "mime")))
+                          ":")))))))))
     (native-inputs
      (list pkg-config xorg-server-for-tests))
     (inputs
