@@ -14940,7 +14940,7 @@ running tests easier.")
 (define-public emacs-org-transclusion
   (package
     (name "emacs-org-transclusion")
-    (version "1.1.1")
+    (version "1.2.0")
     (source
      (origin
        (method git-fetch)
@@ -14949,7 +14949,7 @@ running tests easier.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0qvc8f4i44d8mgkzfi9yld664cmapkbmjv4bf0l8va417ck5sm92"))))
+        (base32 "01q62mrh0lijj2mwf0jy40zhy3q7w3bq2f4sb0f8hrr8ggh6shxh"))))
     (build-system emacs-build-system)
     (home-page "https://nobiot.github.io/org-transclusion/")
     (synopsis "Enable transclusion with Org Mode")
