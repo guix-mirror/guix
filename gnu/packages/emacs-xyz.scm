@@ -3392,22 +3392,30 @@ filters, new key bindings and faces.  It can be enabled by
     (build-system emacs-build-system)
     (inputs (list djview djvulibre))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'configure
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((file "djvu.el")
-                   (djview (assoc-ref inputs "djview"))
-                   (djvulibre (assoc-ref inputs "djvulibre")))
-               ;; Specify the absolute executable locations.
-               (chmod file #o644)
-               (substitute* file
-                 (("\"djvused\"") (string-append "\"" djvulibre "/bin/djvused\""))
-                 (("\"djvm\"") (string-append "\"" djvulibre "/bin/djvm\""))
-                 (("\"ddjvu\"") (string-append "\"" djvulibre "/bin/ddjvu\"")))
-               (emacs-substitute-variables file
-                 ("djvu-djview-command" (string-append djview "/bin/djview"))))
-             #t)))))
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'configure
+            (lambda* (#:key inputs #:allow-other-keys)
+              (let ((file "djvu.el"))
+                ;; Specify the absolute executable locations.
+                (make-file-writable file)
+                (substitute* file
+                  (("\"djvused\"")
+                   (string-append "\""
+                                  (search-input-file inputs "/bin/djvused")
+                                  "\""))
+                  (("\"djvm\"")
+                   (string-append "\""
+                                  (search-input-file inputs "/bin/djvm")
+                                  "\""))
+                  (("\"ddjvu\"")
+                   (string-append "\""
+                                  (search-input-file inputs "/bin/ddjvu")
+                                  "\"")))
+                (emacs-substitute-variables file
+                  ("djvu-djview-command"
+                   (search-input-file inputs "/bin/djview")))))))))
     (home-page "http://elpa.gnu.org/packages/djvu.html")
     (synopsis "Edit and view Djvu files via djvused")
     (description
