@@ -780,8 +780,35 @@ library.")
         (base32 "13l86aq0h1jga949k79k9x3hw2xqchjc162sclg2f99vz98zcz15"))
        (file-name (git-file-name name version))))
     (arguments
-     (list #:phases
-           #~(modify-phases %standard-phases
+     (list #:modules `((srfi srfi-1)
+                       (srfi srfi-26)
+                       ,@%python-build-system-modules)
+           #:phases
+           #~(modify-phases (@ (guix build python-build-system) %standard-phases)
+               (add-before 'wrap 'reduce-GUIX_PYTHONPATH
+                 (lambda _
+                   ;; Hide the transitive native inputs from GUIX_PYTHONPATH
+                   ;; to prevent them from ending up in the run-time closure.
+                   ;; See also <https://bugs.gnu.org/25235>.
+                   (let ((transitive-native-inputs
+                          '#$(match (package-transitive-native-inputs
+                                     this-package)
+                               (((labels packages) ...) packages))))
+                     ;; Save the original PYTHONPATH because we need it for
+                     ;; tests later.
+                     (setenv "TMP_PYTHONPATH" (getenv "GUIX_PYTHONPATH"))
+                     (setenv "GUIX_PYTHONPATH"
+                             (string-join
+                              (filter (lambda (path)
+                                        (not (any (cut string-prefix? <> path)
+                                                  transitive-native-inputs)))
+                                      (search-path-as-string->list
+                                       (getenv "GUIX_PYTHONPATH")))
+                              ":")))))
+               (add-after 'wrap 'reset-GUIX_PYTHONPATH
+                 (lambda _
+                   (setenv "GUIX_PYTHONPATH"
+                           (getenv "TMP_PYTHONPATH"))))
                (replace 'check
                  (lambda* (#:key tests? #:allow-other-keys)
                    (when tests?
