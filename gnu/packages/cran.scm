@@ -8284,6 +8284,66 @@ Python to R they are converted back to R types.")
 file.")
     (license license:gpl2+)))
 
+(define-public r-billboarder
+  (package
+    (name "r-billboarder")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "billboarder" version))
+       (sha256
+        (base32 "189ngvg84rcwhrivxskmjv3srhadvzr4p1v8pf11axyv2qn01b0x"))
+       (snippet
+        '(delete-file "inst/htmlwidgets/lib/billboard/billboard.pkgd.min.js"))))
+    (properties `((upstream-name . "billboarder")))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'process-javascript
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "inst/htmlwidgets/lib/billboard/"
+               (let ((source (assoc-ref inputs "js-billboard"))
+                     (target "billboard.pkgd.min.js"))
+                 (format #true "Processing ~a --> ~a~%"
+                         source target)
+                 (invoke "esbuild" source "--minify"
+                         (string-append "--outfile=" target)))))))))
+    (propagated-inputs
+     (list r-ggplot2
+           r-htmltools
+           r-htmlwidgets
+           r-jsonlite
+           r-magrittr
+           r-rlang
+           r-scales
+           r-shiny))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)
+       ("esbuild" ,esbuild)
+       ;; It is not ideal to use this concatenated (but not minified)
+       ;; JavaScript file, as the original source is written in TypeScript.
+       ;; However, this can still be considered source code as it is readable
+       ;; and can be modified.
+       ("js-billboard"
+        ,(origin
+           (method url-fetch)
+           (uri "https://unpkg.com/billboard.js@3.2.0/dist/billboard.js")
+           (sha256
+            (base32
+             "1kx5rqmn87pgal2cwmcij2rrnwa0fgcsw6y99m4i0l2sdm0qffv2"))))))
+    (home-page "https://github.com/dreamRs/billboarder")
+    (synopsis "Create interactive charts with the JavaScript Billboard library")
+    (description
+     "This package provides an @code{htmlwidgets} interface to billboard.js,
+a re-usable easy interface JavaScript chart library, based on D3 v4+.  Chart
+types include line charts, scatterplots, bar/lollipop charts,
+histogram/density plots, pie/donut charts and gauge charts.  All charts are
+interactive, and a proxy method is implemented to smoothly update a chart
+without rendering it again in shiny apps.")
+    (license license:expat)))
+
 (define-public r-ggseqlogo
   (package
     (name "r-ggseqlogo")
