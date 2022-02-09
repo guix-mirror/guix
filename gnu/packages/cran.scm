@@ -3997,6 +3997,54 @@ T distribution.  There is only one exported function, @code{e_trunct},
 which should be seen for details.")
    (license license:expat)))
 
+(define-public r-excelr
+  (package
+    (name "r-excelr")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "excelR" version))
+       (sha256
+        (base32 "1pb4sy54zjv5vrh7gjjv7qlpab74km6mfsmfyl0yhmr0jx01hrw0"))
+       (snippet
+        '(delete-file "inst/htmlwidgets/lib/jexcel/js/jexcel.min.js"))))
+    (properties `((upstream-name . "excelR")))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'process-javascript
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "inst/htmlwidgets/lib/jexcel/js/"
+               (let ((source (assoc-ref inputs "js-jexcel"))
+                     (target "jexcel.min.js"))
+                 (format #true "Processing ~a --> ~a~%"
+                         source target)
+                 (invoke "esbuild" source "--minify"
+                         (string-append "--outfile=" target)))))))))
+    (native-inputs
+     `(("esbuild" ,esbuild)
+       ;; There is no tag for this particular commit, but comparison of the
+       ;; contents of the JavaScript files point to this commit as the most
+       ;; likely source.
+       ("js-jexcel"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "https://raw.githubusercontent.com/jspreadsheet/ce/"
+                               "8af1960f76e6803bebc5750013d2ebe95354e88a/dist/jexcel.js"))
+           (sha256
+            (base32
+             "0y88hsr9d8cpnvdmbm17m328pc4kc5wbcv02kzmhm0bryzhviw7h"))))))
+    (propagated-inputs (list r-htmlwidgets r-jsonlite))
+    (home-page "https://github.com/Swechhya/excelR")
+    (synopsis "Wrapper of the JavaScript library jExcel")
+    (description
+     "This package provides an R interface to the jExcel library to
+create web-based interactive tables and spreadsheets compatible with
+spreadsheet software.")
+    (license license:expat)))
+
 (define-public r-extremes
   (package
     (name "r-extremes")
