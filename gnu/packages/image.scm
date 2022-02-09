@@ -32,6 +32,7 @@
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2021 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2021 Alexandr Vityazev <avityazev@posteo.org>
+;;; Copyright © 2022 Jai Vetrivelan <jaivetrivelan@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1957,7 +1958,7 @@ identical visual appearance.")
 (define-public grim
   (package
    (name "grim")
-   (version "1.3.2")
+   (version "1.4.0")
    (source
     (origin
      (method git-fetch)
@@ -1966,10 +1967,10 @@ identical visual appearance.")
            (commit (string-append "v" version))))
      (file-name (git-file-name name version))
      (sha256
-      (base32 "1l4gwvvc0zvg5b6f6w92xjhmwj7cg9hlgrf43lc7ygaz8dh6cmzg"))))
+      (base32 "1b1k5cmmk7gzis0rncyl98lnhdwpjkdsv9pada5mmgxcpka6f0lp"))))
    (build-system meson-build-system)
    (native-inputs (list pkg-config scdoc))
-   (inputs (list cairo libjpeg-turbo wayland wayland-protocols))
+   (inputs (list pixman libpng libjpeg-turbo wayland wayland-protocols))
    (home-page "https://github.com/emersion/grim")
    (synopsis "Create screenshots from a Wayland compositor")
    (description "grim can create screenshots from a Wayland compositor.")
