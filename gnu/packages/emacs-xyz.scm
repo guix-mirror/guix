@@ -26330,6 +26330,54 @@ commands in @code{evil-mode}.")
 Emacs windows and tmux panes.")
     (license license:expat)))
 
+(define-public emacs-everywhere
+  ;; No upstream release.  Extract version from main file.
+  (let ((commit "ace53396a66ed4b753f42c04a5a0db2bcd770423")
+        (revision "0"))
+    (package
+      (name "emacs-everywhere")
+      (version (git-version "0.0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/tecosaur/emacs-everywhere")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0p55shxvqm1713af33mfglny7rpi31d42wvgwylcsfy4jvnsq8bb"))))
+      (arguments
+       (list
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-after 'unpack 'patch-exec-paths
+              (lambda* (#:key inputs #:allow-other-keys)
+                (substitute* "emacs-everywhere.el"
+                  (("\"xclip\"")
+                   (string-append "\""
+                                  (search-input-file inputs "/bin/xclip")
+                                  "\""))
+                  (("\"xdotool\"")
+                   (string-append "\""
+                                  (search-input-file inputs "/bin/xdotool")
+                                  "\""))
+                  (("\"xprop\"")
+                   (string-append "\""
+                                  (search-input-file inputs "/bin/xprop")
+                                  "\""))
+                  (("\"xwininfo\"")
+                   (string-append "\""
+                                  (search-input-file inputs "/bin/xwininfo")
+                                  "\""))))))))
+      (inputs (list xclip xdotool xprop xwininfo))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/tecosaur/emacs-everywhere")
+      (synopsis "System-wide popup Emacs windows for quick edits")
+      (description "@code{emacs-everywhere} launches a new Emacs frame, and the
+contents of the buffer are pasted into the previously focused application on
+deletion of the frame.")
+      (license license:gpl3+))))
+
 (define-public emacs-xclip
   (package
     (name "emacs-xclip")
