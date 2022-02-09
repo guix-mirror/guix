@@ -15306,6 +15306,38 @@ several common set, element and attribute related tasks.")
 effects from the jQuery UI library.")
     (license license:expat)))
 
+(define-public r-shinymanager
+  (package
+    (name "r-shinymanager")
+    (version "1.0.400")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "shinymanager" version))
+       (sha256
+        (base32 "1np2yp5pn8g9i4jhysfgprmdn13cpw4vaaagrd72rnk2r4hpmyx4"))))
+    (properties `((upstream-name . "shinymanager")))
+    (build-system r-build-system)
+    (propagated-inputs
+     (list r-billboarder
+           r-dbi
+           r-dt
+           r-htmltools
+           r-openssl
+           r-r-utils
+           r-r6
+           r-rsqlite
+           r-scrypt
+           r-shiny))
+    (native-inputs (list r-knitr))
+    (home-page "https://github.com/datastorm-open/shinymanager")
+    (synopsis "Authentication management for Shiny applications")
+    (description
+     "This package provides simple and secure authentification mechanism for
+single Shiny applications.  Credentials are stored in an encrypted SQLite
+database.")
+    (license license:gpl3)))
+
 (define-public r-outliers
   (package
     (name "r-outliers")
