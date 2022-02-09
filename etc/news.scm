@@ -27,7 +27,8 @@
 
  (entry (commit "96d7535b030c65b2d8cb0bea52c4bd96cbdefaf0")
         (title
-         (en "ci.guix.gnu.org to stop offering Gzip substitutes"))
+         (en "ci.guix.gnu.org to stop offering Gzip substitutes")
+         (de "ci.guix.gnu.org wird keine Substitute mit Gzip mehr anbieten"))
         (body
          (en "This is a notice to let you know that starting next
 month (2022/03/01), Gzip-compressed substitutes will no longer be available,
@@ -35,7 +36,14 @@ which means that Guix daemons from a revision older than commit
 @samp{3092f1b835d79655eecb2f8a79dda20ad9ba6bd6} (2019/06/02) will loose the
 ability to download binary substitutes.  Starting next month, only lzip and
 zstd substitutes will be offered.  Dropping Gzip substitutes will free about
-6.5 TiB of storage space from the build farm.")))
+6.5 TiB of storage space from the build farm.")
+         (de "Hiermit weisen wir Sie darauf hin, dass ab nächstem
+Monat (2022/03/01) keine Gzip-komprimierten Substitute mehr zur Verfügung
+stehen.  Dadurch können Guix-Daemons, deren Version älter ist als Commit
+@samp{3092f1b835d79655eecb2f8a79dda20ad9ba6bd6} (2019/06/02) keine binären
+Substitute mehr beziehen.  Ab kommendem Monat werden nur Substitute mit lzip
+und zstd angeboten.  Indem wir auf Gzip-Substitute verzichten, sparen wir 6.5
+TiB Speicherplatz auf der Erstellungsfarm.")))
 
  (entry (commit "5c13484646069064c834bbd3cd02c3bc80d94cb6")
         (title
