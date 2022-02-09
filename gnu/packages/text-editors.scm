@@ -52,6 +52,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages code)
+  #:use-module (gnu packages cpp)
   #:use-module (gnu packages crates-io)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
@@ -320,7 +321,12 @@ bindings and many of the powerful features of GNU Emacs.")
                                   (recursive? #t)))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "0xyf1fa7jvxzvg1dxh5vc50fbwjjsar4fmlvbfhicdd1f8bhz1ii"))))
+               (base32 "0xyf1fa7jvxzvg1dxh5vc50fbwjjsar4fmlvbfhicdd1f8bhz1ii"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete bundled copy of nlohmann/json.
+                  (delete-file-recursively "lib/json")))))
     (build-system cmake-build-system)
     (arguments
      (list #:configure-flags #~(list "-DBUILD_TESTING=ON")
@@ -381,6 +387,7 @@ bindings and many of the powerful features of GNU Emacs.")
            clang-11               ;XXX: must be the same version as Mesas LLVM
            gtkmm-3
            gtksourceviewmm
+           json-modern-cxx
            libgit2
            universal-ctags))
     (synopsis "Lightweight C++ IDE")
