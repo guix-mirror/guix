@@ -326,11 +326,12 @@ bindings and many of the powerful features of GNU Emacs.")
      `(#:configure-flags '("-DBUILD_TESTING=ON")
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'patch-tiny-process-library
-                    (lambda _
+                    (lambda* (#:key native-inputs inputs #:allow-other-keys)
                       (with-directory-excursion "lib/tiny-process-library"
                         (substitute* '("process_unix.cpp"
                                        "tests/io_test.cpp")
-                          (("/bin/sh") (which "sh"))))))
+                          (("/bin/sh") (search-input-file (or native-inputs inputs)
+                                                          "bin/sh"))))))
                   (add-after 'unpack 'disable-git-test
                     (lambda _
                       (substitute* "tests/CMakeLists.txt"
@@ -348,11 +349,10 @@ bindings and many of the powerful features of GNU Emacs.")
                       (setenv "HOME" "/etc")
 
                       ;; Most tests require an X server.
-                      (let ((xorg-server (assoc-ref inputs "xorg-server"))
+                      (let ((xvfb (search-input-file inputs "bin/Xvfb"))
                             (display ":1"))
                         (setenv "DISPLAY" display)
-                        (system (string-append xorg-server "/bin/Xvfb "
-                                               display " &")))))
+                        (system (string-append xvfb " " display " &")))))
                   (add-after 'install 'wrap
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       ;; The package needs GTK+ and GtkSourceView on XDG_DATA_DIRS
@@ -361,26 +361,28 @@ bindings and many of the powerful features of GNU Emacs.")
                       ;; XXX: Ideally we'd reuse glib-or-gtk-wrap here, but it
                       ;; does not pick up $gtksourceview/share/gtksourceview-3.0.
                       (let ((out (assoc-ref outputs "out"))
-                            (gtk+ (assoc-ref inputs "gtk+"))
-                            (gtksourceview (assoc-ref inputs "gtksourceview"))
-                            (shared-mime-info (assoc-ref inputs "shared-mime-info")))
+                            (gtk+ (dirname (search-input-file inputs
+                                                              "share/gtk-3.0")))
+                            (gtksourceview (dirname (search-input-directory
+                                                     inputs
+                                                     "share/gtksourceview-3.0")))
+                            (shared-mime-info (dirname (search-input-directory
+                                                        inputs "share/mime"))))
                         (wrap-program (string-append out "/bin/juci")
                           `("XDG_DATA_DIRS" ":" prefix
                             (,(string-join
-                               (map (lambda (pkg)
-                                      (string-append pkg "/share"))
-                                    (list out gtk+ gtksourceview shared-mime-info))
+                               (list out gtk+ gtksourceview shared-mime-info)
                                ":"))))))))))
     (native-inputs
      (list pkg-config xorg-server-for-tests))
     (inputs
-     `(("aspell" ,aspell)
-       ("boost" ,boost)
-       ("ctags" ,universal-ctags)
-       ("gtkmm" ,gtkmm-3)
-       ("gtksourceviewmm" ,gtksourceviewmm)
-       ("libclang" ,clang-11)     ;XXX: must be the same version as Mesas LLVM
-       ("libgit2" ,libgit2)))
+     (list aspell
+           boost
+           clang-11               ;XXX: must be the same version as Mesas LLVM
+           gtkmm-3
+           gtksourceviewmm
+           libgit2
+           universal-ctags))
     (synopsis "Lightweight C++ IDE")
     (description
      "juCi++ is a small @acronym{IDE, Integrated Development Environment}
