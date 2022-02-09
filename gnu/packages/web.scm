@@ -4667,8 +4667,8 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
                    license:freebsd-doc)))) ; documentation
 
 (define-public guix-data-service
-  (let ((commit "f1d8d76c4d685bc5e938f495c762984fe2564371")
-        (revision "28"))
+  (let ((commit "4a1088c21687531de0b4e062e1bf9ec491e5d4da")
+        (revision "29"))
     (package
       (name "guix-data-service")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -4680,7 +4680,7 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "16ys402pvrzxm8kvhss4fhgfzbcxh70jndi50cpgz80qb510x3iq"))))
+                  "1k9hnpx47l91l0x3gvjrzx4772lnkb55lk66axgl3a8g1fhaji4l"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
@@ -4740,7 +4740,7 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
            (delete 'strip))))           ; As the .go files aren't compatible
       (inputs
        (list guix
-             guile-fibers
+             guile-fibers-1.1
              guile-json-4
              guile-email
              guile-prometheus
