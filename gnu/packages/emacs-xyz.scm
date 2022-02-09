@@ -1117,20 +1117,22 @@ then only the color of the mode line changes when a window becomes in-/active.")
           (base32 "10gkg7jh1s1484gm66a87zr7x8vmv00s7gfd0w2pj47nqf98g8hz"))))
       (build-system emacs-build-system)
       (arguments
-       `(
-         ;; Include Pywal interaction scripts.
-         #:include (cons "^python/" %default-include)
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'patch-exec-paths
-             (lambda* (#:key inputs #:allow-other-keys)
-               (let ((files '("theme-magic.el" "python/wal_change_colors.py"))
-                     (python (assoc-ref inputs "python"))
-                     (python-pywal (assoc-ref inputs "python-pywal")))
-                 (substitute* files
-                   (("\"python\"") (string-append "\"" python "/bin/python3\""))
-                   (("\"wal\"") (string-append "\"" python-pywal "/bin/wal\""))))
-               #t)))))
+       (list
+        ;; Include Pywal interaction scripts.
+        #:include #~(cons "^python/" %default-include)
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-after 'unpack 'patch-exec-paths
+              (lambda* (#:key inputs #:allow-other-keys)
+                (substitute* '("theme-magic.el" "python/wal_change_colors.py")
+                  (("\"python\"")
+                   (string-append "\""
+                                  (search-input-file inputs "/bin/python3")
+                                  "\""))
+                  (("\"wal\"")
+                   (string-append "\""
+                                  (search-input-file inputs "/bin/wal")
+                                  "\""))))))))
       (inputs
        (list python python-pywal))
       (home-page "https://github.com/jcaw/theme-magic")
