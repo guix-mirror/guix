@@ -40,7 +40,7 @@ zstd substitutes will be offered.  Dropping Gzip substitutes will free about
          (de "Hiermit weisen wir Sie darauf hin, dass ab nächstem
 Monat (2022/03/01) keine Gzip-komprimierten Substitute mehr zur Verfügung
 stehen.  Dadurch können Guix-Daemons, deren Version älter ist als Commit
-@samp{3092f1b835d79655eecb2f8a79dda20ad9ba6bd6} (2019/06/02) keine binären
+@samp{3092f1b835d79655eecb2f8a79dda20ad9ba6bd6} (2019/06/02), keine binären
 Substitute mehr beziehen.  Ab kommendem Monat werden nur Substitute mit lzip
 und zstd angeboten.  Indem wir auf Gzip-Substitute verzichten, sparen wir 6.5
 TiB Speicherplatz auf der Erstellungsfarm.")))
