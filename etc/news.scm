@@ -40,6 +40,7 @@ zstd substitutes will be offered.  Dropping Gzip substitutes will free about
  (entry (commit "5c13484646069064c834bbd3cd02c3bc80d94cb6")
         (title
          (en "New @option{--execute} option to @command{guix deploy}")
+         (de "Neue Option @option{--execute} für @command{guix deploy}")
          (fr "Nouvelle option @option{--execute} pour @command{guix deploy}"))
         (body
          (en "The @command{guix deploy} command has a new @option{--execute}
@@ -52,6 +53,16 @@ guix deploy deploy.scm -x -- herd restart guix-daemon
 
 This is no substitute for full-featured tools such as pdsh but it is a useful
 helper.")
+         (de "Der Befehl @command{guix deploy} verfügt über eine neue Option
+@option{--execute} oder @option{-x}, mit der Sie einen Befehl auf allen in der
+Konfigurationsdatei angegebenen Maschinen ausführen können.  Zum Beispiel:
+
+@example
+guix deploy deploy.scm -x -- herd restart guix-daemon
+@end example
+
+Dies ist kein Ersatz für vollumfängliche Werkzeuge wie pdsh, aber es kann doch
+von Nutzen sein.")
          (fr "La commande @command{guix deploy} a une nouvelle option
 @option{--execute} ou @option{-x} qui permet d'exécuter une commande sur
 toutes les machines spécifiées dans son fichier de configuration, comme dans
