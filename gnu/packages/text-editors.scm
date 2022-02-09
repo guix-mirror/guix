@@ -9,7 +9,7 @@
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2019, 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
-;;; Copyright © 2020, 2021 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2020-2022 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Tom Zander <tomz@freedommail.ch>
 ;;; Copyright © 2020 Mark Meyer <mark@ofosos.org>
 ;;; Copyright © 2020 Maxime Devos <maximedevos@telenet.be>
@@ -308,7 +308,7 @@ bindings and many of the powerful features of GNU Emacs.")
 (define-public jucipp
   (package
     (name "jucipp")
-    (version "1.6.3")
+    (version "1.7.1")
     (home-page "https://gitlab.com/cppit/jucipp")
     (source (origin
               (method git-fetch)
@@ -320,36 +320,28 @@ bindings and many of the powerful features of GNU Emacs.")
                                   (recursive? #t)))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "1gy2xb5rm7q4zx9rl23h96b1i46fz27v25nklj50fvqp8ax2gxqy"))))
+               (base32 "0xyf1fa7jvxzvg1dxh5vc50fbwjjsar4fmlvbfhicdd1f8bhz1ii"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags '("-DBUILD_TESTING=ON"
-
-                           ;; These arguments are here to facilitate an "in-source"
-                           ;; build using "./build" instead of the default "../build".
-                           ;; The test suite expects that to be the case.
-                           "..")
-       #:out-of-source? #f
+     `(#:configure-flags '("-DBUILD_TESTING=ON")
        #:phases (modify-phases %standard-phases
-                  (add-before 'configure 'enter-build-directory
-                    (lambda _
-                      (mkdir "build")
-                      (chdir "build")
-                      #t))
-
                   (add-after 'unpack 'patch-tiny-process-library
                     (lambda _
                       (with-directory-excursion "lib/tiny-process-library"
                         (substitute* '("process_unix.cpp"
                                        "tests/io_test.cpp")
-                          (("/bin/sh") (which "sh"))))
-                      #t))
+                          (("/bin/sh") (which "sh"))))))
                   (add-after 'unpack 'disable-git-test
                     (lambda _
                       (substitute* "tests/CMakeLists.txt"
+                        ;; Disable the CMake build test, as it does not test
+                        ;; functionality of the package, and requires doing
+                        ;; an "in-source" build.
+                        (("add_test\\(cmake_build_test.*\\)")
+                         "")
                         ;; Disable the git test, as it requires the full checkout.
-                        (("add_test\\(git_test.*\\)") ""))
-                      #t))
+                        (("add_test\\(git_test.*\\)")
+                         ""))))
                   (add-before 'check 'pre-check
                     (lambda* (#:key inputs #:allow-other-keys)
                       ;; Tests do not expect HOME to be empty.
@@ -360,8 +352,7 @@ bindings and many of the powerful features of GNU Emacs.")
                             (display ":1"))
                         (setenv "DISPLAY" display)
                         (system (string-append xorg-server "/bin/Xvfb "
-                                               display " &")))
-                      #t))
+                                               display " &")))))
                   (add-after 'install 'wrap
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       ;; The package needs GTK+ and GtkSourceView on XDG_DATA_DIRS
@@ -379,8 +370,7 @@ bindings and many of the powerful features of GNU Emacs.")
                                (map (lambda (pkg)
                                       (string-append pkg "/share"))
                                     (list out gtk+ gtksourceview shared-mime-info))
-                               ":"))))
-                        #t))))))
+                               ":"))))))))))
     (native-inputs
      (list pkg-config xorg-server-for-tests))
     (inputs
