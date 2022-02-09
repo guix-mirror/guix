@@ -74,6 +74,7 @@
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages pretty-print)
@@ -766,7 +767,7 @@ library.")
 (define-public cpplint
   (package
     (name "cpplint")
-    (version "1.4.5")
+    (version "1.5.5")
     (source
      (origin
        (method git-fetch)
@@ -776,19 +777,22 @@ library.")
              (url "https://github.com/cpplint/cpplint")
              (commit version)))
        (sha256
-        (base32 "1yzcxqx0186sh80p0ydl9z0ld51fn2cdpz9hmhrp15j53g9ira7c"))
+        (base32 "13l86aq0h1jga949k79k9x3hw2xqchjc162sclg2f99vz98zcz15"))
        (file-name (git-file-name name version))))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'use-later-pytest
-           (lambda _
-             (substitute* "test-requirements"
-               (("pytest.*") "pytest\n"))
-             #t)))))
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (replace 'check
+                 (lambda* (#:key tests? #:allow-other-keys)
+                   (when tests?
+                     (invoke "pytest" "-vv")))))))
     (build-system python-build-system)
     (native-inputs
-     (list python-pytest python-pytest-cov python-pytest-runner))
+     (list python-coverage
+           python-pytest
+           python-pytest-cov
+           python-pytest-runner
+           python-testfixtures))
     (home-page "https://github.com/cpplint/cpplint")
     (synopsis "Static code checker for C++")
     (description "@code{cpplint} is a command-line tool to check C/C++ files
