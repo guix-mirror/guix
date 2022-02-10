@@ -2641,14 +2641,14 @@ run command line programs.")
 (define-public ocaml-xmlm
   (package
     (name "ocaml-xmlm")
-    (version "1.3.0")
+    (version "1.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://erratique.ch/software/xmlm/releases/"
                                   "xmlm-" version ".tbz"))
               (sha256
                 (base32
-                  "1rrdxg5kh9zaqmgapy9bhdqyxbbvxxib3bdfg1vhw4rrkp1z0x8n"))))
+                  "1ynrjba3wm3axscvggrfijfgsznmphhxnkffqch67l9xiqjm44h9"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:tests? #f
