@@ -1,0 +1,9 @@
+-*- mode: org -*-
+
+* Out of service
+
+GitHub broke this mirror in December 2023.  Go ask them why.
+
+You should use the upstream repository at https://savannah.gnu.org/projects/guix/
+
+If you can't, you may find a list of mirrors at https://libreplanet.org/wiki/Group:Guix/Mirrors#Git
